@@ -1,3 +1,8 @@
 # packages/ui
 
-Design tokens and components, no app logic. Tokens live in `tokens.ts` and nowhere else; Tailwind config is generated from them (CLAUDE.md section 7). Lands with spec 00, criteria "Design tokens" and "Core components". Until then this folder is a placeholder.
+Design tokens and components, no app logic (ADR-005).
+
+- `tokens.ts` holds every value in `docs/design/system.md` section 2 and nothing else. `pnpm --filter ui build:tokens` writes `tokens.css`, the Tailwind 4 theme the site imports; `__tests__/tokens.test.ts` fails when the file is stale or a value drifts from the design document. Changing a value needs an ADR.
+- `brand.ts` holds the working title (`SITE_NAME`, CLAUDE.md section 12) and `legal.ts` the verbatim disclaimer, trademark line and credits with their sources.
+- `components/` is the Phase 0 set from the design system; `index.ts` is the public surface. Components are TypeScript source consumed by `apps/web` through `transpilePackages`; `next/link` is the only framework import.
+- `stories/` renders each component from fixture rows for the gallery route in `apps/web`; Playwright writes one light and one dark screenshot per story into `__screenshots__/`.

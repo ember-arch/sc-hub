@@ -1,7 +1,8 @@
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { type Manifest, type Vehicle, parsePack, utf8Bytes } from "schema";
+import { type Manifest, type Vehicle } from "schema";
+import { parsePack, utf8Bytes } from "schema/pack";
 import { describe, expect, it } from "vitest";
 import {
   BuildError,

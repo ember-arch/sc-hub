@@ -1,12 +1,6 @@
 import { describe, expect, it } from "vitest";
-import {
-  type EntityName,
-  PackError,
-  entityNames,
-  parsePack,
-  sha256Hex,
-  utf8Bytes,
-} from "../index.js";
+import { type EntityName, PackError, entityNames } from "../index.js";
+import { parsePack, sha256Hex, utf8Bytes } from "../pack.js";
 import { loadFixture } from "./helpers.js";
 
 // A pack built from the synthetic fixtures in fixtures/schema is self-contained: TEST_Example is

@@ -12,8 +12,8 @@ import {
   type VehicleKind,
   VehicleStats,
   type VehicleStatus,
-  describeIssues,
 } from "schema";
+import { describeIssues } from "schema/pack";
 import type { z } from "zod";
 import { MapError } from "./errors.js";
 import { type Named, assignSlugs } from "./slugs.js";

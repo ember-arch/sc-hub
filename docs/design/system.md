@@ -80,6 +80,11 @@ Faces: Geist Sans and Geist Mono, or Inter Tight and JetBrains Mono. Pick one pa
 - `PatchStrip` — LIVE and PTU versions, shown on home and in the footer.
 - `Footer` — disclaimer (verbatim, see legal), attribution lines, legal links.
 
+Added by spec 02 (ADR-006):
+
+- `FilterBar` — a GET form of labelled native selects; filters are URL state, so each change navigates to a shareable address.
+- `SegmentedLinks` — a row of links that reads as one control (the card/table toggle).
+
 ## 4. Page templates
 
 | Page | Layout |

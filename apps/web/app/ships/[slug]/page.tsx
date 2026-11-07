@@ -5,6 +5,7 @@ import {
   EmptyState,
   EntityPage,
   Section,
+  StatsByChannel,
   TextLink,
   sentence,
   vehicleStatusBadge,
@@ -12,7 +13,6 @@ import {
 import { flattenPorts, repo } from "../../../lib/data";
 import { Site } from "../../../lib/site";
 import { shipCard, shipFacts, shipSpecRows } from "../../../lib/views";
-import { StatsByChannel } from "../../components/stats-by-channel";
 import { loadoutGroups } from "../../../lib/loadout";
 import { CompareLink, CompareToggle } from "../../compare/compare-controls";
 import { LoadoutPanels } from "./loadout-panels";
@@ -108,12 +108,19 @@ export default async function ShipPage({ params }: Params) {
           placeholder:
             "Render placeholder until the fankit image or the 3D viewer lands",
           children: (
-            <div className="flex flex-wrap gap-2">
-              <CompareToggle
-                slug={ship.vehicle.slug}
-                name={ship.vehicle.name}
-              />
-              <CompareLink />
+            <div className="flex flex-col gap-3">
+              {version === null ? null : (
+                <p className="m-0 text-caption text-secondary">
+                  Key facts and stats from LIVE {version}
+                </p>
+              )}
+              <div className="flex flex-wrap gap-2">
+                <CompareToggle
+                  slug={ship.vehicle.slug}
+                  name={ship.vehicle.name}
+                />
+                <CompareLink />
+              </div>
             </div>
           ),
         }}
@@ -215,7 +222,7 @@ export default async function ShipPage({ params }: Params) {
                       ? "Variants"
                       : `Variant of the ${base.vehicle.name}`}
                   </h3>
-                  <ul className="m-0 grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-2 lg:grid-cols-4">
+                  <ul className="m-0 grid list-none grid-cols-2 gap-4 p-0 md:grid-cols-3 lg:grid-cols-4">
                     {variants.map((v) => (
                       <li key={v.vehicle.class_name}>
                         <Card {...shipCard(v)} />

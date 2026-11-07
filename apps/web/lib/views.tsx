@@ -1,13 +1,13 @@
 import { sizeClassRank } from "schema";
 import {
   type CardProps,
+  type ChannelStatRow,
   type KeyFact,
   formatNumber,
   sentence,
   vehicleStatusBadge,
 } from "ui";
 import type { ItemStats, VehicleStats } from "schema";
-import type { ChannelStatRow } from "../app/components/stats-by-channel";
 import type { ShipRow } from "../app/ships/ship-table";
 import { type Deltas, channelDeltas } from "./channel-diff";
 import type { ComponentView, ShipView } from "./data";

@@ -1,6 +1,13 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { EmptyState, EntityPage, Section, sentence } from "ui";
+import {
+  Card,
+  EmptyState,
+  EntityPage,
+  Section,
+  StatsByChannel,
+  sentence,
+} from "ui";
 import { repo } from "../../../lib/data";
 import { Site } from "../../../lib/site";
 import {
@@ -8,7 +15,6 @@ import {
   componentStatRows,
   shipCard,
 } from "../../../lib/views";
-import { StatsByChannel } from "../stats-by-channel";
 
 interface Params {
   readonly params: Promise<{ slug: string }>;
@@ -54,12 +60,6 @@ export default async function ComponentPage({ params }: Params) {
                 },
         }}
         facts={componentFacts(c)}
-        related={[
-          {
-            title: "Stock on",
-            items: stockOn.map(shipCard),
-          },
-        ]}
       >
         <Section
           id="stats"
@@ -84,14 +84,30 @@ export default async function ComponentPage({ params }: Params) {
             />
           )}
         </Section>
-        {stockOn.length === 0 ? (
-          <Section id="stock" title="Stock on">
+        <Section
+          id="stock"
+          title="Stock on"
+          aside={
+            stockOn.length === 0
+              ? undefined
+              : `${stockOn.length} ${stockOn.length === 1 ? "ship" : "ships"}`
+          }
+        >
+          {stockOn.length === 0 ? (
             <EmptyState>
               No ship in the current data pack carries this component by
               default.
             </EmptyState>
-          </Section>
-        ) : null}
+          ) : (
+            <ul className="m-0 grid list-none grid-cols-2 gap-4 p-0 md:grid-cols-3 lg:grid-cols-4">
+              {stockOn.map((ship) => (
+                <li key={ship.vehicle.class_name}>
+                  <Card {...shipCard(ship)} />
+                </li>
+              ))}
+            </ul>
+          )}
+        </Section>
         <Section id="news" title="In the news">
           <EmptyState>No news mentions this component yet.</EmptyState>
         </Section>

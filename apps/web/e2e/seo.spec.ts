@@ -94,6 +94,8 @@ test("sitemap.xml lists every ship, component and manufacturer page and robots.t
   expect(robots.status()).toBe(200);
   const text = await robots.text();
   expect(text).toMatch(/Disallow: \/gallery/);
+  // Compare carries noindex, which a crawler only sees if robots.txt lets it fetch the page.
+  expect(text).not.toMatch(/Disallow: \/compare/);
   expect(text).toMatch(/Sitemap: .*\/sitemap\.xml/);
 });
 

@@ -21,7 +21,7 @@ const SCREENS = [
   { name: "components", path: "/components", status: 200 },
   {
     name: "components-filtered",
-    path: "/components?manufacturer=behring",
+    path: "/components?manufacturer=behring-applied-technology",
     status: 200,
   },
   {

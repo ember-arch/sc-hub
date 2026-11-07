@@ -25,8 +25,10 @@ import { shipCard, shipRows } from "../../lib/views";
 import { CompareLink, CompareToggle } from "../compare/compare-controls";
 import { ShipTable } from "./ship-table";
 
+// The canonical is the unfiltered index: filters are views of one page, not pages of their own.
 export const metadata: Metadata = {
   title: "Ships",
+  alternates: { canonical: "/ships" },
   description:
     "Every Star Citizen ship and vehicle with crew, cargo, dimensions and status by game version; filter by manufacturer, role, size and status.",
 };

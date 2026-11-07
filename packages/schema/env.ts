@@ -25,6 +25,8 @@ export const envSchema = z.object({
   SPECTRUM_FEED_URL: url.optional(),
   SPECTRUM_SESSION_COOKIE: nonEmpty.optional(),
   SENTRY_DSN: url.optional(),
+  /** The public origin for canonical URLs, the sitemap and Open Graph (spec 02, "SEO"). */
+  SITE_URL: url.optional(),
   /** Windows only. */
   SC_INSTALL_ROOT: nonEmpty.optional(),
   /** Windows only. */

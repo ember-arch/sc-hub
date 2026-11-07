@@ -3,7 +3,10 @@ import { Section } from "ui";
 import { SITE_NAME } from "ui/brand";
 import { Site } from "../../lib/site";
 
-export const metadata: Metadata = { title: "Privacy" };
+export const metadata: Metadata = {
+  title: "Privacy",
+  alternates: { canonical: "/privacy" },
+};
 
 /** docs/legal/obligations.md, Privacy: short, present from Phase 0. */
 export default function PrivacyPage() {

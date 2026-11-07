@@ -23,6 +23,7 @@ import { ComponentTable } from "./component-table";
 
 export const metadata: Metadata = {
   title: "Components",
+  alternates: { canonical: "/components" },
   description:
     "Star Citizen ship components grouped by type: weapons, shields, power plants, coolers, quantum drives and more, with size and manufacturer filters.",
 };

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import {
   Card,
   EmptyState,
@@ -11,7 +11,10 @@ import {
   vehicleStatusBadge,
 } from "ui";
 import { flattenPorts, repo } from "../../../lib/data";
+import { shipJsonLd } from "../../../lib/seo";
 import { Site } from "../../../lib/site";
+import { resolveSlug } from "../../../lib/slugs";
+import { JsonLdScript } from "../../json-ld";
 import { shipCard, shipFacts, shipSpecRows } from "../../../lib/views";
 import { loadoutGroups } from "../../../lib/loadout";
 import { CompareLink, CompareToggle } from "../../compare/compare-controls";
@@ -26,14 +29,36 @@ export function generateStaticParams() {
   return repo().ships.map((s) => ({ slug: s.vehicle.slug }));
 }
 
+/**
+ * The ship for a slug. An old slug from slug_history answers with a permanent redirect to the
+ * current one (spec 02, "Slugs and redirects"; Next sends 308, the permanent status that also
+ * keeps the method); an unknown slug is a 404 with the search box.
+ */
+function shipFor(slug: string) {
+  const r = repo();
+  const result = resolveSlug(
+    r.ships.map((s) => s.vehicle),
+    slug,
+  );
+  if (result.status === "moved") permanentRedirect(`/ships/${result.to}`);
+  if (result.status === "missing") notFound();
+  const ship = r.shipBySlug(result.entity.slug);
+  if (ship === undefined) notFound();
+  return ship;
+}
+
+function describe(ship: ReturnType<typeof shipFor>): string {
+  const maker = ship.manufacturer?.name ?? ship.vehicle.manufacturer_code;
+  return `${maker} ${ship.vehicle.name}: specifications, hardpoints and stock loadout by game version.`;
+}
+
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
-  const ship = repo().shipBySlug(slug);
-  if (ship === undefined) return { title: "Ship not found" };
-  const maker = ship.manufacturer?.name ?? ship.vehicle.manufacturer_code;
+  const ship = shipFor(slug);
   return {
     title: ship.vehicle.name,
-    description: `${maker} ${ship.vehicle.name}: specifications, hardpoints and stock loadout by game version.`,
+    description: describe(ship),
+    alternates: { canonical: `/ships/${ship.vehicle.slug}` },
   };
 }
 
@@ -45,8 +70,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 export default async function ShipPage({ params }: Params) {
   const { slug } = await params;
   const r = repo();
-  const ship = r.shipBySlug(slug);
-  if (ship === undefined) notFound();
+  const ship = shipFor(slug);
   const status = vehicleStatusBadge(ship.vehicle.status);
   const s = ship.stats;
   const allPorts = flattenPorts(r.shipPorts(ship.vehicle.class_name));
@@ -93,6 +117,7 @@ export default async function ShipPage({ params }: Params) {
 
   return (
     <Site current="ships" theme="dark">
+      <JsonLdScript data={shipJsonLd(ship, describe(ship))} />
       <EntityPage
         hero={{
           name: ship.vehicle.name,

@@ -71,7 +71,8 @@ jobs:
           node-version-file: .node-version
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm exec playwright install --with-deps chromium
+      # @playwright/test is a dependency of apps/web, not of the root.
+      - run: pnpm --filter web exec playwright install --with-deps chromium
       - run: pnpm test:e2e
       - name: Upload Playwright report and screenshots
         if: always()

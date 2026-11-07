@@ -205,4 +205,4 @@ The normalize step emits `diff.json` per run: for each entity, fields added, rem
 
 ## Slugs and redirects
 
-A slug is computed once when an entity is first published. If the display name changes, the old slug is appended to `slug_history` and the app serves a 301 from it. A slug collision across manufacturers is resolved by prefixing the manufacturer code to the newer entity's slug. If the prefixed slug still collides (placeholder components share one display name within a manufacturer), the slug is the kebab-case `class_name`, which is unique by definition.
+A slug is computed once when an entity is first published. If the display name changes, the old slug is appended to `slug_history` and the app serves a 301 from it. A slug collision across manufacturers is resolved by prefixing the manufacturer code to the newer entity's slug; when the collision is found at one first publish (a bootstrap pack, a first import), every colliding entity gets the prefix. If the prefixed slug still collides (components that share one display name within a manufacturer, placeholders among them), the slug is the kebab-case `class_name`, which is unique by definition.

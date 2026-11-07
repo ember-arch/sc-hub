@@ -129,8 +129,6 @@ export default async function ShipPage({ params }: Params) {
                 },
           status,
           image: null,
-          placeholder:
-            "Render placeholder until the fankit image or the 3D viewer lands",
           children: (
             <div className="flex flex-col gap-3">
               {version === null ? null : (
@@ -164,7 +162,7 @@ export default async function ShipPage({ params }: Params) {
         >
           {s === null ? (
             <EmptyState>
-              No LIVE stats for this ship in the current data pack.
+              No LIVE stats are on record for this ship yet.
             </EmptyState>
           ) : (
             <StatsByChannel
@@ -185,7 +183,7 @@ export default async function ShipPage({ params }: Params) {
         >
           {ports.length === 0 ? (
             <EmptyState>
-              No hardpoints in the current data pack for this ship.
+              No hardpoints are on record for this ship yet.
             </EmptyState>
           ) : (
             <LoadoutPanels groups={loadout} />
@@ -235,7 +233,8 @@ export default async function ShipPage({ params }: Params) {
         >
           {variants.length === 0 && ship.paints.length === 0 ? (
             <EmptyState>
-              No variants or paints in the current data pack.
+              No variants or paints are on record for this ship yet. The{" "}
+              <TextLink href="/ships">ship index</TextLink> lists every hull.
             </EmptyState>
           ) : (
             <div className="flex flex-col gap-6">
@@ -279,14 +278,8 @@ export default async function ShipPage({ params }: Params) {
           aside={version === null ? undefined : `LIVE ${version}`}
         >
           <EmptyState>
-            No earlier LIVE version in the current data pack to compare against;
-            changes appear here once the pipeline publishes a second version.
-          </EmptyState>
-        </Section>
-        <Section id="news" title="In the news">
-          <EmptyState>
-            No news mentions this ship yet; see the{" "}
-            <TextLink href="/news">news feed</TextLink>.
+            This is the first version on record for this ship, so nothing has
+            changed yet. Changes appear here when the next version is published.
           </EmptyState>
         </Section>
       </EntityPage>

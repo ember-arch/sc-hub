@@ -71,6 +71,35 @@ Spec 02 asks for the reference experience: a filterable ship index, the full shi
 | JSON-LD | Ships as schema.org `Vehicle` (name, URL, manufacturer as `Organization`, role as category, mass in kilograms, cargo with `unitText` SCU, and the channel and build as `additionalProperty`; crew is left out because schema.org has no crew property and seating capacity is a different fact; no `sameAs`, which would assert identity with CIG's site), manufacturers as `Organization`; fields come from the pack and anything it lacks is left out. Rendered through one `JsonLdScript` component that escapes `<` | The spec names ships and manufacturers; schema.org has no closer type for a fictional spacecraft than Vehicle, and nothing is typed in |
 | Open Graph images | `app/ships/[slug]/opengraph-image.tsx` draws a 1200 by 630 card from the tokens (dark page color; caption, display and body sizes scaled for the card; Geist Medium read from the geist package; only current slugs, prerendered). When a pipeline thumbnail exists the card becomes `openGraph.images` pointing at the CDN URL, never fetched inside this route, so the thumbnail is not routed through the app server with the ship name, manufacturer and role, generated at build for every ship | The spec wants the pipeline thumbnail or the fankit render; neither exists (no R2, fankit not downloaded). A static placeholder from the tokens gives every share a card without an image the project does not have, and the file is served static, not routed through the app server |
 
+### Design review (PR 7)
+
+The KICKOFF design-review prompt ran in a subagent over home, the Gladius, the Polaris, a component page and compare, at 390 px and 1280 px in both schemes. Tokens, decoration, the phone table rule and the disclaimer passed on every page; LCP was 0.9 to 1.06 s. What changed in response:
+
+| Finding | Change | Reason |
+| --- | --- | --- |
+| News sections on ship, component and manufacturer pages | Removed | Spec 02 "Out of scope": Phase 3 adds news and dev posts to entity pages. An empty section ahead of its phase is an element the reader can lose |
+| Empty states written for the operator ("data pack", "pipeline publishes", "PTU pack is imported") | Rewritten for the reader, with a next step where one exists ("The ship index lists every hull", "browse the ships") | system.md section 5: empty states name the space and the next step |
+| Key facts printed an em dash for a missing value | A null fact is left out | Spec 02 notes: omit the row; the block collapses gracefully |
+| Crew, length and mass in the key facts (and crew on compare) set in the interface face because they arrive preformatted | `KeyFact.numeric` and `CompareRow.mono` set them in mono | system.md principle 2: one mono for numbers, tabular figures |
+| The compare phone stack inherited the browser's 16 px | `text-ui` on the stack | system.md section 2: only token sizes |
+| Loadout panels stretched to the tallest in their row (530 px for two lines on the Polaris) | `items-start` on the grid | Chrome without content |
+| The game's "UNDEFINED" subtype and subtypes that repeat the item name ("Manned turret") | Not shown | They tell the reader nothing |
+| "<= PLACEHOLDER =>" as a link in the loadout | Reads "Unnamed thruster" (the port type); the component page keeps the pack's own name | It is the wiki's marker for a missing localized name, not a name. Spec 01's normalizer should name these parts from localization |
+| Cards drew an empty grey image well | No well without an image | An empty box on every card is chrome; the image returns when the fankit or pipeline thumbnails exist |
+| Home: an h1 and a tagline above the search field; the search field at the body size | The h1 is visually hidden, the tagline lives in the meta description only, the field uses the ui size, the feed's aside is gone | system.md section 4: search field as the first element; controls use `ui` |
+| The viewer placeholder said "Render placeholder until the fankit image or the 3D viewer lands" with no padding | It says "No image yet", padded and centered | Copy for the reader, not the operator |
+
+Recorded for the owner, not changed (each is a design-document or token decision):
+
+| Finding | Why it waits |
+| --- | --- |
+| Light-mode accent contrast: `#2F6BFF` measures 4.19:1 on `bg.page` and 3.90:1 on `bg.inset`, under the 4.5:1 system.md section 6 asks for text; `success` and `warning` are under it too (PTU deltas in light mode, once a PTU build exists). `#2560E8` would measure about 5.0:1 on `bg.page`, 4.65:1 on `bg.inset` and 5.4:1 on white | A token change needs an ADR and is the owner's design call, like the `text.muted` question in ADR-005. Local Lighthouse runs scored 1.00 because the machine's system scheme is dark |
+| Labels in capitals that are not units: "SCM speed", "NAV speed", "EM signature", "LIVE", "PTU" | They are the game's own acronyms; system.md section 2 allows only unit abbreviations in capitals, so the owner rewords the rule or the labels |
+| Duplicates the spec asks for: manufacturer and status in both the hero and the key facts; length, mass, cargo and crew in both the key facts and the specifications (the specifications are where their PTU deltas show) | Spec 02 lists both; dropping either is a spec change |
+| Showing or hiding the placeholder viewer slot and empty sections ("Variants and paints", "Changed in this version") until data exists | Spec 02 asks for the slot and the sections; the fankit download (spec 00 prerequisite) fills the slot |
+| The footer line "SC Hub is a non-commercial fan project." and the patch strip shown both on home and in the footer | system.md section 3 asks for both strips; the footer line is not required by docs/legal/obligations.md |
+| "Three sizes per page" against the six-role type table | Already open in ADR-005 |
+
 ## Alternatives considered
 
 | Option | Why not |

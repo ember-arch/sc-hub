@@ -64,7 +64,7 @@ export function Hero({
       </div>
       {image === undefined ? null : image === null ? (
         <div
-          className="flex aspect-video w-full items-center justify-center rounded-card border border-hairline bg-inset text-ui text-secondary md:w-1/2"
+          className="flex aspect-video w-full items-center justify-center rounded-card border border-hairline bg-inset px-4 text-center text-ui text-secondary md:w-1/2"
           role="img"
           aria-label={placeholder ?? "No image yet"}
         >
@@ -90,9 +90,11 @@ export function Hero({
 
 export interface KeyFact {
   readonly label: string;
-  /** null renders as an em dash. */
+  /** null omits the fact: the key-facts block collapses rather than showing a dash (spec 02 notes). */
   readonly value: ReactNode | null;
   readonly unit?: string | undefined;
+  /** A preformatted number (a range, a grouped value): set in mono like a numeric value. */
+  readonly numeric?: boolean | undefined;
 }
 
 export interface KeyFactsProps {
@@ -104,30 +106,30 @@ export interface KeyFactsProps {
 export function KeyFacts({ facts }: KeyFactsProps) {
   return (
     <dl className="m-0 grid grid-cols-2 gap-x-6 gap-y-4 rounded-card border border-hairline bg-surface p-4 md:grid-cols-4">
-      {facts.map((fact) => (
-        <div key={fact.label} className="flex flex-col gap-1">
-          <dt className="text-caption text-secondary">{fact.label}</dt>
-          <dd className="m-0 text-ui text-primary">
-            {fact.value === null ? (
-              <span className="text-secondary">—</span>
-            ) : (
-              <>
-                <span
-                  className={typeof fact.value === "number" ? "font-mono" : ""}
-                >
-                  {fact.value}
+      {facts
+        .filter((fact) => fact.value !== null)
+        .map((fact) => (
+          <div key={fact.label} className="flex flex-col gap-1">
+            <dt className="text-caption text-secondary">{fact.label}</dt>
+            <dd className="m-0 text-ui text-primary">
+              <span
+                className={
+                  typeof fact.value === "number" || fact.numeric === true
+                    ? "font-mono"
+                    : ""
+                }
+              >
+                {fact.value}
+              </span>
+              {fact.unit !== undefined ? (
+                <span className="text-caption text-secondary">
+                  {" "}
+                  {fact.unit}
                 </span>
-                {fact.unit !== undefined ? (
-                  <span className="text-caption text-secondary">
-                    {" "}
-                    {fact.unit}
-                  </span>
-                ) : null}
-              </>
-            )}
-          </dd>
-        </div>
-      ))}
+              ) : null}
+            </dd>
+          </div>
+        ))}
     </dl>
   );
 }

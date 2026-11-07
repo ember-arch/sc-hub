@@ -57,11 +57,11 @@ export default async function ManufacturerPage({ params }: Params) {
         <Section
           id="lineup"
           title="Lineup"
-          aside={`${lineup.length} ships in the current data pack`}
+          aside={`${lineup.length} ${lineup.length === 1 ? "ship" : "ships"}`}
         >
           {lineup.length === 0 ? (
             <EmptyState>
-              No ships from this manufacturer in the current data pack.
+              No ships from this manufacturer are on record yet.
             </EmptyState>
           ) : (
             <ul className="m-0 grid list-none grid-cols-2 gap-4 p-0 md:grid-cols-3 lg:grid-cols-4">
@@ -80,7 +80,7 @@ export default async function ManufacturerPage({ params }: Params) {
         >
           {components.length === 0 ? (
             <EmptyState>
-              No components from this manufacturer in the current data pack.
+              No components from this manufacturer are on record yet.
             </EmptyState>
           ) : (
             <ComponentTable
@@ -88,9 +88,6 @@ export default async function ManufacturerPage({ params }: Params) {
               rows={componentRows(components)}
             />
           )}
-        </Section>
-        <Section id="news" title="In the news">
-          <EmptyState>No news mentions this manufacturer yet.</EmptyState>
         </Section>
       </EntityPage>
     </Site>

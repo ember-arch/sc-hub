@@ -85,8 +85,8 @@ export function StatsByChannel({
       </div>
       {ptuVersion === null ? (
         <p className="m-0 text-caption text-secondary">
-          No PTU build recorded. PTU values show as differences against LIVE
-          once a PTU pack is imported.
+          No PTU build is on record. When one is, its values appear here as
+          differences from LIVE.
         </p>
       ) : !hasPtuRow ? (
         <p className="m-0 text-caption text-secondary">

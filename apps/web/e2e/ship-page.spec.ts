@@ -72,7 +72,6 @@ test("the ship page has every section in order, each stat with its unit and vers
     "Hardpoints and stock loadout",
     "Variants and paints",
     "Changed in this version",
-    "In the news",
   ]);
   const specs = page.locator("#specs");
   await expect(specs).toContainText(`LIVE ${live.version}`);
@@ -93,7 +92,9 @@ test("the PTU toggle shows only when a PTU build differs; otherwise the page say
   const toggle = page.getByRole("button", { name: /PTU differences/ });
   if (ptu === undefined) {
     await expect(toggle).toHaveCount(0);
-    await expect(page.locator("#specs")).toContainText("No PTU build recorded");
+    await expect(page.locator("#specs")).toContainText(
+      "No PTU build is on record",
+    );
   } else {
     // With a PTU build the specs aside names both channels; the toggle depends on the diff.
     await expect(page.locator("#specs")).toContainText(`PTU ${ptu.version}`);
@@ -105,10 +106,10 @@ test("variants and paints, and changed in this version, show honest empty states
 }) => {
   await page.goto(`/ships/${ship.slug}`);
   await expect(page.locator("#variants")).toContainText(
-    "No variants or paints in the current data pack",
+    "No variants or paints are on record",
   );
   await expect(page.locator("#changes")).toContainText(
-    "No earlier LIVE version",
+    "first version on record",
   );
 });
 

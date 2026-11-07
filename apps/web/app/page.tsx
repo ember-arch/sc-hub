@@ -6,6 +6,7 @@ import {
   PatchStrip,
   SearchField,
   Section,
+  TextLink,
   sentence,
 } from "ui";
 import { SITE_NAME, SITE_TAGLINE } from "ui/brand";
@@ -29,17 +30,18 @@ export default function HomePage() {
     <Site>
       <div className="flex flex-col gap-12 pt-8">
         <div className="flex flex-col gap-3">
-          <h1 className="text-title text-primary">{SITE_NAME}</h1>
-          <p className="max-w-prose text-body text-secondary">{SITE_TAGLINE}</p>
+          {/* The header already names the site; the h1 is for assistive tech and outlines. */}
+          <h1 className="sr-only">{SITE_NAME}</h1>
           <SearchField />
         </div>
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
           <div className="lg:col-span-2">
-            <Section id="feed" title="Today" aside="News and developer posts">
+            <Section id="feed" title="Today">
               {feed.length === 0 ? (
                 <EmptyState>
-                  No news yet. Comm-Links and developer posts appear here once
-                  the feeds are connected.
+                  No news yet. Comm-Links and developer posts will appear here;
+                  until then, browse the{" "}
+                  <TextLink href="/ships">ships</TextLink>.
                 </EmptyState>
               ) : (
                 <div className="flex flex-col">

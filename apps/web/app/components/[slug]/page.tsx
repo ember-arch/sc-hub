@@ -75,7 +75,7 @@ export default async function ComponentPage({ params }: Params) {
         >
           {rows.length === 0 ? (
             <EmptyState>
-              No stats for this component in the current data pack.
+              No stats are on record for this component yet.
             </EmptyState>
           ) : (
             <StatsByChannel
@@ -96,8 +96,7 @@ export default async function ComponentPage({ params }: Params) {
         >
           {stockOn.length === 0 ? (
             <EmptyState>
-              No ship in the current data pack carries this component by
-              default.
+              No ship carries this component in its stock loadout.
             </EmptyState>
           ) : (
             <ul className="m-0 grid list-none grid-cols-2 gap-4 p-0 md:grid-cols-3 lg:grid-cols-4">
@@ -108,9 +107,6 @@ export default async function ComponentPage({ params }: Params) {
               ))}
             </ul>
           )}
-        </Section>
-        <Section id="news" title="In the news">
-          <EmptyState>No news mentions this component yet.</EmptyState>
         </Section>
       </EntityPage>
     </Site>

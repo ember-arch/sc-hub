@@ -40,10 +40,23 @@ describe("envSchema", () => {
     expect(envSchema.safeParse({ SPECTRUM_MODE: "maybe" }).success).toBe(false);
   });
 
-  it("rejects a malformed URL", () => {
-    expect(envSchema.safeParse({ MEILI_HOST: "not a url" }).success).toBe(
-      false,
-    );
+  it.each([
+    "not a url",
+    "localhost:7700",
+    "ftp://search.example.test",
+    "javascript:alert(1)",
+  ])("rejects a URL that is not http(s): %s", (value) => {
+    expect(envSchema.safeParse({ MEILI_HOST: value }).success).toBe(false);
+    expect(envSchema.safeParse({ CDN_BASE_URL: value }).success).toBe(false);
+  });
+
+  it("accepts http and https URLs", () => {
+    expect(
+      envSchema.safeParse({ MEILI_HOST: "http://localhost:7700" }).success,
+    ).toBe(true);
+    expect(
+      envSchema.safeParse({ CDN_BASE_URL: "https://cdn.example.test" }).success,
+    ).toBe(true);
   });
 });
 

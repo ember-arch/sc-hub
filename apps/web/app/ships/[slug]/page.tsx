@@ -14,6 +14,7 @@ import { flattenPorts, repo } from "../../../lib/data";
 import { Site } from "../../../lib/site";
 import { shipCard, shipFacts, shipSpecRows } from "../../../lib/views";
 import { loadoutGroups } from "../../../lib/loadout";
+import { CompareLink, CompareToggle } from "../../compare/compare-controls";
 import { LoadoutPanels } from "./loadout-panels";
 import { PortTable } from "./port-table";
 
@@ -106,12 +107,22 @@ export default async function ShipPage({ params }: Params) {
           image: null,
           placeholder:
             "Render placeholder until the fankit image or the 3D viewer lands",
-          children:
-            version === null ? undefined : (
-              <p className="m-0 text-caption text-secondary">
-                Key facts and stats from LIVE {version}
-              </p>
-            ),
+          children: (
+            <div className="flex flex-col gap-3">
+              {version === null ? null : (
+                <p className="m-0 text-caption text-secondary">
+                  Key facts and stats from LIVE {version}
+                </p>
+              )}
+              <div className="flex flex-wrap gap-2">
+                <CompareToggle
+                  slug={ship.vehicle.slug}
+                  name={ship.vehicle.name}
+                />
+                <CompareLink />
+              </div>
+            </div>
+          ),
         }}
         facts={shipFacts(ship, status.label)}
         related={related}

@@ -21,8 +21,8 @@ The reference experience readers come for: a ship index you can filter in one ta
 - [ ] **Manufacturer pages.** `/manufacturers/[slug]` with the 3 px brand rule, lineup cards, and description from fankit or localization only.
 - [x] **Compare.** `/compare?ships=a,b,c,d` shows up to four ships side by side on the key-facts set and the full stats table; shareable by URL; add and remove from the ship page and the index.
 - [ ] **Command palette on Meilisearch.** Typo-tolerant, grouped results (ships, components, manufacturers), under 100 ms server time for a warm query, keyboard navigable, recent entities remembered in local storage (wrapped in try/catch).
-- [ ] **Slugs and redirects.** Old slugs in `slug_history` 301 to the current slug; unknown slugs 404 with a search box.
-- [ ] **SEO.** Server-rendered pages, canonical URLs, per-page title and description, `sitemap.xml`, JSON-LD for ships and manufacturers, and static Open Graph images per ship (pipeline thumbnail when present, fankit render otherwise).
+- [x] **Slugs and redirects.** Old slugs in `slug_history` 301 to the current slug; unknown slugs 404 with a search box.
+- [x] **SEO.** Server-rendered pages, canonical URLs, per-page title and description, `sitemap.xml`, JSON-LD for ships and manufacturers, and static Open Graph images per ship (pipeline thumbnail when present, fankit render otherwise).
 - [ ] **Performance.** LCP under 1.5 s and CLS under 0.1 on `/ships/[slug]` and `/ships` at throttled 4G in Lighthouse CI; images served from R2 with width-appropriate variants.
 - [x] **Accessibility.** Keyboard-only run through index, ship page, compare, and palette recorded as a Playwright test; Lighthouse accessibility ≥ 90.
 - [ ] **Design review.** Design-review prompt run on home, a small ship, a capital ship, a component, and compare; findings addressed; screenshots in the PR.
@@ -46,4 +46,4 @@ Lighthouse CI reports attached; Playwright screenshots (390 and 1280, light and 
 
 - The ship page is the product. Spend the design effort there first; the index and compare follow its patterns.
 - If a stat is null for a ship, omit the row rather than showing a dash; the key-facts block collapses gracefully.
-- Ticked on the bootstrap pack (ADR-006): "Ship page" renders "changed in this version" as an empty state until spec 01 defines `diff.json`; the PTU toggle, variants and paints are built and unit-tested over synthetic rows because the pack has no PTU build, variant or paint. Spec 01's "Both channels" criterion is where the toggle is seen with real differences.
+- Ticked on the bootstrap pack (ADR-006): "Ship page" renders "changed in this version" as an empty state until spec 01 defines `diff.json`; the PTU toggle, variants and paints are built and unit-tested over synthetic rows because the pack has no PTU build, variant or paint. Spec 01's "Both channels" criterion is where the toggle is seen with real differences. "Slugs and redirects" answers an old slug with 308, the permanent redirect Next sends (same meaning as 301 for a GET; it also keeps the method); the pack's histories are empty, so the resolver is unit-tested over a synthetic renamed row. "SEO" ships a tokenized placeholder Open Graph image per ship until a pipeline thumbnail or fankit render exists, and canonical URLs resolve against `SITE_URL` (CLAUDE.md section 9).

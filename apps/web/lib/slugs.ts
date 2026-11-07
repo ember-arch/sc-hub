@@ -28,3 +28,27 @@ export function resolveSlug<T extends Sluggable>(
   }
   return { status: "missing" };
 }
+
+export interface ListResolution {
+  /** Each slug replaced by its current one; unknown slugs are kept so the page can name them. */
+  readonly slugs: readonly string[];
+  /** True when at least one slug was an old one, so the page should redirect to the current list. */
+  readonly moved: boolean;
+}
+
+/** Resolves every slug in a list (a compare URL); old slugs become current, unknown ones stay. */
+export function resolveSlugs<T extends Sluggable>(
+  rows: readonly T[],
+  slugs: readonly string[],
+): ListResolution {
+  let moved = false;
+  const out = slugs.map((slug) => {
+    const result = resolveSlug(rows, slug);
+    if (result.status === "moved") {
+      moved = true;
+      return result.to;
+    }
+    return slug;
+  });
+  return { slugs: [...new Set(out)], moved };
+}

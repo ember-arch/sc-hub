@@ -11,6 +11,7 @@ import { compareColumns, compareGroups } from "../../lib/compare-view";
 import { type ShipView, repo } from "../../lib/data";
 import type { Query } from "../../lib/ship-filters";
 import { Site } from "../../lib/site";
+import { resolveSlugs } from "../../lib/slugs";
 import { SyncCompareBasket } from "./compare-controls";
 import { CompareTable } from "./compare-table";
 
@@ -39,7 +40,15 @@ export default async function ComparePage({
 }) {
   const query = await searchParams;
   const r = repo();
-  const { slugs, dropped } = parseCompare(query["ships"]);
+  const parsed = parseCompare(query["ships"]);
+  // An old slug from slug_history in a shared link lands on the current ship (spec 02, "Slugs and redirects").
+  const resolved = resolveSlugs(
+    r.ships.map((s) => s.vehicle),
+    parsed.slugs,
+  );
+  if (resolved.moved) redirect(compareHref(resolved.slugs));
+  const slugs = resolved.slugs;
+  const dropped = parsed.dropped;
   const add = first(query["add"])?.trim();
   if (add !== undefined && add !== "" && r.shipBySlug(add) !== undefined) {
     const next = withShip(slugs, add);

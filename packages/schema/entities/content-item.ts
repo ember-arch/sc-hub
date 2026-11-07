@@ -8,8 +8,8 @@ export const ContentItem = z.strictObject({
   source: ContentSource,
   /** Source's own id; unique with source. */
   external_id: z.string().min(1),
-  /** Canonical link back to the source; always displayed. */
-  url: z.url(),
+  /** Canonical link back to the source; always displayed, so only http(s) is allowed. */
+  url: z.url({ protocol: /^https?$/ }),
   title: z.string().min(1),
   /** First paragraph or source-provided excerpt; never generated. */
   summary: z.string().nullable(),

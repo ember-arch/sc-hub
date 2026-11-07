@@ -4,7 +4,7 @@ export const SpectrumMode = z.enum(["feed", "poll", "off"]);
 export type SpectrumMode = z.infer<typeof SpectrumMode>;
 
 const nonEmpty = z.string().min(1);
-const url = z.url();
+const url = z.url({ protocol: /^https?$/ });
 
 /**
  * Every variable from CLAUDE.md section 9. All are optional at the schema level because each

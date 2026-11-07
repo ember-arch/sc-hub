@@ -133,6 +133,8 @@ SC_INSTALL_ROOT (Windows only, for example C:\Program Files\Roberts Space Indust
 STARBREAKER_BIN (Windows only)
 ```
 
+When `DATABASE_URL` is unset, `pnpm db:migrate` and `pnpm db:seed` use an embedded PGlite database in `packages/db/.pglite/` (local development only; ADR-004). Every deployed runtime requires it.
+
 Rate limits (polite defaults; never exceed):
 
 | Source | Limit |

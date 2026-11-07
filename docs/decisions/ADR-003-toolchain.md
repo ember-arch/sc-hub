@@ -53,7 +53,7 @@ ADR-001 fixes the stack (pnpm workspaces, TypeScript strict, Next.js, Zod, Vites
 - A dependency with a build script fails `pnpm install` until it is listed in `allowBuilds`; that is the intended review moment.
 - Relative imports in TypeScript end in `.js`.
 - Prettier's 80-column default decides line wrapping; nobody argues about it in review.
-- `packages/schema` exports point at `dist/`, and CI runs typecheck before build. The first in-repo consumer (`packages/db`, criterion 4) must choose between a source export condition for development and building before typecheck; record the choice here.
+- `packages/schema` exports point at `dist/`, and CI runs typecheck before build. Decided in ADR-004: the root `typecheck` script builds `schema` first, and Vitest aliases `schema` to its source so `pnpm test` needs no build.
 - The CI `e2e` and `lighthouse` jobs start the moment `apps/web/package.json` exists. The Site shell PR must add `@playwright/test` and `@lhci/cli`, replace `FIXTURE_SLUG` in `lighthouserc.json`, and make `pnpm test:e2e` real, or those jobs fail.
 - Format rules for `game_version`, `class_name` and `manufacturer_code` are `min(1)` until Phase 1 shows real strings; tightening them then is a schema change and a new data version, by design.
 - When typescript-eslint supports TypeScript 7, the pin in the root `package.json` and this ADR change together.

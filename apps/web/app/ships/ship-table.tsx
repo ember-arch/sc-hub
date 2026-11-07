@@ -10,6 +10,8 @@ export interface ShipRow {
   readonly manufacturer: string;
   readonly role: string | null;
   readonly size: string | null;
+  /** Position in the documented size order, for sorting the size column. */
+  readonly sizeRank: number;
   readonly crew: string | null;
   /** Numeric for sorting; the crew column shows `crew`. */
   readonly crewMax: number | null;
@@ -29,11 +31,18 @@ const dec = (value: number | null): ReactNode =>
 /**
  * Table mode of the ships index (spec 02, "Ship index"): a fixed column set, sorted by name by
  * default and by any stat column on tap. Name and cargo stay visible on phone; the rest expand.
+ * The caption names the build the numbers come from for readers who do not see the count line.
  */
-export function ShipTable({ rows }: { readonly rows: readonly ShipRow[] }) {
+export function ShipTable({
+  rows,
+  version,
+}: {
+  readonly rows: readonly ShipRow[];
+  readonly version: string | null;
+}) {
   return (
     <DataTable
-      caption="Ships"
+      caption={version === null ? "Ships" : `Ships, LIVE ${version}`}
       rows={rows}
       rowKey={(row) => row.key}
       defaultSort={{ key: "name", direction: "asc" }}
@@ -41,7 +50,11 @@ export function ShipTable({ rows }: { readonly rows: readonly ShipRow[] }) {
         {
           key: "name",
           header: "Name",
-          render: (row) => <TextLink href={row.href}>{row.name}</TextLink>,
+          render: (row) => (
+            <TextLink href={row.href} className="whitespace-nowrap">
+              {row.name}
+            </TextLink>
+          ),
           sortValue: (row) => row.name,
         },
         {
@@ -60,7 +73,7 @@ export function ShipTable({ rows }: { readonly rows: readonly ShipRow[] }) {
           key: "size",
           header: "Size",
           render: (row) => row.size ?? dash,
-          sortValue: (row) => row.size,
+          sortValue: (row) => row.sizeRank,
         },
         {
           key: "crew",
@@ -105,7 +118,9 @@ export function ShipTable({ rows }: { readonly rows: readonly ShipRow[] }) {
         {
           key: "status",
           header: "Status",
-          render: (row) => row.status,
+          render: (row) => (
+            <span className="whitespace-nowrap">{row.status}</span>
+          ),
           sortValue: (row) => row.status,
         },
       ]}

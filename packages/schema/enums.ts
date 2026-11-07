@@ -13,6 +13,26 @@ export type VehicleStatus = z.infer<typeof VehicleStatus>;
 export const VehicleKind = z.enum(["ship", "ground_vehicle"]);
 export type VehicleKind = z.infer<typeof VehicleKind>;
 
+/**
+ * `Vehicle.size_class` values in the order docs/data-model.md lists them. The field stays a free
+ * string in the schema (a class CIG adds must not halt an import), so this is the display order,
+ * not a validation list; an unknown class ranks after the known ones.
+ */
+export const sizeClassOrder = [
+  "vehicle",
+  "snub",
+  "small",
+  "medium",
+  "large",
+  "capital",
+] as const;
+
+export function sizeClassRank(size: string | null): number {
+  if (size === null) return sizeClassOrder.length + 1;
+  const index = (sizeClassOrder as readonly string[]).indexOf(size);
+  return index < 0 ? sizeClassOrder.length : index;
+}
+
 export const ItemType = z.enum([
   "weapon",
   "turret",

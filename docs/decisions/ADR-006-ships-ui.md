@@ -60,6 +60,17 @@ Spec 02 asks for the reference experience: a filterable ship index, the full shi
 | Robots | `noindex, follow` on every compare URL | Each selection is its own URL; the pages are for sharing, not for search engines, and would index as near-duplicates |
 | Keyboard run | One Playwright test drives the index (filters, cards), a ship page (compare toggle, link), compare (add select, remove link) and the palette with Tab, arrows, Enter and Space only, and checks a visible outline at every stop | The accessibility criterion asks for the run recorded as a test; the focus-ring check turns system.md section 6 into an assertion |
 
+### Slugs and SEO (PR 7)
+
+| Concern | Choice | Reason |
+| --- | --- | --- |
+| Old slugs | `resolveSlug` (`apps/web/lib/slugs.ts`) checks current slugs first, then every ship's `slug_history`; the ship page and its Open Graph route answer a moved slug with Next's `permanentRedirect`, and the compare page redirects a list with any old slug to the canonical URL of current ones. Unknown slugs 404 with the search box | docs/data-model.md "Slugs and redirects". Next's permanent redirect is 308 rather than the spec's 301: the same permanent signal to browsers and crawlers for a GET, and it keeps the method for anything else; a bare 301 would need a route handler or proxy in front of every entity route |
+| Public origin | `SITE_URL` joins CLAUDE.md section 9 and `env.ts` (optional); the root layout's `metadataBase` reads it, falling back to Vercel's production URL and then the local dev origin | The domain is undecided until the name is (CLAUDE.md section 12), so no origin is baked in; every canonical, sitemap and Open Graph URL derives from one place |
+| Canonical URLs | Every page declares `alternates.canonical`: the unfiltered index for `/ships` and `/components` (filters are views, not pages), the bare `/compare` for the noindex permutations, each entity's own path otherwise | One address per page for crawlers; filter and compare URLs stay shareable without becoming duplicates |
+| Sitemap and robots | `app/sitemap.ts` lists every indexable route, with the LIVE build's publish time as lastModified on entity pages; `app/robots.ts` disallows the gallery and compare and names the sitemap | The entity pages change only when a version is imported; compare and gallery are not for indexing |
+| JSON-LD | Ships as schema.org `Vehicle` (name, URL, manufacturer as `Organization`, role as category, mass, cargo and crew as quantities), manufacturers as `Organization`; fields come from the pack and anything it lacks is left out. Rendered through one `JsonLdScript` component that escapes `<` | The spec names ships and manufacturers; schema.org has no closer type for a fictional spacecraft than Vehicle, and nothing is typed in |
+| Open Graph images | `app/ships/[slug]/opengraph-image.tsx` draws a 1200 by 630 card from the tokens (dark page color, display size, Geist Medium read from the geist package) with the ship name, manufacturer and role, generated at build for every ship | The spec wants the pipeline thumbnail or the fankit render; neither exists (no R2, fankit not downloaded). A static placeholder from the tokens gives every share a card without an image the project does not have, and the file is served static, not routed through the app server |
+
 ## Alternatives considered
 
 | Option | Why not |
@@ -69,6 +80,7 @@ Spec 02 asks for the reference experience: a filterable ship index, the full shi
 | Sort as a query parameter | Every header tap would be a navigation; the spec asks only for filters in the URL |
 | Faceted counts (how many ships each option would leave) | Useful at scale; with five ships it is noise, and the count line beside the title already says how many matched. Revisit when the import job brings the full matrix |
 | PTU toggle as `?channel=ptu` | A shareable PTU view would present PTU values as a page of their own, which CLAUDE.md section 5 forbids; the toggle only annotates LIVE |
+| A 301 through `next.config` redirects or a proxy | Config redirects are fixed at build and cannot read `slug_history`; a proxy in front of every entity route would load the pack on every request to serve a rare redirect |
 | Compare state in a server session or cookie | A cookie per reader for a basket of four slugs is state the privacy page would have to explain; local storage stays on the device |
 | Compare as part of the ships index (`/ships?compare=a,b`) | Two pages in one URL space; the comparison deserves its own address |
 | No story for `StatsByChannel` with differences | Considered in PR 5 because a typed PTU value would be hand-entered game data; the audit noted the unit tests already use a synthetic copy of a fixture row. The story now renders the component with a PTU row that is the LIVE row plus one on every stat, named as such, so the toggle's open state has a screenshot without inventing a game number |

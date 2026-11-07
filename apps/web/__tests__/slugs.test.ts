@@ -1,6 +1,6 @@
 import { Vehicle } from "schema";
 import { describe, expect, it } from "vitest";
-import { resolveSlug } from "../lib/slugs";
+import { resolveSlug, resolveSlugs } from "../lib/slugs";
 import { bootstrapPack } from "./pack";
 
 // Spec 02, criterion "Slugs and redirects": old slugs in slug_history resolve to the current slug
@@ -51,5 +51,26 @@ describe("resolveSlug", () => {
     expect(resolveSlug(vehicles, "no-such-ship")).toEqual({
       status: "missing",
     });
+  });
+});
+
+describe("resolveSlugs", () => {
+  it("replaces old slugs in a list, keeps unknown ones, and says whether anything moved", () => {
+    const renamed = Vehicle.parse({
+      ...base,
+      slug: `${base.slug}-renamed`,
+      slug_history: [base.slug],
+    });
+    const rows = [renamed, ...vehicles.slice(1)];
+    const other = vehicles[1]?.slug ?? "";
+    expect(resolveSlugs(rows, [base.slug, other, "no-such-ship"])).toEqual({
+      slugs: [renamed.slug, other, "no-such-ship"],
+      moved: true,
+    });
+    // The old and the new slug of one ship collapse to one entry.
+    expect(resolveSlugs(rows, [base.slug, renamed.slug]).slugs).toEqual([
+      renamed.slug,
+    ]);
+    expect(resolveSlugs(vehicles, [other]).moved).toBe(false);
   });
 });

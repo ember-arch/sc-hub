@@ -1,0 +1,114 @@
+"use client";
+
+import type { ReactNode } from "react";
+import { DataTable, TextLink, formatNumber } from "ui";
+
+export interface ShipRow {
+  readonly key: string;
+  readonly name: string;
+  readonly href: string;
+  readonly manufacturer: string;
+  readonly role: string | null;
+  readonly size: string | null;
+  readonly crew: string | null;
+  /** Numeric for sorting; the crew column shows `crew`. */
+  readonly crewMax: number | null;
+  readonly cargo: number | null;
+  readonly length: number | null;
+  readonly mass: number | null;
+  readonly scmSpeed: number | null;
+  readonly status: string;
+}
+
+const dash = <span className="text-secondary">—</span>;
+const num = (value: number | null): ReactNode =>
+  value === null ? dash : formatNumber(value);
+const dec = (value: number | null): ReactNode =>
+  value === null ? dash : formatNumber(value, 2);
+
+/**
+ * Table mode of the ships index (spec 02, "Ship index"): a fixed column set, sorted by name by
+ * default and by any stat column on tap. Name and cargo stay visible on phone; the rest expand.
+ */
+export function ShipTable({ rows }: { readonly rows: readonly ShipRow[] }) {
+  return (
+    <DataTable
+      caption="Ships"
+      rows={rows}
+      rowKey={(row) => row.key}
+      defaultSort={{ key: "name", direction: "asc" }}
+      columns={[
+        {
+          key: "name",
+          header: "Name",
+          render: (row) => <TextLink href={row.href}>{row.name}</TextLink>,
+          sortValue: (row) => row.name,
+        },
+        {
+          key: "manufacturer",
+          header: "Manufacturer",
+          render: (row) => row.manufacturer,
+          sortValue: (row) => row.manufacturer,
+        },
+        {
+          key: "role",
+          header: "Role",
+          render: (row) => row.role ?? dash,
+          sortValue: (row) => row.role,
+        },
+        {
+          key: "size",
+          header: "Size",
+          render: (row) => row.size ?? dash,
+          sortValue: (row) => row.size,
+        },
+        {
+          key: "crew",
+          header: "Crew",
+          align: "right",
+          render: (row) => row.crew ?? dash,
+          sortValue: (row) => row.crewMax,
+        },
+        {
+          key: "cargo",
+          header: "Cargo",
+          unit: "SCU",
+          align: "right",
+          primary: true,
+          render: (row) => num(row.cargo),
+          sortValue: (row) => row.cargo,
+        },
+        {
+          key: "length",
+          header: "Length",
+          unit: "m",
+          align: "right",
+          render: (row) => dec(row.length),
+          sortValue: (row) => row.length,
+        },
+        {
+          key: "mass",
+          header: "Mass",
+          unit: "kg",
+          align: "right",
+          render: (row) => num(row.mass),
+          sortValue: (row) => row.mass,
+        },
+        {
+          key: "scm",
+          header: "SCM speed",
+          unit: "m/s",
+          align: "right",
+          render: (row) => num(row.scmSpeed),
+          sortValue: (row) => row.scmSpeed,
+        },
+        {
+          key: "status",
+          header: "Status",
+          render: (row) => row.status,
+          sortValue: (row) => row.status,
+        },
+      ]}
+    />
+  );
+}

@@ -1,5 +1,37 @@
-import { type CardProps, type KeyFact, formatNumber, sentence } from "ui";
+import {
+  type CardProps,
+  type KeyFact,
+  formatNumber,
+  sentence,
+  vehicleStatusBadge,
+} from "ui";
+import type { ShipRow } from "../app/ships/ship-table";
 import type { ComponentView, ShipView } from "./data";
+
+/** Rows for the ships index table; sorting happens in the table from the numeric fields. */
+export function shipRows(ships: readonly ShipView[]): readonly ShipRow[] {
+  return ships.map((ship) => {
+    const s = ship.stats;
+    return {
+      key: ship.vehicle.class_name,
+      name: ship.vehicle.name,
+      href: `/ships/${ship.vehicle.slug}`,
+      manufacturer: ship.manufacturer?.name ?? ship.vehicle.manufacturer_code,
+      role: ship.vehicle.role,
+      size:
+        ship.vehicle.size_class === null
+          ? null
+          : sentence(ship.vehicle.size_class),
+      crew: s === null ? null : crewRange(s.crew_min, s.crew_max),
+      crewMax: s?.crew_max ?? null,
+      cargo: s?.cargo_scu ?? null,
+      length: s?.length_m ?? null,
+      mass: s?.mass_kg ?? null,
+      scmSpeed: s?.scm_speed ?? null,
+      status: vehicleStatusBadge(ship.vehicle.status).label,
+    };
+  });
+}
 
 /** Props shared by the ship index, related groups and manufacturer lineups. */
 export function shipCard(ship: ShipView): CardProps {

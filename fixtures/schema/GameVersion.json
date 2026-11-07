@@ -1,0 +1,9 @@
+{
+  "id": "0b6a1c6e-2f1b-4c0a-9d3e-6f2a9c1e7b10",
+  "channel": "LIVE",
+  "version": "0.0.1-test.1",
+  "detected_at": "2026-01-01T00:00:00.000Z",
+  "published_at": null,
+  "manifest_url": "data/LIVE/0.0.1-test.1/manifest.json",
+  "is_current": false
+}

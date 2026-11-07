@@ -1,0 +1,12 @@
+{
+  "class_name": "TEST_Item",
+  "slug": "test-item",
+  "name": "Test Item",
+  "manufacturer_code": "TEST",
+  "type": "weapon",
+  "subtype": null,
+  "size": 1,
+  "grade": null,
+  "item_class": null,
+  "first_seen_version": "0.0.1-test.1"
+}

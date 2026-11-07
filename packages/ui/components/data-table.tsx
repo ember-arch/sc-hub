@@ -110,7 +110,7 @@ export function DataTable<T>({
                 className={`sticky top-0 border-b border-hairline bg-inset px-3 py-2 text-caption text-secondary ${cellAlign(column)} ${isPrimary(column, index) ? "" : "hidden md:table-cell"}`}
               >
                 {column.sortValue === undefined ? (
-                  <span>
+                  <span className="whitespace-nowrap">
                     {column.header}
                     {column.unit !== undefined ? (
                       <span className="text-secondary"> ({column.unit})</span>
@@ -120,7 +120,7 @@ export function DataTable<T>({
                   <button
                     type="button"
                     onClick={() => toggleSort(column)}
-                    className="inline-flex items-center gap-1 rounded-control hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+                    className="inline-flex items-center gap-1 whitespace-nowrap rounded-control hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
                   >
                     {column.header}
                     {column.unit !== undefined ? (

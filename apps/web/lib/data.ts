@@ -39,7 +39,8 @@ export const REPO_ROOT = findRepoRoot(process.cwd());
 const PACK_DIR = join(REPO_ROOT, "fixtures", "bootstrap");
 const NEWS_FILE = join(REPO_ROOT, "fixtures", "news", "ContentItem.json");
 
-function loadPack(dir: string): DataPack {
+/** Reads and validates a pack folder; the unit tests use it on fixtures/bootstrap too. */
+export function loadPack(dir: string): DataPack {
   const manifestPath = join(dir, "manifest.json");
   if (!existsSync(manifestPath)) {
     throw new PackError(`no manifest.json in ${dir}`, {

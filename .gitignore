@@ -4,7 +4,8 @@
 !.env.example
 
 # legal evidence stays out of git (keep a copy outside the repo too)
-docs/legal/evidence/
+docs/legal/evidence/*
+!docs/legal/evidence/.gitkeep
 
 # pipeline output and raw game data never enter the repo
 pipeline/out/
@@ -23,6 +24,7 @@ dist/
 coverage/
 playwright-report/
 test-results/
+.lighthouseci/
 
 # os
 .DS_Store

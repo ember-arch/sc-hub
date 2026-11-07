@@ -130,3 +130,26 @@ test("an unknown slug returns 404 with the search box and the disclaimer", async
     "unofficial Star Citizen fan site",
   );
 });
+
+test("the stock loadout is grouped by system with nested items, and the raw port table is one disclosure away", async ({
+  page,
+}) => {
+  await page.goto(`/ships/${ship.slug}`);
+  const section = page.locator("#hardpoints");
+  await expect(
+    section.getByRole("heading", { level: 3, name: "Weapons" }),
+  ).toBeVisible();
+  // A merged entry shows its count, and a mount keeps its own items nested beneath it.
+  await expect(section.getByText(/×\d+/).first()).toBeVisible();
+  await expect(section.locator("li li").first()).toBeVisible();
+  // Every mounted item links to a component page.
+  const links = section.getByRole("link");
+  expect(await links.count()).toBeGreaterThan(0);
+  await expect(links.first()).toHaveAttribute("href", /^\/components\//);
+  // The per-port table is collapsed until asked for.
+  const table = section.getByRole("table");
+  await expect(table).toBeHidden();
+  await section.getByText(/^All \d+ ports by game name$/).click();
+  await expect(table).toBeVisible();
+  await expect(table.getByRole("columnheader", { name: /Port/ })).toBeVisible();
+});

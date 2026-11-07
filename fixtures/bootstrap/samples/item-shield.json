@@ -29,7 +29,6 @@
   },
   "type": "Shield",
   "type_label": "Shield",
-  "type_web_url": "https://api.star-citizen.wiki/items?filter%5Btype%5D=Shield",
   "sub_type": "UNDEFINED",
   "sub_type_label": "Undefined",
   "shield": {
@@ -260,52 +259,6 @@
     "em_min": 250,
     "em_max": 250,
     "em_decay": 0.15
-  },
-  "uex_prices": {
-    "purchase": [
-      {
-        "price_buy": 31500,
-        "price_sell": 0,
-        "price_rent": null,
-        "terminal_id": 111,
-        "terminal_code": "COUSI",
-        "terminal_name": "Cousin Crow's - Providence Platform - Orison",
-        "starmap_location": {
-          "uuid": "567f92d7-d34c-42fa-b57b-f1939d4c5f5b",
-          "name": "Orison",
-          "slug": "orison",
-          "type_name": "LandingZone",
-          "parent_name": "Crusader",
-          "star_system_name": "Stanton",
-          "link": "https://api.star-citizen.wiki/api/locations/567f92d7-d34c-42fa-b57b-f1939d4c5f5b",
-          "web_url": "https://api.star-citizen.wiki/locations/567f92d7-d34c-42fa-b57b-f1939d4c5f5b"
-        },
-        "date_updated": "2026-09-19T18:21:29+00:00",
-        "game_version": "4.10.2-LIVE.12881860",
-        "uex_link": "https://uexcorp.space/items/info?name=cloak&tab=about"
-      },
-      {
-        "price_buy": 31500,
-        "price_sell": 0,
-        "price_rent": null,
-        "terminal_id": 114,
-        "terminal_code": "DDA18",
-        "terminal_name": "Dumper's Depot - Area 18",
-        "starmap_location": {
-          "uuid": "c6535844-c615-494e-9dc1-c2d0c6e7190a",
-          "name": "Area18",
-          "slug": "area18",
-          "type_name": "LandingZone",
-          "parent_name": "ArcCorp",
-          "star_system_name": "Stanton",
-          "link": "https://api.star-citizen.wiki/api/locations/c6535844-c615-494e-9dc1-c2d0c6e7190a",
-          "web_url": "https://api.star-citizen.wiki/locations/c6535844-c615-494e-9dc1-c2d0c6e7190a"
-        },
-        "date_updated": "2026-08-29T15:49:54+00:00",
-        "game_version": "4.10.2-LIVE.12881860",
-        "uex_link": "https://uexcorp.space/items/info?name=cloak&tab=about"
-      }
-    ]
   },
   "updated_at": "2026-11-07T00:08:30.000000Z",
   "version": "4.10.2-LIVE.12881860"

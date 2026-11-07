@@ -2,13 +2,15 @@
 
 Some game data via the Star Citizen Wiki API (api.star-citizen.wiki).
 
-Bootstrap placeholders for Phase 0: five ships, their stock loadouts and the components those loadouts reference, fetched from the Star Citizen Wiki API by `scripts/bootstrap-fixtures` on 2026-11-07T13:17:00.411Z. Phase 1 replaces this pack with records extracted from the game files; until then every page that shows this data carries the credit line above (`docs/legal/attribution.md`).
+Bootstrap placeholders for Phase 0: five ships, their stock loadouts and the components those loadouts reference, fetched from the Star Citizen Wiki API by `scripts/bootstrap-fixtures` on 2026-11-07T13:37:27.582Z. Phase 1 replaces this pack with records extracted from the game files; until then every page that shows this data carries the credit line above (`docs/legal/attribution.md`).
 
 **Do not edit these files by hand.** Regenerate with:
 
 ```
 pnpm --filter schema build && pnpm exec tsx scripts/bootstrap-fixtures/index.ts
 ```
+
+**For disposable databases only.** Seeding this pack into the database that will serve the site would freeze its placeholder slugs and first_seen_version values (slugs never change after first publish), and re-seeding a newer bootstrap version into the same database fails on the one-current-version-per-channel rule until the database is wiped (deleting packages/db/.pglite is enough locally). Phase 1 extraction replaces this pack; from then on the import job, not this seed, owns the channel pointer.
 
 ## Contents
 

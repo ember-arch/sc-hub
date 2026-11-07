@@ -181,7 +181,7 @@ describe("parsePack", () => {
     ["Port", "default_item_class", "TEST_Missing", "Item.class_name"],
     [
       "Port",
-      "parent_port_name",
+      "parent_port_path",
       "hardpoint_missing",
       "Port on the same vehicle",
     ],

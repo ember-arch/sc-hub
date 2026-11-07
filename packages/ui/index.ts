@@ -41,6 +41,13 @@ export {
   FeedItem,
   type FeedItemProps,
 } from "./components/feed-item";
+export {
+  FilterBar,
+  type FilterBarProps,
+  type FilterOption,
+  FilterSelect,
+  type FilterSelectProps,
+} from "./components/filter-bar";
 export { Footer, type FooterProps } from "./components/footer";
 export {
   formatDate,
@@ -58,6 +65,11 @@ export {
   PatchStrip,
   type PatchStripProps,
 } from "./components/patch-strip";
+export {
+  type SegmentedLink,
+  SegmentedLinks,
+  type SegmentedLinksProps,
+} from "./components/segmented-links";
 export { StatList, StatRow, type StatRowProps } from "./components/stat-row";
 export { channelBadge, vehicleStatusBadge } from "./components/status";
 export { TextLink, type TextLinkProps } from "./components/text-link";

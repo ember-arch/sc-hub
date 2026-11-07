@@ -1,0 +1,12 @@
+packages:
+  - packages/*
+  - apps/*
+  - workers/*
+  - pipeline
+
+# pnpm 12 fails the install when a dependency has a build script nobody has reviewed.
+# Each entry here is a recorded decision: true runs the script, false never runs it.
+# esbuild (via tsx and Vitest) ships platform binaries as optional packages, so its
+# post-install script is not needed. Read a package's script before adding it here.
+allowBuilds:
+  esbuild: false

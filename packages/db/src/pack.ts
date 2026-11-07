@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { type DataPack, PackError, parsePack } from "schema";
+import { type DataPack, PackError } from "schema";
+import { parsePack } from "schema/pack";
 
 /**
  * Reads a data pack folder from disk and validates it with the shared parser. Throws `PackError`

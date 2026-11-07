@@ -3,12 +3,14 @@ import {
   type LoadoutEntry,
   type LoadoutGroup,
   headlineStat,
+  subtypeLabel,
 } from "../../../lib/loadout";
 
 /**
  * The stock loadout as panels by system (spec 02, "Ship page"). Each panel lists what is mounted:
  * the item linked to its page, its size and how many of it, one headline number when the pack
- * has it, and a turret's or rack's own items nested beneath. Empty ports close each list.
+ * has it, and a turret's or rack's own items nested beneath. Empty ports close each list. Two
+ * parts with one name at the same level show their subtype so a reader can tell them apart.
  */
 
 function EntryRow({
@@ -24,6 +26,10 @@ function EntryRow({
     entry.sizeMin === entry.sizeMax
       ? `S${entry.sizeMax}`
       : `S${entry.sizeMin}–${entry.sizeMax}`;
+  const subtype =
+    entry.showSubtype && entry.item?.subtype != null
+      ? subtypeLabel(entry.item.subtype)
+      : null;
   return (
     <li className={depth === 0 ? "" : "border-l border-hairline pl-3"}>
       <div className="flex items-baseline justify-between gap-4 py-2 text-ui">
@@ -40,6 +46,7 @@ function EntryRow({
           <span className="text-caption text-secondary">
             {" "}
             {size}
+            {subtype !== null ? ` · ${subtype}` : ""}
             {entry.count > 1 ? ` · ×${entry.count}` : ""}
           </span>
         </span>

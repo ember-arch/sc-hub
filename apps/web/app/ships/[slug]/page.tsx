@@ -5,6 +5,7 @@ import {
   EmptyState,
   EntityPage,
   Section,
+  StatsByChannel,
   TextLink,
   sentence,
   vehicleStatusBadge,
@@ -12,7 +13,6 @@ import {
 import { flattenPorts, repo } from "../../../lib/data";
 import { Site } from "../../../lib/site";
 import { shipCard, shipFacts, shipSpecRows } from "../../../lib/views";
-import { StatsByChannel } from "../../components/stats-by-channel";
 import { loadoutGroups } from "../../../lib/loadout";
 import { LoadoutPanels } from "./loadout-panels";
 import { PortTable } from "./port-table";
@@ -106,6 +106,12 @@ export default async function ShipPage({ params }: Params) {
           image: null,
           placeholder:
             "Render placeholder until the fankit image or the 3D viewer lands",
+          children:
+            version === null ? undefined : (
+              <p className="m-0 text-caption text-secondary">
+                Key facts and stats from LIVE {version}
+              </p>
+            ),
         }}
         facts={shipFacts(ship, status.label)}
         related={related}
@@ -205,7 +211,7 @@ export default async function ShipPage({ params }: Params) {
                       ? "Variants"
                       : `Variant of the ${base.vehicle.name}`}
                   </h3>
-                  <ul className="m-0 grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-2 lg:grid-cols-4">
+                  <ul className="m-0 grid list-none grid-cols-2 gap-4 p-0 md:grid-cols-3 lg:grid-cols-4">
                     {variants.map((v) => (
                       <li key={v.vehicle.class_name}>
                         <Card {...shipCard(v)} />

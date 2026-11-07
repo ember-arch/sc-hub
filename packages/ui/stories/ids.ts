@@ -25,4 +25,5 @@ export const storyMeta: readonly {
   { id: "filter-bar", width: 1280 },
   { id: "filter-bar-phone", width: 390 },
   { id: "segmented-links", width: 390 },
+  { id: "stats-by-channel", width: 1280 },
 ];

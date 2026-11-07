@@ -1,0 +1,45 @@
+{
+  "name": "sc-hub",
+  "version": "0.0.0",
+  "private": true,
+  "description": "SC Hub (working title): a non-commercial fan reference for Star Citizen. Monorepo root.",
+  "type": "module",
+  "packageManager": "pnpm@12.18.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "node scripts/not-implemented.mjs dev",
+    "build": "pnpm -r --if-present build",
+    "test": "vitest run",
+    "test:e2e": "node scripts/not-implemented.mjs test:e2e",
+    "lint": "eslint . && prettier --check .",
+    "typecheck": "tsc -p tsconfig.json && pnpm -r --if-present typecheck",
+    "db:migrate": "node scripts/not-implemented.mjs db:migrate",
+    "db:seed": "node scripts/not-implemented.mjs db:seed",
+    "pipeline:detect": "node scripts/not-implemented.mjs pipeline:detect",
+    "pipeline:extract": "node scripts/not-implemented.mjs pipeline:extract",
+    "pipeline:normalize": "node scripts/not-implemented.mjs pipeline:normalize",
+    "pipeline:models": "node scripts/not-implemented.mjs pipeline:models",
+    "pipeline:publish": "node scripts/not-implemented.mjs pipeline:publish",
+    "pipeline:all": "node scripts/not-implemented.mjs pipeline:all",
+    "workers:import": "node scripts/not-implemented.mjs workers:import",
+    "workers:poll-news": "node scripts/not-implemented.mjs workers:poll-news",
+    "workers:poll-spectrum": "node scripts/not-implemented.mjs workers:poll-spectrum",
+    "workers:link": "node scripts/not-implemented.mjs workers:link"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^26.6.6",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
+    "eslint": "^10.14.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.14.0",
+    "prettier": "^3.9.10",
+    "tsx": "^4.23.15",
+    "typescript": "5.9.3",
+    "typescript-eslint": "^8.72.1",
+    "vitest": "^5.1.0"
+  }
+}

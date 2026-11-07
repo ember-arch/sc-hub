@@ -21,8 +21,8 @@ Real extracted data (Phase 1), any poller (Phase 3), any 3D (Phase 4). The viewe
 
 ## Acceptance criteria
 
-- [ ] **Monorepo scaffold.** pnpm workspaces with the exact layout from `CLAUDE.md` section 4. Every script in `CLAUDE.md` section 6 exists; stubs print "not implemented in Phase 0" and exit 1.
-- [ ] **Schema package.** `packages/schema` exports Zod types for every entity in `docs/data-model.md`, the enumerations, and `env.ts`. `pnpm --filter schema build` emits JSON Schema to `packages/schema/dist/json/`. Unit tests round-trip each type through a fixture object.
+- [x] **Monorepo scaffold.** pnpm workspaces with the exact layout from `CLAUDE.md` section 4. Every script in `CLAUDE.md` section 6 exists; stubs print "not implemented in Phase 0" and exit 1.
+- [x] **Schema package.** `packages/schema` exports Zod types for every entity in `docs/data-model.md`, the enumerations, and `env.ts`. `pnpm --filter schema build` emits JSON Schema to `packages/schema/dist/json/`. Unit tests round-trip each type through a fixture object.
 - [ ] **CI.** GitHub Actions on every PR: typecheck, lint, unit tests, Playwright e2e, Lighthouse CI on `/`, `/ships/<fixture-slug>`, `/news`. Vercel preview deploy linked in the PR. A failing budget (performance or accessibility under 90) fails the PR.
 - [ ] **Database package.** `packages/db` with Drizzle schema derived from `packages/schema`, migration `0001_init`, and `pnpm db:seed` loading `fixtures/` into a local or Neon database.
 - [ ] **Fixtures.** `fixtures/bootstrap/` holds five ships of different sizes and manufacturers, their stock loadouts, and the referenced components, sourced from the Star Citizen Wiki API with the credit line recorded, under 2 MB total. These are placeholders until Phase 1 replaces them with extracted records.

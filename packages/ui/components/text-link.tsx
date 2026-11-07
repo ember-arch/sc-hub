@@ -7,6 +7,8 @@ export interface TextLinkProps {
   /** Opens source sites in a new tab with rel noopener. */
   readonly external?: boolean | undefined;
   readonly className?: string | undefined;
+  /** When the visible text is not enough on its own, for example a repeated "Remove". */
+  readonly ariaLabel?: string | undefined;
 }
 
 const base =
@@ -18,17 +20,24 @@ export function TextLink({
   children,
   external,
   className,
+  ariaLabel,
 }: TextLinkProps) {
   const cls = className === undefined ? base : `${base} ${className}`;
   if (external === true) {
     return (
-      <a href={href} className={cls} target="_blank" rel="noopener noreferrer">
+      <a
+        href={href}
+        className={cls}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={ariaLabel}
+      >
         {children}
       </a>
     );
   }
   return (
-    <NextLink href={href} className={cls}>
+    <NextLink href={href} className={cls} aria-label={ariaLabel}>
       {children}
     </NextLink>
   );

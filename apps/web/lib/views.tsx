@@ -107,6 +107,7 @@ export function shipRows(ships: readonly ShipView[]): readonly ShipRow[] {
     const s = ship.stats;
     return {
       key: ship.vehicle.class_name,
+      slug: ship.vehicle.slug,
       name: ship.vehicle.name,
       href: `/ships/${ship.vehicle.slug}`,
       manufacturer: ship.manufacturer?.name ?? ship.vehicle.manufacturer_code,

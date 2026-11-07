@@ -13,6 +13,7 @@ import { flattenPorts, repo } from "../../../lib/data";
 import { Site } from "../../../lib/site";
 import { shipCard, shipFacts, shipSpecRows } from "../../../lib/views";
 import { StatsByChannel } from "../../components/stats-by-channel";
+import { CompareLink, CompareToggle } from "../../compare/compare-controls";
 import { PortTable } from "./port-table";
 
 interface Params {
@@ -100,6 +101,15 @@ export default async function ShipPage({ params }: Params) {
           image: null,
           placeholder:
             "Render placeholder until the fankit image or the 3D viewer lands",
+          children: (
+            <div className="flex flex-wrap gap-2">
+              <CompareToggle
+                slug={ship.vehicle.slug}
+                name={ship.vehicle.name}
+              />
+              <CompareLink />
+            </div>
+          ),
         }}
         facts={shipFacts(ship, status.label)}
         related={related}

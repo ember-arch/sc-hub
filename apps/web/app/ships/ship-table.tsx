@@ -2,9 +2,11 @@
 
 import type { ReactNode } from "react";
 import { DataTable, TextLink, formatNumber } from "ui";
+import { CompareToggle } from "../compare/compare-controls";
 
 export interface ShipRow {
   readonly key: string;
+  readonly slug: string;
   readonly name: string;
   readonly href: string;
   readonly manufacturer: string;
@@ -122,6 +124,11 @@ export function ShipTable({
             <span className="whitespace-nowrap">{row.status}</span>
           ),
           sortValue: (row) => row.status,
+        },
+        {
+          key: "compare",
+          header: "Compare",
+          render: (row) => <CompareToggle slug={row.slug} name={row.name} />,
         },
       ]}
     />

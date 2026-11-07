@@ -75,7 +75,7 @@ export function CompareTable({
                   <TextLink
                     href={column.removeHref}
                     className="text-secondary"
-                    aria-label={`Remove ${column.name} from the comparison`}
+                    ariaLabel={`Remove ${column.name} from the comparison`}
                   >
                     Remove
                   </TextLink>
@@ -98,7 +98,11 @@ export function CompareTable({
               className="flex items-baseline justify-between gap-4"
             >
               <TextLink href={column.href}>{column.name}</TextLink>
-              <TextLink href={column.removeHref} className="text-secondary">
+              <TextLink
+                href={column.removeHref}
+                className="text-secondary"
+                ariaLabel={`Remove ${column.name} from the comparison`}
+              >
                 Remove
               </TextLink>
             </li>

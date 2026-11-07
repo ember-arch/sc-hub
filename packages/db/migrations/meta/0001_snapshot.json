@@ -1,0 +1,1418 @@
+{
+  "id": "1dd7d5e2-bdb1-42aa-a9b3-8c771fa5bc36",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.author": {
+      "name": "author",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "handle": {
+          "name": "handle",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "display_name": {
+          "name": "display_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "first_seen": {
+          "name": "first_seen",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "post_count": {
+          "name": "post_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "takedown": {
+          "name": "takedown",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "author_handle_unique": {
+          "name": "author_handle_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "handle"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.content_item": {
+      "name": "content_item",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "source": {
+          "name": "source",
+          "type": "content_source",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "external_id": {
+          "name": "external_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "url": {
+          "name": "url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "summary": {
+          "name": "summary",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "body_html": {
+          "name": "body_html",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "published_at": {
+          "name": "published_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fetched_at": {
+          "name": "fetched_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "revision": {
+          "name": "revision",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "author_id": {
+          "name": "author_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "thread_id": {
+          "name": "thread_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "thread_title": {
+          "name": "thread_title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "forum": {
+          "name": "forum",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "takedown": {
+          "name": "takedown",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "content_item_author_id_author_id_fk": {
+          "name": "content_item_author_id_author_id_fk",
+          "tableFrom": "content_item",
+          "tableTo": "author",
+          "columnsFrom": [
+            "author_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "content_item_source_external_id_revision": {
+          "name": "content_item_source_external_id_revision",
+          "nullsNotDistinct": false,
+          "columns": [
+            "source",
+            "external_id",
+            "revision"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.entity_link": {
+      "name": "entity_link",
+      "schema": "",
+      "columns": {
+        "content_item_id": {
+          "name": "content_item_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "entity_type": {
+          "name": "entity_type",
+          "type": "entity_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "entity_key": {
+          "name": "entity_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "matched_text": {
+          "name": "matched_text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "char_start": {
+          "name": "char_start",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "char_end": {
+          "name": "char_end",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "confidence": {
+          "name": "confidence",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "confirmed": {
+          "name": "confirmed",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "entity_link_content_item_id_content_item_id_fk": {
+          "name": "entity_link_content_item_id_content_item_id_fk",
+          "tableFrom": "entity_link",
+          "tableTo": "content_item",
+          "columnsFrom": [
+            "content_item_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "entity_link_content_item_id_entity_type_entity_key_char_start_pk": {
+          "name": "entity_link_content_item_id_entity_type_entity_key_char_start_pk",
+          "columns": [
+            "content_item_id",
+            "entity_type",
+            "entity_key",
+            "char_start"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.game_version": {
+      "name": "game_version",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "channel": {
+          "name": "channel",
+          "type": "channel",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "version": {
+          "name": "version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "detected_at": {
+          "name": "detected_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "published_at": {
+          "name": "published_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "manifest_url": {
+          "name": "manifest_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_current": {
+          "name": "is_current",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "game_version_one_current_per_channel": {
+          "name": "game_version_one_current_per_channel",
+          "columns": [
+            {
+              "expression": "channel",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "\"game_version\".\"is_current\"",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "game_version_channel_version": {
+          "name": "game_version_channel_version",
+          "nullsNotDistinct": false,
+          "columns": [
+            "channel",
+            "version"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.item": {
+      "name": "item",
+      "schema": "",
+      "columns": {
+        "class_name": {
+          "name": "class_name",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "slug": {
+          "name": "slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "manufacturer_code": {
+          "name": "manufacturer_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "item_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "subtype": {
+          "name": "subtype",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "size": {
+          "name": "size",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "grade": {
+          "name": "grade",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "item_class": {
+          "name": "item_class",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "first_seen_version": {
+          "name": "first_seen_version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "item_manufacturer_code_manufacturer_code_fk": {
+          "name": "item_manufacturer_code_manufacturer_code_fk",
+          "tableFrom": "item",
+          "tableTo": "manufacturer",
+          "columnsFrom": [
+            "manufacturer_code"
+          ],
+          "columnsTo": [
+            "code"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "item_slug_unique": {
+          "name": "item_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "slug"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.item_stats": {
+      "name": "item_stats",
+      "schema": "",
+      "columns": {
+        "class_name": {
+          "name": "class_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "channel": {
+          "name": "channel",
+          "type": "channel",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "game_version": {
+          "name": "game_version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "hp": {
+          "name": "hp",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "power_draw": {
+          "name": "power_draw",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "power_output": {
+          "name": "power_output",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "heat_generation": {
+          "name": "heat_generation",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cooling_rate": {
+          "name": "cooling_rate",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "em_signature": {
+          "name": "em_signature",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ir_signature": {
+          "name": "ir_signature",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "weapon_damage": {
+          "name": "weapon_damage",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "weapon_fire_rate": {
+          "name": "weapon_fire_rate",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "weapon_range": {
+          "name": "weapon_range",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "projectile_speed": {
+          "name": "projectile_speed",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "shield_hp": {
+          "name": "shield_hp",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "shield_regen": {
+          "name": "shield_regen",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "shield_delay": {
+          "name": "shield_delay",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "qd_speed": {
+          "name": "qd_speed",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "qd_range": {
+          "name": "qd_range",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "qd_fuel_per_jump": {
+          "name": "qd_fuel_per_jump",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "qd_spool_time": {
+          "name": "qd_spool_time",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "raw": {
+          "name": "raw",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "item_stats_class_name_item_class_name_fk": {
+          "name": "item_stats_class_name_item_class_name_fk",
+          "tableFrom": "item_stats",
+          "tableTo": "item",
+          "columnsFrom": [
+            "class_name"
+          ],
+          "columnsTo": [
+            "class_name"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "item_stats_game_version_fk": {
+          "name": "item_stats_game_version_fk",
+          "tableFrom": "item_stats",
+          "tableTo": "game_version",
+          "columnsFrom": [
+            "channel",
+            "game_version"
+          ],
+          "columnsTo": [
+            "channel",
+            "version"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "item_stats_class_name_channel_game_version_pk": {
+          "name": "item_stats_class_name_channel_game_version_pk",
+          "columns": [
+            "class_name",
+            "channel",
+            "game_version"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.manufacturer": {
+      "name": "manufacturer",
+      "schema": "",
+      "columns": {
+        "code": {
+          "name": "code",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "slug": {
+          "name": "slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "logo_asset": {
+          "name": "logo_asset",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "manufacturer_slug_unique": {
+          "name": "manufacturer_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "slug"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.model": {
+      "name": "model",
+      "schema": "",
+      "columns": {
+        "class_name": {
+          "name": "class_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "channel": {
+          "name": "channel",
+          "type": "channel",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "game_version": {
+          "name": "game_version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tier": {
+          "name": "tier",
+          "type": "model_tier",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "url": {
+          "name": "url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "bytes": {
+          "name": "bytes",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "triangles": {
+          "name": "triangles",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "texture_count": {
+          "name": "texture_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "checksum": {
+          "name": "checksum",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "takedown": {
+          "name": "takedown",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "model_class_name_vehicle_class_name_fk": {
+          "name": "model_class_name_vehicle_class_name_fk",
+          "tableFrom": "model",
+          "tableTo": "vehicle",
+          "columnsFrom": [
+            "class_name"
+          ],
+          "columnsTo": [
+            "class_name"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "model_game_version_fk": {
+          "name": "model_game_version_fk",
+          "tableFrom": "model",
+          "tableTo": "game_version",
+          "columnsFrom": [
+            "channel",
+            "game_version"
+          ],
+          "columnsTo": [
+            "channel",
+            "version"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "model_class_name_channel_game_version_tier_pk": {
+          "name": "model_class_name_channel_game_version_tier_pk",
+          "columns": [
+            "class_name",
+            "channel",
+            "game_version",
+            "tier"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.paint": {
+      "name": "paint",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "class_name": {
+          "name": "class_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "preview_asset": {
+          "name": "preview_asset",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "paint_class_name_vehicle_class_name_fk": {
+          "name": "paint_class_name_vehicle_class_name_fk",
+          "tableFrom": "paint",
+          "tableTo": "vehicle",
+          "columnsFrom": [
+            "class_name"
+          ],
+          "columnsTo": [
+            "class_name"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.port": {
+      "name": "port",
+      "schema": "",
+      "columns": {
+        "class_name": {
+          "name": "class_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "channel": {
+          "name": "channel",
+          "type": "channel",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "game_version": {
+          "name": "game_version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "port_path": {
+          "name": "port_path",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "port_name": {
+          "name": "port_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "port_type": {
+          "name": "port_type",
+          "type": "port_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "size_min": {
+          "name": "size_min",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "size_max": {
+          "name": "size_max",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parent_port_path": {
+          "name": "parent_port_path",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "default_item_class": {
+          "name": "default_item_class",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "position": {
+          "name": "position",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "port_class_name_vehicle_class_name_fk": {
+          "name": "port_class_name_vehicle_class_name_fk",
+          "tableFrom": "port",
+          "tableTo": "vehicle",
+          "columnsFrom": [
+            "class_name"
+          ],
+          "columnsTo": [
+            "class_name"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "port_default_item_class_item_class_name_fk": {
+          "name": "port_default_item_class_item_class_name_fk",
+          "tableFrom": "port",
+          "tableTo": "item",
+          "columnsFrom": [
+            "default_item_class"
+          ],
+          "columnsTo": [
+            "class_name"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "port_game_version_fk": {
+          "name": "port_game_version_fk",
+          "tableFrom": "port",
+          "tableTo": "game_version",
+          "columnsFrom": [
+            "channel",
+            "game_version"
+          ],
+          "columnsTo": [
+            "channel",
+            "version"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "port_parent_fk": {
+          "name": "port_parent_fk",
+          "tableFrom": "port",
+          "tableTo": "port",
+          "columnsFrom": [
+            "class_name",
+            "channel",
+            "game_version",
+            "parent_port_path"
+          ],
+          "columnsTo": [
+            "class_name",
+            "channel",
+            "game_version",
+            "port_path"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "port_class_name_channel_game_version_port_path_pk": {
+          "name": "port_class_name_channel_game_version_port_path_pk",
+          "columns": [
+            "class_name",
+            "channel",
+            "game_version",
+            "port_path"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.vehicle": {
+      "name": "vehicle",
+      "schema": "",
+      "columns": {
+        "class_name": {
+          "name": "class_name",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "slug": {
+          "name": "slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "manufacturer_code": {
+          "name": "manufacturer_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kind": {
+          "name": "kind",
+          "type": "vehicle_kind",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "vehicle_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "size_class": {
+          "name": "size_class",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "base_variant_of": {
+          "name": "base_variant_of",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_hero": {
+          "name": "is_hero",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "first_seen_version": {
+          "name": "first_seen_version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "slug_history": {
+          "name": "slug_history",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "vehicle_manufacturer_code_manufacturer_code_fk": {
+          "name": "vehicle_manufacturer_code_manufacturer_code_fk",
+          "tableFrom": "vehicle",
+          "tableTo": "manufacturer",
+          "columnsFrom": [
+            "manufacturer_code"
+          ],
+          "columnsTo": [
+            "code"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "vehicle_base_variant_of_vehicle_class_name_fk": {
+          "name": "vehicle_base_variant_of_vehicle_class_name_fk",
+          "tableFrom": "vehicle",
+          "tableTo": "vehicle",
+          "columnsFrom": [
+            "base_variant_of"
+          ],
+          "columnsTo": [
+            "class_name"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "vehicle_slug_unique": {
+          "name": "vehicle_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "slug"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.vehicle_stats": {
+      "name": "vehicle_stats",
+      "schema": "",
+      "columns": {
+        "class_name": {
+          "name": "class_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "channel": {
+          "name": "channel",
+          "type": "channel",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "game_version": {
+          "name": "game_version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "length_m": {
+          "name": "length_m",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "beam_m": {
+          "name": "beam_m",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "height_m": {
+          "name": "height_m",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "mass_kg": {
+          "name": "mass_kg",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cargo_scu": {
+          "name": "cargo_scu",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "crew_min": {
+          "name": "crew_min",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "crew_max": {
+          "name": "crew_max",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "hull_hp": {
+          "name": "hull_hp",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "scm_speed": {
+          "name": "scm_speed",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nav_speed": {
+          "name": "nav_speed",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hydrogen_fuel": {
+          "name": "hydrogen_fuel",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "quantum_fuel": {
+          "name": "quantum_fuel",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hydrogen_capacity": {
+          "name": "hydrogen_capacity",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "quantum_capacity": {
+          "name": "quantum_capacity",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "raw": {
+          "name": "raw",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "vehicle_stats_class_name_vehicle_class_name_fk": {
+          "name": "vehicle_stats_class_name_vehicle_class_name_fk",
+          "tableFrom": "vehicle_stats",
+          "tableTo": "vehicle",
+          "columnsFrom": [
+            "class_name"
+          ],
+          "columnsTo": [
+            "class_name"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "vehicle_stats_game_version_fk": {
+          "name": "vehicle_stats_game_version_fk",
+          "tableFrom": "vehicle_stats",
+          "tableTo": "game_version",
+          "columnsFrom": [
+            "channel",
+            "game_version"
+          ],
+          "columnsTo": [
+            "channel",
+            "version"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "vehicle_stats_class_name_channel_game_version_pk": {
+          "name": "vehicle_stats_class_name_channel_game_version_pk",
+          "columns": [
+            "class_name",
+            "channel",
+            "game_version"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.channel": {
+      "name": "channel",
+      "schema": "public",
+      "values": [
+        "LIVE",
+        "PTU",
+        "EPTU"
+      ]
+    },
+    "public.content_source": {
+      "name": "content_source",
+      "schema": "public",
+      "values": [
+        "comm_link",
+        "patch_notes",
+        "roadmap",
+        "progress_tracker",
+        "video",
+        "spectrum"
+      ]
+    },
+    "public.entity_type": {
+      "name": "entity_type",
+      "schema": "public",
+      "values": [
+        "vehicle",
+        "item",
+        "manufacturer",
+        "author"
+      ]
+    },
+    "public.item_type": {
+      "name": "item_type",
+      "schema": "public",
+      "values": [
+        "weapon",
+        "turret",
+        "missile_rack",
+        "missile",
+        "shield",
+        "power_plant",
+        "cooler",
+        "quantum_drive",
+        "radar",
+        "fuel_tank",
+        "fuel_intake",
+        "jump_module",
+        "thruster",
+        "armor",
+        "utility",
+        "mining_laser",
+        "tractor_beam",
+        "countermeasure",
+        "other"
+      ]
+    },
+    "public.model_tier": {
+      "name": "model_tier",
+      "schema": "public",
+      "values": [
+        "preview",
+        "full"
+      ]
+    },
+    "public.port_type": {
+      "name": "port_type",
+      "schema": "public",
+      "values": [
+        "weapon",
+        "turret",
+        "missile_rack",
+        "missile",
+        "shield",
+        "power_plant",
+        "cooler",
+        "quantum_drive",
+        "radar",
+        "fuel_tank",
+        "fuel_intake",
+        "jump_module",
+        "thruster",
+        "armor",
+        "utility",
+        "mining_laser",
+        "tractor_beam",
+        "countermeasure",
+        "other",
+        "paint",
+        "interior",
+        "cargo_grid"
+      ]
+    },
+    "public.vehicle_kind": {
+      "name": "vehicle_kind",
+      "schema": "public",
+      "values": [
+        "ship",
+        "ground_vehicle"
+      ]
+    },
+    "public.vehicle_status": {
+      "name": "vehicle_status",
+      "schema": "public",
+      "values": [
+        "flight_ready",
+        "in_production",
+        "concept"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

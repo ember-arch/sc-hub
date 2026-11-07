@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound, permanentRedirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import {
   Card,
   EmptyState,
@@ -13,7 +13,7 @@ import {
 import { flattenPorts, repo } from "../../../lib/data";
 import { shipJsonLd } from "../../../lib/seo";
 import { Site } from "../../../lib/site";
-import { resolveSlug } from "../../../lib/slugs";
+import { entityForSlug } from "../../../lib/entity-route";
 import { JsonLdScript } from "../../json-ld";
 import { shipCard, shipFacts, shipSpecRows } from "../../../lib/views";
 import { loadoutGroups } from "../../../lib/loadout";
@@ -36,13 +36,12 @@ export function generateStaticParams() {
  */
 function shipFor(slug: string) {
   const r = repo();
-  const result = resolveSlug(
+  const vehicle = entityForSlug(
     r.ships.map((s) => s.vehicle),
     slug,
+    "/ships",
   );
-  if (result.status === "moved") permanentRedirect(`/ships/${result.to}`);
-  if (result.status === "missing") notFound();
-  const ship = r.shipBySlug(result.entity.slug);
+  const ship = r.shipBySlug(vehicle.slug);
   if (ship === undefined) notFound();
   return ship;
 }

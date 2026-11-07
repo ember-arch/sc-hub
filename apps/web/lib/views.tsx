@@ -5,8 +5,100 @@ import {
   sentence,
   vehicleStatusBadge,
 } from "ui";
+import type { ItemStats, VehicleStats } from "schema";
+import type { ChannelStatRow } from "../app/components/stats-by-channel";
 import type { ShipRow } from "../app/ships/ship-table";
+import { type Deltas, channelDeltas } from "./channel-diff";
 import type { ComponentView, ShipView } from "./data";
+
+type NumericKey<T> = {
+  [K in keyof T]: T[K] extends number | null ? K : never;
+}[keyof T];
+
+interface StatSpec<T> {
+  readonly key: NumericKey<T>;
+  readonly label: string;
+  readonly unit?: string | undefined;
+  readonly digits?: 0 | 2 | undefined;
+}
+
+/** Every VehicleStats field the page shows, with its unit; null fields are omitted (spec 02 notes). */
+const VEHICLE_STATS: readonly StatSpec<VehicleStats>[] = [
+  { key: "length_m", label: "Length", unit: "m", digits: 2 },
+  { key: "beam_m", label: "Beam", unit: "m", digits: 2 },
+  { key: "height_m", label: "Height", unit: "m", digits: 2 },
+  { key: "mass_kg", label: "Mass", unit: "kg" },
+  { key: "cargo_scu", label: "Cargo", unit: "SCU" },
+  { key: "hull_hp", label: "Hull", unit: "HP" },
+  { key: "scm_speed", label: "SCM speed", unit: "m/s" },
+  { key: "nav_speed", label: "NAV speed", unit: "m/s" },
+  // The data model gives the fuel fields no unit yet; they show none rather than a guessed one.
+  { key: "hydrogen_fuel", label: "Hydrogen fuel", digits: 2 },
+  { key: "hydrogen_capacity", label: "Hydrogen capacity", digits: 2 },
+  { key: "quantum_fuel", label: "Quantum fuel", digits: 2 },
+  { key: "quantum_capacity", label: "Quantum capacity", digits: 2 },
+];
+
+/** Every ItemStats field; the type-specific ones stay null for other types and are omitted. */
+const ITEM_STATS: readonly StatSpec<ItemStats>[] = [
+  { key: "hp", label: "Health", digits: 2 },
+  { key: "power_draw", label: "Power draw", digits: 2 },
+  { key: "power_output", label: "Power output", digits: 2 },
+  { key: "heat_generation", label: "Heat generation", digits: 2 },
+  { key: "cooling_rate", label: "Cooling rate", digits: 2 },
+  { key: "em_signature", label: "EM signature", digits: 2 },
+  { key: "ir_signature", label: "IR signature", digits: 2 },
+  { key: "weapon_damage", label: "Damage", digits: 2 },
+  { key: "weapon_fire_rate", label: "Fire rate", digits: 2 },
+  { key: "weapon_range", label: "Range", digits: 2 },
+  { key: "projectile_speed", label: "Projectile speed", digits: 2 },
+  { key: "shield_hp", label: "Shield health", digits: 2 },
+  { key: "shield_regen", label: "Shield regeneration", digits: 2 },
+  { key: "shield_delay", label: "Shield delay", digits: 2 },
+  { key: "qd_speed", label: "Quantum speed", digits: 2 },
+  { key: "qd_range", label: "Quantum range", digits: 2 },
+  { key: "qd_fuel_per_jump", label: "Fuel per jump", digits: 2 },
+  { key: "qd_spool_time", label: "Spool time", digits: 2 },
+];
+
+function channelRows<T extends object>(
+  specs: readonly StatSpec<T>[],
+  live: T,
+  ptu: T | null,
+): ChannelStatRow[] {
+  const deltas: Deltas<T> = channelDeltas(live, ptu);
+  return specs
+    .filter((spec) => live[spec.key] !== null)
+    .map((spec) => ({
+      key: String(spec.key),
+      label: spec.label,
+      value: live[spec.key] as number | null,
+      unit: spec.unit,
+      digits: spec.digits,
+      delta: deltas[spec.key],
+    }));
+}
+
+/** Specification rows for StatsByChannel: LIVE values, PTU deltas where the PTU row differs, crew last. */
+export function shipSpecRows(ship: ShipView): ChannelStatRow[] {
+  const s = ship.stats;
+  if (s === null) return [];
+  const rows = channelRows(VEHICLE_STATS, s, ship.ptu);
+  const crew: ChannelStatRow = {
+    key: "crew",
+    label: "Crew",
+    value: crewRange(s.crew_min, s.crew_max),
+    delta:
+      ship.ptu !== null && ship.ptu.crew_max !== s.crew_max
+        ? ship.ptu.crew_max - s.crew_max
+        : undefined,
+  };
+  return [...rows, crew];
+}
+
+export function componentStatRows(c: ComponentView): ChannelStatRow[] {
+  return c.stats === null ? [] : channelRows(ITEM_STATS, c.stats, c.ptu);
+}
 
 /** Rows for the ships index table; sorting happens in the table from the numeric fields. */
 export function shipRows(ships: readonly ShipView[]): readonly ShipRow[] {

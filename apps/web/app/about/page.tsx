@@ -40,7 +40,7 @@ export default function AboutPage() {
         <Section id="notice" title="Fan site notice">
           <p className="text-ui text-primary">{DISCLAIMER}</p>
           <p className="text-ui text-secondary">{TRADEMARK_LINE}</p>
-          <p className="text-caption text-muted">
+          <p className="text-caption text-secondary">
             Notice copied verbatim from the "{DISCLAIMER_SOURCE.section}"
             section of{" "}
             <TextLink href={DISCLAIMER_SOURCE.url} external>

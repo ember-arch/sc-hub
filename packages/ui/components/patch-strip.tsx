@@ -23,7 +23,9 @@ export function PatchStrip({ versions }: PatchStripProps) {
             <dt className="font-medium text-secondary">{channel}</dt>
             <dd className="m-0 font-mono text-primary">
               {found === undefined ? (
-                <span className="font-sans text-muted">no build recorded</span>
+                <span className="font-sans text-secondary">
+                  no build recorded
+                </span>
               ) : (
                 found.version
               )}

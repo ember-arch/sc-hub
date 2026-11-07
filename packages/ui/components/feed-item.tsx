@@ -30,7 +30,7 @@ export function FeedItem({
 }: FeedItemProps) {
   return (
     <article className="flex flex-col gap-2 border-b border-hairline py-4">
-      <div className="flex flex-wrap items-center gap-2 text-caption text-muted">
+      <div className="flex flex-wrap items-center gap-2 text-caption text-secondary">
         <Badge tone="neutral">{source}</Badge>
         <time dateTime={publishedAt}>{formatTime(publishedAt, now)}</time>
       </div>

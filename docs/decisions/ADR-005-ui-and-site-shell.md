@@ -27,6 +27,9 @@
 | Contact address | `CONTACT_EMAIL` in `packages/ui/legal.ts` is `null` until the owner chooses one; the footer and about page say the address is not yet published | The address is the owner's to pick; the placeholder is honest rather than invented |
 | Licenses page | `apps/web/scripts/licenses.ts` writes `apps/web/generated/licenses.json` from `pnpm licenses list` before `dev` and `build`; the route renders it | docs/legal/attribution.md: generated at build from package metadata |
 | Component screenshots in CI | Generated as artifacts, not compared pixel for pixel | Windows and Linux render fonts differently; a pixel diff would fail on every PR for the wrong reason |
+| `text.muted` | Placeholder text only (the palette input). Every informational caption, unit, label and timestamp uses `text.secondary` | Lighthouse measured `text.muted` on `bg.page` at about 3.3:1 in light mode, under the 4.5:1 the design document requires for text; `text.secondary` measures about 5.9:1. The token keeps its documented value; whether to darken it is a design-document change for the owner |
+| Inline links | `TextLink` is always underlined (hairline-strong, accent on hover) | Lighthouse's link-in-text-block: a link inside prose must not rely on color alone (system.md section 6) |
+| Favicon | `apps/web/app/icon.svg`: a 6 px-radius square in the accent color, nothing else | The missing `/favicon.ico` was the only console error Lighthouse logged; the mark is a placeholder until the name is decided (CLAUDE.md section 12) |
 
 ## Alternatives considered
 

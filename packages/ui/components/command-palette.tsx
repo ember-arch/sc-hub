@@ -200,7 +200,7 @@ export function CommandPalette({
       className="inline-flex items-center gap-2 rounded-control border border-hairline bg-surface px-3 py-1 text-ui text-secondary transition-colors duration-hover hover:border-hairline-strong hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
     >
       <span>Search</span>
-      <kbd className="hidden rounded-control border border-hairline bg-inset px-1 font-mono text-caption text-muted md:inline">
+      <kbd className="hidden rounded-control border border-hairline bg-inset px-1 font-mono text-caption text-secondary md:inline">
         ⌘K
       </kbd>
     </button>
@@ -264,7 +264,7 @@ export function CommandPalette({
                   if (items.length === 0) return null;
                   return (
                     <li key={group.type} role="presentation">
-                      <p className="px-3 pb-1 pt-2 text-caption text-muted">
+                      <p className="px-3 pb-1 pt-2 text-caption text-secondary">
                         {query.trim() === ""
                           ? `Recent ${group.title.toLowerCase()}`
                           : group.title}
@@ -289,7 +289,7 @@ export function CommandPalette({
                           >
                             <span>{entry.name}</span>
                             {entry.meta !== undefined ? (
-                              <span className="truncate text-caption text-muted">
+                              <span className="truncate text-caption text-secondary">
                                 {entry.meta}
                               </span>
                             ) : null}

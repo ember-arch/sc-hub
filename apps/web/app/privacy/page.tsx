@@ -35,7 +35,7 @@ export default function PrivacyPage() {
               removed. Not active yet.
             </li>
           </ul>
-          <p className="text-caption text-muted">
+          <p className="text-caption text-secondary">
             This page changes before either is switched on.
           </p>
         </Section>

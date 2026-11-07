@@ -10,7 +10,7 @@ export interface TextLinkProps {
 }
 
 const base =
-  "text-accent underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent rounded-control";
+  "text-accent underline underline-offset-4 decoration-hairline-strong hover:decoration-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent rounded-control";
 
 /** The one link style. Internal links use next/link; external ones a plain anchor. */
 export function TextLink({

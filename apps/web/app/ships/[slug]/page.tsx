@@ -182,7 +182,7 @@ export default async function ShipPage({ params }: Params) {
             />
           )}
           {hiddenPorts > 0 ? (
-            <p className="text-caption text-muted">
+            <p className="text-caption text-secondary">
               {hiddenPorts} ports of unmapped type with nothing mounted are not
               listed.
             </p>

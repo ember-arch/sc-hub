@@ -23,7 +23,12 @@ export interface CompareGroup {
   readonly rows: readonly CompareRow[];
 }
 
-const dash = <span className="text-secondary">—</span>;
+const dash = (
+  <span className="text-secondary">
+    <span aria-hidden="true">—</span>
+    <span className="sr-only">no value</span>
+  </span>
+);
 
 function cell(row: CompareRow, value: number | string | null): ReactNode {
   if (value === null) return dash;
@@ -48,14 +53,20 @@ function cell(row: CompareRow, value: number | string | null): ReactNode {
 export function CompareTable({
   columns,
   groups,
+  version,
 }: {
   readonly columns: readonly CompareColumn[];
   readonly groups: readonly CompareGroup[];
+  readonly version: string | null;
 }) {
   return (
     <>
       <table className="hidden w-full border-collapse text-ui md:table">
-        <caption className="sr-only">Ships compared</caption>
+        <caption className="sr-only">
+          {version === null
+            ? "Ships compared"
+            : `Ships compared, LIVE ${version}`}
+        </caption>
         <thead>
           <tr>
             <th

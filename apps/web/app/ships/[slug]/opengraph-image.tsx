@@ -19,6 +19,8 @@ export const alt = "Ship name and manufacturer on a plain dark card";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 export const dynamic = "force-static";
+// Only the current slugs, prerendered at build; old and unknown slugs 404 here (the page redirects).
+export const dynamicParams = false;
 
 export function generateStaticParams() {
   return repo().ships.map((s) => ({ slug: s.vehicle.slug }));

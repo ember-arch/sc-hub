@@ -146,9 +146,10 @@ describe("tokens.css is generated from tokens.ts", () => {
   });
 
   it("exposes exactly the spacing scale as named spacing values", () => {
-    const names = [...css.matchAll(/--spacing-([\d.]+): (\d+)px;/g)].map(
-      (m) => ({ name: Number(m[1]), px: Number(m[2]) }),
-    );
+    const names = [...css.matchAll(/--spacing-([\d.]+): (\d+)px;/g)]
+      .map((m) => ({ name: Number(m[1]), px: Number(m[2]) }))
+      // --spacing-0 is the zero every inset-0 and top-0 needs, not part of the scale.
+      .filter((n) => n.px > 0);
     expect(names.map((n) => n.px)).toEqual([...space]);
     for (const n of names) expect(n.name).toBe(n.px / 4);
   });

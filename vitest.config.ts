@@ -12,6 +12,7 @@ export default defineConfig({
       "apps/*/__tests__/**/*.test.ts",
       "workers/*/__tests__/**/*.test.ts",
       "pipeline/__tests__/**/*.test.ts",
+      "scripts/__tests__/**/*.test.ts",
     ],
     exclude: ["**/node_modules/**", "**/dist/**", "**/.next/**"],
   },

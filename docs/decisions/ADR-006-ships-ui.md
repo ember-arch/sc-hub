@@ -42,6 +42,17 @@ Spec 02 asks for the reference experience: a filterable ship index, the full shi
 | Stock loadout | Panels by system (weapons; defense; power and cooling; flight; sensors and utility; cargo) built from the port tree by `apps/web/lib/loadout.ts`: identical sibling ports merge with a count, a turret's or rack's items stay nested beneath it, each mounted item links to its page, empty ports close each list, and one headline number (weapon damage, shield health) shows when the pack has it. The raw per-port table stays behind a "All N ports by game name" disclosure | The owner's reading of the first version: a flat table of game port names read like a spreadsheet. The idea of grouping a loadout by system is FleetYards' (feature ideas are fair game, CLAUDE.md section 2; no code was read or copied); the panels are this design system's tokens and components. Nested ports and item links (the spec's words) are kept in both views. Headline numbers stop at the two whose scale reads without a unit because the data model names none for item stats |
 | Error boundary | `apps/web/app/error.tsx`: one sentence, a retry and a home link, and the footer with the verbatim notice; the patch strip shows its empty state because a client boundary cannot read the pack | Deferred from the ADR-005 audit; CLAUDE.md section 2 says no page ships without the disclaimer |
 
+### Compare and the keyboard run (PR 6)
+
+| Concern | Choice | Reason |
+| --- | --- | --- |
+| Source of truth | `/compare?ships=a,b,c,d` is the comparison. The page resolves the slugs, names any unknown slug and any past the fourth and leaves them out, and renders the rest. Remove is a link to the URL without that ship; the add select submits `add=` and the page redirects to the canonical URL with the ship appended | The spec says shareable by URL; one URL per comparison, no state the link does not carry |
+| The basket | The Compare toggles on the ship page hero, under each index card and in a table column keep a list of slugs in local storage (try/catch, like the palette's recents) through `useSyncExternalStore`, with an empty server snapshot so the first client render matches the server. "Compare N ships" links to the compare URL for the basket; the compare page writes its URL back into the basket | Add and remove from the ship page and the index need a place to collect ships across navigations; a server session is more than a reference site should hold. The write-back keeps a shared link and the toggles agreeing |
+| Phone layout | A table with one column per ship on md and up; on phone each stat becomes a block with the ships' values in a two-column grid. Both are server-rendered; one is hidden per breakpoint | system.md principle 6: no sideways scroll. Four ship columns cannot expand row by row the way a list can |
+| Row set | The key-facts set first (manufacturer, role, size, crew, cargo, length, mass, status), then the rest of VehicleStats; a row every ship lacks is omitted | The spec names the key-facts set and the full stats table; spec 02 notes say omit null rows |
+| Robots | `noindex, follow` on every compare URL | Each selection is its own URL; the pages are for sharing, not for search engines, and would index as near-duplicates |
+| Keyboard run | One Playwright test drives the index (filters, cards), a ship page (compare toggle, link), compare (add select, remove link) and the palette with Tab, arrows, Enter and Space only, and checks a visible outline at every stop | The accessibility criterion asks for the run recorded as a test; the focus-ring check turns system.md section 6 into an assertion |
+
 ## Alternatives considered
 
 | Option | Why not |
@@ -51,6 +62,8 @@ Spec 02 asks for the reference experience: a filterable ship index, the full shi
 | Sort as a query parameter | Every header tap would be a navigation; the spec asks only for filters in the URL |
 | Faceted counts (how many ships each option would leave) | Useful at scale; with five ships it is noise, and the count line beside the title already says how many matched. Revisit when the import job brings the full matrix |
 | PTU toggle as `?channel=ptu` | A shareable PTU view would present PTU values as a page of their own, which CLAUDE.md section 5 forbids; the toggle only annotates LIVE |
+| Compare state in a server session or cookie | A cookie per reader for a basket of four slugs is state the privacy page would have to explain; local storage stays on the device |
+| Compare as part of the ships index (`/ships?compare=a,b`) | Two pages in one URL space; the comparison deserves its own address |
 | A story for `StatsByChannel` with deltas | The story would need PTU values the pack does not have; typed deltas are hand-entered game data. The unit test over a synthetic PTU copy of a fixture row covers the logic |
 
 ## Consequences

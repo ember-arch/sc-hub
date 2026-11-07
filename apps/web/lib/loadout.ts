@@ -1,4 +1,4 @@
-import type { Item, ItemStats, PortType } from "schema";
+import { type Item, type ItemStats, PortType } from "schema";
 import type { PortNode } from "./data";
 
 /**
@@ -11,112 +11,138 @@ import type { PortNode } from "./data";
  */
 
 export interface LoadoutEntry {
-  /** Stable within a ship: the port type, the item class (or "empty"), the size range and the children. */
+  /** Stable within a ship: the port type, the part, the size range and the children. */
   readonly key: string;
   readonly portType: PortType;
+  /** The first item of the merged ports; `classes` lists every class they carry. */
   readonly item: Item | null;
+  readonly classes: readonly string[];
   readonly stats: ItemStats | null;
   readonly sizeMin: number;
   readonly sizeMax: number;
   /** How many identical ports the ship has at this level. */
   readonly count: number;
+  /** True when another entry at the same level shares this item's name, so the row shows the subtype. */
+  readonly showSubtype: boolean;
   /** Items mounted inside this one (a turret's guns, a rack's missiles), merged the same way. */
   readonly children: readonly LoadoutEntry[];
 }
 
 export interface LoadoutGroup {
-  readonly id: string;
+  readonly id: GroupId;
   readonly title: string;
   readonly entries: readonly LoadoutEntry[];
   /** Ports in this group, nested ones included. */
   readonly ports: number;
 }
 
-/** Which panel each port type lands in; `other` only when something is mounted. */
-const GROUPS: readonly {
-  id: string;
-  title: string;
-  types: readonly PortType[];
-}[] = [
-  {
-    id: "weapons",
-    title: "Weapons",
-    types: ["weapon", "turret", "missile_rack", "missile"],
-  },
-  {
-    id: "defense",
-    title: "Defense",
-    types: ["shield", "armor", "countermeasure"],
-  },
-  { id: "power", title: "Power and cooling", types: ["power_plant", "cooler"] },
-  {
-    id: "flight",
-    title: "Flight",
-    types: [
-      "quantum_drive",
-      "jump_module",
-      "thruster",
-      "fuel_tank",
-      "fuel_intake",
-    ],
-  },
-  {
-    id: "utility",
-    title: "Sensors and utility",
-    types: ["radar", "tractor_beam", "mining_laser", "utility", "other"],
-  },
-  { id: "cargo", title: "Cargo", types: ["cargo_grid", "interior", "paint"] },
-];
+const GROUP_TITLES = {
+  weapons: "Weapons",
+  defense: "Defense",
+  power: "Power and cooling",
+  flight: "Flight",
+  utility: "Sensors and utility",
+  cargo: "Cargo",
+} as const;
+export type GroupId = keyof typeof GROUP_TITLES;
+
+/** Which panel each port type lands in. Typed over the enum, so a new port type fails to compile until it has a home. */
+const GROUP_OF: Readonly<Record<PortType, GroupId>> = {
+  weapon: "weapons",
+  turret: "weapons",
+  missile_rack: "weapons",
+  missile: "weapons",
+  shield: "defense",
+  armor: "defense",
+  countermeasure: "defense",
+  power_plant: "power",
+  cooler: "power",
+  quantum_drive: "flight",
+  jump_module: "flight",
+  thruster: "flight",
+  fuel_tank: "flight",
+  fuel_intake: "flight",
+  radar: "utility",
+  tractor_beam: "utility",
+  mining_laser: "utility",
+  utility: "utility",
+  other: "utility",
+  cargo_grid: "cargo",
+  interior: "cargo",
+  paint: "cargo",
+};
 
 export type StatsLookup = (className: string) => ItemStats | null;
 
 /**
- * Ports merge when a reader would call them the same thing: the item's display name, type and
- * size, not its class name. The game gives a left and a right rack (or the upper and lower
- * torpedo racks) their own class names; the entry links to the first one's page.
+ * Ports merge when a reader would call them the same part: the item's type, display name, size
+ * and subtype, not its class name. The game gives a left and a right rack (or the upper and lower
+ * torpedo racks) their own class names; the entry links to the first one's page. The subtype
+ * keeps apart parts that share a name but not a job, such as a hydrogen and a quantum fuel tank
+ * both called "Internal Tank".
  */
-function entryKey(node: PortNode, children: readonly LoadoutEntry[]): string {
-  const item =
-    node.item === null
-      ? "empty"
-      : `${node.item.type}:${node.item.name}:${node.item.size}`;
-  const kids = children.map((c) => `${c.key}x${c.count}`).join(",");
-  return `${node.port.port_type}|${item}|${node.port.size_min}-${node.port.size_max}|${kids}`;
+function partKey(item: Item | null): string {
+  return item === null
+    ? "empty"
+    : `${item.type}:${item.name}:${item.size}:${item.subtype ?? ""}`;
 }
 
-/** Merges sibling ports that carry the same item (and the same nested items) into one entry. */
+function entryKey(node: PortNode, children: readonly LoadoutEntry[]): string {
+  const kids = children.map((c) => `${c.key}x${c.count}`).join(",");
+  return `${node.port.port_type}|${partKey(node.item)}|${node.port.size_min}-${node.port.size_max}|${kids}`;
+}
+
+const listed = (node: PortNode): boolean =>
+  node.port.port_type !== "other" || node.item !== null;
+
+/** Merges sibling ports that carry the same part (and the same nested parts) into one entry. */
 function fold(nodes: readonly PortNode[], stats: StatsLookup): LoadoutEntry[] {
   const out = new Map<string, LoadoutEntry>();
   for (const node of nodes) {
-    const children = fold(
-      node.children.filter(
-        (c) => c.port.port_type !== "other" || c.item !== null,
-      ),
-      stats,
-    );
+    const children = fold(node.children.filter(listed), stats);
     const key = entryKey(node, children);
     const existing = out.get(key);
     if (existing !== undefined) {
-      out.set(key, { ...existing, count: existing.count + 1 });
+      const cls = node.item?.class_name;
+      out.set(key, {
+        ...existing,
+        count: existing.count + 1,
+        classes:
+          cls === undefined || existing.classes.includes(cls)
+            ? existing.classes
+            : [...existing.classes, cls],
+      });
       continue;
     }
     out.set(key, {
       key,
       portType: node.port.port_type,
       item: node.item,
+      classes: node.item === null ? [] : [node.item.class_name],
       stats: node.item === null ? null : stats(node.item.class_name),
       sizeMin: node.port.size_min,
       sizeMax: node.port.size_max,
       count: 1,
+      showSubtype: false,
       children,
     });
   }
-  // Mounted items first, larger first, then by name; empty ports last.
-  return [...out.values()].sort(
+  const entries = [...out.values()].sort(
     (a, b) =>
       Number(a.item === null) - Number(b.item === null) ||
       b.sizeMax - a.sizeMax ||
       (a.item?.name ?? "").localeCompare(b.item?.name ?? "", "en"),
+  );
+  // Same name at the same level: show what tells them apart.
+  const names = new Map<string, number>();
+  for (const e of entries) {
+    if (e.item !== null)
+      names.set(e.item.name, (names.get(e.item.name) ?? 0) + 1);
+  }
+  return entries.map((e) =>
+    e.item !== null && (names.get(e.item.name) ?? 0) > 1
+      ? { ...e, showSubtype: true }
+      : e,
   );
 }
 
@@ -132,21 +158,31 @@ export function loadoutGroups(
   roots: readonly PortNode[],
   stats: StatsLookup,
 ): LoadoutGroup[] {
-  const listed = roots.filter(
-    (node) => node.port.port_type !== "other" || node.item !== null,
-  );
-  return GROUPS.map((group) => {
-    const entries = fold(
-      listed.filter((node) => group.types.includes(node.port.port_type)),
-      stats,
-    );
-    return {
-      id: group.id,
-      title: group.title,
-      entries,
-      ports: countPorts(entries),
-    };
-  }).filter((group) => group.entries.length > 0);
+  const shown = roots.filter(listed);
+  return (Object.keys(GROUP_TITLES) as GroupId[])
+    .map((id) => {
+      const entries = fold(
+        shown.filter((node) => GROUP_OF[node.port.port_type] === id),
+        stats,
+      );
+      return {
+        id,
+        title: GROUP_TITLES[id],
+        entries,
+        ports: countPorts(entries),
+      };
+    })
+    .filter((group) => group.entries.length > 0);
+}
+
+/** `QuantumFuel` → `Quantum fuel`; the game's subtype strings are CamelCase. */
+export function subtypeLabel(subtype: string): string {
+  const words = subtype
+    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+    .replace(/[_-]+/g, " ")
+    .trim()
+    .toLowerCase();
+  return words.charAt(0).toUpperCase() + words.slice(1);
 }
 
 export interface Headline {
@@ -177,3 +213,7 @@ export function headlineStat(
       return null;
   }
 }
+
+/** Every port type has a panel; exported so a test can assert the table covers the enum. */
+export const portTypeGroups: Readonly<Record<PortType, GroupId>> = GROUP_OF;
+export const allPortTypes: readonly PortType[] = PortType.options;

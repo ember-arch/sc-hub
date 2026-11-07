@@ -30,6 +30,7 @@ import { PatchStrip } from "../components/patch-strip";
 import type { SearchEntry } from "../components/search-match";
 import { SegmentedLinks } from "../components/segmented-links";
 import { StatList, StatRow } from "../components/stat-row";
+import { StatsByChannel } from "../components/stats-by-channel";
 import { channelBadge, vehicleStatusBadge } from "../components/status";
 import { DataTableStory } from "./data-table-story";
 import { storyMeta } from "./ids";
@@ -327,6 +328,48 @@ const renderers: Record<string, { title: string; render: Story["render"] }> = {
         links={[
           { href: "/ships", label: "Cards" },
           { href: "/ships?view=table", label: "Table" },
+        ]}
+      />
+    ),
+  },
+  "stats-by-channel": {
+    // The PTU row is the LIVE row plus one on every stat: a transparent, mechanical stand-in
+    // for the PTU build the pack does not have, so the toggle's open state can be seen.
+    title: "StatsByChannel with PTU differences",
+    render: (s) => (
+      <StatsByChannel
+        initialOpen
+        ptuVersion={`${liveVersion(s)}-story`}
+        hasPtuRow
+        rows={[
+          {
+            key: "length",
+            label: "Length",
+            value: s.stats.length_m,
+            unit: "m",
+            digits: 2,
+            delta: 1,
+          },
+          {
+            key: "mass",
+            label: "Mass",
+            value: s.stats.mass_kg,
+            unit: "kg",
+            delta: 1,
+          },
+          {
+            key: "scm",
+            label: "SCM speed",
+            value: s.stats.scm_speed,
+            unit: "m/s",
+            delta: s.stats.scm_speed === null ? undefined : 1,
+          },
+          {
+            key: "cargo",
+            label: "Cargo",
+            value: s.stats.cargo_scu,
+            unit: "SCU",
+          },
         ]}
       />
     ),

@@ -1,20 +1,36 @@
-import { mkdirSync } from "node:fs";
+import { mkdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { expect, test } from "@playwright/test";
 
-// Spec 00, criterion "Three key screens": home, one ship page and the news feed at 390 px and
-// 1280 px, light and dark; CLAUDE.md section 8: screenshots for every page a PR touched. Files
-// land in e2e/__screenshots__/ and are attached to the PR.
+// Spec 00, criterion "Three key screens", and CLAUDE.md section 8: screenshots for every page a
+// PR touched at 390 px and 1280 px, light and dark. Files land in e2e/__screenshots__/ and are
+// attached to the PR. Ship slugs are read from the pack: the first small ship and the first
+// capital ship, so a re-slug changes the data, not this file.
 
 const here = dirname(fileURLToPath(import.meta.url));
 const OUT = join(here, "__screenshots__");
 
-/** The three key screens first; the other Phase 0 routes follow. Slugs come from the bootstrap pack. */
+interface VehicleRow {
+  slug: string;
+  size_class: string | null;
+}
+const vehicles = JSON.parse(
+  readFileSync(join(here, "../../../fixtures/bootstrap/Vehicle.json"), "utf8"),
+) as VehicleRow[];
+const slugOf = (size: string): string => {
+  const found = vehicles.find((v) => v.size_class === size)?.slug;
+  if (found === undefined) throw new Error(`pack has no ${size} ship`);
+  return found;
+};
+const smallShip = slugOf("small");
+const capitalShip = slugOf("capital");
+
+/** The three key screens first; the other routes follow. */
 const SCREENS = [
   { name: "home", path: "/", status: 200 },
-  { name: "ship", path: "/ships/gladius", status: 200 },
-  { name: "ship-capital", path: "/ships/polaris", status: 200 },
+  { name: "ship", path: `/ships/${smallShip}`, status: 200 },
+  { name: "ship-capital", path: `/ships/${capitalShip}`, status: 200 },
   { name: "news", path: "/news", status: 200 },
   { name: "ships", path: "/ships", status: 200 },
   { name: "ships-table", path: "/ships?view=table", status: 200 },
@@ -65,16 +81,23 @@ for (const screen of SCREENS) {
             document.documentElement.clientWidth,
         );
         expect(overflow, "page scrolls sideways").toBe(false);
-        // Port and item names must wrap at their parts, never into fragments shorter than a word.
-        if (viewport.name === "phone" && screen.name === "ship") {
+        // Port names in the opened port table must wrap at their parts (the break after each
+        // underscore), never into fragments shorter than a word.
+        if (viewport.name === "phone" && screen.name.startsWith("ship")) {
+          const summary = page.locator("#hardpoints details summary");
+          const hasTable = (await summary.count()) > 0;
+          if (hasTable) await summary.click();
           const tooNarrow = await page.evaluate(() => {
-            const cells = [...document.querySelectorAll("td span.font-mono")];
+            const cells = [
+              ...document.querySelectorAll("#hardpoints td span.font-mono"),
+            ];
             return cells.filter((cell) => {
               const rects = [...cell.getClientRects()];
               return rects.length > 1 && rects.some((r) => r.width < 40);
             }).length;
           });
-          expect(tooNarrow, "port names wrapped into fragments").toBe(0);
+          expect(tooNarrow, "names wrapped into fragments").toBe(0);
+          if (hasTable) await summary.click();
         }
         mkdirSync(OUT, { recursive: true });
         await page.screenshot({

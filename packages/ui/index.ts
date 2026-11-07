@@ -71,5 +71,10 @@ export {
   type SegmentedLinksProps,
 } from "./components/segmented-links";
 export { StatList, StatRow, type StatRowProps } from "./components/stat-row";
+export {
+  type ChannelStatRow,
+  StatsByChannel,
+  type StatsByChannelProps,
+} from "./components/stats-by-channel";
 export { channelBadge, vehicleStatusBadge } from "./components/status";
 export { TextLink, type TextLinkProps } from "./components/text-link";

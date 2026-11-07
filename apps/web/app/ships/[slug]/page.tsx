@@ -13,7 +13,9 @@ import { flattenPorts, repo } from "../../../lib/data";
 import { Site } from "../../../lib/site";
 import { shipCard, shipFacts, shipSpecRows } from "../../../lib/views";
 import { StatsByChannel } from "../../components/stats-by-channel";
+import { loadoutGroups } from "../../../lib/loadout";
 import { CompareLink, CompareToggle } from "../../compare/compare-controls";
+import { LoadoutPanels } from "./loadout-panels";
 import { PortTable } from "./port-table";
 
 interface Params {
@@ -53,6 +55,10 @@ export default async function ShipPage({ params }: Params) {
     ({ node }) => node.port.port_type !== "other" || node.item !== null,
   );
   const hiddenPorts = allPorts.length - ports.length;
+  const loadout = loadoutGroups(
+    r.shipPorts(ship.vehicle.class_name),
+    (cls) => r.componentByClass(cls)?.stats ?? null,
+  );
   const version = s?.game_version ?? r.liveVersion ?? null;
   const variants = r.variantsOf(ship.vehicle.class_name);
   const base =
@@ -151,24 +157,34 @@ export default async function ShipPage({ params }: Params) {
               No hardpoints in the current data pack for this ship.
             </EmptyState>
           ) : (
-            <PortTable
-              rows={ports.map(({ node, depth }) => ({
-                key: node.port.port_path,
-                depth,
-                name: node.port.port_name,
-                type: sentence(node.port.port_type),
-                sizeMin: node.port.size_min,
-                sizeMax: node.port.size_max,
-                item:
-                  node.item === null
-                    ? null
-                    : {
-                        name: node.item.name,
-                        href: `/components/${node.item.slug}`,
-                      },
-                position: node.port.position,
-              }))}
-            />
+            <LoadoutPanels groups={loadout} />
+          )}
+          {ports.length === 0 ? null : (
+            <details className="rounded-card border border-hairline bg-surface">
+              <summary className="cursor-pointer rounded-card px-4 py-3 text-ui text-secondary hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent">
+                All {ports.length} ports by game name
+              </summary>
+              <div className="border-t border-hairline px-4 pb-4">
+                <PortTable
+                  rows={ports.map(({ node, depth }) => ({
+                    key: node.port.port_path,
+                    depth,
+                    name: node.port.port_name,
+                    type: sentence(node.port.port_type),
+                    sizeMin: node.port.size_min,
+                    sizeMax: node.port.size_max,
+                    item:
+                      node.item === null
+                        ? null
+                        : {
+                            name: node.item.name,
+                            href: `/components/${node.item.slug}`,
+                          },
+                    position: node.port.position,
+                  }))}
+                />
+              </div>
+            </details>
           )}
           {hiddenPorts > 0 ? (
             <p className="text-caption text-secondary">

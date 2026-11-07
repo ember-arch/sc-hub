@@ -103,6 +103,7 @@ export interface Repository {
   /** The ship's base and its other variants (data-model: variants point at their base), never itself. */
   variantsOf(className: string): readonly ShipView[];
   componentBySlug(slug: string): ComponentView | undefined;
+  componentByClass(className: string): ComponentView | undefined;
   /** Ships that carry the item in their stock loadout. */
   stockOn(className: string): readonly ShipView[];
   manufacturerBySlug(slug: string): Manufacturer | undefined;
@@ -169,6 +170,9 @@ export function buildRepository(
       manufacturer: manufacturerByCode.get(item.manufacturer_code) ?? null,
     }));
   const shipByClass = new Map(ships.map((s) => [s.vehicle.class_name, s]));
+  const componentByClass = new Map(
+    components.map((c) => [c.item.class_name, c]),
+  );
 
   const portsByVehicle = new Map<string, Port[]>();
   for (const port of rows.Port.filter(isLive)) {
@@ -266,6 +270,7 @@ export function buildRepository(
         (s) => s.vehicle.class_name !== className,
       ),
     componentBySlug: (slug) => components.find((c) => c.item.slug === slug),
+    componentByClass: (className) => componentByClass.get(className),
     stockOn: (className) =>
       [...(stockIndex.get(className) ?? [])]
         .map((cls) => shipByClass.get(cls))

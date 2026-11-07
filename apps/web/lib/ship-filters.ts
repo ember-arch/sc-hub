@@ -1,4 +1,9 @@
-import type { Manufacturer, Vehicle, VehicleStats } from "schema";
+import {
+  type Manufacturer,
+  type Vehicle,
+  type VehicleStats,
+  sizeClassRank,
+} from "schema";
 
 /**
  * The ships index's URL state (spec 02, "Ship index"): five filters and a view, parsed from the
@@ -32,16 +37,6 @@ export interface ShipIndexState {
   readonly view: ShipView;
 }
 
-/** docs/data-model.md: vehicle, snub, small, medium, large, capital. Unknown classes sort after. */
-const SIZE_ORDER: readonly string[] = [
-  "vehicle",
-  "snub",
-  "small",
-  "medium",
-  "large",
-  "capital",
-];
-
 export type Query = Readonly<Record<string, string | string[] | undefined>>;
 
 const first = (value: string | string[] | undefined): string | undefined =>
@@ -64,9 +59,13 @@ export function rolesOf(vehicle: Vehicle): readonly string[] {
     .filter((role) => role !== "");
 }
 
-/** The manufacturer's slug when the pack knows it, the code otherwise. */
-export function manufacturerValue(ship: IndexShip): string {
-  return ship.manufacturer?.slug ?? ship.vehicle.manufacturer_code;
+/**
+ * The manufacturer's slug. A valid pack resolves every manufacturer code (parsePack checks the
+ * reference), so null only happens on a ship whose row is missing; such a ship offers no option
+ * and matches no manufacturer filter rather than leaking the code as a URL value.
+ */
+export function manufacturerValue(ship: IndexShip): string | null {
+  return ship.manufacturer?.slug ?? null;
 }
 
 export function parseShipQuery(query: Query): ShipIndexState {
@@ -144,26 +143,24 @@ export function shipFacetOptions(
   const statuses = new Set<Vehicle["status"]>();
   const kinds = new Set<Vehicle["kind"]>();
   for (const ship of ships) {
-    manufacturers.set(
-      manufacturerValue(ship),
-      ship.manufacturer?.name ?? ship.vehicle.manufacturer_code,
-    );
+    if (ship.manufacturer !== null) {
+      manufacturers.set(ship.manufacturer.slug, ship.manufacturer.name);
+    }
     for (const role of rolesOf(ship.vehicle)) roles.set(facetValue(role), role);
     if (ship.vehicle.size_class !== null) sizes.add(ship.vehicle.size_class);
     statuses.add(ship.vehicle.status);
     kinds.add(ship.vehicle.kind);
   }
-  const sizeRank = (size: string): number => {
-    const index = SIZE_ORDER.indexOf(size);
-    return index < 0 ? SIZE_ORDER.length : index;
-  };
   return {
     manufacturer: [...manufacturers]
       .map(([value, label]) => ({ value, label }))
       .sort(byLabel),
     role: [...roles].map(([value, label]) => ({ value, label })).sort(byLabel),
     size: [...sizes]
-      .sort((a, b) => sizeRank(a) - sizeRank(b) || a.localeCompare(b, "en"))
+      .sort(
+        (a, b) =>
+          sizeClassRank(a) - sizeClassRank(b) || a.localeCompare(b, "en"),
+      )
       .map((value) => ({ value, label: labels.size(value) })),
     status: [...statuses]
       .map((value) => ({ value, label: labels.status(value) }))

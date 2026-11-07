@@ -110,9 +110,9 @@ export default async function ShipsPage({
             ship.
           </EmptyState>
         ) : state.view === "table" ? (
-          <ShipTable rows={shipRows(ships)} />
+          <ShipTable rows={shipRows(ships)} version={r.liveVersion} />
         ) : (
-          <ul className="m-0 grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-2 lg:grid-cols-4">
+          <ul className="m-0 grid list-none grid-cols-2 gap-4 p-0 md:grid-cols-3 lg:grid-cols-4">
             {ships.map((ship) => (
               <li key={ship.vehicle.class_name}>
                 <Card {...shipCard(ship)} />

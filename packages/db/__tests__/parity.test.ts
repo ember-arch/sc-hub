@@ -80,3 +80,61 @@ describe("tables mirror the schema", () => {
     }
   });
 });
+
+// The SQL type of every column follows the Zod field: an integer field that became double precision
+// (or the reverse) passes the TypeScript check, because both are `number`, so this test reads the
+// Zod definition and the Drizzle column type directly.
+type ZodDef = { type: string; format?: string; innerType?: unknown };
+const defOf = (schema: unknown): ZodDef => (schema as { def: ZodDef }).def;
+
+function unwrap(schema: unknown): ZodDef {
+  let def = defOf(schema);
+  while (
+    (def.type === "nullable" || def.type === "optional") &&
+    def.innerType !== undefined
+  ) {
+    def = defOf(def.innerType);
+  }
+  return def;
+}
+
+function allowedColumnTypes(def: ZodDef): string[] {
+  switch (def.type) {
+    case "number":
+      return def.format === "safeint" || def.format === "int32"
+        ? ["PgInteger", "PgBigInt53"]
+        : ["PgDoublePrecision"];
+    case "boolean":
+      return ["PgBoolean"];
+    case "string":
+      if (def.format === "uuid") return ["PgUUID"];
+      if (def.format === "datetime") return ["PgCustomColumn"];
+      return ["PgText"];
+    case "enum":
+      return ["PgEnumColumn"];
+    case "array":
+      return ["PgArray"];
+    case "record":
+      return ["PgJsonb"];
+    default:
+      return [];
+  }
+}
+
+describe("SQL column types follow the Zod field types", () => {
+  it.each(entityNames)("%s", (entity) => {
+    const columns = getTableColumns(tables[entity]);
+    const shape = registry[entity].shape as Record<string, unknown>;
+    for (const [key, column] of Object.entries(columns)) {
+      const def = unwrap(shape[key]);
+      const allowed = allowedColumnTypes(def);
+      expect(
+        allowed,
+        `${entity}.${key}: no rule for Zod type ${def.type}`,
+      ).not.toHaveLength(0);
+      expect(allowed, `${entity}.${key} is ${column.columnType}`).toContain(
+        column.columnType,
+      );
+    }
+  });
+});

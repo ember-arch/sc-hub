@@ -16,6 +16,7 @@ const ROUTES = [
   "/",
   "/ships",
   "/ships/gladius",
+  "/compare",
   "/components",
   "/news",
   "/about",

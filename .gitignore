@@ -1,0 +1,29 @@
+# secrets and local config
+.env
+.env.*
+!.env.example
+
+# legal evidence stays out of git (keep a copy outside the repo too)
+docs/legal/evidence/
+
+# pipeline output and raw game data never enter the repo
+pipeline/out/
+pipeline/reports/*.md
+!pipeline/reports/.gitkeep
+
+# fankit downloads (large; licensed separately)
+fixtures/fankit/
+
+# toolchain
+node_modules/
+.pnpm-store/
+dist/
+.next/
+.turbo/
+coverage/
+playwright-report/
+test-results/
+
+# os
+.DS_Store
+Thumbs.db

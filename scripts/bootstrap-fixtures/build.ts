@@ -251,6 +251,8 @@ Bootstrap placeholders for Phase 0: five ships, their stock loadouts and the com
 pnpm --filter schema build && pnpm exec tsx scripts/bootstrap-fixtures/index.ts
 \`\`\`
 
+**For disposable databases only.** Seeding this pack into the database that will serve the site would freeze its placeholder slugs and first_seen_version values (slugs never change after first publish), and re-seeding a newer bootstrap version into the same database fails on the one-current-version-per-channel rule until the database is wiped (deleting packages/db/.pglite is enough locally). Phase 1 extraction replaces this pack; from then on the import job, not this seed, owns the channel pointer.
+
 ## Contents
 
 Game version \`${input.manifest.game_version}\`, channel ${input.manifest.channel}, as reported by the API's default version at fetch time. \`manifest.json\` lists every file with its sha256, byte size and row count; \`packages/schema\` (\`parsePack\`) validates the whole pack before anything reads it.

@@ -168,6 +168,8 @@ export const VEHICLE_RAW_DROP: ReadonlySet<string> = new Set([
 
 /** Keys dropped from an item's `raw` remainder. */
 export const ITEM_RAW_DROP: ReadonlySet<string> = new Set([
+  "uex_prices",
+  "type_web_url",
   "shops",
   "images",
   "variants",

@@ -6,7 +6,7 @@ import {
   rmSync,
   writeFileSync,
 } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname, isAbsolute, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { Item, ItemStats, Port } from "schema";
 import {
@@ -71,6 +71,14 @@ async function main(): Promise<void> {
   const sources: string[] = [];
   // Optional response cache for development reruns, always outside the repository (never committed).
   const cacheDir = process.env["BOOTSTRAP_CACHE_DIR"];
+  if (cacheDir !== undefined && cacheDir !== "") {
+    const inside = relative(repoRoot, resolve(cacheDir));
+    if (inside === "" || (!inside.startsWith("..") && !isAbsolute(inside))) {
+      throw new MapError(
+        `BOOTSTRAP_CACHE_DIR must point outside the repository: ${cacheDir}`,
+      );
+    }
+  }
   const get = async (path: string): Promise<unknown> => {
     sources.push(path);
     if (cacheDir === undefined || cacheDir === "") return client.getJson(path);

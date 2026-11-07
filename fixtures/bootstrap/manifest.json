@@ -2,7 +2,7 @@
   "schema_version": 1,
   "channel": "LIVE",
   "game_version": "4.10.2-LIVE.12881860",
-  "created_at": "2026-11-07T13:17:00.411Z",
+  "created_at": "2026-11-07T13:37:27.582Z",
   "source": "wiki-bootstrap",
   "source_url": "https://api.star-citizen.wiki",
   "credit": "Some game data via the Star Citizen Wiki API (api.star-citizen.wiki).",
@@ -10,7 +10,7 @@
     {
       "name": "GameVersion.json",
       "entity": "GameVersion",
-      "sha256": "e19b0dddd0f677effdeccafb28f91aad645995eb9e7d691a630fa30c751fdc60",
+      "sha256": "fcae172c710e1d3399bd4bcebbc682acdcc0833a56ddd7a5aa437b50dffc406d",
       "bytes": 253,
       "count": 1
     },
@@ -52,8 +52,8 @@
     {
       "name": "ItemStats.json",
       "entity": "ItemStats",
-      "sha256": "71281ade01965a2a8ddb73b0e402559ca836c622c6f44b0069effb80a6324b8a",
-      "bytes": 680130,
+      "sha256": "398654ef06d5abcfaf826e3583f77104ebb3584082fc4641cfb1dd4c0f0813e9",
+      "bytes": 457556,
       "count": 136
     }
   ]

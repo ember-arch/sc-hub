@@ -13,5 +13,6 @@ export * from "./entities/content-item.js";
 export * from "./entities/author.js";
 export * from "./entities/entity-link.js";
 export * from "./registry.js";
+export * from "./manifest.js";
 export * from "./json-schema.js";
 export * from "./env.js";

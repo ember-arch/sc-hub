@@ -60,5 +60,7 @@ export function toggleShip(
   slugs: readonly string[],
   slug: string,
 ): readonly string[] {
-  return slugs.includes(slug) ? withoutShip(slugs, slug) : withShip(slugs, slug);
+  return slugs.includes(slug)
+    ? withoutShip(slugs, slug)
+    : withShip(slugs, slug);
 }

@@ -23,6 +23,18 @@ Spec 02 asks for the reference experience: a filterable ship index, the full shi
 | Rendering | `/ships` and `/components` read `searchParams`, so they render per request from the in-memory pack | The pack is in process memory (ADR-005); a per-request render of five ships costs nothing measurable, and the pages stay static-shaped for Lighthouse |
 | New components | `FilterBar` (with `FilterSelect`) and `SegmentedLinks` join `packages/ui` with light and dark stories | system.md section 3 is the Phase 0 set; spec 02 is the first spec that needs a filter control and a view switch |
 
+### Ship page and component page (PR 5)
+
+| Concern | Choice | Reason |
+| --- | --- | --- |
+| Specs by channel | One "Specifications" section showing LIVE values with the LIVE version in the aside. `channelDeltas` (`apps/web/lib/channel-diff.ts`) returns PTU minus LIVE for every numeric field that differs; `StatsByChannel` shows a "Show PTU differences" toggle only when a current PTU build has a differing row for the entity, and reveals the deltas through `StatRow` (arrow glyph plus color, never color alone) | CLAUDE.md section 5: LIVE is canonical and PTU displays as a diff, never as the default. The toggle is client state, not a query parameter: it changes how one section reads, not which page is shown |
+| PTU states | No PTU build: a one-line note under the stats. PTU build but no row for this entity: a note naming the build. PTU row equal to LIVE: the design document's "No PTU differences for this version." empty state | Every state names the space and the next step (system.md section 5) rather than hiding the section |
+| The same component for items | The component page builds its stat list from one `ItemStats` field table (null fields omitted) and uses `StatsByChannel` too | One channel model for ships and components; the type-specific fields are null for other types by the data model's own rule |
+| Variants and paints | The repository groups ships into variant families (a base plus every ship whose `base_variant_of` chain reaches it) and attaches `Paint` rows per ship. Variants render as cards under a heading that names the base; paints as a chip list of names, with no preview until R2 exists | Both are data-model entities with no pipeline yet; the bootstrap pack has none, so the section shows an empty state and the logic is tested over synthetic rows |
+| Changed in this version | An empty state saying there is no earlier LIVE version to compare against | `diff.json` has no shape until spec 01's "Diff" criterion; inventing one in the web app would be a contract made on the wrong side of the boundary |
+| Fuel fields | Two decimals, no unit | The data model gives `hydrogen_fuel`, `quantum_fuel`, `hydrogen_capacity` and `quantum_capacity` no unit; showing a guessed one would be an inference. Spec 01's normalizer should name the unit and the data model gain it |
+| Error boundary | `apps/web/app/error.tsx`: one sentence, a retry and a home link, and the footer with the verbatim notice; the patch strip shows its empty state because a client boundary cannot read the pack | Deferred from the ADR-005 audit; CLAUDE.md section 2 says no page ships without the disclaimer |
+
 ## Alternatives considered
 
 | Option | Why not |
@@ -31,6 +43,8 @@ Spec 02 asks for the reference experience: a filterable ship index, the full shi
 | Chip groups (one button per value) instead of selects | Five facets with up to dozens of manufacturers would fill the viewport on phone; a select scales and is keyboard-accessible for free |
 | Sort as a query parameter | Every header tap would be a navigation; the spec asks only for filters in the URL |
 | Faceted counts (how many ships each option would leave) | Useful at scale; with five ships it is noise, and the count line beside the title already says how many matched. Revisit when the import job brings the full matrix |
+| PTU toggle as `?channel=ptu` | A shareable PTU view would present PTU values as a page of their own, which CLAUDE.md section 5 forbids; the toggle only annotates LIVE |
+| A story for `StatsByChannel` with deltas | The story would need PTU values the pack does not have; typed deltas are hand-entered game data. The unit test over a synthetic PTU copy of a fixture row covers the logic |
 
 ## Consequences
 

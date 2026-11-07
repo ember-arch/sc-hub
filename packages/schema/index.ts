@@ -14,5 +14,7 @@ export * from "./entities/author.js";
 export * from "./entities/entity-link.js";
 export * from "./registry.js";
 export * from "./manifest.js";
+export * from "./keys.js";
+export * from "./pack.js";
 export * from "./json-schema.js";
 export * from "./env.js";

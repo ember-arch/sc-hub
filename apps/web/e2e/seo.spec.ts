@@ -1,4 +1,5 @@
-import { readFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { type Page, expect, test } from "@playwright/test";
 
@@ -148,6 +149,10 @@ test("each ship has an Open Graph image and the page points at it", async ({
   expect(bytes.subarray(0, 8).toString("hex")).toBe("89504e470d0a1a0a");
   expect(bytes.readUInt32BE(16)).toBe(1200);
   expect(bytes.readUInt32BE(20)).toBe(630);
+  // Kept with the page screenshots so the PR shows the card (CLAUDE.md section 8).
+  const out = join(dirname(fileURLToPath(import.meta.url)), "__screenshots__");
+  mkdirSync(out, { recursive: true });
+  writeFileSync(join(out, "og-ship.png"), bytes);
 });
 
 test("an unknown ship slug is a 404 that still has the search box", async ({

@@ -1,5 +1,5 @@
 import type { Manufacturer } from "schema";
-import { OFFICIAL_SITE_URL, SITE_NAME } from "ui/brand";
+import { SITE_NAME } from "ui/brand";
 import type { ShipView } from "./data";
 
 /**
@@ -16,6 +16,10 @@ export function siteUrl(): URL {
   const vercel = process.env["VERCEL_PROJECT_PRODUCTION_URL"];
   if (vercel !== undefined && vercel !== "")
     return new URL(`https://${vercel}`);
+  // A production deploy without an origin would publish localhost in every canonical.
+  if (process.env["VERCEL_ENV"] === "production") {
+    throw new Error("SITE_URL is required in production (CLAUDE.md section 9)");
+  }
   return new URL("http://localhost:3000");
 }
 
@@ -33,10 +37,10 @@ export type JsonLd = Readonly<Record<string, unknown>>;
 export function shipJsonLd(ship: ShipView, description: string): JsonLd {
   const s = ship.stats;
   const maker = ship.manufacturer;
-  const quantity = (value: number, unitCode: string) => ({
+  const kilograms = (value: number) => ({
     "@type": "QuantitativeValue",
     value,
-    unitCode,
+    unitCode: "KGM",
   });
   return {
     "@context": "https://schema.org",
@@ -57,11 +61,25 @@ export function shipJsonLd(ship: ShipView, description: string): JsonLd {
     ...(s === null
       ? {}
       : {
-          weight: quantity(s.mass_kg, "KGM"),
+          weight: kilograms(s.mass_kg),
           ...(s.cargo_scu === null
             ? {}
-            : { cargoVolume: quantity(s.cargo_scu, "SCU") }),
-          vehicleSeatingCapacity: s.crew_max,
+            : {
+                cargoVolume: {
+                  "@type": "QuantitativeValue",
+                  value: s.cargo_scu,
+                  unitText: "SCU",
+                },
+              }),
+          // Every stat names its channel and build (CLAUDE.md section 5).
+          additionalProperty: [
+            { "@type": "PropertyValue", name: "channel", value: s.channel },
+            {
+              "@type": "PropertyValue",
+              name: "game_version",
+              value: s.game_version,
+            },
+          ],
         }),
     isAccessibleForFree: true,
     publisher: { "@type": "Organization", name: SITE_NAME, url: absolute("/") },
@@ -76,8 +94,6 @@ export function manufacturerJsonLd(m: Manufacturer): JsonLd {
     name: m.name,
     url: absolute(`/manufacturers/${m.slug}`),
     ...(m.description === "" ? {} : { description: m.description }),
-    // Fictional organizations are described by the fan site; the official site is the source.
-    sameAs: OFFICIAL_SITE_URL,
   };
 }
 

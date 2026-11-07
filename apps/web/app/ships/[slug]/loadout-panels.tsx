@@ -13,6 +13,17 @@ import {
  * parts with one name at the same level show their subtype so a reader can tell them apart.
  */
 
+/**
+ * The wiki bootstrap gives parts without a localized name the text "<= PLACEHOLDER =>"; the row
+ * says what it is instead ("Unnamed thruster"). The component page keeps the pack's own name.
+ */
+function itemLabel(entry: LoadoutEntry): string {
+  const name = entry.item?.name ?? "";
+  return /^<=.*=>$/.test(name.trim())
+    ? `Unnamed ${sentence(entry.portType).toLowerCase()}`
+    : name;
+}
+
 function EntryRow({
   entry,
   depth,
@@ -26,10 +37,17 @@ function EntryRow({
     entry.sizeMin === entry.sizeMax
       ? `S${entry.sizeMax}`
       : `S${entry.sizeMin}–${entry.sizeMax}`;
-  const subtype =
+  const label =
     entry.showSubtype && entry.item?.subtype != null
       ? subtypeLabel(entry.item.subtype)
       : null;
+  // The game's "UNDEFINED" subtype, or one that repeats the name, tells the reader nothing.
+  const subtype =
+    label === null ||
+    label.toLowerCase() === "undefined" ||
+    label.toLowerCase() === entry.item?.name.toLowerCase()
+      ? null
+      : label;
   return (
     <li className={depth === 0 ? "" : "border-l border-hairline pl-3"}>
       <div className="flex items-baseline justify-between gap-4 py-2 text-ui">
@@ -40,7 +58,7 @@ function EntryRow({
             </span>
           ) : (
             <TextLink href={`/components/${entry.item.slug}`}>
-              {entry.item.name}
+              {itemLabel(entry)}
             </TextLink>
           )}
           <span className="text-caption text-secondary">
@@ -77,7 +95,7 @@ export function LoadoutPanels({
   readonly groups: readonly LoadoutGroup[];
 }) {
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-1 items-start gap-4 md:grid-cols-2 lg:grid-cols-3">
       {groups.map((group) => (
         <section
           key={group.id}

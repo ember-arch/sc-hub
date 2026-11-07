@@ -6,7 +6,10 @@ import { repo } from "../../lib/data";
 import { Site, now } from "../../lib/site";
 import { NewsTabs } from "./tabs";
 
-export const metadata: Metadata = { title: "News" };
+export const metadata: Metadata = {
+  title: "News",
+  alternates: { canonical: "/news" },
+};
 
 interface Props {
   readonly searchParams: Promise<Record<string, string | string[] | undefined>>;

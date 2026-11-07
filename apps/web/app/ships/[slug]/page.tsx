@@ -11,7 +11,10 @@ import {
   vehicleStatusBadge,
 } from "ui";
 import { flattenPorts, repo } from "../../../lib/data";
+import { shipJsonLd } from "../../../lib/seo";
 import { Site } from "../../../lib/site";
+import { entityForSlug } from "../../../lib/entity-route";
+import { JsonLdScript } from "../../json-ld";
 import { shipCard, shipFacts, shipSpecRows } from "../../../lib/views";
 import { loadoutGroups } from "../../../lib/loadout";
 import { CompareLink, CompareToggle } from "../../compare/compare-controls";
@@ -26,14 +29,35 @@ export function generateStaticParams() {
   return repo().ships.map((s) => ({ slug: s.vehicle.slug }));
 }
 
+/**
+ * The ship for a slug. An old slug from slug_history answers with a permanent redirect to the
+ * current one (spec 02, "Slugs and redirects"; Next sends 308, the permanent status that also
+ * keeps the method); an unknown slug is a 404 with the search box.
+ */
+function shipFor(slug: string) {
+  const r = repo();
+  const vehicle = entityForSlug(
+    r.ships.map((s) => s.vehicle),
+    slug,
+    "/ships",
+  );
+  const ship = r.shipBySlug(vehicle.slug);
+  if (ship === undefined) notFound();
+  return ship;
+}
+
+function describe(ship: ReturnType<typeof shipFor>): string {
+  const maker = ship.manufacturer?.name ?? ship.vehicle.manufacturer_code;
+  return `${maker} ${ship.vehicle.name}: specifications, hardpoints and stock loadout by game version.`;
+}
+
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
-  const ship = repo().shipBySlug(slug);
-  if (ship === undefined) return { title: "Ship not found" };
-  const maker = ship.manufacturer?.name ?? ship.vehicle.manufacturer_code;
+  const ship = shipFor(slug);
   return {
     title: ship.vehicle.name,
-    description: `${maker} ${ship.vehicle.name}: specifications, hardpoints and stock loadout by game version.`,
+    description: describe(ship),
+    alternates: { canonical: `/ships/${ship.vehicle.slug}` },
   };
 }
 
@@ -45,8 +69,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 export default async function ShipPage({ params }: Params) {
   const { slug } = await params;
   const r = repo();
-  const ship = r.shipBySlug(slug);
-  if (ship === undefined) notFound();
+  const ship = shipFor(slug);
   const status = vehicleStatusBadge(ship.vehicle.status);
   const s = ship.stats;
   const allPorts = flattenPorts(r.shipPorts(ship.vehicle.class_name));
@@ -93,6 +116,7 @@ export default async function ShipPage({ params }: Params) {
 
   return (
     <Site current="ships" theme="dark">
+      <JsonLdScript data={shipJsonLd(ship, describe(ship))} />
       <EntityPage
         hero={{
           name: ship.vehicle.name,
@@ -105,8 +129,6 @@ export default async function ShipPage({ params }: Params) {
                 },
           status,
           image: null,
-          placeholder:
-            "Render placeholder until the fankit image or the 3D viewer lands",
           children: (
             <div className="flex flex-col gap-3">
               {version === null ? null : (
@@ -140,7 +162,7 @@ export default async function ShipPage({ params }: Params) {
         >
           {s === null ? (
             <EmptyState>
-              No LIVE stats for this ship in the current data pack.
+              No LIVE stats are on record for this ship yet.
             </EmptyState>
           ) : (
             <StatsByChannel
@@ -161,7 +183,7 @@ export default async function ShipPage({ params }: Params) {
         >
           {ports.length === 0 ? (
             <EmptyState>
-              No hardpoints in the current data pack for this ship.
+              No hardpoints are on record for this ship yet.
             </EmptyState>
           ) : (
             <LoadoutPanels groups={loadout} />
@@ -211,7 +233,8 @@ export default async function ShipPage({ params }: Params) {
         >
           {variants.length === 0 && ship.paints.length === 0 ? (
             <EmptyState>
-              No variants or paints in the current data pack.
+              No variants or paints are on record for this ship yet. The{" "}
+              <TextLink href="/ships">ship index</TextLink> lists every hull.
             </EmptyState>
           ) : (
             <div className="flex flex-col gap-6">
@@ -255,14 +278,8 @@ export default async function ShipPage({ params }: Params) {
           aside={version === null ? undefined : `LIVE ${version}`}
         >
           <EmptyState>
-            No earlier LIVE version in the current data pack to compare against;
-            changes appear here once the pipeline publishes a second version.
-          </EmptyState>
-        </Section>
-        <Section id="news" title="In the news">
-          <EmptyState>
-            No news mentions this ship yet; see the{" "}
-            <TextLink href="/news">news feed</TextLink>.
+            This is the first version on record for this ship, so nothing has
+            changed yet. Changes appear here when the next version is published.
           </EmptyState>
         </Section>
       </EntityPage>

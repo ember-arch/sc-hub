@@ -5,7 +5,10 @@ import { EmptyState, Section, TextLink } from "ui";
 import { REPO_ROOT } from "../../lib/data";
 import { Site } from "../../lib/site";
 
-export const metadata: Metadata = { title: "Licenses" };
+export const metadata: Metadata = {
+  title: "Licenses",
+  alternates: { canonical: "/licenses" },
+};
 
 interface LicenseRow {
   readonly name: string;

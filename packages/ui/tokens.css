@@ -1,0 +1,173 @@
+/* Generated from packages/ui/tokens.ts by `pnpm --filter ui build:tokens`. Do not edit. */
+
+:root,
+[data-theme="light"] {
+  --bg-page: #F7F7F5;
+  --bg-surface: #FFFFFF;
+  --bg-raised: #FFFFFF;
+  --bg-inset: #EFEFEC;
+  --text-primary: #131416;
+  --text-secondary: #5C5F66;
+  --text-muted: #8A8E96;
+  --border-default: rgba(0,0,0,0.10);
+  --border-strong: rgba(0,0,0,0.20);
+  --accent: #2F6BFF;
+  --accent-bg: #E8EFFF;
+  --success: #1F8A4C;
+  --warning: #B86E00;
+  --danger: #C7352B;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg-page: #0C0D0F;
+    --bg-surface: #141619;
+    --bg-raised: #1B1E22;
+    --bg-inset: #0F1012;
+    --text-primary: #F2F2F0;
+    --text-secondary: #A2A6AD;
+    --text-muted: #6E7279;
+    --border-default: rgba(255,255,255,0.10);
+    --border-strong: rgba(255,255,255,0.18);
+    --accent: #5B8CFF;
+    --accent-bg: #17223D;
+    --success: #3DBA6E;
+    --warning: #E0962B;
+    --danger: #E5574D;
+    color-scheme: dark;
+  }
+}
+
+[data-theme="dark"] {
+  --bg-page: #0C0D0F;
+  --bg-surface: #141619;
+  --bg-raised: #1B1E22;
+  --bg-inset: #0F1012;
+  --text-primary: #F2F2F0;
+  --text-secondary: #A2A6AD;
+  --text-muted: #6E7279;
+  --border-default: rgba(255,255,255,0.10);
+  --border-strong: rgba(255,255,255,0.18);
+  --accent: #5B8CFF;
+  --accent-bg: #17223D;
+  --success: #3DBA6E;
+  --warning: #E0962B;
+  --danger: #E5574D;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-*: initial;
+  --color-page: var(--bg-page);
+  --color-surface: var(--bg-surface);
+  --color-raised: var(--bg-raised);
+  --color-inset: var(--bg-inset);
+  --color-primary: var(--text-primary);
+  --color-secondary: var(--text-secondary);
+  --color-muted: var(--text-muted);
+  --color-hairline: var(--border-default);
+  --color-hairline-strong: var(--border-strong);
+  --color-accent: var(--accent);
+  --color-accent-bg: var(--accent-bg);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+
+  --font-*: initial;
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --text-*: initial;
+  --text-display: 40px;
+  --text-display--line-height: 44px;
+  --text-display--font-weight: 500;
+  --text-title: 28px;
+  --text-title--line-height: 34px;
+  --text-title--font-weight: 500;
+  --text-heading: 20px;
+  --text-heading--line-height: 28px;
+  --text-heading--font-weight: 500;
+  --text-body: 16px;
+  --text-body--line-height: 26px;
+  --text-body--font-weight: 400;
+  --text-ui: 14px;
+  --text-ui--line-height: 20px;
+  --text-ui--font-weight: 400;
+  --text-caption: 12.5px;
+  --text-caption--line-height: 18px;
+  --text-caption--font-weight: 400;
+
+  --font-weight-*: initial;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+
+  --spacing: initial;
+  --spacing-*: initial;
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+  --spacing-12: 48px;
+  --spacing-16: 64px;
+  --spacing-24: 96px;
+
+  --radius-*: initial;
+  --radius-control: 6px;
+  --radius-card: 10px;
+  --radius-palette: 14px;
+
+  --shadow-*: initial;
+  --inset-shadow-*: initial;
+  --drop-shadow-*: initial;
+  --text-shadow-*: initial;
+  --shadow-popover: 0 8px 24px rgba(0,0,0,0.12);
+
+  --container-*: initial;
+  --container-content: 1200px;
+  --container-prose: 68ch;
+
+  --ease-*: initial;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --default-transition-duration: 120ms;
+  --default-transition-timing-function: var(--ease-standard);
+
+  --animate-*: initial;
+  --blur-*: initial;
+  --perspective-*: initial;
+}
+
+@utility duration-hover {
+  transition-duration: 120ms;
+  transition-timing-function: var(--ease-standard);
+}
+
+@utility duration-panel {
+  transition-duration: 200ms;
+  transition-timing-function: var(--ease-standard);
+}
+
+@utility duration-viewer {
+  transition-duration: 320ms;
+  transition-timing-function: var(--ease-standard);
+}
+
+@layer base {
+  html {
+    background: var(--bg-page);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-variant-numeric: tabular-nums;
+    -webkit-font-smoothing: antialiased;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      transition-duration: 0ms !important;
+      animation-duration: 0ms !important;
+    }
+  }
+}

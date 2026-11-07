@@ -10,3 +10,4 @@ pipeline/out
 fixtures/
 packages/db/migrations/
 *.md
+packages/ui/tokens.css

@@ -74,11 +74,7 @@ export function useCompareBasket(): {
   readonly toggle: (slug: string) => void;
   readonly set: (slugs: readonly string[]) => void;
 } {
-  const slugs = useSyncExternalStore(
-    subscribe,
-    getSnapshot,
-    getServerSnapshot,
-  );
+  const slugs = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const toggle = useCallback(
     (slug: string) => writeCompare(toggleShip(getSnapshot(), slug)),
     [],

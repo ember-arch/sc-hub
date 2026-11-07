@@ -38,10 +38,9 @@ describe("compareHref", () => {
     const href = compareHref(["gladius", "cutlass-black"]);
     expect(href).toBe("/compare?ships=gladius,cutlass-black");
     const url = new URL(href, "http://localhost");
-    expect(parseCompare(url.searchParams.get("ships") ?? undefined).slugs).toEqual([
-      "gladius",
-      "cutlass-black",
-    ]);
+    expect(
+      parseCompare(url.searchParams.get("ships") ?? undefined).slugs,
+    ).toEqual(["gladius", "cutlass-black"]);
   });
 });
 

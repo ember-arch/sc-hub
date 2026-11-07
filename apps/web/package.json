@@ -1,0 +1,32 @@
+{
+  "name": "web",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The Next.js site. Phase 0 renders the bootstrap fixture pack; Postgres and Meilisearch arrive with their specs.",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx scripts/licenses.ts && next dev",
+    "build": "tsx scripts/licenses.ts && next build",
+    "start": "next start",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test:e2e": "playwright test",
+    "licenses:generate": "tsx scripts/licenses.ts"
+  },
+  "dependencies": {
+    "geist": "^1.9.2",
+    "next": "16.4.5",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "schema": "workspace:*",
+    "ui": "workspace:*"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.0",
+    "@tailwindcss/postcss": "^4.3.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "tailwindcss": "^4.3.5",
+    "tsx": "^4.23.15",
+    "typescript": "5.9.3"
+  }
+}

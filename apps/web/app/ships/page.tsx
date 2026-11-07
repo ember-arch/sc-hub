@@ -22,6 +22,7 @@ import {
 } from "../../lib/ship-filters";
 import { Site } from "../../lib/site";
 import { shipCard, shipRows } from "../../lib/views";
+import { CompareLink, CompareToggle } from "../compare/compare-controls";
 import { ShipTable } from "./ship-table";
 
 export const metadata: Metadata = {
@@ -67,12 +68,15 @@ export default async function ShipsPage({
       <div className="flex flex-col gap-8 pt-8">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h1 className="text-title text-primary">Ships</h1>
-          <p className="text-caption text-secondary" data-testid="ship-count">
-            {filtered
-              ? `${ships.length} of ${r.ships.length} ships`
-              : `${r.ships.length} ships`}{" "}
-            · {r.liveVersion ?? "no LIVE build"}
-          </p>
+          <div className="flex flex-wrap items-baseline gap-4">
+            <CompareLink />
+            <p className="text-caption text-secondary" data-testid="ship-count">
+              {filtered
+                ? `${ships.length} of ${r.ships.length} ships`
+                : `${r.ships.length} ships`}{" "}
+              · {r.liveVersion ?? "no LIVE build"}
+            </p>
+          </div>
         </div>
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <FilterBar
@@ -114,8 +118,14 @@ export default async function ShipsPage({
         ) : (
           <ul className="m-0 grid list-none grid-cols-2 gap-4 p-0 md:grid-cols-3 lg:grid-cols-4">
             {ships.map((ship) => (
-              <li key={ship.vehicle.class_name}>
+              <li key={ship.vehicle.class_name} className="flex flex-col gap-2">
                 <Card {...shipCard(ship)} />
+                <div className="flex justify-end">
+                  <CompareToggle
+                    slug={ship.vehicle.slug}
+                    name={ship.vehicle.name}
+                  />
+                </div>
               </li>
             ))}
           </ul>

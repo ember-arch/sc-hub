@@ -16,15 +16,15 @@ type NumericKey<T> = {
   [K in keyof T]: T[K] extends number | null ? K : never;
 }[keyof T];
 
-interface StatSpec<T> {
+export interface StatSpec<T> {
   readonly key: NumericKey<T>;
   readonly label: string;
   readonly unit?: string | undefined;
   readonly digits?: 0 | 2 | undefined;
 }
 
-/** Every VehicleStats field the page shows, with its unit; null fields are omitted (spec 02 notes). */
-const VEHICLE_STATS: readonly StatSpec<VehicleStats>[] = [
+/** Every VehicleStats field the ship page and compare show, with its unit; null fields are omitted (spec 02 notes). */
+export const VEHICLE_STATS: readonly StatSpec<VehicleStats>[] = [
   { key: "length_m", label: "Length", unit: "m", digits: 2 },
   { key: "beam_m", label: "Beam", unit: "m", digits: 2 },
   { key: "height_m", label: "Height", unit: "m", digits: 2 },
@@ -107,6 +107,7 @@ export function shipRows(ships: readonly ShipView[]): readonly ShipRow[] {
     const s = ship.stats;
     return {
       key: ship.vehicle.class_name,
+      slug: ship.vehicle.slug,
       name: ship.vehicle.name,
       href: `/ships/${ship.vehicle.slug}`,
       manufacturer: ship.manufacturer?.name ?? ship.vehicle.manufacturer_code,

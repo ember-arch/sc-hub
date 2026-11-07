@@ -132,7 +132,8 @@ Rule: a type-specific field left null for other types is fine. Do not create one
 ### Model (3D)
 | Field | Type | Notes |
 | --- | --- | --- |
-| class_name | FK Vehicle | PK with game_version + tier |
+| class_name | FK Vehicle | PK with channel + game_version + tier |
+| channel | Channel | |
 | game_version | string | |
 | tier | ModelTier | |
 | url | string | CDN path |

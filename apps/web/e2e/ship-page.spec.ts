@@ -34,12 +34,29 @@ const fixture = <T>(file: string): T =>
     ),
   ) as T;
 const vehicles = fixture<VehicleRow[]>("Vehicle.json");
+interface PortRow {
+  class_name: string;
+  port_type: string;
+  parent_port_path: string | null;
+  default_item_class: string | null;
+}
+const ports = fixture<PortRow[]>("Port.json");
 const stats = fixture<StatsRow[]>("VehicleStats.json");
 const versions = fixture<GameVersionRow[]>("GameVersion.json");
 const live = versions.find((v) => v.channel === "LIVE" && v.is_current);
 const ptu = versions.find((v) => v.channel === "PTU" && v.is_current);
 
-const ship = vehicles[0];
+// The ship under test: the first one in the pack with a mounted item nested under another
+// port (a turret's gun or a rack's missile), so the nesting assertions mean something.
+const ship = vehicles.find((v) =>
+  ports.some(
+    (p) =>
+      p.class_name === v.class_name &&
+      p.parent_port_path !== null &&
+      p.default_item_class !== null &&
+      p.port_type !== "other",
+  ),
+);
 const shipStats = stats.find((s) => s.class_name === ship?.class_name);
 if (ship === undefined || shipStats === undefined || live === undefined)
   throw new Error("pack needs one ship with stats and a LIVE build");

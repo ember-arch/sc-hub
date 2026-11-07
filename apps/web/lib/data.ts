@@ -206,10 +206,18 @@ export function buildRepository(
     return roots;
   };
 
-  /** A variant family is the base ship plus every ship pointing at it. */
+  /** A variant family is the base ship plus every ship pointing at it. A cycle or a dangling base ends the walk. */
   const familyOf = (className: string): string => {
-    const base = shipByClass.get(className)?.vehicle.base_variant_of;
-    return base === null || base === undefined ? className : familyOf(base);
+    const seen = new Set<string>();
+    let current = className;
+    for (;;) {
+      seen.add(current);
+      const base = shipByClass.get(current)?.vehicle.base_variant_of;
+      if (base == null || seen.has(base) || !shipByClass.has(base)) {
+        return current;
+      }
+      current = base;
+    }
   };
   const families = new Map<string, ShipView[]>();
   for (const ship of ships) {

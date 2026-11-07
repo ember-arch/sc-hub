@@ -114,7 +114,7 @@ export function CompareTable({
             aria-label={group.title}
             className="flex flex-col gap-4"
           >
-            <h3 className="text-ui font-medium text-primary">{group.title}</h3>
+            <h2 className="text-ui font-medium text-primary">{group.title}</h2>
             {group.rows.map((row) => (
               <dl
                 key={row.key}

@@ -1,13 +1,15 @@
 "use client";
 
 import { useId, useState } from "react";
-import { EmptyState, StatList, StatRow } from "ui";
+import { EmptyState } from "./entity-page";
+import { StatList, StatRow } from "./stat-row";
 
 /**
  * Specs by channel with the PTU diff toggle (spec 02, "Ship page" and "PTU diff toggle"). LIVE
  * values are always shown; when a PTU build is current and differs, a toggle reveals each PTU
  * value as a delta beside the LIVE value, with an arrow glyph and color, never color alone
- * (`StatRow`). The same component serves ship specs and component stats.
+ * (`StatRow`). The same component serves ship specs and component stats; the page computes the
+ * deltas, this only shows them.
  */
 
 export interface ChannelStatRow {
@@ -24,16 +26,19 @@ export interface StatsByChannelProps {
   readonly rows: readonly ChannelStatRow[];
   /** The current PTU build, or null when none is recorded. */
   readonly ptuVersion: string | null;
-  /** True when the PTU pack has a row for this entity (false means "no PTU row for this entity"). */
+  /** True when the PTU pack has a row for this entity. */
   readonly hasPtuRow: boolean;
+  /** Stories only: render with the differences shown. */
+  readonly initialOpen?: boolean | undefined;
 }
 
 export function StatsByChannel({
   rows,
   ptuVersion,
   hasPtuRow,
+  initialOpen,
 }: StatsByChannelProps) {
-  const [showPtu, setShowPtu] = useState(false);
+  const [showPtu, setShowPtu] = useState(initialOpen === true);
   const noteId = useId();
   const changed = rows.filter((row) => row.delta !== undefined).length;
   const half = Math.ceil(rows.length / 2);

@@ -20,8 +20,9 @@ export type ComponentFilters = Readonly<
 const first = (value: string | string[] | undefined): string | undefined =>
   Array.isArray(value) ? value[0] : value;
 
-export function componentManufacturerValue(c: IndexComponent): string {
-  return c.manufacturer?.slug ?? c.item.manufacturer_code;
+/** The manufacturer's slug; null (a missing row, which parsePack prevents) matches no filter. */
+export function componentManufacturerValue(c: IndexComponent): string | null {
+  return c.manufacturer?.slug ?? null;
 }
 
 export function parseComponentQuery(query: Query): ComponentFilters {
@@ -64,10 +65,9 @@ export function componentFacetOptions(
   const manufacturers = new Map<string, string>();
   for (const c of components) {
     sizes.add(c.item.size);
-    manufacturers.set(
-      componentManufacturerValue(c),
-      c.manufacturer?.name ?? c.item.manufacturer_code,
-    );
+    if (c.manufacturer !== null) {
+      manufacturers.set(c.manufacturer.slug, c.manufacturer.name);
+    }
   }
   return {
     size: [...sizes]

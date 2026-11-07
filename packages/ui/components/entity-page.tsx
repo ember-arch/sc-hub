@@ -186,7 +186,7 @@ export function Related({ groups }: RelatedProps) {
       {shown.map((group) => (
         <div key={group.title} className="flex flex-col gap-4">
           <h2 className="text-heading text-primary">{group.title}</h2>
-          <ul className="m-0 grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-2 lg:grid-cols-4">
+          <ul className="m-0 grid list-none grid-cols-2 gap-4 p-0 md:grid-cols-3 lg:grid-cols-4">
             {group.items.map((item) => (
               <li key={item.href}>
                 <Card {...item} />

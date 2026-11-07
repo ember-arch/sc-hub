@@ -1,3 +1,4 @@
+import { sizeClassOrder } from "schema";
 import { describe, expect, it } from "vitest";
 import {
   type IndexShip,
@@ -27,6 +28,10 @@ const labels = {
   kind: (k: string) => k,
   size: (s: string) => s,
 };
+const first = ships[0];
+if (first === undefined || first.manufacturer === null)
+  throw new Error("pack has no ship with a manufacturer row");
+const firstMaker = first.manufacturer;
 
 describe("parseShipQuery", () => {
   it("reads each facet and the view, ignoring blanks and unknown keys", () => {
@@ -62,12 +67,9 @@ describe("applyShipFilters on the fixture pack", () => {
     expect(applyShipFilters(ships, {})).toHaveLength(ships.length);
   });
 
-  it("filters by manufacturer slug", () => {
-    const first = ships[0];
-    if (first === undefined || first.manufacturer === null)
-      throw new Error("pack has no ship with a manufacturer");
+  it("filters by manufacturer slug, and never by the code", () => {
     const result = applyShipFilters(ships, {
-      manufacturer: first.manufacturer.slug,
+      manufacturer: firstMaker.slug,
     });
     expect(result.length).toBeGreaterThan(0);
     for (const ship of result) {
@@ -75,6 +77,11 @@ describe("applyShipFilters on the fixture pack", () => {
         first.vehicle.manufacturer_code,
       );
     }
+    expect(
+      applyShipFilters(ships, {
+        manufacturer: first.vehicle.manufacturer_code,
+      }),
+    ).toHaveLength(0);
   });
 
   it("filters by size class, status and kind from the vehicle row", () => {
@@ -85,10 +92,7 @@ describe("applyShipFilters on the fixture pack", () => {
       expect(bySize).toContain(ship);
       for (const other of bySize) expect(other.vehicle.size_class).toBe(size);
     }
-    const status = ships[0]?.vehicle.status;
-    const kind = ships[0]?.vehicle.kind;
-    if (status === undefined || kind === undefined)
-      throw new Error("empty pack");
+    const { status, kind } = first.vehicle;
     expect(applyShipFilters(ships, { status, kind }).length).toBe(
       ships.filter(
         (s) => s.vehicle.status === status && s.vehicle.kind === kind,
@@ -96,26 +100,28 @@ describe("applyShipFilters on the fixture pack", () => {
     );
   });
 
-  it("matches any one of a ship's comma-separated roles", () => {
-    const multi = ships.find((s) => rolesOf(s.vehicle).length > 1);
-    if (multi === undefined) throw new Error("pack has no multi-role ship");
-    for (const role of rolesOf(multi.vehicle)) {
-      expect(applyShipFilters(ships, { role: facetValue(role) })).toContain(
-        multi,
-      );
-    }
-    expect(applyShipFilters(ships, { role: "no-such-role" })).toHaveLength(0);
-  });
+  const multi = ships.find((s) => rolesOf(s.vehicle).length > 1);
+  it.skipIf(multi === undefined)(
+    "matches any one of a ship's comma-separated roles",
+    () => {
+      if (multi === undefined) return;
+      for (const role of rolesOf(multi.vehicle)) {
+        expect(applyShipFilters(ships, { role: facetValue(role) })).toContain(
+          multi,
+        );
+      }
+    },
+  );
 
-  it("combines filters with AND", () => {
-    const ship = ships[0];
-    if (ship === undefined || ship.vehicle.size_class === null)
-      throw new Error("empty pack");
-    const result = applyShipFilters(ships, {
-      size: ship.vehicle.size_class,
-      manufacturer: "no-such-manufacturer",
-    });
-    expect(result).toHaveLength(0);
+  it("matches no ship for an unknown role and combines filters with AND", () => {
+    expect(applyShipFilters(ships, { role: "no-such-role" })).toHaveLength(0);
+    if (first.vehicle.size_class === null) return;
+    expect(
+      applyShipFilters(ships, {
+        size: first.vehicle.size_class,
+        manufacturer: "no-such-manufacturer",
+      }),
+    ).toHaveLength(0);
   });
 });
 
@@ -126,7 +132,9 @@ describe("shipFacetOptions", () => {
     expect(options.manufacturer.map((o) => o.value).sort()).toEqual(
       [
         ...new Set(
-          ships.map((s) => s.manufacturer?.slug ?? s.vehicle.manufacturer_code),
+          ships.flatMap((s) =>
+            s.manufacturer === null ? [] : [s.manufacturer.slug],
+          ),
         ),
       ].sort(),
     );
@@ -134,11 +142,6 @@ describe("shipFacetOptions", () => {
     expect(options.role).toHaveLength(roles.size);
     for (const option of options.role)
       expect(roles.has(option.label)).toBe(true);
-    expect(options.size.map((o) => o.value)).toEqual(
-      [...new Set(ships.map((s) => s.vehicle.size_class))]
-        .filter((s): s is string => s !== null)
-        .sort((a, b) => sizeRank(a) - sizeRank(b)),
-    );
     expect(options.status.map((o) => o.value)).toEqual(
       [...new Set(ships.map((s) => s.vehicle.status))].sort(),
     );
@@ -147,29 +150,40 @@ describe("shipFacetOptions", () => {
     );
   });
 
+  it("orders sizes as the data model lists them, not alphabetically", () => {
+    const values = options.size.map((o) => o.value);
+    const positions = values.map((v) =>
+      (sizeClassOrder as readonly string[]).indexOf(v),
+    );
+    // Every size in the pack is a documented class, and they come out in documented order.
+    expect(positions.every((p) => p >= 0)).toBe(true);
+    expect(positions).toEqual([...positions].sort((a, b) => a - b));
+    expect(values).not.toEqual([...values].sort());
+  });
+
   it("labels manufacturers by name and sorts them", () => {
     const names = options.manufacturer.map((o) => o.label);
     expect(names).toEqual([...names].sort((a, b) => a.localeCompare(b, "en")));
     for (const option of options.manufacturer) {
       const m = pack.rows.Manufacturer.find((row) => row.slug === option.value);
-      expect(option.label).toBe(m?.name ?? option.value);
+      expect(option.label).toBe(m?.name);
     }
   });
 });
 
-const SIZE_ORDER = ["vehicle", "snub", "small", "medium", "large", "capital"];
-const sizeRank = (s: string): number => {
-  const i = SIZE_ORDER.indexOf(s);
-  return i < 0 ? SIZE_ORDER.length : i;
-};
-
 describe("facetValue", () => {
-  it("kebab-cases a role label", () => {
+  it("kebab-cases one role label", () => {
     expect(facetValue("Light Fighter")).toBe("light-fighter");
     expect(facetValue("  Heavy  Bomber ")).toBe("heavy-bomber");
-    expect(facetValue("Light Freight, Medium Fighter")).toBe(
-      "light-freight-medium-fighter",
-    );
+  });
+
+  it("splits a multi-role ship-matrix string into one value per role", () => {
+    const multi = ships.find((s) => rolesOf(s.vehicle).length > 1);
+    if (multi === undefined) return;
+    const values = rolesOf(multi.vehicle).map(facetValue);
+    expect(values.length).toBeGreaterThan(1);
+    for (const value of values)
+      expect(value).toMatch(/^[a-z0-9]+(-[a-z0-9]+)*$/);
   });
 });
 

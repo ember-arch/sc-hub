@@ -67,7 +67,8 @@ export default async function ComparePage({
         </div>
         {unknown.length > 0 ? (
           <p className="m-0 text-caption text-secondary">
-            No ship named {unknown.join(", ")}; it was left out.
+            No ship named {unknown.join(", ")};{" "}
+            {unknown.length === 1 ? "it was" : "they were"} left out.
           </p>
         ) : null}
         {dropped.length > 0 ? (
@@ -85,6 +86,7 @@ export default async function ComparePage({
           <CompareTable
             columns={compareColumns(ships)}
             groups={compareGroups(ships)}
+            version={r.liveVersion}
           />
         )}
         {ships.length < MAX_COMPARE && others.length > 0 ? (
@@ -96,6 +98,7 @@ export default async function ComparePage({
             }
           >
             <FilterSelect
+              key={chosen.join(",")}
               name="add"
               label="Add a ship"
               allLabel="Choose a ship"

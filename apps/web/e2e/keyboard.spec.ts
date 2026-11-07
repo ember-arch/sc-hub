@@ -40,21 +40,36 @@ async function tabTo(
   throw new Error("did not reach the target with Tab");
 }
 
-/** The focused element draws an outline (focus-visible), not just a color change. */
+/**
+ * The focused element draws the design ring (ADR-005: a 2 px solid outline in the accent color),
+ * not the browser's default focus outline.
+ */
 async function expectFocusRing(page: Page): Promise<void> {
-  const ring = await page.evaluate(() => {
-    const el = document.activeElement;
-    if (el === null || el === document.body) return null;
-    const style = getComputedStyle(el);
-    return {
-      tag: el.tagName,
-      style: style.outlineStyle,
-      width: style.outlineWidth,
-    };
-  });
-  expect(ring, "something is focused").not.toBeNull();
-  expect(ring?.style, `${ring?.tag} has an outline style`).not.toBe("none");
-  expect(ring?.width, `${ring?.tag} has an outline width`).not.toBe("0px");
+  // Controls fade their colors over the hover duration, so the ring is read once it has settled.
+  await expect(async () => {
+    const ring = await page.evaluate(() => {
+      const el = document.activeElement;
+      if (el === null || el === document.body) return null;
+      const style = getComputedStyle(el);
+      // The accent token resolves at the element, so a dark ship page reads its own value.
+      const accent = style.getPropertyValue("--accent").trim();
+      const hex = accent.replace("#", "");
+      const rgb = `rgb(${parseInt(hex.slice(0, 2), 16)}, ${parseInt(hex.slice(2, 4), 16)}, ${parseInt(hex.slice(4, 6), 16)})`;
+      return {
+        tag: `${el.tagName} "${(el.textContent ?? "").trim().slice(0, 30)}"`,
+        style: style.outlineStyle,
+        width: style.outlineWidth,
+        color: style.outlineColor,
+        accent: rgb,
+      };
+    });
+    expect(ring, "something is focused").not.toBeNull();
+    expect(ring?.style, `${ring?.tag} outline style`).toBe("solid");
+    expect(ring?.width, `${ring?.tag} outline width`).toBe("2px");
+    expect(ring?.color, `${ring?.tag} outline color is the accent`).toBe(
+      ring?.accent,
+    );
+  }).toPass({ timeout: 2_000 });
 }
 
 test("index, ship page, compare and the palette are operable with the keyboard alone", async ({

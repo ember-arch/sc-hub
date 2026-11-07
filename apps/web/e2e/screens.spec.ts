@@ -25,6 +25,10 @@ const slugOf = (size: string): string => {
 };
 const smallShip = slugOf("small");
 const capitalShip = slugOf("capital");
+const compared = vehicles
+  .slice(0, 4)
+  .map((v) => v.slug)
+  .join(",");
 
 /** The three key screens first; the other routes follow. */
 const SCREENS = [
@@ -37,7 +41,7 @@ const SCREENS = [
   { name: "ships-filtered", path: "/ships?size=small", status: 200 },
   {
     name: "compare",
-    path: "/compare?ships=fury,gladius,cutlass-black,polaris",
+    path: `/compare?ships=${compared}`,
     status: 200,
   },
   { name: "compare-empty", path: "/compare", status: 200 },

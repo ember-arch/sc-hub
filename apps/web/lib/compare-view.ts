@@ -6,11 +6,13 @@ import type {
 } from "../app/compare/compare-table";
 import { compareHref, withoutShip } from "./compare";
 import type { ShipView } from "./data";
-import { crewRange } from "./views";
+import { VEHICLE_STATS, crewRange } from "./views";
 
 /**
- * Rows for the compare page (spec 02, "Compare"): the key-facts set first, then the full stats
- * table, one column per ship. A row every ship lacks is omitted (spec 02 notes: omit null rows).
+ * Rows for the compare page (spec 02, "Compare"): the key-facts set first, then every other
+ * VehicleStats field from the ship page's own field table, one column per ship. A row every ship
+ * lacks is omitted (spec 02 notes: omit null rows); a ship missing a stat the others have shows a
+ * dash in the table.
  */
 
 export function compareColumns(ships: readonly ShipView[]): CompareColumn[] {
@@ -33,6 +35,7 @@ interface RowSpec {
   readonly value: (ship: ShipView) => Value;
 }
 
+/** The key-facts set (system.md section 4), in the ship page's order. */
 const KEY_FACTS: readonly RowSpec[] = [
   {
     key: "manufacturer",
@@ -78,65 +81,18 @@ const KEY_FACTS: readonly RowSpec[] = [
   },
 ];
 
-const STATS: readonly RowSpec[] = [
-  {
-    key: "beam",
-    label: "Beam",
-    unit: "m",
-    digits: 2,
-    value: (s) => s.stats?.beam_m ?? null,
-  },
-  {
-    key: "height",
-    label: "Height",
-    unit: "m",
-    digits: 2,
-    value: (s) => s.stats?.height_m ?? null,
-  },
-  {
-    key: "hull",
-    label: "Hull",
-    unit: "HP",
-    value: (s) => s.stats?.hull_hp ?? null,
-  },
-  {
-    key: "scm",
-    label: "SCM speed",
-    unit: "m/s",
-    value: (s) => s.stats?.scm_speed ?? null,
-  },
-  {
-    key: "nav",
-    label: "NAV speed",
-    unit: "m/s",
-    value: (s) => s.stats?.nav_speed ?? null,
-  },
-  // The data model gives the fuel fields no unit yet (ADR-006).
-  {
-    key: "hydrogen-fuel",
-    label: "Hydrogen fuel",
-    digits: 2,
-    value: (s) => s.stats?.hydrogen_fuel ?? null,
-  },
-  {
-    key: "hydrogen-capacity",
-    label: "Hydrogen capacity",
-    digits: 2,
-    value: (s) => s.stats?.hydrogen_capacity ?? null,
-  },
-  {
-    key: "quantum-fuel",
-    label: "Quantum fuel",
-    digits: 2,
-    value: (s) => s.stats?.quantum_fuel ?? null,
-  },
-  {
-    key: "quantum-capacity",
-    label: "Quantum capacity",
-    digits: 2,
-    value: (s) => s.stats?.quantum_capacity ?? null,
-  },
-];
+/** The stats the key facts already cover; everything else in VEHICLE_STATS makes the second group. */
+const IN_KEY_FACTS = new Set<string>(["cargo_scu", "length_m", "mass_kg"]);
+
+const STATS: readonly RowSpec[] = VEHICLE_STATS.filter(
+  (spec) => !IN_KEY_FACTS.has(spec.key),
+).map((spec) => ({
+  key: spec.key,
+  label: spec.label,
+  unit: spec.unit,
+  digits: spec.digits,
+  value: (s) => s.stats?.[spec.key] ?? null,
+}));
 
 function rows(specs: readonly RowSpec[], ships: readonly ShipView[]) {
   return specs

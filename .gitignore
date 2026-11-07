@@ -15,6 +15,9 @@ pipeline/reports/*.md
 # fankit downloads (large; licensed separately)
 fixtures/fankit/
 
+# embedded local database for pnpm db:* when DATABASE_URL is unset
+packages/db/.pglite/
+
 # toolchain
 node_modules/
 .pnpm-store/

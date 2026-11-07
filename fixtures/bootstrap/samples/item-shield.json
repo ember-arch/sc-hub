@@ -1,0 +1,265 @@
+{
+  "uuid": "48e2b865-a936-4346-a621-582568ebd008",
+  "slug": "cloak",
+  "name": "Cloak",
+  "class_name": "SHLD_ASAS_S01_Cloak_SCItem",
+  "classification": "Ship.Shield",
+  "classification_label": "Shield",
+  "size": 1,
+  "mass": 63,
+  "event_source": [],
+  "is_base_variant": true,
+  "is_craftable": true,
+  "is_lootable": false,
+  "blueprint": [
+    {
+      "uuid": "53682234-5ecd-4cce-b572-7b37a91e0b57",
+      "name": "Cloak",
+      "link": "https://api.star-citizen.wiki/api/blueprints/53682234-5ecd-4cce-b572-7b37a91e0b57"
+    }
+  ],
+  "grade": "D",
+  "class": "Stealth",
+  "manufacturer_description": "Ascension Astro",
+  "manufacturer": {
+    "name": "Ascension Astro",
+    "code": "ASAS",
+    "uuid": "abca0ae0-a819-4aeb-a1a7-f8f1d7e277cf",
+    "link": "https://api.star-citizen.wiki/api/manufacturers/ASAS"
+  },
+  "type": "Shield",
+  "type_label": "Shield",
+  "sub_type": "UNDEFINED",
+  "sub_type_label": "Undefined",
+  "shield": {
+    "max_health": 2244,
+    "regen_rate": 404,
+    "regen_time": 5.55,
+    "decay_ratio": 0.25,
+    "reserve_pool": {
+      "regen_rate": 1010,
+      "regen_time": 2.22,
+      "initial_health_ratio": 1,
+      "max_health_ratio": 1,
+      "regen_rate_ratio": 1,
+      "drain_rate_ratio": 2.5
+    },
+    "regen_delay": {
+      "downed": 7.7,
+      "damage": 3.85
+    },
+    "electrical_charge_damage_resistance": 0,
+    "absorption": {
+      "physical": {
+        "min": 0,
+        "max": 0.45
+      },
+      "energy": {
+        "min": 1,
+        "max": 1
+      },
+      "distortion": {
+        "min": 1,
+        "max": 1
+      },
+      "thermal": {
+        "min": 1,
+        "max": 1
+      },
+      "biochemical": {
+        "min": 1,
+        "max": 1
+      },
+      "stun": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "resistance": {
+      "physical": {
+        "min": 0,
+        "max": 0.25
+      },
+      "energy": {
+        "min": 0,
+        "max": 0
+      },
+      "distortion": {
+        "min": 0.75,
+        "max": 0.95
+      },
+      "thermal": {
+        "min": 0,
+        "max": 0
+      },
+      "biochemical": {
+        "min": 0,
+        "max": 0
+      },
+      "stun": {
+        "min": 0,
+        "max": 0
+      }
+    },
+    "max_shield_health": 2244,
+    "max_shield_regen": 404
+  },
+  "dimension": {
+    "width": 0.75,
+    "height": 0.75,
+    "length": 0.75,
+    "volume": 0.084,
+    "volume_converted": 84000,
+    "volume_converted_unit": "µSCU",
+    "true_dimension": {
+      "width": 0.746,
+      "height": 0.258,
+      "length": 0.256
+    },
+    "dimensions": {
+      "width": 0.746,
+      "height": 0.258,
+      "length": 0.256
+    },
+    "cargo_dimension": {
+      "width": 0.22,
+      "height": 0.8,
+      "length": 2.21
+    },
+    "ui_dimension": {
+      "width": 0.75,
+      "height": 0.75,
+      "length": 0.75
+    }
+  },
+  "tags": [],
+  "required_tags": [],
+  "entity_tags": [],
+  "entity_tag_map": [],
+  "interactions": [],
+  "temperature": {
+    "unit": "C",
+    "cooling_threshold": 34.9,
+    "ir_threshold": 39.9,
+    "overheat_threshold": 89.9,
+    "overheat_temperature": 89.9,
+    "max_temperature": 89.9,
+    "recovery_temperature": 85.9
+  },
+  "durability": {
+    "health": 110,
+    "lifetime": 0,
+    "max_lifetime": 0,
+    "repairable": true,
+    "salvageable": true,
+    "resistance": {
+      "stun": 1,
+      "energy": 0.9,
+      "thermal": 0.1,
+      "physical": 0.9,
+      "distortion": 1,
+      "biochemical": 1
+    }
+  },
+  "distortion": {
+    "decay_rate": 110,
+    "decay_delay": 1.5,
+    "max": 1650,
+    "maximum": 1650,
+    "overload_ratio": null,
+    "warning_ratio": 0.75,
+    "recovery_ratio": 0,
+    "recovery_time": null,
+    "power_ratio_at_max_distortion": 0,
+    "power_change_only_at_max_distortion": 0,
+    "shutdown_time": 16.5
+  },
+  "resource_network": {
+    "is_networked": true,
+    "is_relay": false,
+    "default_priority": 50,
+    "states": [
+      {
+        "name": "Online",
+        "signature": {
+          "em": 250,
+          "ir": null
+        },
+        "deltas": [
+          {
+            "type": "Conversion",
+            "resource": "Power",
+            "rate": 1,
+            "minimum_fraction": 1,
+            "generated_resource": "Shield",
+            "generated_rate": 404,
+            "discharge": null,
+            "no_over_generation": 0,
+            "binary_evaluation": null,
+            "composition": null
+          },
+          {
+            "type": "Consumption",
+            "resource": "Coolant",
+            "rate": 0,
+            "minimum_fraction": 0,
+            "generated_resource": null,
+            "generated_rate": null,
+            "discharge": null,
+            "no_over_generation": null,
+            "binary_evaluation": null,
+            "composition": null
+          }
+        ],
+        "power_ranges": [
+          {
+            "start": 0,
+            "modifier": 0.7,
+            "register_range": 0
+          },
+          {
+            "start": 0,
+            "modifier": 0.85,
+            "register_range": 0
+          },
+          {
+            "start": 1,
+            "modifier": 1,
+            "register_range": 1
+          }
+        ]
+      }
+    ],
+    "repair": {
+      "max_repair_count": 1,
+      "time_to_repair": 39.6,
+      "health_ratio": 0.2
+    },
+    "usage": {
+      "power": {
+        "min": 1,
+        "max": 1,
+        "minimum": 1,
+        "maximum": 1
+      },
+      "coolant": {
+        "min": 1,
+        "max": 1,
+        "minimum": 1,
+        "maximum": 1
+      }
+    },
+    "generation": {
+      "coolant": null,
+      "power": null
+    }
+  },
+  "emission": {
+    "ir": 0,
+    "em_min": 250,
+    "em_max": 250,
+    "em_decay": 0.15
+  },
+  "updated_at": "2026-11-07T00:08:30.000000Z",
+  "version": "4.10.2-LIVE.12881860"
+}

@@ -1,0 +1,380 @@
+{
+  "uuid": "cf57c4df-0fed-40bb-9771-10fc7853d8f9",
+  "slug": "omnisky-xii-cannon",
+  "name": "Omnisky XII Cannon",
+  "class_name": "AMRS_LaserCannon_S4",
+  "classification": "Ship.Weapon.Gun",
+  "classification_label": "Gun",
+  "size": 4,
+  "mass": 280,
+  "event_source": [],
+  "is_base_variant": false,
+  "is_craftable": true,
+  "is_lootable": false,
+  "blueprint": [
+    {
+      "uuid": "8af10b9c-dbe4-41b6-9e1b-5ff99a3360f4",
+      "name": "Omnisky XII Cannon",
+      "link": "https://api.star-citizen.wiki/api/blueprints/8af10b9c-dbe4-41b6-9e1b-5ff99a3360f4"
+    }
+  ],
+  "grade": "A",
+  "class": null,
+  "manufacturer_description": "Amon & Reese Co",
+  "manufacturer": {
+    "name": "Amon & Reese Co.",
+    "code": "AMRS",
+    "uuid": "eccba58a-f6d9-42e8-95c6-d0a65763e583",
+    "link": "https://api.star-citizen.wiki/api/manufacturers/AMRS"
+  },
+  "type": "WeaponGun",
+  "type_label": "Weapon Gun",
+  "sub_type": "Gun",
+  "sub_type_label": "Gun",
+  "vehicle_weapon": {
+    "class": "Gun",
+    "type": "Laser Cannon",
+    "capacity": 0,
+    "range": 2799,
+    "damage_per_shot": 327.9,
+    "regeneration": 3,
+    "rpm": 150,
+    "damages": [
+      {
+        "type": "impact",
+        "name": "energy",
+        "damage": 327.888
+      }
+    ],
+    "modes": [
+      {
+        "mode": "Single",
+        "localised": "[AUTO]",
+        "type": "sequence",
+        "rpm": 150,
+        "rounds_per_minute": 150,
+        "ammo_per_shot": 1,
+        "pellets_per_shot": 1,
+        "damage_per_second": 819.7,
+        "heat_per_shot": 0,
+        "wear_per_shot": 0,
+        "heat_per_second": null,
+        "wear_per_second": null,
+        "fire_during_spin_up": null,
+        "shot_count": null,
+        "cooldown_time": null,
+        "sequence_mode": "Looping",
+        "charge_up_time": null,
+        "charge_down_time": null,
+        "full_damage_range": null,
+        "zero_damage_range": null,
+        "hit_type": null,
+        "hit_radius": null,
+        "min_energy_draw": null,
+        "max_energy_draw": null,
+        "healing_mode": null,
+        "healing_per_second": null,
+        "ammo_per_mscu": null,
+        "medical_ammo_type": null,
+        "external_healing": null,
+        "toggle": null,
+        "max_distance": null,
+        "max_sensor_distance": null,
+        "auto_dosage_modifier": null,
+        "healing_break_time": null,
+        "max_dose_for_auto_adjustment": null,
+        "battery_drain_per_second": null,
+        "material_efficiency": null,
+        "max_health_repair_rate": null,
+        "max_damage_map_repair_rate": null,
+        "health_to_ammo_ratio": null,
+        "ramp_up_time": null,
+        "ramp_down_time": null,
+        "max_vehicle_damage_ratio": null,
+        "repaired_material_ratio": null,
+        "salvage_can_fire_on_full": null,
+        "damage_threshold": null,
+        "minimum_distance": null,
+        "maximum_distance": null,
+        "beam_radius": null,
+        "collection_rate": null,
+        "energy_draw": null,
+        "mining_extractor_tag": null,
+        "toggle_mode": null
+      }
+    ],
+    "damage": {
+      "sustained_60s": 435.2,
+      "burst": 819.7,
+      "alpha_total": 327.9,
+      "max": "Infinite",
+      "maximum": "Infinite",
+      "dps": {
+        "physical": 0,
+        "energy": 819.7,
+        "distortion": 0,
+        "thermal": 0,
+        "biochemical": 0,
+        "stun": 0
+      },
+      "alpha": {
+        "physical": 0,
+        "energy": 327.888,
+        "distortion": 0,
+        "thermal": 0,
+        "biochemical": 0,
+        "stun": 0
+      }
+    },
+    "spread": {
+      "min": 0.45,
+      "max": 0.45,
+      "minimum": 0.45,
+      "maximum": 0.45,
+      "first_attack": 0.025,
+      "per_attack": 0.025,
+      "decay": 0.05
+    },
+    "capacitor": {
+      "max_ammo_load": 25,
+      "regen_per_second": 3,
+      "cooldown": 0.5,
+      "requested_ammo_load": 30300,
+      "costs_per_shot": 303
+    },
+    "ammunition": {
+      "uuid": "748fee1d-29dd-4900-b51a-fd1c35363816",
+      "size": 4,
+      "lifetime": 2.43,
+      "speed": 1152,
+      "range": 2799,
+      "capacity": 0,
+      "initial_capacity": 0,
+      "damage_falloff_level_1": 0,
+      "damage_falloff_level_2": 0,
+      "damage_falloff_level_3": 0,
+      "max_penetration_thickness": 0.5,
+      "penetration": {
+        "base_distance": 0.4896,
+        "near_radius": 0.02,
+        "far_radius": 0.02,
+        "angle": null
+      },
+      "impact_damage": [
+        {
+          "type": "impact",
+          "name": "Energy",
+          "damage": 327.888
+        }
+      ],
+      "impact_damage_map": {
+        "energy": 327.888
+      },
+      "conversion_rate": 129,
+      "impulse_scale": 1,
+      "bullet_type": -1
+    },
+    "magazine_volume": {
+      "micro_scu": 0,
+      "scu": 0
+    }
+  },
+  "ammunition": {
+    "uuid": "748fee1d-29dd-4900-b51a-fd1c35363816",
+    "size": 4,
+    "lifetime": 2.43,
+    "speed": 1152,
+    "range": 2799,
+    "capacity": 0,
+    "initial_capacity": 0,
+    "damage_falloff_level_1": 0,
+    "damage_falloff_level_2": 0,
+    "damage_falloff_level_3": 0,
+    "max_penetration_thickness": 0.5,
+    "penetration": {
+      "base_distance": 0.4896,
+      "near_radius": 0.02,
+      "far_radius": 0.02,
+      "angle": null
+    },
+    "impact_damage": [
+      {
+        "type": "impact",
+        "name": "Energy",
+        "damage": 327.888
+      }
+    ],
+    "impact_damage_map": {
+      "energy": 327.888
+    },
+    "conversion_rate": 129,
+    "impulse_scale": 1,
+    "bullet_type": -1
+  },
+  "dimension": {
+    "width": 0.75,
+    "height": 0.75,
+    "length": 1.5,
+    "volume": 2.1,
+    "volume_converted": 2100000,
+    "volume_converted_unit": "µSCU",
+    "true_dimension": {
+      "width": 0.512,
+      "height": 1.329,
+      "length": 4.836
+    },
+    "dimensions": {
+      "width": 0.512,
+      "height": 1.329,
+      "length": 4.836
+    },
+    "cargo_dimension": {
+      "width": 0.89,
+      "height": 1.6,
+      "length": 6.63
+    },
+    "ui_dimension": {
+      "width": 0.75,
+      "height": 0.75,
+      "length": 1.5
+    }
+  },
+  "tags": [
+    "AMRS",
+    "LaserCannon",
+    "flightReady",
+    "weaponMountUsable"
+  ],
+  "required_tags": [],
+  "entity_tags": [],
+  "entity_tag_map": [],
+  "interactions": [],
+  "durability": {
+    "health": 1650,
+    "lifetime": null,
+    "max_lifetime": null,
+    "repairable": true,
+    "salvageable": true,
+    "resistance": {
+      "stun": 1,
+      "energy": 1,
+      "thermal": 1,
+      "physical": 0.6,
+      "distortion": 1,
+      "biochemical": 1
+    }
+  },
+  "distortion": {
+    "decay_rate": 500000,
+    "decay_delay": 0,
+    "max": 500000,
+    "maximum": 500000,
+    "overload_ratio": null,
+    "warning_ratio": 0.75,
+    "recovery_ratio": 0,
+    "recovery_time": null,
+    "power_ratio_at_max_distortion": 0,
+    "power_change_only_at_max_distortion": 0,
+    "shutdown_time": 1
+  },
+  "resource_network": {
+    "is_networked": true,
+    "is_relay": false,
+    "default_priority": 50,
+    "states": [
+      {
+        "name": "Online",
+        "signature": {
+          "em": null,
+          "ir": null
+        },
+        "deltas": [
+          {
+            "type": "Consumption",
+            "resource": "Power",
+            "rate": 1.3,
+            "minimum_fraction": 0,
+            "generated_resource": null,
+            "generated_rate": null,
+            "discharge": null,
+            "no_over_generation": null,
+            "binary_evaluation": null,
+            "composition": null
+          }
+        ],
+        "power_ranges": [
+          {
+            "start": 0,
+            "modifier": 1,
+            "register_range": 0
+          },
+          {
+            "start": 0,
+            "modifier": 1,
+            "register_range": 0
+          },
+          {
+            "start": 0,
+            "modifier": 1,
+            "register_range": 0
+          }
+        ]
+      }
+    ],
+    "repair": {
+      "max_repair_count": 1,
+      "time_to_repair": 63.4,
+      "health_ratio": 0.2
+    },
+    "usage": {
+      "power": {
+        "min": 0,
+        "max": 1.3,
+        "minimum": 0,
+        "maximum": 1.3
+      },
+      "coolant": {
+        "min": 0,
+        "max": 1.3,
+        "minimum": 0,
+        "maximum": 1.3
+      }
+    },
+    "generation": {
+      "coolant": null,
+      "power": null
+    }
+  },
+  "emission": {
+    "ir": 0,
+    "em_min": 0,
+    "em_max": 0,
+    "em_decay": 0.15
+  },
+  "base_variant": {
+    "uuid": "26838ca7-418a-47d2-8429-7339ebbb8993",
+    "name": "Omnisky III Cannon",
+    "class_name": "AMRS_LaserCannon_S1",
+    "type": "WeaponGun",
+    "type_label": "Weapon Gun",
+    "sub_type": "Gun",
+    "sub_type_label": "Gun",
+    "classification": "Ship.Weapon.Gun",
+    "classification_label": "Gun",
+    "is_base_variant": true,
+    "variant_name": null,
+    "manufacturer": {
+      "name": "Amon & Reese Co.",
+      "code": "AMRS",
+      "uuid": "eccba58a-f6d9-42e8-95c6-d0a65763e583",
+      "link": "https://api.star-citizen.wiki/api/manufacturers/AMRS"
+    },
+    "link": "https://api.star-citizen.wiki/api/items/26838ca7-418a-47d2-8429-7339ebbb8993",
+    "web_url": "https://api.star-citizen.wiki/items/omnisky-iii-cannon",
+    "size": 1,
+    "updated_at": "2026-11-01T00:23:50.000000Z",
+    "version": "4.10.2-LIVE.12881860"
+  },
+  "updated_at": "2026-11-07T00:07:58.000000Z",
+  "version": "4.10.2-LIVE.12881860"
+}

@@ -1,0 +1,7 @@
+[
+  {"class_name":"AEGS_Gladius","slug":"gladius","name":"Gladius","manufacturer_code":"AEGS","kind":"ship","status":"flight_ready","role":"Light Fighter","size_class":"small","base_variant_of":null,"is_hero":false,"first_seen_version":"4.10.2-LIVE.12881860","slug_history":[]},
+  {"class_name":"ANVL_Carrack","slug":"carrack","name":"Carrack","manufacturer_code":"ANVL","kind":"ship","status":"flight_ready","role":"Expedition","size_class":"large","base_variant_of":null,"is_hero":false,"first_seen_version":"4.10.2-LIVE.12881860","slug_history":[]},
+  {"class_name":"DRAK_Cutlass_Black","slug":"cutlass-black","name":"Cutlass Black","manufacturer_code":"DRAK","kind":"ship","status":"flight_ready","role":"Light Freight, Medium Fighter","size_class":"medium","base_variant_of":null,"is_hero":false,"first_seen_version":"4.10.2-LIVE.12881860","slug_history":[]},
+  {"class_name":"MISC_Fury","slug":"fury","name":"Fury","manufacturer_code":"MRAI","kind":"ship","status":"flight_ready","role":"Snub Fighter","size_class":"snub","base_variant_of":null,"is_hero":false,"first_seen_version":"4.10.2-LIVE.12881860","slug_history":[]},
+  {"class_name":"RSI_Polaris","slug":"polaris","name":"Polaris","manufacturer_code":"RSI","kind":"ship","status":"flight_ready","role":"Corvette","size_class":"capital","base_variant_of":null,"is_hero":false,"first_seen_version":"4.10.2-LIVE.12881860","slug_history":[]}
+]

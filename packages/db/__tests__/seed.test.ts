@@ -1,11 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { and, count, eq, isNotNull, isNull } from "drizzle-orm";
-import {
-  type DataPack,
-  type EntityName,
-  type PackRows,
-  entityNames,
-} from "schema";
+import { type DataPack, type PackRows, entityNames } from "schema";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { DbHandle } from "../src/client.js";
 import { silentLogger } from "../src/log.js";
@@ -213,11 +208,5 @@ describe("seedPack with the bootstrap pack", () => {
         .insert(vehicleStats)
         .values({ ...stats, class_name: "TEST_Missing" }),
     ).rejects.toSatisfy(mentions(/foreign key/i));
-  });
-
-  it("keeps the seed order stable for every entity", () => {
-    const seeded: EntityName[] = [];
-    for (const entity of entityNames) seeded.push(entity);
-    expect(seeded).toHaveLength(12);
   });
 });

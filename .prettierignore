@@ -8,4 +8,5 @@ pnpm-lock.yaml
 .lighthouseci
 pipeline/out
 fixtures/
+packages/db/migrations/
 *.md

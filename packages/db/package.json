@@ -1,0 +1,31 @@
+{
+  "name": "db",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Drizzle tables derived from packages/schema, forward-only migrations, and the seed that loads a data pack into Postgres or an embedded PGlite database.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "generate": "drizzle-kit generate",
+    "check": "drizzle-kit check",
+    "migrate": "tsx src/cli/migrate.ts",
+    "seed": "tsx src/cli/seed.ts"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "^0.5.15",
+    "drizzle-orm": "0.45.4",
+    "postgres": "^4.1.0",
+    "schema": "workspace:*"
+  },
+  "devDependencies": {
+    "drizzle-kit": "0.31.11",
+    "tsx": "^4.23.15"
+  }
+}

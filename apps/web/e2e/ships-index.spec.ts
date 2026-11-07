@@ -4,7 +4,8 @@ import { expect, test } from "@playwright/test";
 
 // Spec 02, criterion "Ship index": filters for manufacturer, role, size class, status and kind as
 // URL state; card and table views; the table sorted by name by default and by any stat column;
-// the phone expand-row rule. Expected values are read from the fixture pack, never typed in.
+// the phone expand-row rule; keyboard and no-JavaScript operation of the filters. Expected values
+// are read from the fixture pack, never typed in.
 
 interface VehicleRow {
   class_name: string;
@@ -15,12 +16,19 @@ interface VehicleRow {
 }
 interface StatsRow {
   class_name: string;
+  channel: string;
+  game_version: string;
   mass_kg: number;
 }
 interface ManufacturerRow {
   code: string;
   slug: string;
   name: string;
+}
+interface GameVersionRow {
+  channel: string;
+  version: string;
+  is_current: boolean;
 }
 const fixture = <T>(file: string): T =>
   JSON.parse(
@@ -33,27 +41,40 @@ const fixture = <T>(file: string): T =>
   ) as T;
 const vehicles = fixture<VehicleRow[]>("Vehicle.json");
 const manufacturers = fixture<ManufacturerRow[]>("Manufacturer.json");
-const stats = fixture<StatsRow[]>("VehicleStats.json");
+const live = fixture<GameVersionRow[]>("GameVersion.json").find(
+  (v) => v.channel === "LIVE" && v.is_current,
+);
+if (live === undefined) throw new Error("pack has no current LIVE build");
+/** LIVE stats of the current build only, as the index shows them. */
+const liveMass = new Map(
+  fixture<StatsRow[]>("VehicleStats.json")
+    .filter((s) => s.channel === "LIVE" && s.game_version === live.version)
+    .map((s) => [s.class_name, s.mass_kg]),
+);
+const byName = [...vehicles].sort((a, b) => a.name.localeCompare(b.name, "en"));
+
+const sizes = [...new Set(vehicles.map((v) => v.size_class))].filter(
+  (s): s is string => s !== null,
+);
+const size = sizes[0];
+if (size === undefined) throw new Error("pack has no size classes");
 
 test("a size filter chosen from the select becomes URL state and narrows the cards", async ({
   page,
 }) => {
   await page.goto("/ships");
-  const sizes = [...new Set(vehicles.map((v) => v.size_class))].filter(
-    (s): s is string => s !== null,
-  );
-  const size = sizes[0];
-  if (size === undefined) throw new Error("pack has no size classes");
   const expected = vehicles.filter((v) => v.size_class === size);
   await page.getByLabel("Size").selectOption(size);
   await expect(page).toHaveURL(new RegExp(`/ships\\?size=${size}$`));
   await expect(page.getByTestId("ship-count")).toContainText(
     `${expected.length} of ${vehicles.length} ships`,
   );
-  const cards = page.getByRole("main").getByRole("link", {
-    name: new RegExp(expected.map((v) => v.name).join("|")),
-  });
+  // Each card is one link whose name starts with the ship name; count them exactly.
+  const cards = page.getByRole("main").locator("ul li a");
   await expect(cards).toHaveCount(expected.length);
+  for (const v of expected) {
+    await expect(cards.filter({ hasText: v.name })).toHaveCount(1);
+  }
   // Clear filters restores the full list and the plain URL.
   await page.getByRole("link", { name: "Clear filters" }).click();
   await expect(page).toHaveURL(/\/ships$/);
@@ -62,7 +83,7 @@ test("a size filter chosen from the select becomes URL state and narrows the car
   );
 });
 
-test("a manufacturer filter in the URL preselects the control and survives the view toggle", async ({
+test("a manufacturer filter in the URL preselects the control and survives the view toggle, and a filter change keeps the table view", async ({
   page,
 }) => {
   const first = vehicles[0];
@@ -83,6 +104,12 @@ test("a manufacturer filter in the URL preselects the control and survives the v
   await expect(rows).toHaveCount(
     vehicles.filter((v) => v.manufacturer_code === maker.code).length,
   );
+  // Changing a filter in table view keeps the view and puts it last, as the toggle links do.
+  await page.getByLabel("Manufacturer").selectOption("");
+  await expect(page).toHaveURL(/\/ships\?view=table$/);
+  await page.getByLabel("Size").selectOption(size);
+  await expect(page).toHaveURL(new RegExp(`/ships\\?size=${size}&view=table$`));
+  await expect(page.getByRole("table")).toBeVisible();
 });
 
 test("table mode sorts by name by default and by a stat column on tap", async ({
@@ -90,22 +117,27 @@ test("table mode sorts by name by default and by a stat column on tap", async ({
 }) => {
   await page.goto("/ships?view=table");
   const names = page.getByRole("table").locator("tbody tr td:first-child");
-  const byName = [...vehicles]
-    .map((v) => v.name)
-    .sort((a, b) => a.localeCompare(b, "en"));
-  await expect(names).toHaveText(byName);
+  await expect(names).toHaveText(byName.map((v) => v.name));
   const massHeader = page.getByRole("columnheader", { name: /Mass/ });
   await massHeader.getByRole("button").click();
   await expect(massHeader).toHaveAttribute("aria-sort", "ascending");
-  const byMass = [...stats]
-    .sort((a, b) => a.mass_kg - b.mass_kg)
-    .map((s) => vehicles.find((v) => v.class_name === s.class_name)?.name)
-    .filter((n): n is string => n !== undefined);
-  expect(byMass).toHaveLength(vehicles.length);
-  await expect(names).toHaveText(byMass);
+  // A stable sort over the name order, ships without a LIVE row last, like the table's own.
+  const mass = (v: VehicleRow): number | null =>
+    liveMass.get(v.class_name) ?? null;
+  const ordered = (direction: 1 | -1): string[] =>
+    [...byName]
+      .sort((a, b) => {
+        const x = mass(a);
+        const y = mass(b);
+        if (x === null) return y === null ? 0 : 1;
+        if (y === null) return -1;
+        return (x - y) * direction;
+      })
+      .map((v) => v.name);
+  await expect(names).toHaveText(ordered(1));
   await massHeader.getByRole("button").click();
   await expect(massHeader).toHaveAttribute("aria-sort", "descending");
-  await expect(names).toHaveText([...byMass].reverse());
+  await expect(names).toHaveText(ordered(-1));
 });
 
 test("on a phone the table keeps name and cargo and expands a row for the rest", async ({
@@ -131,6 +163,62 @@ test("on a phone the table keeps name and cargo and expands a row for the rest",
     page.getByRole("button", { name: "Less" }).first(),
   ).toBeVisible();
   await expect(page.getByText("Mass (kg)").first()).toBeVisible();
+  await context.close();
+});
+
+test("arrow keys step through a select without navigating; Enter or leaving the control applies it, and focus stays put", async ({
+  page,
+}) => {
+  await page.goto("/ships");
+  const select = page.getByLabel("Size");
+  // Options follow the data model's size order, whatever order the pack lists ships in.
+  const values = (
+    await select
+      .locator("option")
+      .evaluateAll((options) =>
+        options.map((o) => (o as HTMLOptionElement).value),
+      )
+  ).filter((v) => v !== "");
+  const [firstSize, secondSize] = values;
+  if (firstSize === undefined) throw new Error("size select has no options");
+  await select.focus();
+  await page.keyboard.press("ArrowDown");
+  await expect(select).toHaveValue(firstSize);
+  await expect(page).toHaveURL(/\/ships$/);
+  if (secondSize !== undefined) {
+    await page.keyboard.press("ArrowDown");
+    await expect(select).toHaveValue(secondSize);
+    await expect(page).toHaveURL(/\/ships$/);
+    await page.keyboard.press("ArrowUp");
+  }
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(new RegExp(`/ships\\?size=${firstSize}$`));
+  await expect(select).toBeFocused();
+  await expect(select).toHaveValue(firstSize);
+  // Leaving the control after another arrow press applies that change too.
+  await page.keyboard.press("ArrowUp");
+  await expect(select).toHaveValue("");
+  await page.keyboard.press("Tab");
+  await expect(page).toHaveURL(/\/ships$/);
+  await expect(page.getByLabel("Status")).toBeFocused();
+});
+
+test("without JavaScript the Apply button submits the same filters as a plain GET", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  const page = await context.newPage();
+  await page.goto("/ships?view=table");
+  await page.getByLabel("Size").selectOption(size);
+  await page.getByRole("button", { name: "Apply" }).click();
+  const url = new URL(page.url());
+  expect(url.pathname).toBe("/ships");
+  expect(url.searchParams.get("size")).toBe(size);
+  expect(url.searchParams.get("view")).toBe("table");
+  await expect(page.getByTestId("ship-count")).toContainText(
+    `${vehicles.filter((v) => v.size_class === size).length} of ${vehicles.length} ships`,
+  );
+  await expect(page.getByRole("table")).toBeVisible();
   await context.close();
 });
 

@@ -1,3 +1,4 @@
+import { sizeClassRank } from "schema";
 import {
   type CardProps,
   type KeyFact,
@@ -22,6 +23,7 @@ export function shipRows(ships: readonly ShipView[]): readonly ShipRow[] {
         ship.vehicle.size_class === null
           ? null
           : sentence(ship.vehicle.size_class),
+      sizeRank: sizeClassRank(ship.vehicle.size_class),
       crew: s === null ? null : crewRange(s.crew_min, s.crew_max),
       crewMax: s?.crew_max ?? null,
       cargo: s?.cargo_scu ?? null,

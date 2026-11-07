@@ -1,0 +1,109 @@
+# CI for every PR and for pushes to main (spec 00, criterion "CI").
+#
+# `check` runs now. `e2e` and `lighthouse` are written but skip until apps/web exists
+# (spec 00, criterion "Site shell"), so they start running without another workflow change.
+# The Vercel preview link on PRs comes from the Vercel GitHub app, not from this file.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Typecheck, lint, unit tests, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm test
+      - run: pnpm build
+      - name: Upload the JSON Schema contract
+        uses: actions/upload-artifact@v7
+        with:
+          name: json-schema
+          path: packages/schema/dist/json
+          if-no-files-found: error
+
+  detect:
+    name: Detect which surfaces exist
+    runs-on: ubuntu-latest
+    outputs:
+      web: ${{ steps.web.outputs.exists }}
+    steps:
+      - uses: actions/checkout@v7
+      - id: web
+        run: |
+          if [ -f apps/web/package.json ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  e2e:
+    name: Playwright e2e and screenshots
+    needs: [check, detect]
+    if: needs.detect.outputs.web == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm test:e2e
+      - name: Upload Playwright report and screenshots
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright
+          path: |
+            playwright-report
+            apps/web/playwright-report
+            packages/ui/__screenshots__
+          if-no-files-found: ignore
+
+  lighthouse:
+    name: Lighthouse CI budgets
+    needs: [check, detect]
+    if: needs.detect.outputs.web == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter web build
+      # Budgets live in lighthouserc.json: performance and accessibility under 90 fail the PR.
+      - run: pnpm exec lhci autorun
+      - name: Upload Lighthouse reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: lighthouse
+          path: .lighthouseci
+          if-no-files-found: ignore

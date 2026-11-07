@@ -17,15 +17,15 @@ import {
  * client-side index of fixture entities; Meilisearch replaces the matcher in spec 02.
  */
 
-export type SearchEntryType = "ship" | "component" | "manufacturer";
+import { SITE_NAME } from "../brand";
+import {
+  SEARCH_GROUPS as GROUPS,
+  type SearchEntry,
+  matchEntries,
+} from "./search-match";
 
-export interface SearchEntry {
-  readonly type: SearchEntryType;
-  readonly name: string;
-  readonly href: string;
-  /** Secondary text, searched too: manufacturer, role, item type. */
-  readonly meta?: string | undefined;
-}
+export type { SearchEntry, SearchEntryType } from "./search-match";
+export { matchEntries } from "./search-match";
 
 export interface CommandPaletteProps {
   readonly entries: readonly SearchEntry[];
@@ -34,17 +34,11 @@ export interface CommandPaletteProps {
   readonly initialQuery?: string | undefined;
 }
 
-const GROUPS: readonly { type: SearchEntryType; title: string }[] = [
-  { type: "ship", title: "Ships" },
-  { type: "component", title: "Components" },
-  { type: "manufacturer", title: "Manufacturers" },
-];
-const PER_GROUP = 6;
-const RECENT_KEY = "sc-hub.recent";
+const RECENT_KEY = `${SITE_NAME.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.recent`;
 const RECENT_MAX = 6;
 
 /** Any element can open the palette by dispatching this on `window` (the home page's search field). */
-export const OPEN_SEARCH_EVENT = "sc-hub:open-search";
+export const OPEN_SEARCH_EVENT = "open-search";
 
 function readRecent(): string[] {
   try {
@@ -64,42 +58,6 @@ function writeRecent(hrefs: string[]): void {
   } catch {
     // Storage may be unavailable (private mode, blocked site data); recents are a convenience.
   }
-}
-
-export function matchEntries(
-  entries: readonly SearchEntry[],
-  query: string,
-): readonly SearchEntry[] {
-  const q = query.trim().toLowerCase();
-  if (q === "") return [];
-  const scored = entries
-    .map((entry) => {
-      const name = entry.name.toLowerCase();
-      const meta = (entry.meta ?? "").toLowerCase();
-      const score = name.startsWith(q)
-        ? 0
-        : name.includes(q)
-          ? 1
-          : meta.includes(q)
-            ? 2
-            : -1;
-      return { entry, score };
-    })
-    .filter((s) => s.score >= 0)
-    .sort(
-      (a, b) =>
-        a.score - b.score || a.entry.name.localeCompare(b.entry.name, "en"),
-    );
-  const out: SearchEntry[] = [];
-  for (const group of GROUPS) {
-    out.push(
-      ...scored
-        .filter((s) => s.entry.type === group.type)
-        .slice(0, PER_GROUP)
-        .map((s) => s.entry),
-    );
-  }
-  return out;
 }
 
 export function CommandPalette({

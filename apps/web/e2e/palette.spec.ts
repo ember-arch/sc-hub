@@ -7,9 +7,12 @@ test("opens with the keyboard shortcut, navigates with arrows and enter, closes 
   page,
 }) => {
   await page.goto("/");
-  await page.keyboard.press("ControlOrMeta+k");
   const dialog = page.getByRole("dialog", { name: "Search" });
-  await expect(dialog).toBeVisible();
+  // The first keypress can land before hydration attaches the listener; retry until it opens.
+  await expect(async () => {
+    await page.keyboard.press("ControlOrMeta+k");
+    await expect(dialog).toBeVisible({ timeout: 500 });
+  }).toPass();
   const input = dialog.getByRole("combobox");
   await expect(input).toBeFocused();
 

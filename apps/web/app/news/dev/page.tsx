@@ -5,7 +5,7 @@ import { NewsTabs } from "../tabs";
 
 export const metadata: Metadata = { title: "Dev tracker" };
 
-/** Spec 00: the dev tracker is an empty state until the Spectrum adapter lands (spec 03). */
+/** Spec 00: the dev tracker is an empty state until the Spectrum adapter lands. */
 export default function DevTrackerPage() {
   return (
     <Site current="news">
@@ -13,8 +13,8 @@ export default function DevTrackerPage() {
         <h1 className="text-title text-primary">News</h1>
         <NewsTabs current="/news/dev" />
         <EmptyState>
-          No developer posts yet. The Spectrum tracker arrives with spec 03 once
-          CIG has confirmed the access method.
+          No developer posts yet. Posts by CIG staff on Spectrum appear here
+          once the tracker is connected.
         </EmptyState>
       </div>
     </Site>

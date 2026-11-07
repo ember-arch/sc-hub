@@ -6,7 +6,7 @@ import { shipCard } from "../../lib/views";
 
 export const metadata: Metadata = { title: "Ships" };
 
-/** Ships index. Filters, URL state and the table view arrive with spec 02. */
+/** Ships index. Filters, URL state and the table view arrive with the ships UI spec. */
 export default function ShipsPage() {
   const r = repo();
   return (

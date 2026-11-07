@@ -190,14 +190,13 @@ export default async function ShipPage({ params }: Params) {
         </Section>
         <Section id="variants" title="Variants and paints">
           <EmptyState>
-            No variants or paints in the current data pack. They arrive with the
-            real extraction in spec 01.
+            No variants or paints in the current data pack.
           </EmptyState>
         </Section>
         <Section id="news" title="In the news">
           <EmptyState>
-            No news mentions this ship yet. Entity linking arrives with spec 03;
-            see the <TextLink href="/news">news feed</TextLink>.
+            No news mentions this ship yet; see the{" "}
+            <TextLink href="/news">news feed</TextLink>.
           </EmptyState>
         </Section>
       </EntityPage>

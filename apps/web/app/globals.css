@@ -7,7 +7,7 @@
 /* Dev post bodies arrive sanitized with quotes preserved; style the quote with tokens only. */
 .dev-post-body blockquote {
   margin: 0 0 var(--spacing-3);
-  border-left: 2px solid var(--border-strong);
+  border-left: 1px solid var(--border-strong);
   padding-left: var(--spacing-3);
   color: var(--text-secondary);
 }

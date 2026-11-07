@@ -107,7 +107,7 @@ export function DataTable<T>({
                 key={column.key}
                 scope="col"
                 aria-sort={ariaSort}
-                className={`sticky top-0 border-b border-hairline bg-inset px-3 py-2 text-caption font-medium text-secondary ${cellAlign(column)} ${isPrimary(column, index) ? "" : "hidden md:table-cell"}`}
+                className={`sticky top-0 border-b border-hairline bg-inset px-3 py-2 text-caption text-secondary ${cellAlign(column)} ${isPrimary(column, index) ? "" : "hidden md:table-cell"}`}
               >
                 {column.sortValue === undefined ? (
                   <span>

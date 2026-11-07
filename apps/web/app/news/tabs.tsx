@@ -12,16 +12,13 @@ export function NewsTabs({
   readonly current: "/news" | "/news/dev";
 }) {
   return (
-    <nav
-      aria-label="News sections"
-      className="flex gap-4 border-b border-hairline text-ui"
-    >
+    <nav aria-label="News sections" className="flex gap-4 text-ui">
       {TABS.map((tab) => (
         <NextLink
           key={tab.href}
           href={tab.href}
           aria-current={current === tab.href ? "page" : undefined}
-          className={`-mb-px border-b-2 px-1 pb-2 no-underline ${current === tab.href ? "border-accent text-primary" : "border-transparent text-secondary hover:text-primary"}`}
+          className={`border-b px-1 pb-2 no-underline ${current === tab.href ? "border-accent text-primary" : "border-transparent text-secondary hover:text-primary"}`}
         >
           {tab.label}
         </NextLink>

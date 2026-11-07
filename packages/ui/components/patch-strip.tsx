@@ -20,7 +20,7 @@ export function PatchStrip({ versions }: PatchStripProps) {
         const found = versions.find((v) => v.channel === channel);
         return (
           <div key={channel} className="flex items-baseline gap-2">
-            <dt className="font-medium text-secondary">{channel}</dt>
+            <dt className="text-secondary">{channel}</dt>
             <dd className="m-0 font-mono text-primary">
               {found === undefined ? (
                 <span className="font-sans text-secondary">

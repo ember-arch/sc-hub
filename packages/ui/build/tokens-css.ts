@@ -82,10 +82,9 @@ export function renderTokensCss(): string {
   push();
   push("  --spacing: initial;");
   push("  --spacing-*: initial;");
-  // Zero and the hairline are not spacing tokens but every `inset-0`, `top-0` and `-mb-px`
-  // needs them once the multiplier is gone.
+  // Zero is not a spacing token but every `inset-0`, `top-0` and `m-0` needs it once the
+  // multiplier is gone (ADR-005).
   push("  --spacing-0: 0px;");
-  push("  --spacing-px: 1px;");
   for (const px of space) {
     push(`  --spacing-${px / 4}: ${px}px;`);
   }

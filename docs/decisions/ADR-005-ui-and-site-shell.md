@@ -30,6 +30,14 @@
 | `text.muted` | Placeholder text only (the palette input). Every informational caption, unit, label and timestamp uses `text.secondary` | Lighthouse measured `text.muted` on `bg.page` at about 3.3:1 in light mode, under the 4.5:1 the design document requires for text; `text.secondary` measures about 5.9:1. The token keeps its documented value; whether to darken it is a design-document change for the owner |
 | Inline links | `TextLink` is always underlined (hairline-strong, accent on hover) | Lighthouse's link-in-text-block: a link inside prose must not rely on color alone (system.md section 6) |
 | Favicon | `apps/web/app/icon.svg`: a 6 px-radius square in the accent color, nothing else | The missing `/favicon.ico` was the only console error Lighthouse logged; the mark is a placeholder until the name is decided (CLAUDE.md section 12) |
+| Zero in the spacing theme | The generated theme defines `--spacing-0: 0px` beside the nine-step scale | With the multiplier reset, `inset-0`, `top-0` and `m-0` produce no CSS without it; zero is not a spacing value, so it is not a new token |
+| Focus rings | `outline-2` (2 px) with the accent color on every focusable element | A visible focus ring is an accessibility requirement (system.md section 6), and outline width is not a token category; recorded here with the other non-token widths (the 3 px brand rule) |
+| Ship pages | `PageShell` sets `data-theme="dark"` on ship pages, so they are dark in both system schemes; their "light" screenshots duplicate the dark ones | system.md principle 3 says ship pages default to dark and there is no theme toggle yet, so the default is the only state. A toggle (a later product decision) would turn this into a default |
+| Port names on phone | A `<wbr>` after each underscore in a port name, with `break-words` on table cells, instead of `break-all` | `hardpoint_cooler_left` wraps at its parts; `break-all` shredded names into three-character lines while still passing the no-sideways-scroll check |
+
+## Open decision for the owner: "three sizes per page"
+
+CLAUDE.md section 7 and system.md principle 2 say three type sizes per page; system.md section 2 defines six roles (display, title, heading, body, ui, caption) and assigns units, metadata and timestamps to `caption`. A ship page needs the entity name (display), section headings (heading), facts and table cells (ui) and units (caption): four roles. Home uses five. The two rules cannot both hold as written. This PR follows the six-role table and keeps every page at five roles or fewer; the owner decides whether to reword the three-size rule (for example "three roles besides ui and caption") or to cut roles from the table. Until then the audit reads the table as authoritative.
 
 ## Alternatives considered
 

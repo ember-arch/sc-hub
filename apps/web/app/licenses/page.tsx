@@ -44,8 +44,7 @@ export default function LicensesPage() {
         </div>
         {rows === null ? (
           <EmptyState>
-            The license list has not been generated for this build. Run pnpm
-            --filter web licenses:generate.
+            The license list was not generated for this build.
           </EmptyState>
         ) : (
           groups.map((g) => (

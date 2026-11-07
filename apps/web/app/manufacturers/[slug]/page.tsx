@@ -3,9 +3,8 @@ import { notFound } from "next/navigation";
 import { Card, EmptyState, EntityPage, Section } from "ui";
 import { repo } from "../../../lib/data";
 import { Site } from "../../../lib/site";
-import { shipCard } from "../../../lib/views";
+import { componentRows, shipCard } from "../../../lib/views";
 import { ComponentTable } from "../../components/component-table";
-import { componentRows } from "../../components/page";
 
 interface Params {
   readonly params: Promise<{ slug: string }>;
@@ -84,10 +83,7 @@ export default async function ManufacturerPage({ params }: Params) {
           )}
         </Section>
         <Section id="news" title="In the news">
-          <EmptyState>
-            No news mentions this manufacturer yet. Entity linking arrives with
-            spec 03.
-          </EmptyState>
+          <EmptyState>No news mentions this manufacturer yet.</EmptyState>
         </Section>
       </EntityPage>
     </Site>

@@ -8,13 +8,11 @@ import type {
   Vehicle,
   VehicleStats,
 } from "schema";
+import { VehicleStatus } from "schema";
 import type { ReactNode } from "react";
 import { Badge } from "../components/badge";
 import { Card } from "../components/card";
-import {
-  CommandPalette,
-  type SearchEntry,
-} from "../components/command-palette";
+import { CommandPalette } from "../components/command-palette";
 import { DevPost } from "../components/dev-post";
 import {
   EmptyState,
@@ -28,15 +26,17 @@ import { Footer } from "../components/footer";
 import { formatNumber, sentence } from "../components/format";
 import { PageShell } from "../components/page-shell";
 import { PatchStrip } from "../components/patch-strip";
+import type { SearchEntry } from "../components/search-match";
 import { StatList, StatRow } from "../components/stat-row";
-import { vehicleStatusBadge } from "../components/status";
+import { channelBadge, vehicleStatusBadge } from "../components/status";
 import { DataTableStory } from "./data-table-story";
 import { storyMeta } from "./ids";
 
 /**
  * Light and dark stories for every Phase 0 component (system.md section 3). Stories take their
  * data from fixtures (CLAUDE.md section 2: never hand-enter game data), so the gallery route in
- * apps/web loads the bootstrap pack and hands rows in. Playwright screenshots each story into
+ * apps/web loads the bootstrap pack and hands rows in; nothing here types a stat, a version or a
+ * status that the pack or the schema does not hold. Playwright screenshots each story into
  * packages/ui/__screenshots__/. Ids and widths live in ids.ts so the spec can import them.
  */
 
@@ -66,6 +66,10 @@ const versions = (sample: StorySample) =>
   sample.versions
     .filter((v) => v.is_current)
     .map((v) => ({ channel: v.channel, version: v.version }));
+
+const liveVersion = (sample: StorySample): string =>
+  versions(sample).find((v) => v.channel === "LIVE")?.version ??
+  sample.stats.game_version;
 
 const entries = (sample: StorySample): SearchEntry[] => [
   {
@@ -108,10 +112,17 @@ const renderers: Record<string, { title: string; render: Story["render"] }> = {
     title: "Badge",
     render: () => (
       <div className="flex flex-wrap gap-2">
-        <Badge tone="success">Flight ready</Badge>
-        <Badge tone="warning">In production</Badge>
-        <Badge tone="neutral">Concept</Badge>
-        <Badge tone="danger">Removed</Badge>
+        {VehicleStatus.options.map((status) => {
+          const badge = vehicleStatusBadge(status);
+          return (
+            <Badge key={status} tone={badge.tone}>
+              {badge.label}
+            </Badge>
+          );
+        })}
+        <Badge tone={channelBadge("PTU").tone}>
+          {channelBadge("PTU").label}
+        </Badge>
       </div>
     ),
   },
@@ -121,18 +132,8 @@ const renderers: Record<string, { title: string; render: Story["render"] }> = {
       <StatList>
         <StatRow label="Length" value={s.stats.length_m} unit="m" digits={2} />
         <StatRow label="Mass" value={s.stats.mass_kg} unit="kg" />
-        <StatRow
-          label="SCM speed"
-          value={s.stats.scm_speed}
-          unit="m/s"
-          delta={{ value: 12 }}
-        />
-        <StatRow
-          label="Cargo"
-          value={s.stats.cargo_scu}
-          unit="SCU"
-          delta={{ value: -4 }}
-        />
+        <StatRow label="SCM speed" value={s.stats.scm_speed} unit="m/s" />
+        <StatRow label="Cargo" value={s.stats.cargo_scu} unit="SCU" />
         <StatRow label="Hydrogen fuel" value={s.stats.hydrogen_fuel} />
       </StatList>
     ),
@@ -184,8 +185,12 @@ const renderers: Record<string, { title: string; render: Story["render"] }> = {
   },
   section: {
     title: "Section and EmptyState",
-    render: () => (
-      <Section id="ptu" title="PTU differences" aside="4.10.2">
+    render: (s) => (
+      <Section
+        id="ptu"
+        title="PTU differences"
+        aside={`LIVE ${liveVersion(s)}`}
+      >
         <EmptyState>No PTU differences for this version.</EmptyState>
       </Section>
     ),
@@ -274,7 +279,29 @@ const renderers: Record<string, { title: string; render: Story["render"] }> = {
             { label: "Crew", value: crew(s) },
             { label: "Cargo", value: s.stats.cargo_scu, unit: "SCU" },
           ]}
-        />
+          related={[
+            {
+              title: `More from ${s.manufacturer.name}`,
+              items: [card(s)],
+            },
+          ]}
+        >
+          <Section
+            id="specs"
+            title="Specifications"
+            aside={`LIVE ${liveVersion(s)}`}
+          >
+            <StatList>
+              <StatRow
+                label="Length"
+                value={s.stats.length_m}
+                unit="m"
+                digits={2}
+              />
+              <StatRow label="Mass" value={s.stats.mass_kg} unit="kg" />
+            </StatList>
+          </Section>
+        </EntityPage>
       </PageShell>
     ),
   },

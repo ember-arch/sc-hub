@@ -1,5 +1,6 @@
 "use client";
 
+import { Fragment } from "react";
 import { DataTable, TextLink } from "ui";
 
 export interface PortRow {
@@ -11,6 +12,31 @@ export interface PortRow {
   readonly sizeMax: number;
   readonly item: { readonly name: string; readonly href: string } | null;
   readonly position: string | null;
+}
+
+/** Nesting indents by one spacing step per level, capped at the deepest the game produces. */
+const INDENT = ["", "pl-3", "pl-6", "pl-12"] as const;
+
+/**
+ * Game port names are long and underscore-joined. A break opportunity after each underscore lets
+ * a phone wrap `hardpoint_cooler_left` at its parts instead of mid-word or sideways.
+ */
+function PortName({ name }: { readonly name: string }) {
+  const parts = name.split("_");
+  return (
+    <>
+      {parts.map((part, i) => (
+        <Fragment key={i}>
+          {i > 0 ? (
+            <>
+              _<wbr />
+            </>
+          ) : null}
+          {part}
+        </Fragment>
+      ))}
+    </>
+  );
 }
 
 /** Hardpoints as a DataTable: nested ports indent under their parent; each stock item links to its page. */
@@ -26,21 +52,15 @@ export function PortTable({ rows }: { readonly rows: readonly PortRow[] }) {
           header: "Port",
           render: (row) => (
             <span
-              className={`break-all font-mono text-caption text-secondary ${row.depth > 0 ? "inline-block border-l border-hairline" : ""}`}
-              style={
-                row.depth > 0
-                  ? { paddingLeft: `${row.depth * 12}px` }
-                  : undefined
-              }
+              className={`block wrap-anywhere font-mono text-caption text-secondary ${INDENT[Math.min(row.depth, INDENT.length - 1)]} ${row.depth > 0 ? "border-l border-hairline" : ""}`}
             >
-              {row.name}
+              <PortName name={row.name} />
             </span>
           ),
         },
         {
           key: "type",
           header: "Type",
-          primary: true,
           render: (row) => row.type,
           sortValue: (row) => row.type,
         },

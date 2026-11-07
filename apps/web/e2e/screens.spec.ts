@@ -14,6 +14,7 @@ const OUT = join(here, "__screenshots__");
 const SCREENS = [
   { name: "home", path: "/", status: 200 },
   { name: "ship", path: "/ships/gladius", status: 200 },
+  { name: "ship-capital", path: "/ships/polaris", status: 200 },
   { name: "news", path: "/news", status: 200 },
   { name: "ships", path: "/ships", status: 200 },
   { name: "ships-table", path: "/ships?view=table", status: 200 },

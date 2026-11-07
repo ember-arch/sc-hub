@@ -84,10 +84,11 @@ ModelTier        = preview | full
 | --- | --- | --- |
 | class_name | FK Vehicle | |
 | channel, game_version | | |
-| port_name | string | Game port name; PK with the three above |
+| port_path | string | Path from the vehicle's root port, parent paths joined by `/`, for example `hardpoint_gun_nose/hardpoint_class_2`; PK with the three above. Game port names repeat under different parents (each missile rack has a `missile_01_attach`), so the name alone cannot be the key |
+| port_name | string | Game port name; the last segment of port_path |
 | port_type | PortType | |
 | size_min, size_max | integer | |
-| parent_port_name | string nullable | Nested ports (a turret's weapon ports) |
+| parent_port_path | string nullable | Nested ports (a turret's weapon ports) point at their parent's port_path |
 | default_item_class | FK Item nullable | Stock loadout |
 | position | string nullable | Human label if the game provides one |
 
@@ -204,4 +205,4 @@ The normalize step emits `diff.json` per run: for each entity, fields added, rem
 
 ## Slugs and redirects
 
-A slug is computed once when an entity is first published. If the display name changes, the old slug is appended to `slug_history` and the app serves a 301 from it. A slug collision across manufacturers is resolved by prefixing the manufacturer code to the newer entity's slug.
+A slug is computed once when an entity is first published. If the display name changes, the old slug is appended to `slug_history` and the app serves a 301 from it. A slug collision across manufacturers is resolved by prefixing the manufacturer code to the newer entity's slug. If the prefixed slug still collides (placeholder components share one display name within a manufacturer), the slug is the kebab-case `class_name`, which is unique by definition.

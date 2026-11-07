@@ -237,7 +237,7 @@ function checkReferences(rows: PackRows): void {
   const authors = new Set(rows.Author.map((row) => row.id));
   const contentItems = new Set(rows.ContentItem.map((row) => row.id));
   const ports = new Set(
-    rows.Port.map((row) => `${row.class_name}|${row.port_name}`),
+    rows.Port.map((row) => `${row.class_name}|${row.port_path}`),
   );
 
   rows.Vehicle.forEach((row, i) => {
@@ -295,14 +295,25 @@ function checkReferences(rows: PackRows): void {
       items,
       "Item.class_name",
     );
-    if (row.parent_port_name !== null) {
+    if (row.parent_port_path !== null) {
       expectRef(
         "Port",
         i,
-        "parent_port_name",
-        `${row.class_name}|${row.parent_port_name}`,
+        "parent_port_path",
+        `${row.class_name}|${row.parent_port_path}`,
         ports,
         "Port on the same vehicle",
+      );
+    }
+    // The path is derived from the parent's path and the game's port name, nothing else.
+    const expectedPath =
+      row.parent_port_path === null
+        ? row.port_name
+        : `${row.parent_port_path}/${row.port_name}`;
+    if (row.port_path !== expectedPath) {
+      throw new PackError(
+        `Port[${i}].port_path = ${JSON.stringify(row.port_path)} should be ${JSON.stringify(expectedPath)} (parent path plus port name)`,
+        { entity: "Port", index: i, path: "port_path" },
       );
     }
   });

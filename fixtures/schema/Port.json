@@ -2,11 +2,12 @@
   "class_name": "TEST_Example",
   "channel": "LIVE",
   "game_version": "0.0.1-test.1",
+  "port_path": "hardpoint_test_1",
   "port_name": "hardpoint_test_1",
   "port_type": "weapon",
   "size_min": 1,
   "size_max": 1,
-  "parent_port_name": null,
+  "parent_port_path": null,
   "default_item_class": "TEST_Item",
   "position": null
 }

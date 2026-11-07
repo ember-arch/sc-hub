@@ -13,7 +13,7 @@ export const primaryKeys = {
   Manufacturer: ["code"],
   Vehicle: ["class_name"],
   VehicleStats: ["class_name", "channel", "game_version"],
-  Port: ["class_name", "channel", "game_version", "port_name"],
+  Port: ["class_name", "channel", "game_version", "port_path"],
   Item: ["class_name"],
   ItemStats: ["class_name", "channel", "game_version"],
   Paint: ["id"],

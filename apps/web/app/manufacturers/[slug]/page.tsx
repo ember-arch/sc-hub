@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Card, EmptyState, EntityPage, Section } from "ui";
 import { repo } from "../../../lib/data";
+import { manufacturerJsonLd } from "../../../lib/seo";
 import { Site } from "../../../lib/site";
+import { JsonLdScript } from "../../json-ld";
 import { componentRows, shipCard } from "../../../lib/views";
 import { ComponentTable } from "../../components/component-table";
 
@@ -18,7 +20,11 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
   const m = repo().manufacturerBySlug(slug);
   if (m === undefined) return { title: "Manufacturer not found" };
-  return { title: m.name, description: `${m.name}: ships and components.` };
+  return {
+    title: m.name,
+    description: `${m.name}: ships and components.`,
+    alternates: { canonical: `/manufacturers/${m.slug}` },
+  };
 }
 
 /** Manufacturer page: EntityPage with the 3 px brand rule, lineup cards, description only from fankit or localization. */
@@ -31,6 +37,7 @@ export default async function ManufacturerPage({ params }: Params) {
   const components = r.componentsBy(m.code);
   return (
     <Site>
+      <JsonLdScript data={manufacturerJsonLd(m)} />
       <EntityPage
         hero={{
           name: m.name,
@@ -50,11 +57,11 @@ export default async function ManufacturerPage({ params }: Params) {
         <Section
           id="lineup"
           title="Lineup"
-          aside={`${lineup.length} ships in the current data pack`}
+          aside={`${lineup.length} ${lineup.length === 1 ? "ship" : "ships"}`}
         >
           {lineup.length === 0 ? (
             <EmptyState>
-              No ships from this manufacturer in the current data pack.
+              No ships from this manufacturer are on record yet.
             </EmptyState>
           ) : (
             <ul className="m-0 grid list-none grid-cols-2 gap-4 p-0 md:grid-cols-3 lg:grid-cols-4">
@@ -73,7 +80,7 @@ export default async function ManufacturerPage({ params }: Params) {
         >
           {components.length === 0 ? (
             <EmptyState>
-              No components from this manufacturer in the current data pack.
+              No components from this manufacturer are on record yet.
             </EmptyState>
           ) : (
             <ComponentTable
@@ -81,9 +88,6 @@ export default async function ManufacturerPage({ params }: Params) {
               rows={componentRows(components)}
             />
           )}
-        </Section>
-        <Section id="news" title="In the news">
-          <EmptyState>No news mentions this manufacturer yet.</EmptyState>
         </Section>
       </EntityPage>
     </Site>

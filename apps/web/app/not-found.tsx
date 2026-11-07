@@ -1,4 +1,7 @@
+import type { Metadata } from "next";
 import { SearchField, TextLink } from "ui";
+
+export const metadata: Metadata = { title: "Not found" };
 import { Site } from "../lib/site";
 
 /** Unknown routes and slugs: say what happened and offer the search. */

@@ -60,6 +60,46 @@ Spec 02 asks for the reference experience: a filterable ship index, the full shi
 | Robots | `noindex, follow` on every compare URL | Each selection is its own URL; the pages are for sharing, not for search engines, and would index as near-duplicates |
 | Keyboard run | One Playwright test drives the index (filters, cards), a ship page (compare toggle, link), compare (add select, remove link) and the palette with Tab, arrows, Enter and Space only, and checks a visible outline at every stop | The accessibility criterion asks for the run recorded as a test; the focus-ring check turns system.md section 6 into an assertion |
 
+### Slugs and SEO (PR 7)
+
+| Concern | Choice | Reason |
+| --- | --- | --- |
+| Old slugs | `resolveSlug` (`apps/web/lib/slugs.ts`) checks current slugs first, then every ship's `slug_history`; the ship page answers a moved slug with Next's `permanentRedirect` (its Open Graph route prerenders only current slugs, `dynamicParams = false`, so an old slug's card 404s while the page redirects), and the compare page redirects a list with any old slug to the canonical URL of current ones. Unknown slugs 404 with the search box | docs/data-model.md "Slugs and redirects". Next's permanent redirect is 308 rather than the spec's 301: the same permanent signal to browsers and crawlers for a GET, and it keeps the method for anything else; a bare 301 would need a route handler or proxy in front of every entity route |
+| Public origin | `SITE_URL` joins CLAUDE.md section 9 and `env.ts` (optional); the root layout's `metadataBase` reads it, falling back to Vercel's production URL and then the local dev origin; a Vercel production deploy with neither throws at build | The domain is undecided until the name is (CLAUDE.md section 12), so no origin is baked in; every canonical, sitemap and Open Graph URL derives from one place |
+| Canonical URLs | Every page declares `alternates.canonical`: the unfiltered index for `/ships` and `/components` (filters are views, not pages), the bare `/compare` for the noindex permutations, each entity's own path otherwise | One address per page for crawlers; filter and compare URLs stay shareable without becoming duplicates |
+| Sitemap and robots | `app/sitemap.ts` lists every indexable route, with the LIVE build's publish time as lastModified on entity pages; `app/robots.ts` disallows the gallery and names the sitemap; compare is not disallowed, because its `noindex` is only seen if a crawler may fetch it | The entity pages change only when a version is imported; compare and gallery are not for indexing |
+| JSON-LD | Ships as schema.org `Vehicle` (name, URL, manufacturer as `Organization`, role as category, mass in kilograms, cargo with `unitText` SCU, and the channel and build as `additionalProperty`; crew is left out because schema.org has no crew property and seating capacity is a different fact; no `sameAs`, which would assert identity with CIG's site), manufacturers as `Organization`; fields come from the pack and anything it lacks is left out. Rendered through one `JsonLdScript` component that escapes `<` | The spec names ships and manufacturers; schema.org has no closer type for a fictional spacecraft than Vehicle, and nothing is typed in |
+| Open Graph images | `app/ships/[slug]/opengraph-image.tsx` draws a 1200 by 630 card from the tokens (dark page color; caption, display and body sizes scaled for the card; Geist Medium read from the geist package; only current slugs, prerendered). When a pipeline thumbnail exists the card becomes `openGraph.images` pointing at the CDN URL, never fetched inside this route, so the thumbnail is not routed through the app server with the ship name, manufacturer and role, generated at build for every ship | The spec wants the pipeline thumbnail or the fankit render; neither exists (no R2, fankit not downloaded). A static placeholder from the tokens gives every share a card without an image the project does not have, and the file is served static, not routed through the app server |
+
+### Design review (PR 7)
+
+The KICKOFF design-review prompt ran in a subagent over home, the Gladius, the Polaris, a component page and compare, at 390 px and 1280 px in both schemes. Tokens, decoration, the phone table rule and the disclaimer passed on every page; LCP was 0.9 to 1.06 s. What changed in response:
+
+| Finding | Change | Reason |
+| --- | --- | --- |
+| News sections on ship, component and manufacturer pages | Removed | Spec 02 "Out of scope": Phase 3 adds news and dev posts to entity pages. An empty section ahead of its phase is an element the reader can lose |
+| Empty states written for the operator ("data pack", "pipeline publishes", "PTU pack is imported") | Rewritten for the reader, with a next step where one exists ("The ship index lists every hull", "browse the ships") | system.md section 5: empty states name the space and the next step |
+| Key facts printed an em dash for a missing value | A null fact is left out | Spec 02 notes: omit the row; the block collapses gracefully |
+| Crew, length and mass in the key facts (and crew on compare) set in the interface face because they arrive preformatted | `KeyFact.numeric` and `CompareRow.mono` set them in mono | system.md principle 2: one mono for numbers, tabular figures |
+| The compare phone stack inherited the browser's 16 px | `text-ui` on the stack | system.md section 2: only token sizes |
+| Loadout panels stretched to the tallest in their row (530 px for two lines on the Polaris) | `items-start` on the grid | Chrome without content |
+| The game's "UNDEFINED" subtype and subtypes that repeat the item name ("Manned turret") | Not shown | They tell the reader nothing |
+| "<= PLACEHOLDER =>" as a link in the loadout | Reads "Unnamed thruster" (the port type); the component page keeps the pack's own name | It is the wiki's marker for a missing localized name, not a name. Spec 01's normalizer should name these parts from localization |
+| Cards drew an empty grey image well | No well without an image | An empty box on every card is chrome; the image returns when the fankit or pipeline thumbnails exist |
+| Home: an h1 and a tagline above the search field; the search field at the body size | The h1 is visually hidden, the tagline lives in the meta description only, the field uses the ui size, the feed's aside is gone | system.md section 4: search field as the first element; controls use `ui` |
+| The viewer placeholder said "Render placeholder until the fankit image or the 3D viewer lands" with no padding | It says "No image yet", padded and centered | Copy for the reader, not the operator |
+
+Recorded for the owner, not changed (each is a design-document or token decision):
+
+| Finding | Why it waits |
+| --- | --- |
+| Light-mode accent contrast: `#2F6BFF` measures 4.19:1 on `bg.page` and 3.90:1 on `bg.inset`, under the 4.5:1 system.md section 6 asks for text; `success` and `warning` are under it too (PTU deltas in light mode, once a PTU build exists). `#2560E8` would measure about 5.0:1 on `bg.page`, 4.65:1 on `bg.inset` and 5.4:1 on white | A token change needs an ADR and is the owner's design call, like the `text.muted` question in ADR-005. Local Lighthouse runs scored 1.00 because the machine's system scheme is dark |
+| Labels in capitals that are not units: "SCM speed", "NAV speed", "EM signature", "LIVE", "PTU" | They are the game's own acronyms; system.md section 2 allows only unit abbreviations in capitals, so the owner rewords the rule or the labels |
+| Duplicates the spec asks for: manufacturer and status in both the hero and the key facts; length, mass, cargo and crew in both the key facts and the specifications (the specifications are where their PTU deltas show) | Spec 02 lists both; dropping either is a spec change |
+| Showing or hiding the placeholder viewer slot and empty sections ("Variants and paints", "Changed in this version") until data exists | Spec 02 asks for the slot and the sections; the fankit download (spec 00 prerequisite) fills the slot |
+| The footer line "SC Hub is a non-commercial fan project." and the patch strip shown both on home and in the footer | system.md section 3 asks for both strips; the footer line is not required by docs/legal/obligations.md |
+| "Three sizes per page" against the six-role type table | Already open in ADR-005 |
+
 ## Alternatives considered
 
 | Option | Why not |
@@ -69,6 +109,7 @@ Spec 02 asks for the reference experience: a filterable ship index, the full shi
 | Sort as a query parameter | Every header tap would be a navigation; the spec asks only for filters in the URL |
 | Faceted counts (how many ships each option would leave) | Useful at scale; with five ships it is noise, and the count line beside the title already says how many matched. Revisit when the import job brings the full matrix |
 | PTU toggle as `?channel=ptu` | A shareable PTU view would present PTU values as a page of their own, which CLAUDE.md section 5 forbids; the toggle only annotates LIVE |
+| A 301 through `next.config` redirects or a proxy | Config redirects are fixed at build and cannot read `slug_history`; a proxy in front of every entity route would load the pack on every request to serve a rare redirect |
 | Compare state in a server session or cookie | A cookie per reader for a basket of four slugs is state the privacy page would have to explain; local storage stays on the device |
 | Compare as part of the ships index (`/ships?compare=a,b`) | Two pages in one URL space; the comparison deserves its own address |
 | No story for `StatsByChannel` with differences | Considered in PR 5 because a typed PTU value would be hand-entered game data; the audit noted the unit tests already use a synthetic copy of a fixture row. The story now renders the component with a PTU row that is the LIVE row plus one on every stat, named as such, so the toggle's open state has a screenshot without inventing a game number |

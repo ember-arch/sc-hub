@@ -172,17 +172,20 @@ export function shipFacts(ship: ShipView, statusLabel: string): KeyFact[] {
     {
       label: "Crew",
       value: s === null ? null : crewRange(s.crew_min, s.crew_max),
+      numeric: true,
     },
     { label: "Cargo", value: s?.cargo_scu ?? null, unit: "SCU" },
     {
       label: "Length",
       value: s === null ? null : formatNumber(s.length_m, 2),
       unit: "m",
+      numeric: true,
     },
     {
       label: "Mass",
       value: s === null ? null : formatNumber(s.mass_kg),
       unit: "kg",
+      numeric: true,
     },
     { label: "Status", value: statusLabel },
   ];

@@ -3,7 +3,10 @@ import { EmptyState } from "ui";
 import { Site } from "../../../lib/site";
 import { NewsTabs } from "../tabs";
 
-export const metadata: Metadata = { title: "Dev tracker" };
+export const metadata: Metadata = {
+  title: "Dev tracker",
+  alternates: { canonical: "/news/dev" },
+};
 
 /** Spec 00: the dev tracker is an empty state until the Spectrum adapter lands. */
 export default function DevTrackerPage() {

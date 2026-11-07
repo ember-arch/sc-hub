@@ -32,6 +32,7 @@ interface RowSpec {
   readonly label: string;
   readonly unit?: string | undefined;
   readonly digits?: 0 | 2 | undefined;
+  readonly mono?: boolean | undefined;
   readonly value: (ship: ShipView) => Value;
 }
 
@@ -52,6 +53,7 @@ const KEY_FACTS: readonly RowSpec[] = [
   {
     key: "crew",
     label: "Crew",
+    mono: true,
     value: (s) =>
       s.stats === null ? null : crewRange(s.stats.crew_min, s.stats.crew_max),
   },
@@ -101,6 +103,7 @@ function rows(specs: readonly RowSpec[], ships: readonly ShipView[]) {
       label: spec.label,
       unit: spec.unit,
       digits: spec.digits,
+      mono: spec.mono,
       values: ships.map(spec.value),
     }))
     .filter((row) => row.values.some((v) => v !== null));

@@ -32,12 +32,8 @@ export function Card({
       href={href}
       className="group flex h-full flex-col gap-3 rounded-card border border-hairline bg-surface p-4 no-underline transition-colors duration-hover hover:border-hairline-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
     >
-      {image === undefined || image === null ? (
-        <div
-          className="aspect-video w-full rounded-control bg-inset"
-          aria-hidden="true"
-        />
-      ) : (
+      {/* No image, no well: an empty box is chrome the reader could lose (design review, ADR-006). */}
+      {image === undefined || image === null ? null : (
         <img
           src={image.src}
           alt={image.alt}

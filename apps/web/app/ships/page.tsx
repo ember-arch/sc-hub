@@ -1,30 +1,125 @@
 import type { Metadata } from "next";
-import { Card } from "ui";
+import {
+  Card,
+  EmptyState,
+  FilterBar,
+  FilterSelect,
+  SegmentedLinks,
+  TextLink,
+  sentence,
+  vehicleStatusBadge,
+} from "ui";
 import { repo } from "../../lib/data";
+import {
+  SHIP_FACETS,
+  type Query,
+  type ShipFacet,
+  applyShipFilters,
+  hasShipFilters,
+  parseShipQuery,
+  shipFacetOptions,
+  shipIndexHref,
+} from "../../lib/ship-filters";
 import { Site } from "../../lib/site";
-import { shipCard } from "../../lib/views";
+import { shipCard, shipRows } from "../../lib/views";
+import { ShipTable } from "./ship-table";
 
-export const metadata: Metadata = { title: "Ships" };
+export const metadata: Metadata = {
+  title: "Ships",
+  description:
+    "Every Star Citizen ship and vehicle with crew, cargo, dimensions and status by game version; filter by manufacturer, role, size and status.",
+};
 
-/** Ships index. Filters, URL state and the table view arrive with the ships UI spec. */
-export default function ShipsPage() {
+const FACET_LABELS: Readonly<
+  Record<ShipFacet, { readonly label: string; readonly all: string }>
+> = {
+  manufacturer: { label: "Manufacturer", all: "All manufacturers" },
+  role: { label: "Role", all: "All roles" },
+  size: { label: "Size", all: "All sizes" },
+  status: { label: "Status", all: "All statuses" },
+  kind: { label: "Kind", all: "Ships and vehicles" },
+};
+
+/**
+ * Ships index (spec 02, "Ship index"): filters as URL state, card and table views, sorted by name
+ * by default and by any stat column in table mode.
+ */
+export default async function ShipsPage({
+  searchParams,
+}: {
+  readonly searchParams: Promise<Query>;
+}) {
   const r = repo();
+  const state = parseShipQuery(await searchParams);
+  const ships = applyShipFilters(r.ships, state.filters);
+  const options = shipFacetOptions(r.ships, {
+    status: (status) => vehicleStatusBadge(status).label,
+    kind: sentence,
+    size: sentence,
+  });
+  const filtered = hasShipFilters(state.filters);
+  const clearHref = shipIndexHref({ filters: {}, view: state.view });
+  const viewHref = (view: "cards" | "table"): string =>
+    shipIndexHref({ filters: state.filters, view });
+
   return (
     <Site current="ships">
       <div className="flex flex-col gap-8 pt-8">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h1 className="text-title text-primary">Ships</h1>
-          <p className="text-caption text-secondary">
-            {r.ships.length} ships · {r.liveVersion ?? "no LIVE build"}
+          <p className="text-caption text-secondary" data-testid="ship-count">
+            {filtered
+              ? `${ships.length} of ${r.ships.length} ships`
+              : `${r.ships.length} ships`}{" "}
+            · {r.liveVersion ?? "no LIVE build"}
           </p>
         </div>
-        <ul className="m-0 grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-2 lg:grid-cols-4">
-          {r.ships.map((ship) => (
-            <li key={ship.vehicle.class_name}>
-              <Card {...shipCard(ship)} />
-            </li>
-          ))}
-        </ul>
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <FilterBar
+            action="/ships"
+            label="Filter ships"
+            hidden={state.view === "table" ? { view: "table" } : undefined}
+            clearHref={filtered ? clearHref : undefined}
+          >
+            {SHIP_FACETS.map((facet) => (
+              <FilterSelect
+                key={facet}
+                name={facet}
+                label={FACET_LABELS[facet].label}
+                allLabel={FACET_LABELS[facet].all}
+                value={state.filters[facet] ?? ""}
+                options={options[facet]}
+              />
+            ))}
+          </FilterBar>
+          <div className="self-start md:self-end">
+            <SegmentedLinks
+              label="View"
+              current={viewHref(state.view)}
+              links={[
+                { href: viewHref("cards"), label: "Cards" },
+                { href: viewHref("table"), label: "Table" },
+              ]}
+            />
+          </div>
+        </div>
+        {ships.length === 0 ? (
+          <EmptyState>
+            No ships match these filters.{" "}
+            <TextLink href={clearHref}>Clear filters</TextLink> to see every
+            ship.
+          </EmptyState>
+        ) : state.view === "table" ? (
+          <ShipTable rows={shipRows(ships)} />
+        ) : (
+          <ul className="m-0 grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-2 lg:grid-cols-4">
+            {ships.map((ship) => (
+              <li key={ship.vehicle.class_name}>
+                <Card {...shipCard(ship)} />
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </Site>
   );

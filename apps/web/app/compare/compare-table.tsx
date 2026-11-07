@@ -14,6 +14,8 @@ export interface CompareRow {
   readonly label: string;
   readonly unit?: string | undefined;
   readonly digits?: 0 | 2 | undefined;
+  /** Preformatted numbers (a crew range) set in mono like numeric values. */
+  readonly mono?: boolean | undefined;
   /** One value per column, in column order; null renders as an em dash. */
   readonly values: readonly (number | string | null)[];
 }
@@ -34,7 +36,11 @@ function cell(row: CompareRow, value: number | string | null): ReactNode {
   if (value === null) return dash;
   return (
     <>
-      <span className={typeof value === "number" ? "font-mono" : ""}>
+      <span
+        className={
+          typeof value === "number" || row.mono === true ? "font-mono" : ""
+        }
+      >
         {typeof value === "number" ? formatNumber(value, row.digits) : value}
       </span>
       {row.unit !== undefined ? (
@@ -101,7 +107,7 @@ export function CompareTable({
           ))}
         </tbody>
       </table>
-      <div className="flex flex-col gap-8 md:hidden">
+      <div className="flex flex-col gap-8 text-ui md:hidden">
         <ul className="m-0 flex list-none flex-col gap-2 p-0 text-ui">
           {columns.map((column) => (
             <li

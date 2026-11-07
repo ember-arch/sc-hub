@@ -15,9 +15,9 @@ The reference experience readers come for: a ship index you can filter in one ta
 ## Acceptance criteria
 
 - [x] **Ship index.** `/ships` lists every vehicle with filters for manufacturer, role, size class, status, and kind; filters are URL state; card and table views; table uses `DataTable` with the phone expand-row rule; results sorted by name by default and by any stat column in table mode.
-- [ ] **Ship page.** `/ships/[slug]` uses `EntityPage`: hero (name, manufacturer link, status badge, image or placeholder), key facts (manufacturer, role, size, crew, cargo, length, mass, status), sections: specs by channel, hardpoints and stock loadout (nested ports, each item linked), variants and paints, changed in this version (from `diff.json`), related (same manufacturer, same role). Every stat shows its unit and the version it comes from.
-- [ ] **PTU diff toggle.** When PTU differs from LIVE for this ship, a toggle reveals PTU values as deltas next to LIVE values, with an arrow glyph and color, never color alone.
-- [ ] **Component index and pages.** `/components` grouped by `ItemType` with size and manufacturer filters; `/components/[slug]` uses `EntityPage` with stats by channel and a "stock on" list of ships that carry it by default.
+- [x] **Ship page.** `/ships/[slug]` uses `EntityPage`: hero (name, manufacturer link, status badge, image or placeholder), key facts (manufacturer, role, size, crew, cargo, length, mass, status), sections: specs by channel, hardpoints and stock loadout (nested ports, each item linked), variants and paints, changed in this version (from `diff.json`), related (same manufacturer, same role). Every stat shows its unit and the version it comes from.
+- [x] **PTU diff toggle.** When PTU differs from LIVE for this ship, a toggle reveals PTU values as deltas next to LIVE values, with an arrow glyph and color, never color alone.
+- [x] **Component index and pages.** `/components` grouped by `ItemType` with size and manufacturer filters; `/components/[slug]` uses `EntityPage` with stats by channel and a "stock on" list of ships that carry it by default.
 - [ ] **Manufacturer pages.** `/manufacturers/[slug]` with the 3 px brand rule, lineup cards, and description from fankit or localization only.
 - [ ] **Compare.** `/compare?ships=a,b,c,d` shows up to four ships side by side on the key-facts set and the full stats table; shareable by URL; add and remove from the ship page and the index.
 - [ ] **Command palette on Meilisearch.** Typo-tolerant, grouped results (ships, components, manufacturers), under 100 ms server time for a warm query, keyboard navigable, recent entities remembered in local storage (wrapped in try/catch).
@@ -46,3 +46,4 @@ Lighthouse CI reports attached; Playwright screenshots (390 and 1280, light and 
 
 - The ship page is the product. Spend the design effort there first; the index and compare follow its patterns.
 - If a stat is null for a ship, omit the row rather than showing a dash; the key-facts block collapses gracefully.
+- Ticked on the bootstrap pack (ADR-006): "Ship page" renders "changed in this version" as an empty state until spec 01 defines `diff.json`; the PTU toggle, variants and paints are built and unit-tested over synthetic rows because the pack has no PTU build, variant or paint. Spec 01's "Both channels" criterion is where the toggle is seen with real differences.

@@ -14,7 +14,10 @@ import {
 } from "ui/legal";
 import { Site } from "../../lib/site";
 
-export const metadata: Metadata = { title: "About" };
+export const metadata: Metadata = {
+  title: "About",
+  alternates: { canonical: "/about" },
+};
 
 export default function AboutPage() {
   return (

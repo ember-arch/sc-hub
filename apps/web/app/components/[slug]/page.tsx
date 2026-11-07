@@ -30,6 +30,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   if (c === undefined) return { title: "Component not found" };
   return {
     title: c.item.name,
+    alternates: { canonical: `/components/${c.item.slug}` },
     description: `${c.item.name}: a size ${c.item.size} ${sentence(c.item.type).toLowerCase()} by ${c.manufacturer?.name ?? c.item.manufacturer_code}, stats by game version and the ships that carry it.`,
   };
 }

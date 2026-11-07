@@ -16,6 +16,7 @@ import { shipCard } from "../lib/views";
 export const metadata: Metadata = {
   title: { absolute: SITE_NAME },
   description: SITE_TAGLINE,
+  alternates: { canonical: "/" },
 };
 
 /** Home: search first, then today's feed, one featured ship card, the patch strip. No hero banner. */

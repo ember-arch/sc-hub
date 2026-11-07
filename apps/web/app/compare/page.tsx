@@ -16,6 +16,7 @@ import { CompareTable } from "./compare-table";
 
 export const metadata: Metadata = {
   title: "Compare ships",
+  alternates: { canonical: "/compare" },
   description:
     "Up to four Star Citizen ships side by side: crew, cargo, dimensions, mass, speed and status by game version.",
   // Every selection is its own URL; the pages are for sharing, not for search engines.

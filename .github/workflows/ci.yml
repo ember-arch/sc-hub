@@ -17,6 +17,10 @@ concurrency:
 permissions:
   contents: read
 
+# No network from the build beyond the registry: Next.js phones home unless told not to.
+env:
+  NEXT_TELEMETRY_DISABLED: "1"
+
 jobs:
   check:
     name: Typecheck, lint, unit tests, build
@@ -83,6 +87,7 @@ jobs:
             playwright-report
             apps/web/playwright-report
             packages/ui/__screenshots__
+            apps/web/e2e/__screenshots__
           if-no-files-found: ignore
 
   lighthouse:

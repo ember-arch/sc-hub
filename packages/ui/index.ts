@@ -7,10 +7,12 @@ export {
   CommandPalette,
   type CommandPaletteProps,
   OPEN_SEARCH_EVENT,
+} from "./components/command-palette";
+export {
   type SearchEntry,
   type SearchEntryType,
   matchEntries,
-} from "./components/command-palette";
+} from "./components/search-match";
 export { SearchField } from "./components/search-field";
 export {
   DataTable,

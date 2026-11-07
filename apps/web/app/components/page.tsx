@@ -1,25 +1,14 @@
 import type { Metadata } from "next";
 import { ItemType } from "schema";
 import { Section, sentence } from "ui";
-import { type ComponentView, repo } from "../../lib/data";
+import { repo } from "../../lib/data";
 import { Site } from "../../lib/site";
+import { componentRows } from "../../lib/views";
 import { ComponentTable } from "./component-table";
 
 export const metadata: Metadata = { title: "Components" };
 
-export function componentRows(components: readonly ComponentView[]) {
-  return components.map((c) => ({
-    key: c.item.class_name,
-    name: c.item.name,
-    href: `/components/${c.item.slug}`,
-    manufacturer: c.manufacturer?.name ?? c.item.manufacturer_code,
-    size: c.item.size,
-    grade: c.item.grade,
-    itemClass: c.item.item_class === null ? null : sentence(c.item.item_class),
-  }));
-}
-
-/** Components grouped by type (system.md section 4). Size and manufacturer filters arrive with spec 02. */
+/** Components grouped by type (system.md section 4). Size and manufacturer filters arrive with the ships UI. */
 export default function ComponentsPage() {
   const r = repo();
   const groups = ItemType.options

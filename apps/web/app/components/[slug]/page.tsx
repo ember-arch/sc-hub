@@ -112,8 +112,7 @@ export default async function ComponentPage({ params }: Params) {
         >
           {shown.length === 0 ? (
             <EmptyState>
-              No stats for this component in the current data pack. Units and
-              the remaining fields arrive with the real extraction in spec 01.
+              No stats for this component in the current data pack.
             </EmptyState>
           ) : (
             <div className="grid grid-cols-1 gap-x-12 md:grid-cols-2">
@@ -153,10 +152,7 @@ export default async function ComponentPage({ params }: Params) {
           </Section>
         ) : null}
         <Section id="news" title="In the news">
-          <EmptyState>
-            No news mentions this component yet. Entity linking arrives with
-            spec 03.
-          </EmptyState>
+          <EmptyState>No news mentions this component yet.</EmptyState>
         </Section>
       </EntityPage>
     </Site>

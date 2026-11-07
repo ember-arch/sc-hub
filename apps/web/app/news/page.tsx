@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import NextLink from "next/link";
 import { ContentSource } from "schema";
-import { EmptyState, FeedItem, sentence } from "ui";
+import { EmptyState, FeedItem } from "ui";
 import { repo } from "../../lib/data";
 import { Site, now } from "../../lib/site";
 import { NewsTabs } from "./tabs";
@@ -21,7 +21,7 @@ const SOURCE_LABEL: Record<ContentSource, string> = {
   spectrum: "Spectrum",
 };
 
-/** News feed: source filter chips, then FeedItems newest first. Paging and RSS arrive with spec 03. */
+/** News feed: source filter chips when more than one source exists, then FeedItems newest first. */
 export default async function NewsPage({ searchParams }: Props) {
   const params = await searchParams;
   const raw = typeof params.source === "string" ? params.source : undefined;
@@ -40,21 +40,26 @@ export default async function NewsPage({ searchParams }: Props) {
       <div className="flex flex-col gap-8 pt-8">
         <h1 className="text-title text-primary">News</h1>
         <NewsTabs current="/news" />
-        <nav aria-label="Sources" className="flex flex-wrap gap-2 text-caption">
-          <Chip href="/news" active={source === undefined} label="All" />
-          {present.map((s) => (
-            <Chip
-              key={s}
-              href={`/news?source=${s}`}
-              active={source === s}
-              label={SOURCE_LABEL[s]}
-            />
-          ))}
-        </nav>
+        {present.length > 1 ? (
+          <nav
+            aria-label="Sources"
+            className="flex flex-wrap gap-2 text-caption"
+          >
+            <Chip href="/news" active={source === undefined} label="All" />
+            {present.map((s) => (
+              <Chip
+                key={s}
+                href={`/news?source=${s}`}
+                active={source === s}
+                label={SOURCE_LABEL[s]}
+              />
+            ))}
+          </nav>
+        ) : null}
         {items.length === 0 ? (
           <EmptyState>
             {r.news.length === 0
-              ? "No news yet. The Comm-Link poller arrives with spec 03; until then the feed shows the news fixture when one exists."
+              ? "No news yet. Comm-Links, patch notes and videos appear here once the feed is connected."
               : "No items from this source. Choose another source above."}
           </EmptyState>
         ) : (
@@ -97,5 +102,3 @@ function Chip({
     </NextLink>
   );
 }
-
-export { sentence as _sentence };

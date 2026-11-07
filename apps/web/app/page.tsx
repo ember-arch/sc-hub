@@ -37,8 +37,8 @@ export default function HomePage() {
             <Section id="feed" title="Today" aside="News and developer posts">
               {feed.length === 0 ? (
                 <EmptyState>
-                  No news yet. The Comm-Link and Spectrum pollers arrive with
-                  spec 03.
+                  No news yet. Comm-Links and developer posts appear here once
+                  the feeds are connected.
                 </EmptyState>
               ) : (
                 <div className="flex flex-col">

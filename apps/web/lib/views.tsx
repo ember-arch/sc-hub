@@ -90,3 +90,16 @@ export function componentCard(c: ComponentView): CardProps {
     image: null,
   };
 }
+
+/** Rows for ComponentTable on the components index and manufacturer pages. */
+export function componentRows(components: readonly ComponentView[]) {
+  return components.map((c) => ({
+    key: c.item.class_name,
+    name: c.item.name,
+    href: `/components/${c.item.slug}`,
+    manufacturer: c.manufacturer?.name ?? c.item.manufacturer_code,
+    size: c.item.size,
+    grade: c.item.grade,
+    itemClass: c.item.item_class === null ? null : sentence(c.item.item_class),
+  }));
+}

@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import type { ZodError } from "zod";
 import { type Entity, primaryKeyOf } from "./keys.js";
 import { Manifest } from "./manifest.js";
+import { PackError, type DataPack, type PackRows } from "./pack-types.js";
 import { type EntityName, entityNames, registry } from "./registry.js";
 
 /**
@@ -13,29 +14,12 @@ import { type EntityName, entityNames, registry } from "./registry.js";
  * A pack is self-contained: every reference inside it resolves inside it.
  */
 
-export type PackRows = { [K in EntityName]: Entity<K>[] };
-
-export interface DataPack {
-  readonly manifest: Manifest;
-  readonly rows: PackRows;
-}
-
-export interface PackErrorDetails {
-  readonly file?: string;
-  readonly entity?: EntityName;
-  readonly index?: number;
-  readonly path?: string;
-}
-
-export class PackError extends Error {
-  readonly details: PackErrorDetails;
-
-  constructor(message: string, details: PackErrorDetails = {}) {
-    super(message);
-    this.name = "PackError";
-    this.details = details;
-  }
-}
+export {
+  PackError,
+  type DataPack,
+  type PackErrorDetails,
+  type PackRows,
+} from "./pack-types.js";
 
 /** Returns a pack file's UTF-8 text by its manifest name, or undefined when it does not exist. */
 export type PackReader = (name: string) => string | undefined;

@@ -1,0 +1,19 @@
+@import "tailwindcss";
+/* The theme is generated from packages/ui/tokens.ts (ADR-005). */
+@import "../../../packages/ui/tokens.css";
+@source "../../../packages/ui/components";
+@source "../../../packages/ui/stories";
+
+/* Dev post bodies arrive sanitized with quotes preserved; style the quote with tokens only. */
+.dev-post-body blockquote {
+  margin: 0 0 var(--spacing-3);
+  border-left: 1px solid var(--border-strong);
+  padding-left: var(--spacing-3);
+  color: var(--text-secondary);
+}
+.dev-post-body p {
+  margin: 0 0 var(--spacing-3);
+}
+.dev-post-body a {
+  color: var(--accent);
+}

@@ -10,11 +10,9 @@ import {
   type Port,
   type Vehicle,
   type VehicleStats,
-  parsePack,
   primaryKeyOf,
-  sha256Hex,
-  utf8Bytes,
 } from "schema";
+import { parsePack, sha256Hex, utf8Bytes } from "schema/pack";
 import { ITEM_RAW_DROP, VEHICLE_RAW_DROP, collapseLocales } from "./map.js";
 
 /**

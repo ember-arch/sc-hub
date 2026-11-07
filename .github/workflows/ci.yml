@@ -17,6 +17,10 @@ concurrency:
 permissions:
   contents: read
 
+# No network from the build beyond the registry: Next.js phones home unless told not to.
+env:
+  NEXT_TELEMETRY_DISABLED: "1"
+
 jobs:
   check:
     name: Typecheck, lint, unit tests, build
@@ -71,7 +75,8 @@ jobs:
           node-version-file: .node-version
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm exec playwright install --with-deps chromium
+      # @playwright/test is a dependency of apps/web, not of the root.
+      - run: pnpm --filter web exec playwright install --with-deps chromium
       - run: pnpm test:e2e
       - name: Upload Playwright report and screenshots
         if: always()
@@ -82,6 +87,7 @@ jobs:
             playwright-report
             apps/web/playwright-report
             packages/ui/__screenshots__
+            apps/web/e2e/__screenshots__
           if-no-files-found: ignore
 
   lighthouse:

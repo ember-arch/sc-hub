@@ -57,7 +57,7 @@ export default async function ManufacturerPage({ params }: Params) {
               No ships from this manufacturer in the current data pack.
             </EmptyState>
           ) : (
-            <ul className="m-0 grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-2 lg:grid-cols-4">
+            <ul className="m-0 grid list-none grid-cols-2 gap-4 p-0 md:grid-cols-3 lg:grid-cols-4">
               {lineup.map((ship) => (
                 <li key={ship.vehicle.class_name}>
                   <Card {...shipCard(ship)} />

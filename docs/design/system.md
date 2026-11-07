@@ -80,12 +80,17 @@ Faces: Geist Sans and Geist Mono, or Inter Tight and JetBrains Mono. Pick one pa
 - `PatchStrip` — LIVE and PTU versions, shown on home and in the footer.
 - `Footer` — disclaimer (verbatim, see legal), attribution lines, legal links.
 
+Added by spec 02 (ADR-006):
+
+- `FilterBar` — a GET form of labelled native selects; filters are URL state, so each change navigates to a shareable address.
+- `SegmentedLinks` — a row of links that reads as one control (the card/table toggle).
+
 ## 4. Page templates
 
 | Page | Layout |
 | --- | --- |
 | Home | Search field as the first element. Then: today's feed (news and dev posts merged, 10 items), one featured ship card, patch strip. No hero banner. |
-| Ships index | Filter bar (manufacturer, role, size, status) + card/table toggle. Cards in a 2/3/4 column grid by breakpoint. Table mode uses `DataTable`. |
+| Ships index | Filter bar (manufacturer, role, size, status, kind) + card/table toggle. Cards in a 2/3/4 column grid by breakpoint. Table mode uses `DataTable`. |
 | Ship page | `EntityPage`. Hero holds the viewer (hero ships) or the best fankit render (others). Key facts: manufacturer, role, size, crew, cargo, length, mass, status. Sections: specs by channel (with PTU diff toggle), hardpoints and stock loadout, variants and paints, changed in this version, in the news, dev posts. Related: same manufacturer, same role. |
 | Component page | `EntityPage`. Key facts: type, size, grade, class, manufacturer. Sections: stats by channel, stock on (ships that carry it by default), in the news. |
 | Manufacturer page | `EntityPage` with a 3 px brand rule. Sections: lineup (cards), in the news. |

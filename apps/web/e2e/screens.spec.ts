@@ -16,7 +16,14 @@ const SCREENS = [
   { name: "ship", path: "/ships/gladius", status: 200 },
   { name: "news", path: "/news", status: 200 },
   { name: "ships", path: "/ships", status: 200 },
+  { name: "ships-table", path: "/ships?view=table", status: 200 },
+  { name: "ships-filtered", path: "/ships?size=small", status: 200 },
   { name: "components", path: "/components", status: 200 },
+  {
+    name: "components-filtered",
+    path: "/components?manufacturer=behring-applied-technology",
+    status: 200,
+  },
   {
     name: "component",
     path: "/components/aegis-gladius-noise-launcher",

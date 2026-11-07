@@ -14,7 +14,7 @@ The reference experience readers come for: a ship index you can filter in one ta
 
 ## Acceptance criteria
 
-- [ ] **Ship index.** `/ships` lists every vehicle with filters for manufacturer, role, size class, status, and kind; filters are URL state; card and table views; table uses `DataTable` with the phone expand-row rule; results sorted by name by default and by any stat column in table mode.
+- [x] **Ship index.** `/ships` lists every vehicle with filters for manufacturer, role, size class, status, and kind; filters are URL state; card and table views; table uses `DataTable` with the phone expand-row rule; results sorted by name by default and by any stat column in table mode.
 - [ ] **Ship page.** `/ships/[slug]` uses `EntityPage`: hero (name, manufacturer link, status badge, image or placeholder), key facts (manufacturer, role, size, crew, cargo, length, mass, status), sections: specs by channel, hardpoints and stock loadout (nested ports, each item linked), variants and paints, changed in this version (from `diff.json`), related (same manufacturer, same role). Every stat shows its unit and the version it comes from.
 - [ ] **PTU diff toggle.** When PTU differs from LIVE for this ship, a toggle reveals PTU values as deltas next to LIVE values, with an arrow glyph and color, never color alone.
 - [ ] **Component index and pages.** `/components` grouped by `ItemType` with size and manufacturer filters; `/components/[slug]` uses `EntityPage` with stats by channel and a "stock on" list of ships that carry it by default.

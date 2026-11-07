@@ -8,12 +8,13 @@ import {
 } from "../../../packages/ui/legal";
 
 // Spec 00, criterion "Legal footer": the verbatim disclaimer and attribution lines render on
-// every page; this asserts it on five routes (docs/legal/obligations.md names the author page
+// every page; this asserts it on six routes (the ships index joined with spec 02) (docs/legal/obligations.md names the author page
 // as the fifth, which arrives with the news spec; About stands in until then), plus a component
 // page and a manufacturer page.
 
 const ROUTES = [
   "/",
+  "/ships",
   "/ships/gladius",
   "/components",
   "/news",

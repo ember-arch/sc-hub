@@ -6,6 +6,7 @@
       "numberOfRuns": 3,
       "url": [
         "http://localhost:3000/",
+        "http://localhost:3000/ships",
         "http://localhost:3000/ships/gladius",
         "http://localhost:3000/news"
       ]

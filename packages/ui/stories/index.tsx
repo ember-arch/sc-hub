@@ -22,11 +22,13 @@ import {
   Section,
 } from "../components/entity-page";
 import { FeedItem } from "../components/feed-item";
+import { FilterBar, FilterSelect } from "../components/filter-bar";
 import { Footer } from "../components/footer";
 import { formatNumber, sentence } from "../components/format";
 import { PageShell } from "../components/page-shell";
 import { PatchStrip } from "../components/patch-strip";
 import type { SearchEntry } from "../components/search-match";
+import { SegmentedLinks } from "../components/segmented-links";
 import { StatList, StatRow } from "../components/stat-row";
 import { channelBadge, vehicleStatusBadge } from "../components/status";
 import { DataTableStory } from "./data-table-story";
@@ -106,6 +108,57 @@ const card = (s: StorySample) => ({
     { label: "Cargo", value: s.stats.cargo_scu, unit: "SCU" },
   ] as const,
 });
+
+/** Filter options come from the sample's rows: the manufacturer, the ship's size class and the item sizes. */
+function FilterBarStory({ sample }: { readonly sample: StorySample }) {
+  const sizes = [...new Set(sample.items.map((i) => i.size))].sort(
+    (a, b) => a - b,
+  );
+  return (
+    <FilterBar
+      action="/ships"
+      label="Filter ships"
+      clearHref="/ships"
+      hidden={{ view: "table" }}
+    >
+      <FilterSelect
+        name="manufacturer"
+        label="Manufacturer"
+        allLabel="All manufacturers"
+        value={sample.manufacturer.slug}
+        options={[
+          { value: sample.manufacturer.slug, label: sample.manufacturer.name },
+        ]}
+      />
+      <FilterSelect
+        name="size"
+        label="Size"
+        allLabel="All sizes"
+        value=""
+        options={
+          sample.vehicle.size_class === null
+            ? []
+            : [
+                {
+                  value: sample.vehicle.size_class,
+                  label: sentence(sample.vehicle.size_class),
+                },
+              ]
+        }
+      />
+      <FilterSelect
+        name="item-size"
+        label="Component size"
+        allLabel="All sizes"
+        value=""
+        options={sizes.map((size) => ({
+          value: String(size),
+          label: `Size ${size}`,
+        }))}
+      />
+    </FilterBar>
+  );
+}
 
 const renderers: Record<string, { title: string; render: Story["render"] }> = {
   badge: {
@@ -255,6 +308,27 @@ const renderers: Record<string, { title: string; render: Story["render"] }> = {
     title: "CommandPalette",
     render: (s) => (
       <CommandPalette entries={entries(s)} initialOpen initialQuery="a" />
+    ),
+  },
+  "filter-bar": {
+    title: "FilterBar",
+    render: (s) => <FilterBarStory sample={s} />,
+  },
+  "filter-bar-phone": {
+    title: "FilterBar on phone",
+    render: (s) => <FilterBarStory sample={s} />,
+  },
+  "segmented-links": {
+    title: "SegmentedLinks",
+    render: () => (
+      <SegmentedLinks
+        label="View"
+        current="/ships"
+        links={[
+          { href: "/ships", label: "Cards" },
+          { href: "/ships?view=table", label: "Table" },
+        ]}
+      />
     ),
   },
   "page-shell": {

@@ -19,12 +19,12 @@ The reference experience readers come for: a ship index you can filter in one ta
 - [x] **PTU diff toggle.** When PTU differs from LIVE for this ship, a toggle reveals PTU values as deltas next to LIVE values, with an arrow glyph and color, never color alone.
 - [x] **Component index and pages.** `/components` grouped by `ItemType` with size and manufacturer filters; `/components/[slug]` uses `EntityPage` with stats by channel and a "stock on" list of ships that carry it by default.
 - [ ] **Manufacturer pages.** `/manufacturers/[slug]` with the 3 px brand rule, lineup cards, and description from fankit or localization only.
-- [ ] **Compare.** `/compare?ships=a,b,c,d` shows up to four ships side by side on the key-facts set and the full stats table; shareable by URL; add and remove from the ship page and the index.
+- [x] **Compare.** `/compare?ships=a,b,c,d` shows up to four ships side by side on the key-facts set and the full stats table; shareable by URL; add and remove from the ship page and the index.
 - [ ] **Command palette on Meilisearch.** Typo-tolerant, grouped results (ships, components, manufacturers), under 100 ms server time for a warm query, keyboard navigable, recent entities remembered in local storage (wrapped in try/catch).
 - [ ] **Slugs and redirects.** Old slugs in `slug_history` 301 to the current slug; unknown slugs 404 with a search box.
 - [ ] **SEO.** Server-rendered pages, canonical URLs, per-page title and description, `sitemap.xml`, JSON-LD for ships and manufacturers, and static Open Graph images per ship (pipeline thumbnail when present, fankit render otherwise).
 - [ ] **Performance.** LCP under 1.5 s and CLS under 0.1 on `/ships/[slug]` and `/ships` at throttled 4G in Lighthouse CI; images served from R2 with width-appropriate variants.
-- [ ] **Accessibility.** Keyboard-only run through index, ship page, compare, and palette recorded as a Playwright test; Lighthouse accessibility ≥ 90.
+- [x] **Accessibility.** Keyboard-only run through index, ship page, compare, and palette recorded as a Playwright test; Lighthouse accessibility ≥ 90.
 - [ ] **Design review.** Design-review prompt run on home, a small ship, a capital ship, a component, and compare; findings addressed; screenshots in the PR.
 
 ## Suggested order

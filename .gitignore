@@ -25,6 +25,8 @@ dist/
 .next/
 .turbo/
 coverage/
+*.tsbuildinfo
+next-env.d.ts
 playwright-report/
 test-results/
 .lighthouseci/
@@ -32,3 +34,9 @@ test-results/
 # os
 .DS_Store
 Thumbs.db
+
+# generated at build by apps/web/scripts/licenses.ts
+apps/web/generated/
+
+# Claude desktop app tool config (preview launcher); not part of the project
+.claude/

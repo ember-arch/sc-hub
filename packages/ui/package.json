@@ -1,0 +1,36 @@
+{
+  "name": "ui",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Design tokens and components, no app logic. Tokens live in tokens.ts and nowhere else; tokens.css is generated from them.",
+  "type": "module",
+  "exports": {
+    ".": "./index.ts",
+    "./tokens": "./tokens.ts",
+    "./tokens.css": "./tokens.css",
+    "./brand": "./brand.ts",
+    "./legal": "./legal.ts",
+    "./stories": "./stories/index.tsx"
+  },
+  "scripts": {
+    "build:tokens": "tsx build/emit-tokens-css.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "peerDependencies": {
+    "next": "16.4.5",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "dependencies": {
+    "schema": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "next": "16.4.5",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "tsx": "^4.23.15",
+    "typescript": "5.9.3"
+  }
+}

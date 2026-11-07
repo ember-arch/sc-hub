@@ -39,7 +39,7 @@ export function PageShell({
     >
       <a
         href="#main"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-control focus:bg-raised focus:px-3 focus:py-2 focus:text-ui focus:text-primary"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-control focus:bg-raised focus:px-3 focus:py-2 focus:text-ui focus:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
       >
         Skip to content
       </a>

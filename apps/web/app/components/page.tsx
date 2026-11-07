@@ -33,7 +33,7 @@ export default function ComponentsPage() {
       <div className="flex flex-col gap-12 pt-8">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h1 className="text-title text-primary">Components</h1>
-          <p className="text-caption text-muted">
+          <p className="text-caption text-secondary">
             {r.components.length} components in {groups.length} types ·{" "}
             {r.liveVersion ?? "no LIVE build"}
           </p>

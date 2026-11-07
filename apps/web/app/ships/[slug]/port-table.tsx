@@ -60,7 +60,7 @@ export function PortTable({ rows }: { readonly rows: readonly PortRow[] }) {
           primary: true,
           render: (row) =>
             row.item === null ? (
-              <span className="text-muted">—</span>
+              <span className="text-secondary">—</span>
             ) : (
               <TextLink href={row.item.href}>{row.item.name}</TextLink>
             ),

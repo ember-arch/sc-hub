@@ -113,7 +113,7 @@ export function DataTable<T>({
                   <span>
                     {column.header}
                     {column.unit !== undefined ? (
-                      <span className="text-muted"> ({column.unit})</span>
+                      <span className="text-secondary"> ({column.unit})</span>
                     ) : null}
                   </span>
                 ) : (
@@ -124,9 +124,9 @@ export function DataTable<T>({
                   >
                     {column.header}
                     {column.unit !== undefined ? (
-                      <span className="text-muted">({column.unit})</span>
+                      <span className="text-secondary">({column.unit})</span>
                     ) : null}
-                    <span aria-hidden="true" className="text-muted">
+                    <span aria-hidden="true" className="text-secondary">
                       {active ? (sort?.direction === "asc" ? "↑" : "↓") : "↕"}
                     </span>
                   </button>
@@ -178,7 +178,7 @@ export function DataTable<T>({
                     <dl className="m-0 grid grid-cols-2 gap-x-4 gap-y-2">
                       {secondary.map((column) => (
                         <div key={column.key} className="flex flex-col">
-                          <dt className="text-caption text-muted">
+                          <dt className="text-caption text-secondary">
                             {column.header}
                             {column.unit !== undefined
                               ? ` (${column.unit})`

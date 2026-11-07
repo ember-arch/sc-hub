@@ -39,10 +39,10 @@ export function DevPost({
             <span className="text-secondary">{author.role}</span>
           ) : null}
           {thread !== null ? (
-            <span className="text-muted">in {thread}</span>
+            <span className="text-secondary">in {thread}</span>
           ) : null}
         </div>
-        <time dateTime={publishedAt} className="text-caption text-muted">
+        <time dateTime={publishedAt} className="text-caption text-secondary">
           {formatTime(publishedAt, now)}
         </time>
       </header>

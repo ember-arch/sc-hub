@@ -14,7 +14,7 @@ export default function ShipsPage() {
       <div className="flex flex-col gap-8 pt-8">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h1 className="text-title text-primary">Ships</h1>
-          <p className="text-caption text-muted">
+          <p className="text-caption text-secondary">
             {r.ships.length} ships · {r.liveVersion ?? "no LIVE build"}
           </p>
         </div>

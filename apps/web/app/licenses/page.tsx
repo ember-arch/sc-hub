@@ -68,7 +68,7 @@ export default function LicensesPage() {
                         {r.name}
                       </TextLink>
                     )}
-                    <span className="font-mono text-caption text-muted">
+                    <span className="font-mono text-caption text-secondary">
                       {r.version}
                     </span>
                   </li>

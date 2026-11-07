@@ -35,7 +35,7 @@ export function StatRow({
       <dd className="flex items-baseline gap-2 font-mono text-primary">
         <span>{text}</span>
         {unit !== undefined && value !== null ? (
-          <span className="text-caption text-muted">{unit}</span>
+          <span className="text-caption text-secondary">{unit}</span>
         ) : null}
         {delta !== undefined && delta.value !== 0 ? (
           <span

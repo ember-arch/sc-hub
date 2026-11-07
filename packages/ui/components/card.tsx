@@ -56,17 +56,17 @@ export function Card({
       <dl className="m-0 mt-auto grid grid-cols-2 gap-2 border-t border-hairline pt-3">
         {stats.slice(0, 2).map((stat) => (
           <div key={stat.label} className="flex flex-col">
-            <dt className="text-caption text-muted">{stat.label}</dt>
+            <dt className="text-caption text-secondary">{stat.label}</dt>
             <dd className="m-0 font-mono text-ui text-primary">
               {stat.value === null ? (
-                <span className="text-muted">—</span>
+                <span className="text-secondary">—</span>
               ) : (
                 <>
                   {typeof stat.value === "number"
                     ? formatNumber(stat.value)
                     : stat.value}
                   {stat.unit !== undefined ? (
-                    <span className="font-sans text-caption text-muted">
+                    <span className="font-sans text-caption text-secondary">
                       {" "}
                       {stat.unit}
                     </span>

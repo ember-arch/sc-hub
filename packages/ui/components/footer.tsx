@@ -71,7 +71,7 @@ export function Footer({ versions, wikiCredit }: FooterProps) {
         </nav>
         <div className="flex flex-wrap items-baseline justify-between gap-4 border-t border-hairline pt-6">
           <PatchStrip versions={versions} />
-          <p className="m-0 text-caption text-muted">
+          <p className="m-0 text-caption text-secondary">
             {SITE_NAME} is a non-commercial fan project.
           </p>
         </div>

@@ -64,7 +64,7 @@ export function Hero({
       </div>
       {image === undefined ? null : image === null ? (
         <div
-          className="flex aspect-video w-full items-center justify-center rounded-card border border-hairline bg-inset text-ui text-muted md:w-1/2"
+          className="flex aspect-video w-full items-center justify-center rounded-card border border-hairline bg-inset text-ui text-secondary md:w-1/2"
           role="img"
           aria-label={placeholder ?? "No image yet"}
         >
@@ -78,7 +78,7 @@ export function Hero({
             className="aspect-video w-full rounded-card border border-hairline object-cover"
           />
           {image.caption !== undefined ? (
-            <figcaption className="mt-1 text-caption text-muted">
+            <figcaption className="mt-1 text-caption text-secondary">
               {image.caption}
             </figcaption>
           ) : null}
@@ -106,10 +106,10 @@ export function KeyFacts({ facts }: KeyFactsProps) {
     <dl className="m-0 grid grid-cols-2 gap-x-6 gap-y-4 rounded-card border border-hairline bg-surface p-4 md:grid-cols-4">
       {facts.map((fact) => (
         <div key={fact.label} className="flex flex-col gap-1">
-          <dt className="text-caption text-muted">{fact.label}</dt>
+          <dt className="text-caption text-secondary">{fact.label}</dt>
           <dd className="m-0 text-ui text-primary">
             {fact.value === null ? (
-              <span className="text-muted">—</span>
+              <span className="text-secondary">—</span>
             ) : (
               <>
                 <span
@@ -118,7 +118,10 @@ export function KeyFacts({ facts }: KeyFactsProps) {
                   {fact.value}
                 </span>
                 {fact.unit !== undefined ? (
-                  <span className="text-caption text-muted"> {fact.unit}</span>
+                  <span className="text-caption text-secondary">
+                    {" "}
+                    {fact.unit}
+                  </span>
                 ) : null}
               </>
             )}
@@ -149,7 +152,7 @@ export function Section({ id, title, aside, children }: SectionProps) {
           {title}
         </h2>
         {aside !== undefined ? (
-          <div className="text-caption text-muted">{aside}</div>
+          <div className="text-caption text-secondary">{aside}</div>
         ) : null}
       </div>
       {children}

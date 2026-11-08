@@ -59,6 +59,8 @@ The dark accent, success, warning and danger, the light danger (4.59:1 on inset)
 
 ## Consequences
 
+- Measured while landing this branch: local Lighthouse sometimes reports the ship pages' LCP at about 2.8 s instead of 1.05 s (6 of 30 runs on this branch, 0 of 10 on main). In those runs the page paints at about 0.1 s, but hydration and Next.js link prefetches finish first, and Lighthouse's simulated throttling then counts every script and prefetch toward the paint. The performance score stays at 0.95 or above, so the 0.90 budget holds. Inlining the favicon did not change it. Spec 02's Performance criterion (LCP under 1.5 s), still unticked for the R2 images, should measure with applied rather than simulated throttling, or defer link prefetch on entity pages, when it is taken up.
+
 - Every page's links, badges and focus rings are slightly deeper blue, green and amber in light mode; dark mode is unchanged except for the muted grey.
 - The tokens test fails on any color pair under 4.5:1.
 - The palette's placeholder and any future caption in `text.muted` pass contrast.

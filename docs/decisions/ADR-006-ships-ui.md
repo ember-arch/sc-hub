@@ -89,7 +89,7 @@ The KICKOFF design-review prompt ran in a subagent over home, the Gladius, the P
 | Home: an h1 and a tagline above the search field; the search field at the body size | The h1 is visually hidden, the tagline lives in the meta description only, the field uses the ui size, the feed's aside is gone | system.md section 4: search field as the first element; controls use `ui` |
 | The viewer placeholder said "Render placeholder until the fankit image or the 3D viewer lands" with no padding | It says "No image yet", padded and centered | Copy for the reader, not the operator |
 
-Recorded for the owner, not changed (each is a design-document or token decision):
+Recorded for the owner, not changed (each is a design-document or token decision); the owner decided all of them on 2026-11-07, see ADR-007:
 
 | Finding | Why it waits |
 | --- | --- |

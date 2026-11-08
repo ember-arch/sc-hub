@@ -34,10 +34,8 @@ import {
   rankWord,
 } from "../../../lib/ship-file";
 import {
-  type Picture,
   SHOWCASE_CREDITS,
   type ShowcaseView,
-  sentenceCase,
   showcaseFor,
 } from "../../../lib/showcase";
 import { crewRange, shipSpecRows } from "../../../lib/views";
@@ -46,14 +44,7 @@ import { ArmamentStrip } from "./armament-strip";
 import { LoadoutPanels } from "./loadout-panels";
 import { PortTable } from "./port-table";
 import { type SourceEntry, Sources } from "./showcase/dossier";
-import {
-  Claims,
-  Facts,
-  Gap,
-  MediaWall,
-  type ShipFileProps,
-  SHIP_FILE_SECTIONS,
-} from "./ship-file";
+import { Claims, Facts, Gap, type ShipFileProps } from "./ship-file";
 
 /**
  * Builds a ship file (ADR-012) for a ship in the pack or a concept ship. Both produce the same ten
@@ -61,13 +52,20 @@ import {
  * text. Where data is missing the section says so, and CIG's stated claims are listed and cited.
  */
 
-const section = (id: (typeof SHIP_FILE_SECTIONS)[number]["id"]): number =>
-  SHIP_FILE_SECTIONS.findIndex((s) => s.id === id) + 1;
-
 const fileNumber = (code: string, slug: string): string =>
   `${code}-${slug.toUpperCase()}`;
 
 const n0 = (v: number): string => formatNumber(v);
+
+/** The opening band's credit: the Comm-Link the key art comes from (ADR-010). */
+function artCredit(show: ShowcaseView): { text: string; href: string } {
+  return show.article === null
+    ? {
+        text: "Art: Roberts Space Industries",
+        href: "https://robertsspaceindustries.com/",
+      }
+    : { text: "Art: Roberts Space Industries", href: show.article.url };
+}
 
 /** Sources in a fixed order; claims and captions cite them by number. */
 function sourceList(
@@ -98,41 +96,6 @@ function sourceList(
       href: "https://robertsspaceindustries.com/fankit",
     },
   ];
-}
-
-/** Every image and render loop of a showcase, captioned with CIG's short labels, deduplicated. */
-function mediaOf(
-  show: ShowcaseView | null,
-  fallback: { picture: Picture; caption: string } | null,
-) {
-  if (show === null)
-    return { videos: [], images: fallback === null ? [] : [fallback] };
-  const videos = show.chapters.flatMap((c) =>
-    c.video === null
-      ? []
-      : [
-          {
-            src: c.video.src,
-            poster: c.video.poster ?? c.image?.src ?? null,
-            caption: `${sentenceCase(c.kicker ?? c.heading)}, render loop`,
-          },
-        ],
-  );
-  const seen = new Set<string>();
-  const images: { picture: Picture; caption: string }[] = [];
-  const add = (picture: Picture | null, caption: string) => {
-    if (picture === null || seen.has(picture.src)) return;
-    seen.add(picture.src);
-    images.push({ picture, caption });
-  };
-  add(show.background, "Key art");
-  for (const c of show.chapters)
-    add(c.image, sentenceCase(c.kicker ?? c.heading));
-  add(show.topdown, "Plan view");
-  for (const s of show.schematics) add(s.wide, s.caption);
-  for (const g of show.gallery) add(g, "Exhibit");
-  if (fallback !== null) add(fallback.picture, fallback.caption);
-  return { videos, images };
 }
 
 const plural = (n: number, one: string): string =>
@@ -392,7 +355,7 @@ export function packShipFile(ship: ShipView): ShipFileProps {
   const brief: string[] = [
     `The ${v.name} is a ${v.size_class === null ? "" : `${v.size_class} `}${(v.role ?? "ship").toLowerCase()} built by ${maker?.name ?? v.manufacturer_code}. ${
       v.status === "flight_ready"
-        ? `It is flight ready in LIVE ${version ?? ""}.`
+        ? `It is flight ready in LIVE ${(version ?? "").split("-")[0] ?? ""}.`
         : v.status === "in_production"
           ? "It is in production and not yet flyable."
           : "It is in concept and not flyable."
@@ -581,22 +544,6 @@ export function packShipFile(ship: ShipView): ShipFileProps {
       : [{ label: "Mass", value: `${n0(s.mass_kg)} kg`, numeric: true }]),
   ];
 
-  const media_ = mediaOf(
-    show,
-    image === null
-      ? null
-      : {
-          picture: {
-            src: image.src,
-            srcSet: image.srcSet,
-            width: image.width,
-            height: image.height,
-            alt: image.alt,
-          },
-          caption: "Official image",
-        },
-  );
-
   return {
     name: v.name,
     file: fileNumber(v.manufacturer_code, v.slug),
@@ -608,13 +555,19 @@ export function packShipFile(ship: ShipView): ShipFileProps {
     status,
     mark: maker === null ? null : media().maker(maker.code, maker.name),
     compareSlug: v.slug,
+    dek: brief[0] ?? "",
+    figures: show?.figures ?? {},
     visual: {
       model: show?.model ?? null,
       poster: show?.poster?.src ?? image?.src ?? null,
       length: s?.length_m ?? null,
       art:
         show?.background != null
-          ? { background: show.background, cutout: show.cutout }
+          ? {
+              background: show.background,
+              cutout: show.cutout,
+              credit: artCredit(show),
+            }
           : image === null
             ? null
             : {
@@ -626,6 +579,10 @@ export function packShipFile(ship: ShipView): ShipFileProps {
                   alt: image.alt,
                 },
                 cutout: null,
+                credit: {
+                  text: image.credit.text,
+                  href: image.credit.href,
+                },
               },
       modelCredit: SHOWCASE_CREDITS.model,
     },
@@ -665,8 +622,11 @@ export function packShipFile(ship: ShipView): ShipFileProps {
       brief: {
         body: (
           <div className="flex max-w-prose flex-col gap-3">
-            {brief.map((p) => (
-              <p key={p.slice(0, 32)} className="m-0 text-body text-primary">
+            {brief.slice(1).map((p) => (
+              <p
+                key={p.slice(0, 32)}
+                className="m-0 text-heading font-regular text-primary"
+              >
                 {p}
               </p>
             ))}
@@ -788,16 +748,6 @@ export function packShipFile(ship: ShipView): ShipFileProps {
             )
           ),
       },
-      imagery: {
-        aside: `${media_.videos.length + media_.images.length} items`,
-        body: (
-          <MediaWall
-            section={section("imagery")}
-            videos={media_.videos}
-            images={media_.images}
-          />
-        ),
-      },
       specifications: {
         aside:
           version === null
@@ -904,7 +854,6 @@ export function conceptShipFile(concept: ConceptShip): ShipFileProps {
     "Combat, mobility and loadout figures will come from the game files once it is built; until then the sections below list what CIG has stated, cited.",
   );
 
-  const media_ = mediaOf(show, null);
   const notStated = "Not stated";
   return {
     name: concept.name,
@@ -917,6 +866,8 @@ export function conceptShipFile(concept: ConceptShip): ShipFileProps {
     status: vehicleStatusBadge("concept"),
     mark: maker === null ? null : media().maker(maker.code, maker.name),
     compareSlug: null,
+    dek: brief[0] ?? "",
+    figures: show?.figures ?? {},
     visual: {
       model: show?.model ?? null,
       poster: show?.poster?.src ?? null,
@@ -924,7 +875,11 @@ export function conceptShipFile(concept: ConceptShip): ShipFileProps {
       art:
         show?.background == null
           ? null
-          : { background: show.background, cutout: show.cutout },
+          : {
+              background: show.background,
+              cutout: show.cutout,
+              credit: artCredit(show),
+            },
       modelCredit: SHOWCASE_CREDITS.model,
     },
     particulars: [
@@ -984,8 +939,11 @@ export function conceptShipFile(concept: ConceptShip): ShipFileProps {
       brief: {
         body: (
           <div className="flex max-w-prose flex-col gap-3">
-            {brief.map((p) => (
-              <p key={p.slice(0, 32)} className="m-0 text-body text-primary">
+            {brief.slice(1).map((p) => (
+              <p
+                key={p.slice(0, 32)}
+                className="m-0 text-heading font-regular text-primary"
+              >
                 {p}
               </p>
             ))}
@@ -1121,16 +1079,6 @@ export function conceptShipFile(concept: ConceptShip): ShipFileProps {
               others,
             )
           ),
-      },
-      imagery: {
-        aside: `${media_.videos.length + media_.images.length} items`,
-        body: (
-          <MediaWall
-            section={section("imagery")}
-            videos={media_.videos}
-            images={media_.images}
-          />
-        ),
       },
       specifications: {
         body: (

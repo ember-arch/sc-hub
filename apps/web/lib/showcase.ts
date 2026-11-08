@@ -1,6 +1,11 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { ConceptShip, type Showcase, type ShowcaseImage } from "schema";
+import {
+  ConceptShip,
+  type Showcase,
+  type ShowcaseFigure,
+  type ShowcaseImage,
+} from "schema";
 import { REPO_ROOT } from "./data";
 import { media } from "./media";
 
@@ -30,6 +35,24 @@ export interface ChapterView {
   } | null;
 }
 
+/** A figure in a ship file section (ADR-014). */
+export type FigureView =
+  | {
+      readonly kind: "image";
+      readonly picture: Picture;
+      /** A layout for phones (schematics), or null. */
+      readonly narrow: Picture | null;
+      readonly caption: string;
+    }
+  | {
+      readonly kind: "video";
+      readonly src: string;
+      readonly poster: string | null;
+      readonly caption: string;
+    };
+
+export type FigureSection = ShowcaseFigure["section"];
+
 export interface ShowcaseView {
   readonly slug: string;
   readonly article: Showcase["article"];
@@ -46,6 +69,10 @@ export interface ShowcaseView {
     readonly caption: string;
   }[];
   readonly model: { readonly src: string; readonly bytes: number } | null;
+  /** Each section's figures, the first leading the section (ADR-014). */
+  readonly figures: Readonly<
+    Partial<Record<FigureSection, readonly FigureView[]>>
+  >;
 }
 
 export function picture(image: ShowcaseImage, alt: string): Picture {
@@ -98,6 +125,31 @@ export function buildShowcase(raw: Showcase, name: string): ShowcaseView {
     chapters[0].video === null
       ? chapters[0]
       : null;
+  const figures: Partial<Record<FigureSection, FigureView[]>> = {};
+  for (const f of raw.figures) {
+    let view: FigureView | null = null;
+    if (f.kind === "video") {
+      const video = raw.videos.find((v) => v.key === f.key);
+      if (video !== undefined)
+        view = {
+          kind: "video",
+          src: video.src,
+          poster: posterOf(video.poster),
+          caption: f.caption,
+        };
+    } else {
+      const alt = `${name}: ${f.caption.toLowerCase()}`;
+      const wide = img(f.key, alt);
+      if (wide !== null)
+        view = {
+          kind: "image",
+          picture: wide,
+          narrow: img(f.narrow, alt),
+          caption: f.caption,
+        };
+    }
+    if (view !== null) (figures[f.section] ??= []).push(view);
+  }
   return {
     slug: raw.slug,
     article: raw.article,
@@ -126,6 +178,7 @@ export function buildShowcase(raw: Showcase, name: string): ShowcaseView {
           ];
     }),
     model: raw.model,
+    figures,
   };
 }
 

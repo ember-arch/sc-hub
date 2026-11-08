@@ -125,3 +125,31 @@ describe("FANKIT_LOGOS", () => {
     }
   });
 });
+
+describe("showcase figures (ADR-014)", () => {
+  it("places every image and render loop in a section, a role, or the unused list with a reason", async () => {
+    const { SHOWCASE, FILE_SECTIONS } = await import("../media/showcase.js");
+    for (const ship of SHOWCASE) {
+      const placed = new Set<string>(Object.values(ship.layout.roles));
+      for (const section of FILE_SECTIONS) {
+        for (const fig of ship.layout.sections[section] ?? []) {
+          placed.add(fig.file);
+          if (fig.narrow !== undefined) placed.add(fig.narrow);
+        }
+      }
+      const media = ship.files.filter((f) => f.kind !== "model");
+      for (const file of media) {
+        const reason = ship.layout.unused[file.file];
+        expect(
+          placed.has(file.file) || (reason !== undefined && reason !== ""),
+          `${ship.slug}: ${file.file}`,
+        ).toBe(true);
+      }
+      // Nothing placed or excused that the ship does not have.
+      const names = new Set(media.map((f) => f.file));
+      for (const name of [...placed, ...Object.keys(ship.layout.unused)]) {
+        expect(names.has(name), `${ship.slug}: unknown ${name}`).toBe(true);
+      }
+    }
+  });
+});

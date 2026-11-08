@@ -42,6 +42,38 @@ export interface ShowcaseLayout {
     readonly narrow?: string;
     readonly caption: string;
   }[];
+  /**
+   * The ship file's figures (ADR-014): every image and render loop placed in the section it
+   * informs, the first one leading the section. Captions are CIG's short labels where the article
+   * gives one, otherwise a plain description of what the image shows.
+   */
+  readonly sections: Readonly<
+    Partial<Record<FileSection, readonly SectionFigure[]>>
+  >;
+  /** Files the page does not show as figures, each with the reason (logos, label strips, duplicates). */
+  readonly unused: Readonly<Record<string, string>>;
+}
+
+export const FILE_SECTIONS = [
+  "brief",
+  "acquisition",
+  "operations",
+  "combat",
+  "mobility",
+  "scale",
+  "specifications",
+  "hardpoints",
+] as const;
+export type FileSection = (typeof FILE_SECTIONS)[number];
+
+export interface SectionFigure {
+  /** An image or video file of the ship. */
+  readonly file: string;
+  /** A version laid out for phones, for schematics. */
+  readonly narrow?: string;
+  /** For a render loop without a frame of its own: the still shown before it plays. */
+  readonly poster?: string;
+  readonly caption: string;
 }
 
 /**
@@ -285,6 +317,73 @@ export const SHOWCASE: readonly ShowcaseShip[] = [
           caption: "Armament",
         },
       ],
+      sections: {
+        brief: [{ file: "SC_ANVIL_Odin_Exterior-5.jpg", caption: "Exterior" }],
+        operations: [
+          { file: "AT-THE-CORE-OF-COMBAT.jpg", caption: "The bridge" },
+          { file: "SC_ANVIL_Odin_Interior-5.jpg", caption: "Briefing room" },
+          { file: "THE-FIGHT-WITHIN.jpg", caption: "Central hangar" },
+          { file: "SC_ANVIL_Odin_Exterior-7.jpg", caption: "Side hangars" },
+          { file: "75-Copy.jpg", caption: "Hangar interior" },
+          { file: "78.jpg", caption: "Interior" },
+          { file: "SC_ANVIL_Odin_Interior-9.jpg", caption: "Hoards of ammo" },
+          { file: "SC_ANVIL_Odin_Interior-7.jpg", caption: "Cargo" },
+        ],
+        combat: [
+          {
+            file: "video-5.mp4",
+            caption: "Retractable firepower, render loop",
+          },
+          { file: "video-1.mp4", caption: "Munitions, render loop" },
+          { file: "video-2.mp4", caption: "Armed and lethal, render loop" },
+          {
+            file: "video-4.mp4",
+            caption: "Twelve-emitter enforcer, render loop",
+          },
+          {
+            file: "video-3.mp4",
+            poster: "THE-ALL-KILLING-EYE.jpg",
+            caption: "Beam weapon firing, render loop",
+          },
+          { file: "UNVEILING-DESTRUCTION.jpg", caption: "Weapons deployed" },
+          { file: "SC_ANVIL_Odin_Exterior-3.jpg", caption: "In battle" },
+          { file: "SC_ANVIL_Odin_Exterior-4.jpg", caption: "In battle" },
+        ],
+        mobility: [
+          { file: "THE-PINNACLE-OF-PROPULSION.jpg", caption: "Engine power" },
+        ],
+        scale: [
+          { file: "SC_ANVIL_Odin_Exterior-2.jpg", caption: "Size and power" },
+          { file: "SHIP_TOPDOWN.png", caption: "Plan view" },
+        ],
+        specifications: [
+          {
+            file: "SC_ANVIL_Odin_Schematic_UPDATED.jpg",
+            narrow: "SC_ANVIL_Odin_Schematic_MOBILE_UPDATED.jpg",
+            caption: "Layout schematic",
+          },
+          {
+            file: "SC_ANVIL_Odin_Schematic_Callouts-Copy.jpg",
+            narrow: "SC_ANVIL_Odin_Schematic_Callouts_MOBILE-Copy.jpg",
+            caption: "Layout key",
+          },
+        ],
+        hardpoints: [
+          {
+            file: "SC_ANVIL_Odin_WeaponStats_UPDATED.jpg",
+            narrow: "SC_ANVIL_Odin_WeaponStatsMOBILE_UPDATED.jpg",
+            caption: "Armament as CIG states it",
+          },
+        ],
+      },
+      unused: {
+        "ODIN_LOGO.png": "logo",
+        "ODIN_Lockup.png": "logo",
+        "PDCs0001-0110.jpg": "poster of video-1",
+        "ARMING-A-GARRISON.jpg": "poster of video-2",
+        "THE-ALL-KILLING-EYE.jpg": "poster of video-4",
+        "All-Weapons-Opening0001-0240.jpg": "poster of video-5",
+      },
     },
   },
   {
@@ -397,6 +496,46 @@ export const SHOWCASE: readonly ShowcaseShip[] = [
         "Interior_1.jpg",
       ],
       schematics: [],
+      // render-2 to render-7 follow the article's numbered labels (captain's quarters to
+      // engineering bay); Interior_1 to Interior_6 are the same six renders.
+      sections: {
+        brief: [{ file: "render-1.jpg", caption: "Exterior" }],
+        operations: [
+          { file: "render-2.jpg", caption: "Captain's quarters" },
+          { file: "render-3.jpg", caption: "Crew quarters" },
+          { file: "render-4.jpg", caption: "Mess hall" },
+          { file: "render-5.jpg", caption: "Cargo hold" },
+          { file: "render-7.jpg", caption: "Engineering bay" },
+        ],
+        combat: [
+          { file: "matrix-wallpaper.jpg", caption: "Overwhelming ordnance" },
+          { file: "render-6.jpg", caption: "Torpedo room" },
+        ],
+        mobility: [
+          {
+            file: "Star_Citizen_32_9_SALES_-BANNER.jpg",
+            caption: "In formation",
+          },
+        ],
+      },
+      unused: {
+        "Mfr_rsi_perseus_logo_white_4k.png": "logo",
+        "Mfr_rsi_perseus_logo_white_4k_lockup_ONLY.png": "logo",
+        "RSI_Perseus_ImageGraphicsLines.png": "decorative lines",
+        "1_CaptainsQuarters-Copy.png": "label strip, used as a caption",
+        "2_CrewQuarters-Copy.png": "label strip, used as a caption",
+        "3_MessHall-Copy.png": "label strip, used as a caption",
+        "4_CargoHold-Copy.png": "label strip, used as a caption",
+        "5_TorpedoRoom-Copy.png": "label strip, used as a caption",
+        "6_EngineeringBay-Copy.png": "label strip, used as a caption",
+        "Interior_1.jpg": "same image as render-2",
+        "Interior_2.jpg": "same image as render-7",
+        "Interior_3.jpg": "same image as render-5",
+        "Interior_4.jpg": "same image as render-4",
+        "Interior_5.jpg": "same image as render-3",
+        "Interior_6.jpg": "same image as render-6",
+        "render-8.jpg": "same image as the 32:9 banner",
+      },
     },
   },
 ];

@@ -51,6 +51,69 @@
   letter-spacing: -0.03em;
 }
 
+/*
+ * Ship file opening band (ADR-014): the key art full-bleed, CIG's cut-out of the ship breaking out
+ * to the right as CIG composes it, and a fade into the page under the text. Nothing is drawn over
+ * the ship itself; the cut-out arrives once on load, not with reduced motion.
+ */
+.file-hero {
+  background: var(--bg-page);
+}
+.file-hero-cutout {
+  width: 170vw;
+  max-width: none;
+  right: -55vw;
+  top: 10%;
+  animation: file-hero-arrive 1400ms cubic-bezier(0.2, 0.7, 0.1, 1) both;
+}
+@media (min-width: 768px) {
+  .file-hero-cutout {
+    width: min(94vw, 1900px);
+    right: -14vw;
+    top: 0;
+  }
+}
+/* The ship file's sticky left column scrolls on short screens; its scrollbar stays quiet. */
+.file-aside {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-hairline-strong) transparent;
+}
+
+/* Under the ship: darkens the art behind the text column only. */
+.file-hero-scrim {
+  z-index: -15;
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--bg-page) 70%, transparent),
+    transparent 55%
+  );
+}
+/* Over the ship: its lower part fades into the page under the name and figures. */
+.file-hero-fade {
+  z-index: -5;
+  background: linear-gradient(
+    to top,
+    var(--bg-page) 4%,
+    color-mix(in srgb, var(--bg-page) 70%, transparent) 30%,
+    transparent 58%
+  );
+}
+@keyframes file-hero-arrive {
+  from {
+    opacity: 0;
+    transform: translate3d(4%, 1%, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .file-hero-cutout {
+    animation: none;
+  }
+}
+
 /* Dossier key-art figure (ADR-011): the cut-out layered over the art inside the frame. */
 .dossier-cutout {
   width: 112%;

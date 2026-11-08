@@ -10,7 +10,7 @@ The reference experience readers come for: a ship index you can filter in one ta
 
 ## Out of scope
 
-3D (Phase 4; the viewer slot shows the best fankit render or a pipeline thumbnail placeholder). News and dev posts on entity pages (Phase 3 adds the sections). Loadout editing.
+3D (Phase 4; the viewer slot shows the best fankit render or a pipeline thumbnail placeholder). News and dev posts on entity pages (Phase 3 adds the sections). Loadout editing was out of scope until the owner asked for it on 2026-11-08 (ADR-016); it is the criterion "Loadout editor" below.
 
 ## Acceptance criteria
 
@@ -25,6 +25,7 @@ The reference experience readers come for: a ship index you can filter in one ta
 - [x] **SEO.** Server-rendered pages, canonical URLs, per-page title and description, `sitemap.xml`, JSON-LD for ships and manufacturers, and static Open Graph images per ship (pipeline thumbnail when present, fankit render otherwise).
 - [ ] **Performance.** LCP under 1.5 s and CLS under 0.1 on `/ships/[slug]` and `/ships` at throttled 4G in Lighthouse CI; images served from R2 with width-appropriate variants.
 - [x] **Accessibility.** Keyboard-only run through index, ship page, compare, and palette recorded as a Playwright test; Lighthouse accessibility ≥ 90.
+- [x] **Loadout editor.** (Owner direction 2026-11-08, ADR-016.) On every ship with game data, the Hardpoints and loadout section lets a reader swap each gun, missile or torpedo, shield, power plant, cooler and quantum drive for any part in the pack that fits the port by type and size, sorted by the figure parts are compared by and showing the difference from the part fitted now; the build's damage per second by type, damage per volley, missile damage, shields, power drawn against power made and quantum drive are summed beside the stock build; the build is kept in the address and can be shared; reset to stock. Every figure comes from the parts' records. The Weapons and combat section draws the armament by who fires it (pilot, each turret, missile racks), each part in profile at a length set by its size class.
 - [x] **Design review.** Design-review prompt run on home, a small ship, a capital ship, a component, and compare; findings addressed; screenshots in the PR.
 
 ## Suggested order

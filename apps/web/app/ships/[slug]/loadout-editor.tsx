@@ -1,7 +1,15 @@
 "use client";
 
 import { useId, useMemo, useState, useSyncExternalStore } from "react";
-import { type Column, DataTable, TextLink, formatNumber } from "ui";
+import {
+  type Column,
+  DataTable,
+  RankBar,
+  type RankValue,
+  TextLink,
+  formatNumber,
+} from "ui";
+import type { CombatPeer } from "../../../lib/combat";
 import {
   type EditorOption,
   type EditorSlot,
@@ -99,6 +107,11 @@ function summary(o: EditorOption): string {
       if (s.dps !== null) bits.push(`${n0(s.dps)} DPS`);
       if (s.alpha !== null) bits.push(`${n0(s.alpha)} per shot`);
       if (s.range !== null) bits.push(`${n2(s.range / 1000)} km`);
+      {
+        const lasts = ammoSeconds(o);
+        if (s.ammo !== null && lasts !== null)
+          bits.push(`${n0(s.ammo)} rounds, ${duration(lasts)} of fire`);
+      }
       break;
     case "missiles":
       if (s.tracking !== null) bits.push(s.tracking);
@@ -544,6 +557,106 @@ function DamageMix({ t }: { readonly t: LoadoutTotals }) {
  * What the parts here would draw at full power against what the power plants make. Stock builds
  * often want more than is made; it is a comparison between builds, not a warning.
  */
+/** Seconds of continuous fire a ballistic gun's rounds last at its listed rate; null for energy guns. */
+function ammoSeconds(o: EditorOption): number | null {
+  const { ammo, rpm } = o.stats;
+  return ammo === null || rpm === null || rpm <= 0 ? null : ammo / (rpm / 60);
+}
+
+/** "2 min 41 s", "48 s". */
+function duration(seconds: number): string {
+  const s = Math.round(seconds);
+  if (s < 60) return `${s} s`;
+  const m = Math.floor(s / 60);
+  return s % 60 === 0 ? `${m} min` : `${m} min ${s % 60} s`;
+}
+
+/** Which ballistic gun runs dry first, holding the trigger: ammunition is the limit energy guns lack. */
+function AmmoNote({
+  slots,
+  fitted,
+  options,
+}: {
+  readonly slots: readonly EditorSlot[];
+  readonly fitted: Fitted;
+  readonly options: Readonly<Record<string, EditorOption>>;
+}) {
+  const ballistic = slots.flatMap((s) => {
+    if (s.group !== "guns") return [];
+    const id = current(s, fitted);
+    const o = id === null ? undefined : options[id];
+    const lasts = o === undefined ? null : ammoSeconds(o);
+    return o === undefined || lasts === null ? [] : [{ o, lasts }];
+  });
+  if (ballistic.length === 0) return null;
+  const first = ballistic.reduce((a, b) => (b.lasts < a.lasts ? b : a));
+  return (
+    <p className="m-0 text-caption text-secondary">
+      {ballistic.length === 1
+        ? `The ${first.o.name} carries ${n0(first.o.stats.ammo ?? 0)} rounds: ${duration(first.lasts)} of continuous fire at its listed rate.`
+        : `Of the ${ballistic.length} ballistic guns, the ${first.o.name} runs out of rounds first, after ${duration(first.lasts)} of continuous fire at its listed rate.`}{" "}
+      Energy guns draw on power instead.
+    </p>
+  );
+}
+
+/**
+ * The build among the ships on record: its sums against each other ship's stock build, the same
+ * rank bars the rest of the ship file uses. Log scales, because the ships on record span a fighter
+ * to a capital ship.
+ */
+function Ranks({
+  name,
+  t,
+  peers,
+  changed,
+}: {
+  readonly name: string;
+  readonly t: LoadoutTotals;
+  readonly peers: readonly CombatPeer[];
+  readonly changed: boolean;
+}) {
+  if (peers.length === 0) return null;
+  const label = changed ? `${name}, this build` : name;
+  const values = (
+    pick: (
+      p: Pick<CombatPeer, "gunDps" | "missileDamage" | "shieldHp">,
+    ) => number,
+  ): RankValue[] =>
+    [
+      ...peers.map((p) => ({ key: p.key, name: p.name, value: pick(p) })),
+      { key: "build", name: label, value: pick(t), current: true },
+    ].filter((v) => v.value > 0);
+  return (
+    <div className="flex flex-col border-t border-hairline pt-2">
+      <p className="m-0 text-caption text-secondary">
+        Against the other ships on record, each as it comes from the factory
+      </p>
+      <RankBar
+        label="Gun damage"
+        unit="per s"
+        most="Hardest hitting"
+        scale="log"
+        values={values((p) => p.gunDps)}
+      />
+      <RankBar
+        label="Missile damage"
+        unit="damage"
+        most="Most missile damage"
+        scale="log"
+        values={values((p) => p.missileDamage)}
+      />
+      <RankBar
+        label="Shields"
+        unit="HP"
+        most="Best shielded"
+        scale="log"
+        values={values((p) => p.shieldHp)}
+      />
+    </div>
+  );
+}
+
 function PowerBar({
   t,
   stock,
@@ -581,10 +694,13 @@ export function LoadoutEditor({
   name,
   slots,
   options,
+  peers,
 }: {
   readonly name: string;
   readonly slots: readonly EditorSlot[];
   readonly options: Readonly<Record<string, EditorOption>>;
+  /** The other ships' stock sums, to rank this build among them. */
+  readonly peers: readonly CombatPeer[];
 }) {
   // The address holds the build, so a shared link opens it and the server renders stock.
   const build = useSyncExternalStore(subscribeBuild, readBuild, () => "");
@@ -716,7 +832,9 @@ export function LoadoutEditor({
           />
         </dl>
         <DamageMix t={now} />
+        <AmmoNote slots={slots} fitted={fitted} options={options} />
         <PowerBar t={now} stock={stock} />
+        <Ranks name={name} t={now} peers={peers} changed={changed > 0} />
       </section>
 
       {SLOT_GROUPS.map((g) => {

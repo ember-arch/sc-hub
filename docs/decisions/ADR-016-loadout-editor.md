@@ -21,6 +21,7 @@ CLAUDE.md section 2 rules out copying code from Erkul or any fan tool; the idea 
 | Sharing | The build is kept in the address (`?build=`, changed slots by position and class name) and "Copy link to this build" copies it. A shared address that names a part that does not fit is ignored |
 | Armament drawing | Weapons and combat draws the armament by who fires it: the pilot's guns (fixed or on gimbals), each turret type with its guns or missiles (identical turrets counted once, "×2"), then the missile racks. Each part is drawn in profile, a gun with receiver and barrel, a missile with nose and fins, a torpedo heavier and banded, at a length set by its size class on one scale for the page, up to six of each then "+N", with the size, the linked name, the count and what one does. It replaces ADR-008's squares and bars |
 | The rest of the loadout | The panels by system (ADR-006) and the port table stay, each behind its own disclosure: "Every fitted part by system" and "All N ports by game name" |
+| Context | The summary ranks the build among the other ships on record, each as it comes from the factory (gun damage, missile damage, shields; the rank bars the rest of the ship file uses, on log scales), and moves as parts change. Ballistic guns show their rounds and how long they last at the listed rate of fire; the summary names the one that runs dry first. The compare page gains "Combat, stock loadout" (gun damage, per volley, missiles, missile damage, shields, regeneration), summed by the same rules (`lib/combat.ts`) |
 
 ## Consequences
 

@@ -23,6 +23,7 @@ import {
   shopRows,
 } from "../../../lib/acquisition";
 import { armament, armamentPlan } from "../../../lib/armament";
+import { combatPeers } from "../../../lib/combat";
 import { type ShipView, flattenPorts, repo } from "../../../lib/data";
 import { loadoutGroups } from "../../../lib/loadout";
 import {
@@ -903,6 +904,7 @@ export function packShipFile(ship: ShipView): ShipFileProps {
                   name={v.name}
                   slots={editor.slots}
                   options={editor.options}
+                  peers={combatPeers(v.class_name)}
                 />
               )}
               <details className="rounded-card border border-hairline bg-surface">

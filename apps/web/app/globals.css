@@ -90,3 +90,11 @@
     animation: none;
   }
 }
+
+/* Dossier key-art figure (ADR-011): the cut-out layered over the art inside the frame. */
+.dossier-cutout {
+  width: 112%;
+  max-width: none;
+  right: -10%;
+  top: 9%;
+}

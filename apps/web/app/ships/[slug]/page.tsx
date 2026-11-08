@@ -17,7 +17,7 @@ import { shipJsonLd } from "../../../lib/seo";
 import { Site } from "../../../lib/site";
 import { entityForSlug } from "../../../lib/entity-route";
 import { JsonLdScript } from "../../json-ld";
-import { crewRange, shipCard, shipSpecRows } from "../../../lib/views";
+import { shipCard, shipSpecRows } from "../../../lib/views";
 import { loadoutGroups } from "../../../lib/loadout";
 import { armament } from "../../../lib/armament";
 import { ArmamentStrip } from "./armament-strip";
@@ -30,11 +30,8 @@ import {
   conceptShips,
   showcaseFor,
 } from "../../../lib/showcase";
-import { CompareLink, CompareToggle } from "../../compare/compare-controls";
 import { ConceptShipPage } from "./concept-page";
-import { Figures } from "./showcase/figures";
-import { ShowcaseHero } from "./showcase/showcase-hero";
-import { ShowcaseSections } from "./showcase/showcase-sections";
+import { LiveDossier } from "./showcase/live-dossier";
 
 interface Params {
   readonly params: Promise<{ slug: string }>;
@@ -162,106 +159,253 @@ export default async function ShipPage({ params }: Params) {
     },
   ];
 
+  // A showcase ship reads as a dossier (ADR-011): its own sections first, then the game data,
+  // numbered in one run. The conditions match the reference sections below exactly.
+  const toc =
+    show === null
+      ? []
+      : [
+          { id: "summary", title: "Summary" },
+          ...(show.chapters.length === 0
+            ? []
+            : [{ id: "capabilities", title: "Capabilities" }]),
+          ...(show.model === null
+            ? []
+            : [{ id: "model", title: "Holoviewer model" }]),
+          ...(show.gallery.length === 0
+            ? []
+            : [{ id: "exhibits", title: "Exhibits" }]),
+          ...(s === null ? [] : [{ id: "scale", title: "To scale" }]),
+          ...(s === null || others.length < 2
+            ? []
+            : [{ id: "rank", title: "Among the ships on record" }]),
+          ...(arms.length === 0 ? [] : [{ id: "armament", title: "Armament" }]),
+          { id: "specs", title: "Specifications" },
+          { id: "hardpoints", title: "Hardpoints and loadout" },
+          ...(variants.length + ship.paints.length === 0
+            ? []
+            : [{ id: "variants", title: "Variants and paints" }]),
+          { id: "sources", title: "Sources" },
+        ];
+  const num = (id: string): number | undefined => {
+    const at = toc.findIndex((t) => t.id === id);
+    return at < 0 ? undefined : at + 1;
+  };
+  const reference = (
+    <>
+      {s === null ? null : (
+        <Section
+          number={num("scale")}
+          id="scale"
+          title="To scale"
+          aside={`Every ship on record and a person, ${formatNumber(s.length_m, 2)} m nose to tail`}
+        >
+          <ScaleLineup
+            label={`${ship.vehicle.name} drawn to scale beside ${others.length - 1} other ships and a person`}
+            items={others.flatMap((o) =>
+              o.stats === null
+                ? []
+                : [
+                    {
+                      key: o.vehicle.class_name,
+                      name: o.vehicle.name,
+                      length: o.stats.length_m,
+                      height: o.stats.height_m,
+                      current: o.vehicle.class_name === ship.vehicle.class_name,
+                    },
+                  ],
+            )}
+            reference={{
+              key: "person",
+              name: "A person",
+              length: 0.5,
+              height: 1.8,
+            }}
+          />
+        </Section>
+      )}
+      {s === null || others.length < 2 ? null : (
+        <Section
+          number={num("rank")}
+          id="rank"
+          title="Among the ships on record"
+          aside={`${others.length} ships, LIVE ${version ?? ""}`}
+        >
+          <div className="flex flex-col">
+            <RankBar
+              label="SCM speed"
+              unit="m/s"
+              most="Fastest"
+              values={rank((o) => o.stats?.scm_speed ?? null)}
+            />
+            <RankBar
+              label="NAV speed"
+              unit="m/s"
+              most="Fastest"
+              values={rank((o) => o.stats?.nav_speed ?? null)}
+            />
+            <RankBar
+              label="Hull"
+              unit="HP"
+              most="Toughest"
+              scale="log"
+              values={rank((o) => o.stats?.hull_hp ?? null)}
+            />
+            <RankBar
+              label="Mass"
+              unit="kg"
+              most="Heaviest"
+              scale="log"
+              values={rank((o) => o.stats?.mass_kg ?? null)}
+            />
+            <RankBar
+              label="Cargo"
+              unit="SCU"
+              most="Largest hold"
+              values={rank((o) => o.stats?.cargo_scu ?? null)}
+            />
+          </div>
+        </Section>
+      )}
+      {arms.length === 0 ? null : (
+        <Section
+          number={num("armament")}
+          id="armament"
+          title="Armament"
+          aside="Stock loadout"
+        >
+          <ArmamentStrip rows={arms} />
+        </Section>
+      )}
+      <Section
+        number={num("specs")}
+        id="specs"
+        title="Specifications"
+        aside={
+          version === null
+            ? "No LIVE build"
+            : r.ptuVersion === null
+              ? `LIVE ${version}`
+              : `LIVE ${version} · PTU ${r.ptuVersion}`
+        }
+      >
+        {s === null ? (
+          <EmptyState>
+            No LIVE stats are on record for this ship yet.
+          </EmptyState>
+        ) : (
+          <StatsByChannel
+            rows={shipSpecRows(ship)}
+            ptuVersion={r.ptuVersion}
+            hasPtuRow={ship.ptu !== null}
+          />
+        )}
+      </Section>
+      <Section
+        number={num("hardpoints")}
+        id="hardpoints"
+        title="Hardpoints and stock loadout"
+        aside={
+          version === null
+            ? `${ports.length} of ${allPorts.length} ports`
+            : `${ports.length} of ${allPorts.length} ports · LIVE ${version}`
+        }
+      >
+        {ports.length === 0 ? (
+          <EmptyState>
+            No hardpoints are on record for this ship yet.
+          </EmptyState>
+        ) : (
+          <LoadoutPanels groups={loadout} />
+        )}
+        {ports.length === 0 ? null : (
+          <details className="rounded-card border border-hairline bg-surface">
+            <summary className="cursor-pointer rounded-card px-4 py-3 text-ui text-secondary hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent">
+              All {ports.length} ports by game name
+            </summary>
+            <div className="border-t border-hairline px-4 pb-4">
+              <PortTable
+                rows={ports.map(({ node, depth }) => ({
+                  key: node.port.port_path,
+                  depth,
+                  name: node.port.port_name,
+                  type: sentence(node.port.port_type),
+                  sizeMin: node.port.size_min,
+                  sizeMax: node.port.size_max,
+                  item:
+                    node.item === null
+                      ? null
+                      : {
+                          name: node.item.name,
+                          href: `/components/${node.item.slug}`,
+                        },
+                  position: node.port.position,
+                }))}
+              />
+            </div>
+          </details>
+        )}
+        {hiddenPorts > 0 ? (
+          <p className="text-caption text-secondary">
+            {hiddenPorts} ports of unmapped type with nothing mounted are not
+            listed.
+          </p>
+        ) : null}
+      </Section>
+      {variants.length + ship.paints.length === 0 ? null : (
+        <Section
+          number={num("variants")}
+          id="variants"
+          title="Variants and paints"
+          aside={`${variants.length} variants · ${ship.paints.length} paints`}
+        >
+          <div className="flex flex-col gap-6">
+            {variants.length > 0 ? (
+              <div className="flex flex-col gap-3">
+                <h3 className="text-ui font-medium text-primary">
+                  {base === null
+                    ? "Variants"
+                    : `Variant of the ${base.vehicle.name}`}
+                </h3>
+                <ul className="m-0 grid list-none grid-cols-2 gap-4 p-0 md:grid-cols-3 lg:grid-cols-4">
+                  {variants.map((v) => (
+                    <li key={v.vehicle.class_name}>
+                      <Card {...shipCard(v, shipCardImage(v))} />
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+            {ship.paints.length > 0 ? (
+              <div className="flex flex-col gap-3">
+                <h3 className="text-ui font-medium text-primary">Paints</h3>
+                <ul className="m-0 flex list-none flex-wrap gap-2 p-0 text-ui">
+                  {ship.paints.map((paint) => (
+                    <li
+                      key={paint.id}
+                      className="rounded-control border border-hairline bg-surface px-3 py-1 text-primary"
+                    >
+                      {paint.name}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+          </div>
+        </Section>
+      )}
+      {/* "Changed in this version" renders from diff.json once spec 01 publishes a second
+            version; with one version on record there is nothing to show, so the section waits
+            (owner decision 2026-11-07, ADR-007). */}
+    </>
+  );
+
   return (
     <Site
       current="ships"
       theme="dark"
       stage={
-        show?.background ? (
-          <>
-            <ShowcaseHero
-              name={ship.vehicle.name}
-              maker={
-                ship.manufacturer === null
-                  ? null
-                  : {
-                      name: ship.manufacturer.name,
-                      href: `/manufacturers/${ship.manufacturer.slug}`,
-                    }
-              }
-              role={ship.vehicle.role}
-              status={status}
-              mark={
-                ship.manufacturer === null
-                  ? null
-                  : media().maker(
-                      ship.manufacturer.code,
-                      ship.manufacturer.name,
-                    )
-              }
-              background={show.background}
-              cutout={show.cutout}
-              tagline={show.intro?.heading ?? null}
-              lead={show.intro?.text[0] ?? ship.description?.text ?? null}
-              credit={
-                show.article === null
-                  ? null
-                  : {
-                      text: "Art: Roberts Space Industries",
-                      href: show.article.url,
-                    }
-              }
-            >
-              <div className="flex flex-wrap gap-2 pt-2">
-                <CompareToggle
-                  slug={ship.vehicle.slug}
-                  name={ship.vehicle.name}
-                />
-                <CompareLink />
-              </div>
-            </ShowcaseHero>
-            <Figures
-              figures={
-                s === null
-                  ? []
-                  : [
-                      {
-                        label: "Length",
-                        value: formatNumber(s.length_m, 2),
-                        unit: "m",
-                      },
-                      {
-                        label: "Crew",
-                        value: crewRange(s.crew_min, s.crew_max),
-                      },
-                      ...(s.cargo_scu === null
-                        ? []
-                        : [
-                            {
-                              label: "Cargo",
-                              value: formatNumber(s.cargo_scu),
-                              unit: "SCU",
-                            },
-                          ]),
-                      ...(s.scm_speed === null
-                        ? []
-                        : [
-                            {
-                              label: "SCM speed",
-                              value: formatNumber(s.scm_speed),
-                              unit: "m/s",
-                            },
-                          ]),
-                      ...(s.hull_hp === null
-                        ? []
-                        : [
-                            {
-                              label: "Hull",
-                              value: formatNumber(s.hull_hp),
-                              unit: "HP",
-                            },
-                          ]),
-                    ]
-              }
-              source={`Game data, LIVE ${version ?? ""}${ship.description === null ? "" : `. In-game description: “${ship.description.text}”`}`}
-            />
-            <ShowcaseSections
-              show={show}
-              name={ship.vehicle.name}
-              length={s?.length_m ?? null}
-            />
-          </>
-        ) : (
+        show !== null ? undefined : (
           <ShipStage
             ship={ship}
             status={status}
@@ -277,203 +421,22 @@ export default async function ShipPage({ params }: Params) {
       }
     >
       <JsonLdScript data={shipJsonLd(ship, describe(ship))} />
-      <EntityPage hero={null} facts={[]} related={related}>
-        {s === null ? null : (
-          <Section
-            id="scale"
-            title="To scale"
-            aside={`Every ship on record and a person, ${formatNumber(s.length_m, 2)} m nose to tail`}
-          >
-            <ScaleLineup
-              label={`${ship.vehicle.name} drawn to scale beside ${others.length - 1} other ships and a person`}
-              items={others.flatMap((o) =>
-                o.stats === null
-                  ? []
-                  : [
-                      {
-                        key: o.vehicle.class_name,
-                        name: o.vehicle.name,
-                        length: o.stats.length_m,
-                        height: o.stats.height_m,
-                        current:
-                          o.vehicle.class_name === ship.vehicle.class_name,
-                      },
-                    ],
-              )}
-              reference={{
-                key: "person",
-                name: "A person",
-                length: 0.5,
-                height: 1.8,
-              }}
-            />
-          </Section>
-        )}
-        {s === null || others.length < 2 ? null : (
-          <Section
-            id="rank"
-            title="Among the ships on record"
-            aside={`${others.length} ships, LIVE ${version ?? ""}`}
-          >
-            <div className="flex flex-col">
-              <RankBar
-                label="SCM speed"
-                unit="m/s"
-                most="Fastest"
-                values={rank((o) => o.stats?.scm_speed ?? null)}
-              />
-              <RankBar
-                label="NAV speed"
-                unit="m/s"
-                most="Fastest"
-                values={rank((o) => o.stats?.nav_speed ?? null)}
-              />
-              <RankBar
-                label="Hull"
-                unit="HP"
-                most="Toughest"
-                scale="log"
-                values={rank((o) => o.stats?.hull_hp ?? null)}
-              />
-              <RankBar
-                label="Mass"
-                unit="kg"
-                most="Heaviest"
-                scale="log"
-                values={rank((o) => o.stats?.mass_kg ?? null)}
-              />
-              <RankBar
-                label="Cargo"
-                unit="SCU"
-                most="Largest hold"
-                values={rank((o) => o.stats?.cargo_scu ?? null)}
-              />
-            </div>
-          </Section>
-        )}
-        {arms.length === 0 ? null : (
-          <Section id="armament" title="Armament" aside="Stock loadout">
-            <ArmamentStrip rows={arms} />
-          </Section>
-        )}
-        <Section
-          id="specs"
-          title="Specifications"
-          aside={
-            version === null
-              ? "No LIVE build"
-              : r.ptuVersion === null
-                ? `LIVE ${version}`
-                : `LIVE ${version} · PTU ${r.ptuVersion}`
-          }
+      {show === null ? (
+        <EntityPage hero={null} facts={[]} related={related}>
+          {reference}
+        </EntityPage>
+      ) : (
+        <LiveDossier
+          ship={ship}
+          show={show}
+          status={status}
+          version={version}
+          toc={toc}
+          related={related}
         >
-          {s === null ? (
-            <EmptyState>
-              No LIVE stats are on record for this ship yet.
-            </EmptyState>
-          ) : (
-            <StatsByChannel
-              rows={shipSpecRows(ship)}
-              ptuVersion={r.ptuVersion}
-              hasPtuRow={ship.ptu !== null}
-            />
-          )}
-        </Section>
-        <Section
-          id="hardpoints"
-          title="Hardpoints and stock loadout"
-          aside={
-            version === null
-              ? `${ports.length} of ${allPorts.length} ports`
-              : `${ports.length} of ${allPorts.length} ports · LIVE ${version}`
-          }
-        >
-          {ports.length === 0 ? (
-            <EmptyState>
-              No hardpoints are on record for this ship yet.
-            </EmptyState>
-          ) : (
-            <LoadoutPanels groups={loadout} />
-          )}
-          {ports.length === 0 ? null : (
-            <details className="rounded-card border border-hairline bg-surface">
-              <summary className="cursor-pointer rounded-card px-4 py-3 text-ui text-secondary hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent">
-                All {ports.length} ports by game name
-              </summary>
-              <div className="border-t border-hairline px-4 pb-4">
-                <PortTable
-                  rows={ports.map(({ node, depth }) => ({
-                    key: node.port.port_path,
-                    depth,
-                    name: node.port.port_name,
-                    type: sentence(node.port.port_type),
-                    sizeMin: node.port.size_min,
-                    sizeMax: node.port.size_max,
-                    item:
-                      node.item === null
-                        ? null
-                        : {
-                            name: node.item.name,
-                            href: `/components/${node.item.slug}`,
-                          },
-                    position: node.port.position,
-                  }))}
-                />
-              </div>
-            </details>
-          )}
-          {hiddenPorts > 0 ? (
-            <p className="text-caption text-secondary">
-              {hiddenPorts} ports of unmapped type with nothing mounted are not
-              listed.
-            </p>
-          ) : null}
-        </Section>
-        {variants.length + ship.paints.length === 0 ? null : (
-          <Section
-            id="variants"
-            title="Variants and paints"
-            aside={`${variants.length} variants · ${ship.paints.length} paints`}
-          >
-            <div className="flex flex-col gap-6">
-              {variants.length > 0 ? (
-                <div className="flex flex-col gap-3">
-                  <h3 className="text-ui font-medium text-primary">
-                    {base === null
-                      ? "Variants"
-                      : `Variant of the ${base.vehicle.name}`}
-                  </h3>
-                  <ul className="m-0 grid list-none grid-cols-2 gap-4 p-0 md:grid-cols-3 lg:grid-cols-4">
-                    {variants.map((v) => (
-                      <li key={v.vehicle.class_name}>
-                        <Card {...shipCard(v, shipCardImage(v))} />
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ) : null}
-              {ship.paints.length > 0 ? (
-                <div className="flex flex-col gap-3">
-                  <h3 className="text-ui font-medium text-primary">Paints</h3>
-                  <ul className="m-0 flex list-none flex-wrap gap-2 p-0 text-ui">
-                    {ship.paints.map((paint) => (
-                      <li
-                        key={paint.id}
-                        className="rounded-control border border-hairline bg-surface px-3 py-1 text-primary"
-                      >
-                        {paint.name}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ) : null}
-            </div>
-          </Section>
-        )}
-        {/* "Changed in this version" renders from diff.json once spec 01 publishes a second
-            version; with one version on record there is nothing to show, so the section waits
-            (owner decision 2026-11-07, ADR-007). */}
-      </EntityPage>
+          {reference}
+        </LiveDossier>
+      )}
     </Site>
   );
 }

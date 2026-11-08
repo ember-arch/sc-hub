@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { TextLink } from "ui";
 
 /**
- * Explore in 3D (ADR-010): CIG's in-game holoviewer model as FleetYards converted it, in Google's
+ * The holoviewer model as a dossier figure (ADR-010, ADR-011): CIG's in-game holoviewer model as FleetYards converted it, in Google's
  * model-viewer. Drag to orbit, scroll or pinch to zoom, auto-spin until the reader takes over. The
  * library and the model load only as the section approaches; the Draco decoder is served from
  * /media/draco so nothing is fetched from a third party. The model is clay: no textures exist.
@@ -50,6 +50,7 @@ export function ModelStage({
   length,
   poster,
   credit,
+  label,
 }: {
   readonly src: string;
   readonly bytes: number;
@@ -58,6 +59,8 @@ export function ModelStage({
   readonly length: number | null;
   readonly poster: string | null;
   readonly credit: { readonly text: string; readonly href: string };
+  /** Figure number in the dossier, for example "Fig. 4". */
+  readonly label: string;
 }) {
   const box = useRef<HTMLDivElement>(null);
   const viewer = useRef<ModelViewerElement | null>(null);
@@ -118,38 +121,32 @@ export function ModelStage({
     maximumFractionDigits: 1,
   });
 
+  const button =
+    "rounded-control border border-hairline-strong px-3 py-1 text-ui text-primary transition-colors duration-hover hover:border-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent";
+
   return (
-    <section aria-labelledby="explore-3d" className="border-y border-hairline">
-      <div className="mx-auto flex w-full max-w-content flex-wrap items-end justify-between gap-4 px-4 pb-6 pt-16">
-        <div className="flex flex-col gap-2">
-          <p className="m-0 text-ui text-secondary">
-            Drag to rotate · scroll or pinch to zoom
-          </p>
-          <h2 id="explore-3d" className="m-0 text-display text-primary">
-            Explore the {name} in 3D
-          </h2>
-        </div>
+    <figure className="m-0 flex flex-col gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="m-0 text-caption text-secondary">
+          Drag to rotate · scroll or pinch to zoom
+        </p>
         <div className="flex gap-2">
           <button
             type="button"
             onClick={() => setSpin((s) => !s)}
             aria-pressed={spin}
-            className="rounded-control border border-hairline-strong px-3 py-2 text-ui text-primary transition-colors duration-hover hover:border-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+            className={button}
           >
             {spin ? "Stop spin" : "Spin"}
           </button>
-          <button
-            type="button"
-            onClick={reset}
-            className="rounded-control border border-hairline-strong px-3 py-2 text-ui text-primary transition-colors duration-hover hover:border-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
-          >
+          <button type="button" onClick={reset} className={button}>
             Reset view
           </button>
         </div>
       </div>
       <div
         ref={box}
-        className="relative h-[75svh] min-h-[420px] w-full bg-inset"
+        className="relative h-[60svh] min-h-[360px] w-full overflow-hidden rounded-card border border-hairline bg-inset"
       >
         {ready ? (
           <model-viewer
@@ -185,16 +182,17 @@ export function ModelStage({
           </p>
         )}
       </div>
-      <div className="mx-auto flex w-full max-w-content flex-wrap justify-between gap-2 px-4 py-4 text-caption text-secondary">
+      <figcaption className="flex flex-wrap justify-between gap-2 text-caption text-secondary">
         <span>
+          <span className="font-mono text-primary">{label}</span>{" "}
           {length === null
-            ? "Untextured model, to scale"
-            : `Untextured model, to scale: ${length.toLocaleString("en-US")} m long`}
+            ? "Holoviewer model, untextured, to scale"
+            : `Holoviewer model, untextured, to scale: ${length.toLocaleString("en-US")} m long`}
         </span>
         <TextLink href={credit.href} external className="text-secondary">
           {credit.text}
         </TextLink>
-      </div>
-    </section>
+      </figcaption>
+    </figure>
   );
 }

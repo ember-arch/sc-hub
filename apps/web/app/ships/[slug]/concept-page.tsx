@@ -1,26 +1,29 @@
+import type { ReactNode } from "react";
 import type { ConceptShip } from "schema";
-import {
-  EntityPage,
-  ScaleLineup,
-  Section,
-  TextLink,
-  formatNumber,
-  vehicleStatusBadge,
-} from "ui";
+import { ScaleLineup, formatNumber, sentence, vehicleStatusBadge } from "ui";
 import { repo } from "../../../lib/data";
-import { media, shipCardImage } from "../../../lib/media";
-import { showcaseFor } from "../../../lib/showcase";
+import { media } from "../../../lib/media";
+import { SHOWCASE_CREDITS, showcaseFor } from "../../../lib/showcase";
 import { Site } from "../../../lib/site";
-import { shipCard } from "../../../lib/views";
 import { crewRange } from "../../../lib/views";
-import { Figures } from "./showcase/figures";
-import { ShowcaseHero } from "./showcase/showcase-hero";
-import { ShowcaseSections } from "./showcase/showcase-sections";
+import {
+  Capabilities,
+  Dossier,
+  DossierHeader,
+  DossierSection,
+  Figure,
+  type SheetRow,
+  type SourceEntry,
+  Sources,
+  type TocEntry,
+} from "./showcase/dossier";
+import { Exhibits, Schematics } from "./showcase/exhibits";
+import { ModelStage } from "./showcase/model-stage";
 
 /**
- * A ship CIG has published but the game does not contain (ADR-010), the Anvil Odin first: the
- * concept hero every design is tested against. RSI's own figures and art; no stats, loadout or
- * channels, because the game has none yet, and the page says so.
+ * A ship CIG has published but the game does not contain (ADR-010), as a dossier (ADR-011): the
+ * Anvil Odin first, the concept hero every design is tested against. RSI's own figures, art and
+ * words; no stats, loadout or channels, because the game has none yet, and the file says so.
  */
 export function ConceptShipPage({
   concept,
@@ -31,132 +34,274 @@ export function ConceptShipPage({
   const maker =
     r.manufacturers.find((m) => m.code === concept.manufacturer_code) ?? null;
   const show = showcaseFor(concept.slug, concept.name);
-  const m = (v: number | null) => (v === null ? null : formatNumber(v));
-  const figures = [
-    { label: "Length", value: m(concept.length_m), unit: "m" },
-    { label: "Beam", value: m(concept.beam_m), unit: "m" },
-    { label: "Height", value: m(concept.height_m), unit: "m" },
+  const n = (v: number | null): string | null =>
+    v === null ? null : formatNumber(v);
+  const sheet: SheetRow[] = [
     {
-      label: "Crew",
-      value:
-        concept.crew_min === null || concept.crew_max === null
-          ? null
-          : crewRange(concept.crew_min, concept.crew_max),
+      label: "Designation",
+      value: `${maker?.name ?? concept.manufacturer_code} ${concept.name}`,
     },
-    { label: "Cargo", value: m(concept.cargo_scu), unit: "SCU" },
-  ].flatMap((f) => (f.value === null ? [] : [{ ...f, value: f.value }]));
+    { label: "Class", value: concept.focus ?? "Not stated" },
+    {
+      label: "Size",
+      value: concept.size === null ? "Not stated" : sentence(concept.size),
+    },
+    { label: "Status", value: "Concept" },
+    ...(
+      [
+        ["Length", n(concept.length_m), "m"],
+        ["Beam", n(concept.beam_m), "m"],
+        ["Height", n(concept.height_m), "m"],
+        [
+          "Crew",
+          concept.crew_min === null || concept.crew_max === null
+            ? null
+            : crewRange(concept.crew_min, concept.crew_max),
+          undefined,
+        ],
+        ["Cargo", n(concept.cargo_scu), "SCU"],
+      ] as const
+    ).flatMap(([label, value, unit]) =>
+      value === null ? [] : [{ label, value, unit, numeric: true }],
+    ),
+  ];
+  const sources: SourceEntry[] = [
+    ...(show?.article == null
+      ? []
+      : [
+          {
+            text: `Roberts Space Industries, Comm-Link "${show.article.title}", ${show.article.published_at.slice(0, 10)}`,
+            href: show.article.url,
+            note: "Key art, render loops, the capability figures and the text of the summary and capabilities, quoted verbatim",
+          },
+        ]),
+    {
+      text: `RSI ship matrix, ${concept.name}`,
+      href: concept.page_url,
+      note: `Particulars, copied ${concept.fetched_at.slice(0, 10)}`,
+    },
+    ...(show?.model == null
+      ? []
+      : [
+          {
+            text: SHOWCASE_CREDITS.model.text,
+            href: SHOWCASE_CREDITS.model.href,
+          },
+        ]),
+    {
+      text: "CIG fankit, manufacturer logo",
+      href: "https://robertsspaceindustries.com/fankit",
+    },
+  ];
   const others = r.ships.filter((o) => o.stats !== null);
+  const model = show?.model ?? null;
+  const length = concept.length_m;
+  const height = concept.height_m;
+
+  const sections: {
+    id: string;
+    title: string;
+    aside?: string;
+    /** Built with the section's own number, so figure numbers always match. */
+    body: (n: number) => ReactNode;
+  }[] = [
+    {
+      id: "summary",
+      title: "Summary",
+      aside: "In CIG's words",
+      body: (n: number) => (
+        <div className="grid gap-8 md:grid-cols-9">
+          <div className="flex flex-col gap-4 md:col-span-6">
+            {show?.intro?.heading === undefined ? null : (
+              <p className="m-0 text-heading text-primary">
+                {show.intro.heading}
+              </p>
+            )}
+            {(show?.intro?.text ?? [concept.description]).map((p) => (
+              <p key={p.slice(0, 40)} className="m-0 text-body text-secondary">
+                {p}
+              </p>
+            ))}
+          </div>
+          {show?.topdown == null ? null : (
+            <Figure
+              label={`Fig. ${n}`}
+              caption="Plan view"
+              picture={show.topdown}
+              sizes="(min-width: 768px) 25vw, 60vw"
+              className="md:col-span-3 [&_img]:mx-auto [&_img]:max-h-[560px] [&_img]:w-auto"
+            />
+          )}
+        </div>
+      ),
+    },
+    ...(show === null || show.chapters.length === 0
+      ? []
+      : [
+          {
+            id: "capabilities",
+            title: "Capabilities",
+            aside: `${show.chapters.length} entries`,
+            body: (n: number) => (
+              <Capabilities
+                section={n}
+                chapters={show.chapters}
+                name={concept.name}
+              />
+            ),
+          },
+        ]),
+    ...(model === null
+      ? []
+      : [
+          {
+            id: "model",
+            title: "Holoviewer model",
+            aside: `${(model.bytes / 1_000_000).toFixed(1)} MB`,
+            body: (n: number) => (
+              <ModelStage
+                src={model.src}
+                bytes={model.bytes}
+                name={concept.name}
+                length={concept.length_m}
+                poster={show?.poster?.src ?? null}
+                credit={SHOWCASE_CREDITS.model}
+                label={`Fig. ${n}`}
+              />
+            ),
+          },
+        ]),
+    ...(show === null || show.schematics.length === 0
+      ? []
+      : [
+          {
+            id: "schematics",
+            title: "Schematics",
+            body: (n: number) => (
+              <Schematics section={n} schematics={show.schematics} />
+            ),
+          },
+        ]),
+    ...(length === null || height === null
+      ? []
+      : [
+          {
+            id: "scale",
+            title: "To scale",
+            aside: `Beside every ship on record and a person`,
+            body: () => (
+              <ScaleLineup
+                label={`${concept.name} drawn to scale beside ${others.length} ships and a person`}
+                items={[
+                  {
+                    key: concept.slug,
+                    name: concept.name,
+                    length,
+                    height,
+                    current: true,
+                  },
+                  ...others.flatMap((o) =>
+                    o.stats === null
+                      ? []
+                      : [
+                          {
+                            key: o.vehicle.class_name,
+                            name: o.vehicle.name,
+                            length: o.stats.length_m,
+                            height: o.stats.height_m,
+                          },
+                        ],
+                  ),
+                ]}
+                reference={{
+                  key: "person",
+                  name: "A person",
+                  length: 0.5,
+                  height: 1.8,
+                }}
+              />
+            ),
+          },
+        ]),
+    ...(show === null || show.gallery.length === 0
+      ? []
+      : [
+          {
+            id: "exhibits",
+            title: "Exhibits",
+            aside: `${show.gallery.length} images`,
+            body: (n: number) => (
+              <Exhibits section={n} pictures={show.gallery} />
+            ),
+          },
+        ]),
+    {
+      id: "sources",
+      title: "Sources",
+      body: () => <Sources sources={sources} />,
+    },
+  ];
+  const toc: TocEntry[] = sections.map((s) => ({ id: s.id, title: s.title }));
 
   return (
-    <Site
-      current="ships"
-      theme="dark"
-      stage={
-        <>
-          <ShowcaseHero
-            name={concept.name}
+    <Site current="ships" theme="dark">
+      <Dossier
+        toc={toc}
+        header={
+          <DossierHeader
+            meta={[
+              {
+                label: "File",
+                value: `${concept.manufacturer_code}-${concept.slug.toUpperCase()}`,
+              },
+              ...(show?.article == null
+                ? []
+                : [
+                    {
+                      label: "Revealed",
+                      value: show.article.published_at.slice(0, 10),
+                    },
+                  ]),
+              { label: "Compiled", value: concept.fetched_at.slice(0, 10) },
+              { label: "Sources", value: String(sources.length) },
+            ]}
+            status={vehicleStatusBadge("concept")}
+            mark={maker === null ? null : media().maker(maker.code, maker.name)}
             maker={
               maker === null
                 ? null
                 : { name: maker.name, href: `/manufacturers/${maker.slug}` }
             }
             role={concept.focus}
-            status={vehicleStatusBadge("concept")}
-            mark={maker === null ? null : media().maker(maker.code, maker.name)}
+            name={concept.name}
+            tagline={show?.intro?.heading ?? null}
             background={show?.background ?? null}
             cutout={show?.cutout ?? null}
-            tagline={show?.intro?.heading ?? null}
-            lead={show?.intro?.text[0] ?? concept.description}
-            credit={
-              show?.article === null || show?.article === undefined
+            figureCredit={
+              show?.article == null
                 ? null
                 : {
-                    text: "Art: Roberts Space Industries",
+                    text: "Roberts Space Industries [1]",
                     href: show.article.url,
                   }
             }
+            sheet={sheet}
+            sheetSource="RSI ship matrix [2]. In concept: the game has no data for this ship yet."
           />
-          <Figures
-            figures={figures}
-            source="Figures as RSI's ship matrix states them. The ship is in concept: the game has no data for it yet."
-          />
-          {show === null ? null : (
-            <ShowcaseSections
-              show={show}
-              name={concept.name}
-              length={concept.length_m}
-            />
-          )}
-        </>
-      }
-    >
-      <EntityPage
-        hero={null}
-        facts={[]}
-        related={[
-          {
-            title: "Ships on record",
-            items: r.ships.map((s) => shipCard(s, shipCardImage(s))),
-          },
-        ]}
+        }
       >
-        {concept.length_m === null || concept.height_m === null ? null : (
-          <Section
-            id="scale"
-            title="To scale"
-            aside={`Beside every ship on record and a person, ${formatNumber(concept.length_m)} m nose to tail`}
+        {sections.map((s, i) => (
+          <DossierSection
+            key={s.id}
+            id={s.id}
+            number={i + 1}
+            title={s.title}
+            aside={s.aside}
           >
-            <ScaleLineup
-              label={`${concept.name} drawn to scale beside ${others.length} ships and a person`}
-              items={[
-                {
-                  key: concept.slug,
-                  name: concept.name,
-                  length: concept.length_m,
-                  height: concept.height_m,
-                  current: true,
-                },
-                ...others.flatMap((o) =>
-                  o.stats === null
-                    ? []
-                    : [
-                        {
-                          key: o.vehicle.class_name,
-                          name: o.vehicle.name,
-                          length: o.stats.length_m,
-                          height: o.stats.height_m,
-                        },
-                      ],
-                ),
-              ]}
-              reference={{
-                key: "person",
-                name: "A person",
-                length: 0.5,
-                height: 1.8,
-              }}
-            />
-          </Section>
-        )}
-        <Section id="matrix" title="In the ship matrix" aside="RSI">
-          <figure className="m-0 flex max-w-prose flex-col gap-3">
-            <blockquote className="m-0 text-heading font-regular text-primary">
-              {concept.description}
-            </blockquote>
-            <figcaption className="text-caption text-secondary">
-              <TextLink
-                href={concept.page_url}
-                external
-                className="text-secondary"
-              >
-                RSI ship matrix
-              </TextLink>
-              , {concept.production_status.replace(/-/g, " ")}, copied{" "}
-              {concept.fetched_at.slice(0, 10)}
-            </figcaption>
-          </figure>
-        </Section>
-      </EntityPage>
+            {s.body(i + 1)}
+          </DossierSection>
+        ))}
+      </Dossier>
     </Site>
   );
 }

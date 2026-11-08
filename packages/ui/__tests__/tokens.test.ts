@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { renderTokensCss } from "../build/tokens-css";
+import { contrast } from "../contrast";
 import {
   color,
   colorTokens,
@@ -152,5 +153,45 @@ describe("tokens.css is generated from tokens.ts", () => {
       .filter((n) => n.px > 0);
     expect(names.map((n) => n.px)).toEqual([...space]);
     for (const n of names) expect(n.name).toBe(n.px / 4);
+  });
+});
+
+// system.md section 6: text at least 4.5:1 in both modes. Every color used for text (the text
+// tokens, the accent for links, the semantic colors for badges and PTU deltas) against every
+// background, so a token change that breaks the rule fails here rather than in a Lighthouse
+// run that happens to use the other scheme (ADR-007).
+describe("contrast", () => {
+  const textColors = [
+    "text.primary",
+    "text.secondary",
+    "text.muted",
+    "accent",
+    "success",
+    "warning",
+    "danger",
+  ] as const;
+  const backgrounds = [
+    "bg.page",
+    "bg.surface",
+    "bg.raised",
+    "bg.inset",
+  ] as const;
+  for (const scheme of ["light", "dark"] as const) {
+    it(`every text color reads at 4.5:1 or more on every background, ${scheme}`, () => {
+      for (const fg of textColors) {
+        for (const bg of backgrounds) {
+          expect(
+            contrast(color[scheme][fg], color[scheme][bg]),
+            `${fg} on ${bg}`,
+          ).toBeGreaterThanOrEqual(4.5);
+        }
+      }
+    });
+  }
+
+  it("matches the WCAG reference points", () => {
+    expect(contrast("#000000", "#FFFFFF")).toBeCloseTo(21, 5);
+    expect(contrast("#FFFFFF", "#FFFFFF")).toBe(1);
+    expect(contrast("#767676", "#FFFFFF")).toBeCloseTo(4.54, 2);
   });
 });

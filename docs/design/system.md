@@ -7,7 +7,7 @@ Numbered rules are the ones the design-review prompt checks by number.
 ## 1. Principles
 
 1. Imagery does the mood, chrome stays quiet. Near-black and off-white surfaces, one accent, no decoration.
-2. Typography-led. One grotesk for interface text, one mono for numbers. Three sizes and two weights per page.
+2. Typography-led. One grotesk for interface text, one mono for numbers. At most three sizes per page besides interface text and captions, and two weights.
 3. Light and dark are both first-class and follow the system. Ship pages default to dark.
 4. Search is the navigation. The command palette is reachable from every page.
 5. Every entity page uses one template: hero, key facts, body sections, related entities.
@@ -29,12 +29,12 @@ All tokens live in `packages/ui/tokens.ts`. Tailwind config is generated from th
 | `bg.inset` | `#EFEFEC` | `#0F1012` | Table header, code, muted wells |
 | `text.primary` | `#131416` | `#F2F2F0` | Body |
 | `text.secondary` | `#5C5F66` | `#A2A6AD` | Supporting |
-| `text.muted` | `#8A8E96` | `#6E7279` | Captions, placeholders |
+| `text.muted` | `#696D74` | `#82868E` | Captions, placeholders |
 | `border.default` | `rgba(0,0,0,0.10)` | `rgba(255,255,255,0.10)` | Hairlines |
 | `border.strong` | `rgba(0,0,0,0.20)` | `rgba(255,255,255,0.18)` | Emphasis, hover |
-| `accent` | `#2F6BFF` | `#5B8CFF` | Links, focus, selected, primary action |
+| `accent` | `#2560E8` | `#5B8CFF` | Links, focus, selected, primary action |
 | `accent.bg` | `#E8EFFF` | `#17223D` | Accent tint |
-| `success` / `warning` / `danger` | `#1F8A4C` / `#B86E00` / `#C7352B` | `#3DBA6E` / `#E0962B` / `#E5574D` | Status only |
+| `success` / `warning` / `danger` | `#1A7A43` / `#9A5B00` / `#C7352B` | `#3DBA6E` / `#E0962B` / `#E5574D` | Status only |
 
 Rules: one accent. Manufacturer brand colors may appear only as a 3 px rule on the manufacturer page hero, never as fills. Semantic colors are for status (flight-ready, concept, PTU-only), never decoration.
 
@@ -49,7 +49,7 @@ Rules: one accent. Manufacturer brand colors may appear only as a 3 px rule on t
 | `ui` | 14 / 20 | 400 / 500 | Controls, table cells, nav |
 | `caption` | 12.5 / 18 | 400 | Units, metadata, timestamps |
 
-Faces: Geist Sans and Geist Mono, or Inter Tight and JetBrains Mono. Pick one pair in Phase 0 and record it in an ADR. Every number uses tabular figures (`font-variant-numeric: tabular-nums`). Sentence case everywhere. No all-caps labels except unit abbreviations.
+Faces: Geist Sans and Geist Mono, or Inter Tight and JetBrains Mono. Pick one pair in Phase 0 and record it in an ADR. Every number uses tabular figures (`font-variant-numeric: tabular-nums`). Sentence case everywhere. No all-caps labels except unit abbreviations and the game's own acronyms (SCM, NAV, EM, IR, LIVE, PTU, EPTU).
 
 ### Space, radius, elevation
 
@@ -77,7 +77,7 @@ Faces: Geist Sans and Geist Mono, or Inter Tight and JetBrains Mono. Pick one pa
 - `Card` — ship card: image, name, manufacturer, role, two stats.
 - `FeedItem` — source chip, title, time, excerpt, linked entities as chips.
 - `DevPost` — author, role, thread, time, body with quotes preserved, source link always visible.
-- `PatchStrip` — LIVE and PTU versions, shown on home and in the footer.
+- `PatchStrip` — LIVE and PTU versions, shown in the footer of every page, home included.
 - `Footer` — disclaimer (verbatim, see legal), attribution lines, legal links.
 
 Added by spec 02 (ADR-006):
@@ -91,9 +91,9 @@ Added by spec 02 (ADR-006):
 | --- | --- |
 | Home | Search field as the first element. Then: today's feed (news and dev posts merged, 10 items), one featured ship card, patch strip. No hero banner. |
 | Ships index | Filter bar (manufacturer, role, size, status, kind) + card/table toggle. Cards in a 2/3/4 column grid by breakpoint, each with a Compare toggle. Table mode uses `DataTable` with a Compare column. |
-| Ship page | `EntityPage`. Hero holds the viewer (hero ships) or the best fankit render (others). Key facts: manufacturer, role, size, crew, cargo, length, mass, status. Sections: specs by channel (with PTU diff toggle), hardpoints and stock loadout, variants and paints, changed in this version, in the news, dev posts. Related: same manufacturer, same role. |
+| Ship page | `EntityPage`. Hero holds the viewer (hero ships) or the best fankit render (others). Key facts: role, size, crew, cargo, length, mass (manufacturer and status are in the hero). Sections: specs by channel (with PTU diff toggle), hardpoints and stock loadout, variants and paints, changed in this version, in the news, dev posts; a section with nothing in it yet is left out. Related: same manufacturer, same role. |
 | Component page | `EntityPage`. Key facts: type, size, grade, class, manufacturer. Sections: stats by channel, stock on (ships that carry it by default), in the news. |
-| Manufacturer page | `EntityPage` with a 3 px brand rule. Sections: lineup (cards), in the news. |
+| Manufacturer page | `EntityPage` with a 3 px brand rule (the `border.strong` token until the fankit supplies brand colors). Sections: lineup (cards), in the news. |
 | News feed | Source filter chips, then `FeedItem` list, infinite scroll in pages of 20, RSS and JSON links in the header. Dev tracker is a tab: author filter, `DevPost` list, thread grouping. |
 | Author page | `EntityPage` without a hero image: handle, role, first seen, post count; posts newest first. |
 

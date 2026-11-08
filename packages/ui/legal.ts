@@ -40,6 +40,25 @@ export const UNP4K_CREDIT = {
 export const FANKIT_CREDIT = { text: "Image: CIG fankit." } as const;
 
 /**
+ * The notice the Fankit Agreement, clause 2(g), requires wherever fankit assets appear, copied
+ * verbatim (double full stop included) from 06_Fankit_Agreement_2025_11_19.pdf in the fankit
+ * downloaded 2026-11-07. The footer carries it on every page (ADR-009).
+ */
+export const FANKIT_NOTICE =
+  "This site is not endorsed by or affiliated with the Cloud Imperium or Roberts Space Industries group of companies. All game content and materials are copyright Cloud Imperium Rights LLC and Cloud Imperium Rights Ltd.. Star Citizen®, Squadron 42®, Roberts Space Industries®, and Cloud Imperium® are registered trademarks of Cloud Imperium Rights LLC. All rights reserved.";
+
+export const FANKIT_NOTICE_SOURCE = {
+  document: "Fankit Agreement, clause 2(g)",
+  fankitVersion: "2025_11_19",
+  copiedOn: "2026-11-07",
+} as const;
+
+/** Under every ship image copied from RSI's ship matrix, linked to the ship's RSI page (ADR-009). */
+export const RSI_IMAGE_CREDIT = {
+  text: "Image: Roberts Space Industries",
+} as const;
+
+/**
  * The published contact address for corrections and takedowns (docs/legal/takedown.md). The owner
  * has not chosen one yet, so the footer and about page show that it is not yet published.
  */

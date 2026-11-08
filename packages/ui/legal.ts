@@ -27,6 +27,22 @@ export const WIKI_CREDIT = {
   url: "https://api.star-citizen.wiki/",
 } as const;
 
+/**
+ * docs/legal/attribution.md, "UEX Corp" row (ADR-013): wherever in-game shop prices appear, and on
+ * the about page. `notice` is UEX's own wording from its site footer.
+ */
+export const UEX_CREDIT = {
+  text: "In-game shop prices: UEX Corp community reports (uexcorp.space), via the Star Citizen Wiki API.",
+  notice: "Data is community-maintained and may not reflect live servers.",
+  url: "https://uexcorp.space/",
+} as const;
+
+/** docs/legal/attribution.md, "RSI pledge store" row (ADR-013). No referral codes, ever. */
+export const PLEDGE_STORE_CREDIT = {
+  text: "Pledge prices: the Roberts Space Industries pledge store.",
+  url: "https://robertsspaceindustries.com/pledge",
+} as const;
+
 export const STARBREAKER_CREDIT = {
   text: "Game data and models extracted with StarBreaker.",
   url: "https://github.com/hpbgithub/StarBreaker",

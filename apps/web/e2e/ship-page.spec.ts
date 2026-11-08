@@ -128,6 +128,67 @@ test("every ship file, concept or flying, has the same sections in the same orde
   );
 });
 
+// ADR-013: pledge and in-game prices come from fixtures/acquisition/ and carry their sources.
+interface OfferRow {
+  slug: string;
+  price_usd: number;
+}
+interface ShopPriceRow {
+  class_name: string;
+  kind: string;
+  price_auec: number;
+}
+const acquisition = <T>(file: string): T =>
+  JSON.parse(
+    readFileSync(
+      fileURLToPath(
+        new URL(`../../../fixtures/acquisition/${file}`, import.meta.url),
+      ),
+      "utf8",
+    ),
+  ) as T;
+
+test("Acquisition shows pledge and in-game prices with their sources", async ({
+  page,
+}) => {
+  const offers = acquisition<OfferRow[]>("PledgeOffer.json");
+  const shops = acquisition<ShopPriceRow[]>("ShopPrice.json");
+  const sold = vehicles.find((v) =>
+    shops.some((s) => s.class_name === v.class_name && s.kind === "purchase"),
+  );
+  const odin = offers.find((o) => o.slug === "odin");
+  if (sold === undefined || odin === undefined)
+    throw new Error(
+      "fixtures/acquisition needs a ship sold in the game and the Odin",
+    );
+  const lowest = Math.min(
+    ...shops
+      .filter((s) => s.class_name === sold.class_name && s.kind === "purchase")
+      .map((s) => s.price_auec),
+  );
+  await page.goto(`/ships/${sold.slug}`);
+  const acq = page.locator("#acquisition");
+  await expect(acq).toContainText(
+    `From ${lowest.toLocaleString("en-US")} aUEC`,
+  );
+  await expect(
+    acq.getByRole("table", { name: /In-game shop terminals/ }),
+  ).toBeVisible();
+  await expect(acq.getByRole("table", { name: /Pledge store/ })).toBeVisible();
+  await expect(acq).toContainText("may not reflect live servers");
+  await expect(page.locator("#sources")).toContainText("UEX Corp");
+  await expect(page.locator("#sources")).toContainText("RSI pledge store");
+
+  // A concept ship: RSI's own pledge page price, and no shops.
+  await page.goto("/ships/odin");
+  await expect(page.locator("#acquisition")).toContainText(
+    `${odin.price_usd.toLocaleString("en-US")} USD`,
+  );
+  await expect(page.locator("#acquisition")).toContainText(
+    "Not sold or rented in the game",
+  );
+});
+
 test("a component page shows its stats with the version and the ships that carry it", async ({
   page,
 }) => {

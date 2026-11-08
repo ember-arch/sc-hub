@@ -7,4 +7,5 @@ Files unit tests run on, so every normalizer and every page can be built and tes
 - `<game-version>/` — real extracted records captured per build by the pipeline (spec 01). Small, committed.
 - `linking/` — the labeled 200-item sample for entity-link precision (spec 03).
 - `fankit/` — git-ignored: the CIG fankit, unpacked (its logos, holoviewer models and agreement). Maker logos come from here (ADR-009).
+- `acquisition/` — pledge-store offers, UEX Corp's community-reported in-game shop prices and loaners for each ship, copied by `scripts/bootstrap-fixtures/acquisition.ts` (ADR-013). Not game data.
 - `rsi-media/` — git-ignored: RSI's official image of each pack ship, copied from its public ship matrix by `scripts/media/fetch-rsi.ts`; only `sources.json` (where each came from) and the README are committed (ADR-009).

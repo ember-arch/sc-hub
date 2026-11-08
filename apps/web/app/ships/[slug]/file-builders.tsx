@@ -4,11 +4,20 @@ import {
   ScaleLineup,
   StatsByChannel,
   TextLink,
+  formatDate,
   formatNumber,
   sentence,
   vehicleStatusBadge,
 } from "ui";
-import { WIKI_CREDIT } from "ui/legal";
+import { PLEDGE_STORE_CREDIT, UEX_CREDIT, WIKI_CREDIT } from "ui/legal";
+import {
+  type Acquisition,
+  OFFER_KIND,
+  acquisitionFor,
+  lowestShopPrice,
+  pledgeValue,
+  shopRows,
+} from "../../../lib/acquisition";
 import { armament } from "../../../lib/armament";
 import { type ShipView, flattenPorts, repo } from "../../../lib/data";
 import { loadoutGroups } from "../../../lib/loadout";
@@ -18,6 +27,7 @@ import {
   type ShipClaim,
   claimsFor,
   equipment,
+  insuranceOf,
   listEquipment,
   portCount,
   rankAmong,
@@ -31,6 +41,7 @@ import {
   showcaseFor,
 } from "../../../lib/showcase";
 import { crewRange, shipSpecRows } from "../../../lib/views";
+import { type PledgeRow, PledgeTable, ShopTable } from "./acquisition-tables";
 import { ArmamentStrip } from "./armament-strip";
 import { LoadoutPanels } from "./loadout-panels";
 import { PortTable } from "./port-table";
@@ -124,6 +135,118 @@ function mediaOf(
   return { videos, images };
 }
 
+const plural = (n: number, one: string): string =>
+  `${n} ${n === 1 ? one : `${one}s`}`;
+
+function pledgeRows(acq: Acquisition): PledgeRow[] {
+  return acq.offers.map((o, i) => ({
+    key: `${o.url}-${i}`,
+    title: o.title,
+    kind:
+      o.kind === "other"
+        ? (o.store_section ?? OFFER_KIND.other)
+        : OFFER_KIND[o.kind],
+    price_usd: o.price_usd,
+    warbond: o.warbond,
+    available: o.available,
+    observed_at: o.observed_at,
+    url: o.url,
+  }));
+}
+
+/** The pledge-store facts every ship file carries, in one order (ADR-013). */
+function pledgeFacts(acq: Acquisition): Fact[] {
+  const value = pledgeValue(acq.offers);
+  const upgrades = acq.offers.filter((o) => o.kind === "upgrade");
+  const packs = acq.offers.filter((o) => o.kind === "package");
+  const packsOnSale = packs.filter((o) => o.available).length;
+  return [
+    {
+      label: "Pledge, standalone",
+      value:
+        value === null
+          ? "No standalone listing on file"
+          : `${n0(value.price_usd)} USD, ${value.available ? "on sale" : `not on sale (read ${formatDate(value.observed_at)})`}`,
+    },
+    {
+      label: "Upgrade to it",
+      value:
+        upgrades.length === 0
+          ? "Not listed"
+          : upgrades.some((o) => o.available)
+            ? "On sale"
+            : "Not on sale",
+    },
+    {
+      label: "Packs containing it",
+      value:
+        packs.length === 0
+          ? "None listed"
+          : `${packs.length} listed, ${packsOnSale === 0 ? "none" : packsOnSale} on sale`,
+    },
+  ];
+}
+
+const heading = "m-0 text-heading text-primary";
+const note = "m-0 text-caption text-secondary";
+
+/** The two Acquisition tables: the pledge store, then the game's shop terminals (ADR-013). */
+function StoreAndShops({
+  acq,
+  pledgeSource,
+  uexSource,
+  build,
+}: {
+  readonly acq: Acquisition;
+  readonly pledgeSource: number;
+  readonly uexSource: number;
+  /** The LIVE build the shop reports are for, or "concept" for a ship not in the game. */
+  readonly build: string | null;
+}) {
+  const pledge = pledgeRows(acq);
+  const shops = shopRows(acq.shops);
+  return (
+    <>
+      <div className="flex flex-col gap-3">
+        <h3 className={heading}>Pledge store</h3>
+        {pledge.length === 0 ? (
+          <Gap>No pledge store listing on file.</Gap>
+        ) : (
+          <>
+            <PledgeTable rows={pledge} />
+            <p className={note}>
+              US dollars as RSI lists them [{pledgeSource}]. Sales and warbond
+              editions change them.
+              {acq.offers.some((o) => o.kind === "upgrade")
+                ? " An upgrade to this ship costs the difference from the ship it starts from."
+                : null}
+            </p>
+          </>
+        )}
+      </div>
+      <div className="flex flex-col gap-3">
+        <h3 className={heading}>In-game shops</h3>
+        {build === "concept" ? (
+          <Gap>Not sold or rented in the game: it is in concept.</Gap>
+        ) : shops.length === 0 ? (
+          <Gap>
+            No shop terminal has been reported to UEX for LIVE {build ?? ""}.
+          </Gap>
+        ) : (
+          <>
+            <ShopTable rows={shops} />
+            <p className={note}>
+              Community reports to UEX Corp for LIVE {build ?? ""}, via the Star
+              Citizen Wiki API [{uexSource}]. {UEX_CREDIT.notice} UEX lists one
+              rental price per terminal without stating the period.
+            </p>
+          </>
+        )}
+      </div>
+    </>
+  );
+}
+
 function claimsBlock(
   claims: readonly ShipClaim[],
   sections: readonly ShipClaim["section"][],
@@ -192,6 +315,11 @@ export function packShipFile(ship: ShipView): ShipFileProps {
   const others = r.ships.filter((o) => o.stats !== null);
   const variants = r.variantsOf(v.class_name);
   const image = media().ship(v.class_name, v.name);
+  const acq = acquisitionFor(v.slug, v.class_name);
+  const pledge = pledgeValue(acq.offers);
+  const buy = lowestShopPrice(acq.shops, "purchase");
+  const rent = lowestShopPrice(acq.shops, "rental");
+  const insurance = insuranceOf(s?.raw);
   const rankOf = (
     pick: (o: ShipView) => number | null,
     value: number | null,
@@ -229,7 +357,27 @@ export function packShipFile(ship: ShipView): ShipFileProps {
     ...(image === null
       ? []
       : [{ text: "RSI ship page and image", href: image.credit.href }]),
+    ...(acq.offers[0] === undefined
+      ? []
+      : [
+          {
+            text: "RSI pledge store, as the Star Citizen Wiki API relays it",
+            href: PLEDGE_STORE_CREDIT.url,
+            note: `Pledge prices, copied ${acq.offers[0].fetched_at.slice(0, 10)}`,
+          },
+        ]),
+    ...(acq.shops[0] === undefined
+      ? []
+      : [
+          {
+            text: "UEX Corp, community price reports",
+            href: UEX_CREDIT.url,
+            note: `In-game shop prices for LIVE ${version ?? ""}, via the Star Citizen Wiki API, copied ${acq.shops[0].fetched_at.slice(0, 10)}`,
+          },
+        ]),
   ]);
+  const cite = (href: string): number =>
+    sources.findIndex((x) => x.href === href) + 1;
 
   const guns = arms.find((a) => a.kind === "guns");
   const missiles = arms.find((a) => a.kind === "missiles");
@@ -306,7 +454,43 @@ export function packShipFile(ship: ShipView): ShipFileProps {
           : String(ship.paints.length),
       numeric: ship.paints.length > 0,
     },
-    { label: "Shops and prices", value: "Not in our data yet" },
+    ...pledgeFacts(acq),
+    {
+      label: "Buy in the game",
+      value:
+        buy === null
+          ? "Not reported to UEX"
+          : `From ${n0(buy.price_auec)} aUEC, ${plural(buy.terminals, "shop")}`,
+    },
+    {
+      label: "Rent in the game",
+      value:
+        rent === null
+          ? "Not reported to UEX"
+          : `From ${n0(rent.price_auec)} aUEC, ${plural(rent.terminals, "shop")}`,
+    },
+    {
+      label: "Insurance claim",
+      value:
+        insurance === null
+          ? "Not in the game data"
+          : `${formatNumber(insurance.claim_min, 2)} min`,
+      numeric: insurance !== null,
+    },
+    {
+      label: "Expedited claim",
+      value:
+        insurance === null
+          ? "Not in the game data"
+          : `${formatNumber(insurance.expedite_min, 2)} min for ${n0(insurance.expedite_auec)} aUEC`,
+    },
+    {
+      label: "Loaners",
+      value:
+        acq.loaners.length === 0
+          ? "None listed"
+          : acq.loaners.map((l) => l.loaner_name).join(", "),
+    },
   ];
 
   const operations: Fact[] = [
@@ -464,6 +648,8 @@ export function packShipFile(ship: ShipView): ShipFileProps {
         v.size_class === null ? null : sentence(v.size_class),
         undefined,
       ],
+      ["Pledge", pledge === null ? null : n0(pledge.price_usd), "USD"],
+      ["Buy in game", buy === null ? null : n0(buy.price_auec), "aUEC"],
     ].map(([label, value, unit]) =>
       value === null
         ? { label: label as string, value: "Not on file" }
@@ -500,8 +686,14 @@ export function packShipFile(ship: ShipView): ShipFileProps {
       },
       acquisition: {
         body: (
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-6">
             <Facts facts={acquisition} />
+            <StoreAndShops
+              acq={acq}
+              pledgeSource={cite(PLEDGE_STORE_CREDIT.url)}
+              uexSource={cite(UEX_CREDIT.url)}
+              build={version}
+            />
             {image === null ? null : (
               <p className="m-0 text-caption text-secondary">
                 Official page:{" "}
@@ -672,11 +864,13 @@ export function conceptShipFile(concept: ConceptShip): ShipFileProps {
   const show = showcaseFor(concept.slug, concept.name);
   const claims = claimsFor(concept.slug);
   const others = r.ships.filter((o) => o.stats !== null);
+  const acq = acquisitionFor(concept.slug, null);
+  const pledge = pledgeValue(acq.offers);
   const sources = sourceList(show, [
     {
       text: `RSI ship matrix, ${concept.name}`,
       href: concept.page_url,
-      note: `Published figures, copied ${concept.fetched_at.slice(0, 10)}`,
+      note: `Published figures, copied ${concept.fetched_at.slice(0, 10)}${acq.offers[0] === undefined ? "" : `; pledge price from the same page, copied ${acq.offers[0].fetched_at.slice(0, 10)}`}`,
     },
   ]);
   const matrix = sources.findIndex((x) => x.href === concept.page_url) + 1;
@@ -777,6 +971,13 @@ export function conceptShipFile(concept: ConceptShip): ShipFileProps {
         label: "Size",
         value: concept.size === null ? notStated : sentence(concept.size),
       },
+      {
+        label: "Pledge",
+        value: pledge === null ? "Not on file" : n0(pledge.price_usd),
+        unit: pledge === null ? undefined : "USD",
+        numeric: pledge !== null,
+      },
+      { label: "Buy in game", value: "Not in the game" },
     ],
     particularsSource: `RSI ship matrix [${matrix}]. In concept: no game data yet.`,
     sections: {
@@ -793,7 +994,7 @@ export function conceptShipFile(concept: ConceptShip): ShipFileProps {
       },
       acquisition: {
         body: (
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-6">
             <Facts
               facts={[
                 { label: "Status", value: "Concept" },
@@ -804,10 +1005,27 @@ export function conceptShipFile(concept: ConceptShip): ShipFileProps {
                     show?.article?.published_at.slice(0, 10) ?? "Not on file",
                   numeric: show?.article != null,
                 },
+                ...pledgeFacts(acq),
+                { label: "Buy in the game", value: "Not in the game" },
+                { label: "Rent in the game", value: "Not in the game" },
+                {
+                  label: "Insurance claim",
+                  value: "Not in the game data yet",
+                },
+                {
+                  label: "Expedited claim",
+                  value: "Not in the game data yet",
+                },
+                { label: "Loaners", value: "Not on file" },
                 { label: "Variants", value: "None on record" },
                 { label: "Flyable", value: "No" },
-                { label: "Shops and prices", value: "Not sold in the game" },
               ]}
+            />
+            <StoreAndShops
+              acq={acq}
+              pledgeSource={matrix}
+              uexSource={0}
+              build="concept"
             />
             <p className="m-0 text-caption text-secondary">
               Official page:{" "}

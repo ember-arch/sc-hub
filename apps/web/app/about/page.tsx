@@ -7,9 +7,11 @@ import {
   DISCLAIMER,
   DISCLAIMER_SOURCE,
   FANKIT_CREDIT,
+  PLEDGE_STORE_CREDIT,
   RSI_IMAGE_CREDIT,
   STARBREAKER_CREDIT,
   TRADEMARK_LINE,
+  UEX_CREDIT,
   UNP4K_CREDIT,
   WIKI_CREDIT,
 } from "ui/legal";
@@ -58,6 +60,17 @@ export default function AboutPage() {
             <li>
               <TextLink href={WIKI_CREDIT.url} external>
                 {WIKI_CREDIT.text}
+              </TextLink>
+            </li>
+            <li>
+              <TextLink href={UEX_CREDIT.url} external>
+                {UEX_CREDIT.text}
+              </TextLink>{" "}
+              {UEX_CREDIT.notice}
+            </li>
+            <li>
+              <TextLink href={PLEDGE_STORE_CREDIT.url} external>
+                {PLEDGE_STORE_CREDIT.text}
               </TextLink>
             </li>
             <li>

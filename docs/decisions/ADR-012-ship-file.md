@@ -1,6 +1,6 @@
 # ADR-012: The ship file: one template for every ship, two columns, and a hologram viewer
 
-- Status: accepted (owner direction 2026-11-08); supersedes the ship-page parts of ADR-008, ADR-010 and ADR-011
+- Status: accepted (owner direction 2026-11-08); supersedes the ship-page parts of ADR-008, ADR-010 and ADR-011; shops and prices added by ADR-013
 - Date: 2026-11-08
 - Deciders: owner, Claude Code session 2026-11-08
 
@@ -24,4 +24,4 @@ On the dossier pages (ADR-011) the owner asked for: the holographic look of RSI'
 
 - `concept-page.tsx`, `live-dossier.tsx`, `ship-stage.tsx`, `model-stage.tsx` and `exhibits.tsx` are gone; `file-builders.tsx` builds a `ShipFileProps` for a pack ship or a concept ship, and `ship-file.tsx` renders it.
 - Section ids on ship pages are now `brief`, `acquisition`, `operations`, `combat`, `mobility`, `scale`, `imagery`, `specifications`, `hardpoints`, `sources`.
-- Shops and prices, pledge or in-game, are a named gap the data does not fill yet.
+- Shops and prices, pledge or in-game, were a named gap here; ADR-013 fills them and adds two particulars (Pledge, Buy in game), so every ship file now has twelve.

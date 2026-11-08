@@ -22,7 +22,7 @@ Looking at the spec 02 pages, the owner said the site "feels like a slightly buf
 
 ## What this concept does not do yet
 
-- **Imagery.** Every visual here is drawn from data. The cinematic step is the renders: the owner downloads the fankit into `fixtures/fankit/`, and later the pipeline publishes thumbnails to R2. The stage already takes an image.
+- **Imagery.** Every visual here is drawn from data. The cinematic step is the renders: the owner downloads the fankit into `fixtures/fankit/`, and later the pipeline publishes thumbnails to R2. The stage already takes an image. Update 2026-11-07: the fankit has no image of each ship; the stage now shows RSI's official image locally, and maker logos come from the fankit (ADR-009).
 - **The other pages.** The ships index as a gallery of large renders, the component and manufacturer pages, and compare follow once the direction is approved.
 - **Rules still to loosen when images arrive.** A darkening gradient for legible text over a render (system.md lists "gradient hero banners" as an anti-reference) and the image ratio of a full-bleed render need their own decision.
 

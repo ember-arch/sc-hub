@@ -15,6 +15,14 @@ pipeline/reports/*.md
 # fankit downloads (large; licensed separately)
 fixtures/fankit/
 
+# images copied from RSI's public ship matrix (ADR-009): local only, never committed
+fixtures/rsi-media/*
+!fixtures/rsi-media/README.md
+!fixtures/rsi-media/sources.json
+
+# web copies built by scripts/media/prepare.ts from the two folders above (ADR-009)
+apps/web/public/media/
+
 # embedded local database for pnpm db:* when DATABASE_URL is unset
 packages/db/.pglite/
 

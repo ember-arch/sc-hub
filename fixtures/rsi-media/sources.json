@@ -1,0 +1,52 @@
+[
+  {
+    "class_name": "AEGS_Gladius",
+    "file": "AEGS_Gladius.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/gladius/Gladius",
+    "image_url": "https://media.robertsspaceindustries.com/asbrpwjjho1z0/wallpaper_1920x1080.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 561427,
+    "sha256": "92c4a1143c15fe298c38c17382f4c6f16e12059c9832643a762470b5b4b54696",
+    "fetched_at": "2026-11-08T05:59:56.134Z"
+  },
+  {
+    "class_name": "ANVL_Carrack",
+    "file": "ANVL_Carrack.png",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/carrack/Carrack",
+    "image_url": "https://media.robertsspaceindustries.com/bau5bdotm8te8/wallpaper_1920x1080.png",
+    "content_type": "image/png",
+    "bytes": 2664931,
+    "sha256": "2f9470eb4a8bed5d5636397957d12bae22ccee2fc1282ac029d6a1b419a80d0e",
+    "fetched_at": "2026-11-08T06:00:01.189Z"
+  },
+  {
+    "class_name": "DRAK_Cutlass_Black",
+    "file": "DRAK_Cutlass_Black.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/drake-cutlass/Cutlass-Black",
+    "image_url": "https://media.robertsspaceindustries.com/56iszc92bl9oi/wallpaper_1920x1080.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 1962712,
+    "sha256": "acbf97c45d80efdaeec76f18b28147b5d951df256cbd9f242e78a1daeb237ad1",
+    "fetched_at": "2026-11-08T06:00:06.818Z"
+  },
+  {
+    "class_name": "MISC_Fury",
+    "file": "MISC_Fury.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/fury/Fury",
+    "image_url": "https://media.robertsspaceindustries.com/icoxi8ahyr0i9/wallpaper_1920x1080.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 2200058,
+    "sha256": "a4a8484f43e2da6659273e6f5bfc7fa4445241a10aad27de68a18fa3624263a9",
+    "fetched_at": "2026-11-08T06:00:11.493Z"
+  },
+  {
+    "class_name": "RSI_Polaris",
+    "file": "RSI_Polaris.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/polaris/Polaris",
+    "image_url": "https://media.robertsspaceindustries.com/oe0wikh6g3ltm/wallpaper_1920x1080.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 1312705,
+    "sha256": "a7277c53e7704766eae918698a79a530ad68c0f244aa632353cf5b38d4d7d59d",
+    "fetched_at": "2026-11-08T06:00:16.157Z"
+  }
+]

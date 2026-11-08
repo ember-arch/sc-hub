@@ -187,6 +187,19 @@ test("Acquisition shows pledge and in-game prices with their sources", async ({
   await expect(page.locator("#acquisition")).toContainText(
     "Not sold or rented in the game",
   );
+
+  // The ships table, compare and the home register show the headline prices, credited.
+  await page.goto("/ships?view=table");
+  await expect(
+    page.getByRole("columnheader", { name: /Pledge/ }),
+  ).toBeVisible();
+  await expect(page.getByText(/may not reflect live servers/)).toBeVisible();
+  await page.goto(`/compare?ships=${sold.slug}`);
+  await expect(page.getByRole("main")).toContainText("Pledge status");
+  await page.goto("/");
+  await expect(page.getByRole("main")).toContainText(
+    odin.price_usd.toLocaleString("en-US"),
+  );
 });
 
 test("a component page shows its stats with the version and the ships that carry it", async ({

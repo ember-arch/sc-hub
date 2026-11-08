@@ -33,4 +33,4 @@ UEX's site terms limit use of the website to "personal, non-commercial purposes"
 
 - Before launch, the owner asks UEX (support email on uexcorp.space/about/terms) for written permission to show its prices, relayed through the wiki, with the credit above. Until then the prices are for local development, like the RSI images (ADR-009).
 - Prices go stale. Rerun `scripts/bootstrap-fixtures/acquisition.ts` after the pack is regenerated, or whenever a sale changes the store. Every row shows when it was read or reported.
-- The compare page and the dossier index do not show prices yet.
+- The compare page has an Acquisition group (pledge, pledge status, lowest buy and rent, insurance claim, expedite fee); the ships table has Pledge and Buy in game columns, with `unitsBelow` on `DataTable` so thirteen columns fit at 1280 px; the home register has a Pledge column. Each carries a credit line (`PriceCredit`). Cards keep their two stats (system.md section 3).

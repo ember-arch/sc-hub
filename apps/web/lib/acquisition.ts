@@ -163,3 +163,26 @@ export const OFFER_KIND: Readonly<Record<PledgeOffer["kind"], string>> = {
   package: "Pack",
   other: "Other",
 };
+
+export interface ShipPrices {
+  readonly pledge: PledgeValue | null;
+  readonly buy_auec: number | null;
+  readonly rent_auec: number | null;
+}
+
+/** The headline prices the compare page and the indexes show (ADR-013). */
+export function pricesFor(slug: string, className: string | null): ShipPrices {
+  const a = acquisitionFor(slug, className);
+  return {
+    pledge: pledgeValue(a.offers),
+    buy_auec: lowestShopPrice(a.shops, "purchase")?.price_auec ?? null,
+    rent_auec: lowestShopPrice(a.shops, "rental")?.price_auec ?? null,
+  };
+}
+
+/** When the price fixtures were last copied, for credit lines; null without them. */
+export function pricesCopiedAt(): string | null {
+  const a = load();
+  const times = [...a.offers, ...a.shops].map((row) => row.fetched_at).sort();
+  return times.at(-1) ?? null;
+}

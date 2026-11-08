@@ -4,13 +4,16 @@ import type {
   CompareGroup,
   CompareRow,
 } from "../app/compare/compare-table";
+import { pricesFor } from "./acquisition";
 import { compareHref, withoutShip } from "./compare";
 import type { ShipView } from "./data";
+import { insuranceOf } from "./ship-file";
 import { VEHICLE_STATS, crewRange } from "./views";
 
 /**
- * Rows for the compare page (spec 02, "Compare"): the key-facts set first, then every other
- * VehicleStats field from the ship page's own field table, one column per ship. A row every ship
+ * Rows for the compare page (spec 02, "Compare"): the key-facts set first, then prices and
+ * insurance (ADR-013), then every other VehicleStats field from the ship page's own field table,
+ * one column per ship. A row every ship
  * lacks is omitted (spec 02 notes: omit null rows); a ship missing a stat the others have shows a
  * dash in the table.
  */
@@ -83,6 +86,55 @@ const KEY_FACTS: readonly RowSpec[] = [
   },
 ];
 
+const prices = (s: ShipView) => pricesFor(s.vehicle.slug, s.vehicle.class_name);
+
+/**
+ * Prices and insurance for acquisition planning (ADR-013): the pledge store, UEX Corp's lowest
+ * reported shop prices and the game's insurance figures. The page credits both price sources.
+ */
+const ACQUISITION: readonly RowSpec[] = [
+  {
+    key: "pledge",
+    label: "Pledge",
+    unit: "USD",
+    value: (s) => prices(s).pledge?.price_usd ?? null,
+  },
+  {
+    key: "pledge_status",
+    label: "Pledge status",
+    value: (s) => {
+      const pledge = prices(s).pledge;
+      if (pledge === null) return null;
+      return pledge.available ? "On sale" : "Not on sale";
+    },
+  },
+  {
+    key: "buy",
+    label: "Buy in game, lowest",
+    unit: "aUEC",
+    value: (s) => prices(s).buy_auec,
+  },
+  {
+    key: "rent",
+    label: "Rent in game, lowest",
+    unit: "aUEC",
+    value: (s) => prices(s).rent_auec,
+  },
+  {
+    key: "insurance_claim",
+    label: "Insurance claim",
+    unit: "min",
+    digits: 2,
+    value: (s) => insuranceOf(s.stats?.raw)?.claim_min ?? null,
+  },
+  {
+    key: "expedite_fee",
+    label: "Expedite fee",
+    unit: "aUEC",
+    value: (s) => insuranceOf(s.stats?.raw)?.expedite_auec ?? null,
+  },
+];
+
 /** The stats the key facts already cover; everything else in VEHICLE_STATS makes the second group. */
 const IN_KEY_FACTS = new Set<string>(["cargo_scu", "length_m", "mass_kg"]);
 
@@ -112,6 +164,7 @@ function rows(specs: readonly RowSpec[], ships: readonly ShipView[]) {
 export function compareGroups(ships: readonly ShipView[]): CompareGroup[] {
   return [
     { title: "Key facts", rows: rows(KEY_FACTS, ships) },
+    { title: "Acquisition", rows: rows(ACQUISITION, ships) },
     { title: "Specifications", rows: rows(STATS, ships) },
   ].filter((group) => group.rows.length > 0);
 }

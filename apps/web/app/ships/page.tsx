@@ -24,6 +24,7 @@ import { Site } from "../../lib/site";
 import { crewRange, shipCard, shipRows } from "../../lib/views";
 import { conceptShips, showcaseFor } from "../../lib/showcase";
 import { CompareLink, CompareToggle } from "../compare/compare-controls";
+import { PriceCredit } from "../price-credit";
 import { ShipTable } from "./ship-table";
 import { shipCardImage } from "../../lib/media";
 
@@ -120,7 +121,10 @@ export default async function ShipsPage({
             ship.
           </EmptyState>
         ) : state.view === "table" ? (
-          <ShipTable rows={shipRows(ships)} version={r.liveVersion} />
+          <div className="flex flex-col gap-3">
+            <ShipTable rows={shipRows(ships)} version={r.liveVersion} />
+            <PriceCredit />
+          </div>
         ) : (
           <ul className="m-0 grid list-none grid-cols-2 gap-4 p-0 md:grid-cols-3 lg:grid-cols-4">
             {ships.map((ship, index) => (

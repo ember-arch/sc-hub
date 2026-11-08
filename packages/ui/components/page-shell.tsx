@@ -20,6 +20,8 @@ export interface PageShellProps {
   readonly current?: NavSection | undefined;
   /** Ship pages default to dark (system.md principle 3); everything else follows the system. */
   readonly theme?: "light" | "dark" | undefined;
+  /** Full-bleed content above the main column: the ship page's stage (ADR-008). */
+  readonly stage?: ReactNode;
   readonly wikiCredit?: boolean | undefined;
 }
 
@@ -30,6 +32,7 @@ export function PageShell({
   versions,
   current,
   theme,
+  stage,
   wikiCredit = true,
 }: PageShellProps) {
   return (
@@ -68,7 +71,11 @@ export function PageShell({
           <CommandPalette entries={searchEntries} />
         </div>
       </header>
-      <main id="main" className="mx-auto w-full max-w-content flex-1 px-4 pb-8">
+      {stage === undefined ? null : <div id="main">{stage}</div>}
+      <main
+        id={stage === undefined ? "main" : undefined}
+        className="mx-auto w-full max-w-content flex-1 px-4 pb-8"
+      >
         {children}
       </main>
       <Footer versions={versions} wikiCredit={wikiCredit} />

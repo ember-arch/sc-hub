@@ -83,6 +83,7 @@ export const color: Record<Scheme, Record<ColorToken, string>> = {
 };
 
 export const typeTokens = [
+  "hero",
   "display",
   "title",
   "heading",
@@ -102,6 +103,7 @@ export interface TypeStyle {
 }
 
 export const type: Record<TypeToken, TypeStyle> = {
+  hero: { size: 80, line: 84, weight: 500 },
   display: { size: 40, line: 44, weight: 500 },
   title: { size: 28, line: 34, weight: 500 },
   heading: { size: 20, line: 28, weight: 500 },

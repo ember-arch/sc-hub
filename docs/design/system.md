@@ -42,7 +42,8 @@ Rules: one accent. Manufacturer brand colors may appear only as a 3 px rule on t
 
 | Token | Size / line | Weight | Use |
 | --- | --- | --- | --- |
-| `display` | 40 / 44 | 500 | Entity name in a hero |
+| `hero` | 80 / 84 | 500 | Ship name on the full-bleed stage, desktop (ADR-008) |
+| `display` | 40 / 44 | 500 | Entity name in a hero; the stage's headline figures |
 | `title` | 28 / 34 | 500 | Page title |
 | `heading` | 20 / 28 | 500 | Section heading |
 | `body` | 16 / 26 | 400 | Prose |
@@ -84,6 +85,11 @@ Added by spec 02 (ADR-006):
 
 - `FilterBar` — a GET form of labelled native selects; filters are URL state, so each change navigates to a shareable address.
 - `SegmentedLinks` — a row of links that reads as one control (the card/table toggle).
+
+Proposed with the cinematic ship page concept (ADR-008):
+
+- `ScaleLineup` — ships on record and a person drawn to scale from length and height, the page's ship in the accent.
+- `RankBar` — where one ship sits among the ships on record for one stat, linear or log scale, with its rank in words.
 
 ## 4. Page templates
 

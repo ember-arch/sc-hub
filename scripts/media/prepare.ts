@@ -280,18 +280,15 @@ async function showcases(): Promise<Showcase[]> {
 }
 
 /**
- * The 3D models are Draco-compressed. model-viewer would fetch its decoder from Google's CDN; the
- * site serves three's copy from /media/draco/ instead, so a model page makes no third-party request.
+ * The 3D models are Draco-compressed. The holoviewer (ADR-012) loads three's decoder from
+ * /media/draco/, copied here, so a model page makes no third-party request.
  */
 function copyDracoDecoder(): void {
   const require = createRequire(import.meta.url);
-  const viewer = dirname(
-    require.resolve("@google/model-viewer/package.json", {
-      paths: [join(repoRoot, "apps", "web")],
-    }),
-  );
   // three does not export its package.json: walk up from its main entry to the package folder.
-  const entry = require.resolve("three", { paths: [viewer] });
+  const entry = require.resolve("three", {
+    paths: [join(repoRoot, "apps", "web")],
+  });
   const marker = join("node_modules", "three");
   const three = entry.slice(0, entry.lastIndexOf(marker) + marker.length);
   const from = join(three, "examples", "jsm", "libs", "draco", "gltf");

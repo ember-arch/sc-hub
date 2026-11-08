@@ -61,26 +61,34 @@ const shipStats = stats.find((s) => s.class_name === ship?.class_name);
 if (ship === undefined || shipStats === undefined || live === undefined)
   throw new Error("pack needs one ship with stats and a LIVE build");
 
+// ADR-012: every ship page is the same ship file, ten numbered sections in one order.
+const SECTIONS = [
+  "Brief",
+  "Acquisition and status",
+  "Crew and operations",
+  "Combat",
+  "Mobility",
+  "Scale",
+  "Imagery",
+  "Specifications",
+  "Hardpoints and loadout",
+  "Sources",
+];
+
 test("the ship page has every section in order, each stat with its unit and version", async ({
   page,
 }) => {
   await page.goto(`/ships/${ship.slug}`);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(ship.name);
-  const headings = page.getByRole("heading", { level: 2 });
-  await expect(headings).toContainText([
-    "Specifications",
-    "Hardpoints and stock loadout",
-  ]);
-  const specs = page.locator("#specs");
+  await expect(page.getByRole("heading", { level: 2 })).toContainText(SECTIONS);
+  const specs = page.locator("#specifications");
   await expect(specs).toContainText(`LIVE ${live.version}`);
   const mass = specs.locator("dt", { hasText: "Mass" }).locator("..");
   await expect(mass).toContainText("kg");
   await expect(mass).toContainText(shipStats.mass_kg.toLocaleString("en-US"));
   const length = specs.locator("dt", { hasText: "Length" }).locator("..");
   await expect(length).toContainText("m");
-  await expect(page.locator("#hardpoints")).toContainText(
-    `LIVE ${live.version}`,
-  );
+  await expect(page.locator("#hardpoints")).toContainText("ports");
 });
 
 test("the PTU toggle shows only when a PTU build differs; otherwise the page says why", async ({
@@ -90,28 +98,34 @@ test("the PTU toggle shows only when a PTU build differs; otherwise the page say
   const toggle = page.getByRole("button", { name: /PTU differences/ });
   if (ptu === undefined) {
     await expect(toggle).toHaveCount(0);
-    await expect(page.locator("#specs")).toContainText(
+    await expect(page.locator("#specifications")).toContainText(
       "No PTU build is on record",
     );
   } else {
     // With a PTU build the specs aside names both channels; the toggle depends on the diff.
-    await expect(page.locator("#specs")).toContainText(`PTU ${ptu.version}`);
+    await expect(page.locator("#specifications")).toContainText(
+      `PTU ${ptu.version}`,
+    );
   }
 });
 
-test("variants and paints, and changed in this version, stay out of the page until there is something in them", async ({
+test("every ship file, concept or flying, has the same sections in the same order", async ({
   page,
 }) => {
-  // The bootstrap pack has no variants, paints or second version (ADR-007).
-  await page.goto(`/ships/${ship.slug}`);
-  await expect(page.locator("#specs")).toBeVisible();
-  await expect(page.locator("#variants")).toHaveCount(0);
-  // No heading for a section the page leaves out.
-  await expect(
-    page.getByRole("heading", {
-      name: /Variants and paints|Changed in this version/,
-    }),
-  ).toHaveCount(0);
+  for (const slug of [ship.slug, "perseus", "odin"]) {
+    await page.goto(`/ships/${slug}`);
+    const titles = await page
+      .locator("main h2[id$='-title']")
+      .evaluateAll((hs) =>
+        hs.map((h) => (h.textContent ?? "").replace(/^\d+/, "").trim()),
+      );
+    expect(titles, slug).toEqual(SECTIONS);
+  }
+  // A section with nothing on record says so rather than disappearing.
+  await page.goto("/ships/odin");
+  await expect(page.locator("#specifications")).toContainText(
+    "Not in the game data yet",
+  );
 });
 
 test("a component page shows its stats with the version and the ships that carry it", async ({

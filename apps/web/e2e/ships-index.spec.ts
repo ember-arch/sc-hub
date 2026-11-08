@@ -162,7 +162,9 @@ test("on a phone the table keeps name and cargo and expands a row for the rest",
   await expect(
     page.getByRole("button", { name: "Less" }).first(),
   ).toBeVisible();
-  await expect(page.getByText("Mass (kg)").first()).toBeVisible();
+  await expect(
+    page.locator("tbody dt").filter({ hasText: "Mass (kg)" }).first(),
+  ).toBeVisible();
   await context.close();
 });
 
@@ -264,3 +266,24 @@ for (const width of [820, 1024, 1180]) {
     await context.close();
   });
 }
+
+test("where columns are hidden, the Sort by select sorts by any of them", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({
+    viewport: { width: 1024, height: 900 },
+  });
+  const page = await context.newPage();
+  await page.goto("/ships?view=table");
+  const names = page.getByRole("table").locator("tbody tr td:first-child");
+  // Mass is hidden at this width; the select still offers it.
+  await expect(page.getByRole("columnheader", { name: /Mass/ })).toBeHidden();
+  await page
+    .getByLabel("Sort by")
+    .selectOption({ label: "Mass (kg), high to low" });
+  const mass = (v: VehicleRow): number => liveMass.get(v.class_name) ?? -1;
+  await expect(names).toHaveText(
+    [...byName].sort((a, b) => mass(b) - mass(a)).map((v) => v.name),
+  );
+  await context.close();
+});

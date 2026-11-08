@@ -22,7 +22,7 @@ Every color used for text now reads at 4.5:1 or more on every background (`bg.pa
 | `text.muted` | light | `#8A8E96` | `#696D74` | 2.85:1 on inset | 4.51:1 on inset |
 | `text.muted` | dark | `#6E7279` | `#82868E` | 3.46:1 on raised | 4.58:1 on raised |
 
-The dark accent, success, warning and danger, and both schemes' primary and secondary text, already passed and are unchanged. `text.muted` now passes too, which settles the ADR-005 question of whether to darken it: it is darkened, and it may be used for real text again, not only placeholders. Local Lighthouse runs missed the light-mode failures because the machine's system scheme is dark; the unit test does not depend on that.
+The dark accent, success, warning and danger, the light danger (4.59:1 on inset), and both schemes' primary and secondary text already passed and are unchanged. The favicon (`apps/web/app/icon.svg`, ADR-005) follows the light accent. `text.muted` now passes too, which settles the ADR-005 question of whether to darken it: it is darkened, and it may be used for real text again, not only placeholders. Local Lighthouse runs missed the light-mode failures because the machine's system scheme is dark; the unit test does not depend on that.
 
 ### Design rules (CLAUDE.md section 7, system.md sections 1 and 2)
 
@@ -36,10 +36,11 @@ The dark accent, success, warning and danger, and both schemes' primary and seco
 | Decision | Change |
 | --- | --- |
 | Ship key facts no longer repeat the hero | Manufacturer and status leave the key-facts block; the hero already shows the manufacturer above the name and the status badge beside it. Key facts are role, size, crew, cargo, length and mass. The four stats that also appear in the specifications stay in both, because the specifications are where their PTU differences show. Compare keeps manufacturer and status in its key facts, since it has no hero per ship |
-| Empty sections stay out of the page | "Variants and paints" renders only when the ship has a variant or a paint; "Changed in this version" waits for spec 01's `diff.json` and a second version. This reverses ADR-006's choice to show them as empty states |
+| Empty sections stay out of the page | "Variants and paints" renders only when the ship has a variant or a paint; "Changed in this version" waits for spec 01's `diff.json` and a second version, and is built then (tracked in spec 01's notes). This reverses ADR-006's choice to show them as empty states. Sections whose data the pack always has (specifications, hardpoints) keep their empty states for a ship that lacks it |
 | One patch strip per page | The home page drops its "Current builds" section; the footer strip is on every page, home included, so spec 00's "on home and in the footer" still holds |
 | The footer line "SC Hub is a non-commercial fan project." | Kept; it is a plain signal to CIG |
 | The manufacturer page's 3 px rule | Drawn in the `border.strong` token until the fankit supplies brand colors; spec 02's "Manufacturer pages" criterion is ticked on that basis |
+| Wide tables between phone and desktop | Found while the owner looked at the site in an 800 px window: the eleven-column ships table scrolled sideways from 768 px until about 1200 px. `DataTable` takes `expandBelow` (`md` by default, `lg` or `xl`); the ships table uses `xl`, so it keeps the expand-row layout until all columns fit. Wherever a sortable column is hidden, a "Sort by" select above the table offers every column in both directions, so the spec's "sort by any stat column in table mode" holds at every width, phones included. An e2e checks for sideways scroll at 820, 1024 and 1180 px |
 | The three criteria ticked with caveats in ADR-006 (308 instead of 301, "changed in this version" without `diff.json`, the PTU toggle on synthetic rows) | Confirmed as ticked |
 
 ## Still the owner's

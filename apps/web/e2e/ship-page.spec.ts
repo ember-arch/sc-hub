@@ -106,7 +106,12 @@ test("variants and paints, and changed in this version, stay out of the page unt
   await page.goto(`/ships/${ship.slug}`);
   await expect(page.locator("#specs")).toBeVisible();
   await expect(page.locator("#variants")).toHaveCount(0);
-  await expect(page.locator("#changes")).toHaveCount(0);
+  // No heading for a section the page leaves out.
+  await expect(
+    page.getByRole("heading", {
+      name: /Variants and paints|Changed in this version/,
+    }),
+  ).toHaveCount(0);
 });
 
 test("a component page shows its stats with the version and the ships that carry it", async ({

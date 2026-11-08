@@ -195,3 +195,15 @@ describe("contrast", () => {
     expect(contrast("#767676", "#FFFFFF")).toBeCloseTo(4.54, 2);
   });
 });
+
+// accent.bg carries text where something is selected (the palette's active result, a pressed
+// compare toggle, the news source chip); only text.primary sits on it.
+describe("contrast on accent.bg", () => {
+  for (const scheme of ["light", "dark"] as const) {
+    it(`text.primary reads at 4.5:1 or more on accent.bg, ${scheme}`, () => {
+      expect(
+        contrast(color[scheme]["text.primary"], color[scheme]["accent.bg"]),
+      ).toBeGreaterThanOrEqual(4.5);
+    });
+  }
+});

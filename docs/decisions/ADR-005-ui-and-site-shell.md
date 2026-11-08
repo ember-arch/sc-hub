@@ -37,6 +37,8 @@
 
 ## Open decision for the owner: "three sizes per page"
 
+Decided 2026-11-07 (ADR-007): at most three sizes per page besides interface text and captions. ADR-007 also darkened `text.muted` so it passes 4.5:1, which settles the `text.muted` row above, and changed the light accent the favicon uses.
+
 CLAUDE.md section 7 and system.md principle 2 say three type sizes per page; system.md section 2 defines six roles (display, title, heading, body, ui, caption) and assigns units, metadata and timestamps to `caption`. A ship page needs the entity name (display), section headings (heading), facts and table cells (ui) and units (caption): four roles. Home uses five. The two rules cannot both hold as written. This PR follows the six-role table and keeps every page at five roles or fewer; the owner decides whether to reword the three-size rule (for example "three roles besides ui and caption") or to cut roles from the table. Until then the audit reads the table as authoritative.
 
 ## Alternatives considered

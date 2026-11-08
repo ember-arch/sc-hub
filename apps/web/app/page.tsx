@@ -3,7 +3,6 @@ import {
   Card,
   EmptyState,
   FeedItem,
-  PatchStrip,
   SearchField,
   Section,
   TextLink,
@@ -67,9 +66,6 @@ export default function HomePage() {
                 <Card {...shipCard(featured)} />
               </Section>
             ) : null}
-            <Section id="versions" title="Current builds">
-              <PatchStrip versions={r.versions} />
-            </Section>
           </div>
         </div>
       </div>

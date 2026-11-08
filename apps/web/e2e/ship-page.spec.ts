@@ -70,8 +70,6 @@ test("the ship page has every section in order, each stat with its unit and vers
   await expect(headings).toContainText([
     "Specifications",
     "Hardpoints and stock loadout",
-    "Variants and paints",
-    "Changed in this version",
   ]);
   const specs = page.locator("#specs");
   await expect(specs).toContainText(`LIVE ${live.version}`);
@@ -101,16 +99,14 @@ test("the PTU toggle shows only when a PTU build differs; otherwise the page say
   }
 });
 
-test("variants and paints, and changed in this version, show honest empty states on the bootstrap pack", async ({
+test("variants and paints, and changed in this version, stay out of the page until there is something in them", async ({
   page,
 }) => {
+  // The bootstrap pack has no variants, paints or second version (ADR-007).
   await page.goto(`/ships/${ship.slug}`);
-  await expect(page.locator("#variants")).toContainText(
-    "No variants or paints are on record",
-  );
-  await expect(page.locator("#changes")).toContainText(
-    "first version on record",
-  );
+  await expect(page.locator("#specs")).toBeVisible();
+  await expect(page.locator("#variants")).toHaveCount(0);
+  await expect(page.locator("#changes")).toHaveCount(0);
 });
 
 test("a component page shows its stats with the version and the ships that carry it", async ({

@@ -43,6 +43,18 @@ export const PLEDGE_STORE_CREDIT = {
   url: "https://robertsspaceindustries.com/pledge",
 } as const;
 
+/** docs/legal/attribution.md, "RSI holoviewer models" row (ADR-015). */
+export const RSI_HOLO_CREDIT = {
+  text: "3D models: Roberts Space Industries' holoviewer, from each ship's pledge page.",
+  url: "https://robertsspaceindustries.com/pledge",
+} as const;
+
+/** docs/legal/attribution.md, "RSI loaner ship matrix" row (ADR-015). */
+export const LOANER_MATRIX_CREDIT = {
+  text: "Loaners: the Roberts Space Industries loaner ship matrix, checked weekly.",
+  url: "https://support.robertsspaceindustries.com/hc/en-us/articles/360003093114-Loaner-Ship-Matrix",
+} as const;
+
 export const STARBREAKER_CREDIT = {
   text: "Game data and models extracted with StarBreaker.",
   url: "https://github.com/hpbgithub/StarBreaker",

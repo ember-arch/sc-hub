@@ -137,7 +137,7 @@ describe("showcase figures (ADR-014)", () => {
           if (fig.narrow !== undefined) placed.add(fig.narrow);
         }
       }
-      const media = ship.files.filter((f) => f.kind !== "model");
+      const media = ship.files;
       for (const file of media) {
         const reason = ship.layout.unused[file.file];
         expect(

@@ -1,13 +1,14 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { PledgeOffer, ShipLoaner, ShopPrice } from "schema";
+import { LoanerMatrix, type LoanerRow, PledgeOffer, ShopPrice } from "schema";
 import { REPO_ROOT } from "./data";
 
 /**
- * Shops and prices for the ship file (ADR-013): RSI pledge-store offers, UEX Corp's
- * community-reported shop prices and the loaners the wiki lists, all copied by
- * scripts/bootstrap-fixtures/acquisition.ts into fixtures/acquisition/. Optional like the other
- * side fixtures: without them the Acquisition section says the prices are not on file.
+ * Shops and prices for the ship file (ADR-013): RSI pledge-store offers and UEX Corp's
+ * community-reported shop prices, copied by scripts/bootstrap-fixtures/acquisition.ts, and RSI's
+ * loaner ship matrix, copied by scripts/bootstrap-fixtures/loaners.ts (ADR-015), all into
+ * fixtures/acquisition/. Optional like the other side fixtures: without them the Acquisition
+ * section says the prices or loaners are not on file.
  */
 
 const OFFERS_FILE = join(
@@ -21,7 +22,7 @@ const LOANERS_FILE = join(
   REPO_ROOT,
   "fixtures",
   "acquisition",
-  "ShipLoaner.json",
+  "LoanerMatrix.json",
 );
 
 const read = (file: string): unknown =>
@@ -30,7 +31,6 @@ const read = (file: string): unknown =>
 export interface Acquisition {
   readonly offers: readonly PledgeOffer[];
   readonly shops: readonly ShopPrice[];
-  readonly loaners: readonly ShipLoaner[];
 }
 
 let all: Acquisition | undefined;
@@ -39,9 +39,77 @@ function load(): Acquisition {
   all ??= {
     offers: PledgeOffer.array().parse(read(OFFERS_FILE)),
     shops: ShopPrice.array().parse(read(SHOPS_FILE)),
-    loaners: ShipLoaner.array().parse(read(LOANERS_FILE)),
   };
   return all;
+}
+
+let matrix: LoanerMatrix | null | undefined;
+
+function loanerMatrix(): LoanerMatrix | null {
+  matrix ??= existsSync(LOANERS_FILE)
+    ? LoanerMatrix.parse(JSON.parse(readFileSync(LOANERS_FILE, "utf8")))
+    : null;
+  return matrix;
+}
+
+const words = (s: string): string =>
+  s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+
+/**
+ * The matrix row that names the ship: one of the row's ships, split at " / ", " and " and commas,
+ * is the ship's name ("Carrack / Carrack Expedition" names the Carrack, "Carrack w/ C8X" does not),
+ * or the row names the ship's family ("Fury Variants"). Null when no row names it.
+ */
+export function loanerRowFor(
+  name: string,
+  rows: readonly LoanerRow[],
+): LoanerRow | null {
+  const ship = words(name);
+  for (const row of rows) {
+    const parts = row.ships.split(/\s+\/\s+|\s+and\s+|,\s*/i).map(words);
+    if (parts.includes(ship)) return row;
+    const whole = words(row.ships);
+    if (whole === `${ship} variants` || whole === `${ship} series`) return row;
+  }
+  return null;
+}
+
+export interface LoanerView {
+  /** What RSI lends for the ship; empty when the matrix does not list it. */
+  readonly loaners: readonly string[];
+  /** The row's own words for the ship, when listed. */
+  readonly listedAs: string | null;
+  /** When RSI last edited the matrix, as a date. */
+  readonly editedOn: string;
+  readonly build: string | null;
+  readonly url: string;
+}
+
+/** The ship's loaners per RSI's matrix; null when the matrix is not on file. */
+export function loanerFor(name: string): LoanerView | null {
+  const m = loanerMatrix();
+  if (m === null) return null;
+  const row = loanerRowFor(name, m.rows);
+  return {
+    loaners: row?.loaners ?? [],
+    listedAs: row?.ships ?? null,
+    editedOn: m.edited_at.slice(0, 10),
+    build: m.stated_build,
+    url: m.article_url,
+  };
+}
+
+/** The Loaners fact's value: the loaners and the matrix's date, or why there are none. */
+export function loanerValue(view: LoanerView | null, flyable: boolean): string {
+  if (view === null) return "Not on file";
+  if (view.loaners.length === 0)
+    return flyable
+      ? `None; flight ready, not on RSI's loaner matrix (${view.editedOn})`
+      : `Not on RSI's loaner matrix (${view.editedOn})`;
+  return `${view.loaners.join(", ")}, per RSI's loaner matrix (${view.editedOn})`;
 }
 
 /** A ship's rows: offers by slug (concept ships have no class name), the rest by class name. */
@@ -56,10 +124,6 @@ export function acquisitionFor(
       className === null
         ? []
         : a.shops.filter((s) => s.class_name === className),
-    loaners:
-      className === null
-        ? []
-        : a.loaners.filter((l) => l.class_name === className),
   };
 }
 

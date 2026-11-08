@@ -65,8 +65,8 @@ if (ship === undefined || shipStats === undefined || live === undefined)
 const SECTIONS = [
   "Brief",
   "Acquisition and status",
+  "Weapons and combat",
   "Crew and operations",
-  "Combat",
   "Mobility",
   "Scale",
   "Specifications",

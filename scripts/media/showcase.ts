@@ -5,14 +5,15 @@
  * Nothing here is game data; the Odin's figures come from RSI's ship matrix (ADR-010).
  */
 
-export type ShowcaseSource = "rsi" | "fleetyards";
+export type ShowcaseSource = "rsi";
 
+/** Images and render loops. 3D models come from RSI's holoviewer for every ship (`holo.ts`, ADR-015). */
 export interface ShowcaseFile {
   /** Local file name under fixtures/showcase/<slug>/. */
   readonly file: string;
   readonly url: string;
   readonly source: ShowcaseSource;
-  readonly kind: "image" | "video" | "model";
+  readonly kind: "image" | "video";
 }
 
 export interface ShowcaseShip {
@@ -57,8 +58,8 @@ export interface ShowcaseLayout {
 export const FILE_SECTIONS = [
   "brief",
   "acquisition",
-  "operations",
   "combat",
+  "operations",
   "mobility",
   "scale",
   "specifications",
@@ -235,12 +236,6 @@ export const SHOWCASE: readonly ShowcaseShip[] = [
       ...video("ns6umeu6gb7w5", 3),
       ...video("3p246qbd4kwlp", 4),
       ...video("grmgriqce1yoq", 5),
-      {
-        file: "odin_flight_holo.glb",
-        url: "https://api.fleetyards.net/files/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6ImFjODk3YjA1LTQyYjgtNDYxNS1iY2MwLTIzMzhjMjExOTJkZSIsInB1ciI6ImJsb2JfaWQifX0=--00c9c203f293f05a57a8973f2167f180c6974bd2/flight_holo.glb/",
-        source: "fleetyards",
-        kind: "model",
-      },
     ],
     layout: {
       roles: {
@@ -398,7 +393,7 @@ export const SHOWCASE: readonly ShowcaseShip[] = [
       rsi("Perseus_HEADER.jpg"),
       {
         file: "matrix-wallpaper.jpg",
-        url: "https://media.robertsspaceindustries.com/1zli0ngsh3vk7/wallpaper_3840x2160.jpg",
+        url: "https://media.robertsspaceindustries.com/1zli0ngsh3vk7/source.jpg",
         source: "rsi",
         kind: "image",
       },
@@ -466,15 +461,11 @@ export const SHOWCASE: readonly ShowcaseShip[] = [
         source: "rsi",
         kind: "image",
       },
-      {
-        file: "perseus_flight_holo_lite.glb",
-        url: "https://api.fleetyards.net/files/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6ImEzY2IyY2YzLTdkNzktNDkxNi1hMTlmLTQwOWQzYmQ2M2Y2NSIsInB1ciI6ImJsb2JfaWQifX0=--505e7ee193c35c9bac41972a87de00088db7c9c5/flight_holo_lite.glb/",
-        source: "fleetyards",
-        kind: "model",
-      },
     ],
     layout: {
       roles: {
+        // The ship matrix's own Perseus image, at its original size: the opening band (ADR-015).
+        background: "matrix-wallpaper.jpg",
         header: "Perseus_HEADER.jpg",
         poster: "matrix-wallpaper.jpg",
       },
@@ -507,10 +498,8 @@ export const SHOWCASE: readonly ShowcaseShip[] = [
           { file: "render-5.jpg", caption: "Cargo hold" },
           { file: "render-7.jpg", caption: "Engineering bay" },
         ],
-        combat: [
-          { file: "matrix-wallpaper.jpg", caption: "Overwhelming ordnance" },
-          { file: "render-6.jpg", caption: "Torpedo room" },
-        ],
+        // The opening band already shows the matrix wallpaper.
+        combat: [{ file: "render-6.jpg", caption: "Torpedo room" }],
         mobility: [
           {
             file: "Star_Citizen_32_9_SALES_-BANNER.jpg",
@@ -542,6 +531,4 @@ export const SHOWCASE: readonly ShowcaseShip[] = [
 
 export const CREDITS: Readonly<Record<ShowcaseSource, string>> = {
   rsi: "Roberts Space Industries",
-  fleetyards:
-    "3D model: CIG's in-game holoviewer model, converted by FleetYards.net",
 };

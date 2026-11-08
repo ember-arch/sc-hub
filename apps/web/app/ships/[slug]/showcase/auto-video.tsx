@@ -20,16 +20,21 @@ function useReducedMotion(): boolean {
 /**
  * CIG's render loops (ADR-010): muted, looping, playing only while most of it is on screen and
  * paused otherwise, fetched only as it approaches. With reduced motion asked for it never plays on
- * its own; the poster shows with the browser's controls.
+ * its own; the poster shows with the browser's controls. A loop with a known size shows whole at
+ * its own proportions (ADR-015): CIG's wide loops are never cropped to 16:9.
  */
 export function AutoVideo({
   src,
   poster,
   label,
+  width = null,
+  height = null,
 }: {
   readonly src: string;
   readonly poster: string | null;
   readonly label: string;
+  readonly width?: number | null;
+  readonly height?: number | null;
 }) {
   const ref = useRef<HTMLVideoElement>(null);
   const [near, setNear] = useState(false);
@@ -78,7 +83,13 @@ export function AutoVideo({
       preload="none"
       controls={reduced}
       aria-label={label}
-      className="block aspect-video h-auto max-h-[90svh] w-full bg-page object-cover"
+      width={width ?? undefined}
+      height={height ?? undefined}
+      className={
+        width === null || height === null
+          ? "block aspect-video h-auto max-h-[90svh] w-full bg-page object-cover"
+          : "block h-auto max-h-[90svh] w-full bg-page object-contain"
+      }
     />
   );
 }

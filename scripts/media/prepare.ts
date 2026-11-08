@@ -12,7 +12,6 @@
  *   pnpm --filter schema build && pnpm exec tsx scripts/media/prepare.ts
  */
 import { randomUUID } from "node:crypto";
-import { createRequire } from "node:module";
 import {
   copyFileSync,
   existsSync,
@@ -20,12 +19,13 @@ import {
   readFileSync,
   readdirSync,
   rmSync,
-  statSync,
   writeFileSync,
 } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
+  type HoloFigure,
+  type HoloModel,
   MediaManifest,
   type MakerLogo,
   type ShipImage,
@@ -42,12 +42,17 @@ import {
   shipRenditionPath,
 } from "./sources.js";
 import { parseArticle } from "./article.js";
+import { readCtm } from "./ctm.js";
+import { HOLO_FIGURE } from "./holo.js";
+import { packHoloModel } from "./holo-glb.js";
+import { mp4Size } from "./mp4.js";
 import { FILE_SECTIONS, SHOWCASE } from "./showcase.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(here, "..", "..");
 const rsiDir = join(repoRoot, "fixtures", "rsi-media");
 const fankitDir = join(repoRoot, "fixtures", "fankit");
+const holoDir = join(repoRoot, "fixtures", "holo");
 const publicDir = join(repoRoot, "apps", "web", "public");
 const mediaDir = join(publicDir, "media");
 
@@ -139,7 +144,8 @@ async function makers(): Promise<MakerLogo[]> {
 }
 
 /** Widest first; never upscaled. */
-const SHOWCASE_WIDTHS: readonly number[] = [2560, 1600, 960, 640];
+/** 5120 and 3840 keep the full-bleed opening band sharp on 4K and 5K screens (ADR-015). */
+const SHOWCASE_WIDTHS: readonly number[] = [5120, 3840, 2560, 1600, 960, 640];
 
 const keyOf = (file: string): string =>
   file
@@ -196,6 +202,7 @@ async function showcases(): Promise<Showcase[]> {
       const key = keyOf(item.file);
       const src = `/media/showcase/${ship.slug}/${key}.mp4`;
       copyFileSync(join(dir, item.file), fileFor(src));
+      const size = mp4Size(readFileSync(join(dir, item.file)));
       // A chapter's own image is the poster when the video has no frame of its own.
       const chapter = ship.layout.chapters.find((c) => c.video === item.file);
       // Or the still the ship file's figure names for it (ADR-014).
@@ -209,6 +216,8 @@ async function showcases(): Promise<Showcase[]> {
           imageKey(item.file.replace(/\.mp4$/i, ".jpg")) ??
           imageKey(chapter?.image) ??
           imageKey(figure?.poster),
+        width: size?.width ?? null,
+        height: size?.height ?? null,
       });
     }
     const videoKey = (file: string | undefined): string | null => {
@@ -216,13 +225,8 @@ async function showcases(): Promise<Showcase[]> {
       const key = keyOf(file);
       return videos.some((v) => v.key === key) ? key : null;
     };
-    const modelFile = ship.files.find((f) => f.kind === "model" && has(f.file));
-    let model: Showcase["model"] = null;
-    if (modelFile !== undefined) {
-      const src = `/media/showcase/${ship.slug}/${keyOf(modelFile.file)}.glb`;
-      copyFileSync(join(dir, modelFile.file), fileFor(src));
-      model = { src, bytes: statSync(join(dir, modelFile.file)).size };
-    }
+    // Models come from RSI's holoviewer for every ship now (ADR-015), not per showcase.
+    const model: Showcase["model"] = null;
     const articlePath = join(dir, "article.json");
     const article: ArticleFile | null = existsSync(articlePath)
       ? (JSON.parse(readFileSync(articlePath, "utf8")) as ArticleFile)
@@ -301,28 +305,51 @@ async function showcases(): Promise<Showcase[]> {
   return out;
 }
 
+const HoloSource = z.object({
+  slug: z.string(),
+  file: z.string(),
+  page: z.url().nullable(),
+});
+
 /**
- * The 3D models are Draco-compressed. The holoviewer (ADR-012) loads three's decoder from
- * /media/draco/, copied here, so a model page makes no third-party request.
+ * RSI's holoviewer models (ADR-015), copied by `fetch-holo.ts` into `fixtures/holo/`: each is
+ * decoded from OpenCTM and packed into a meshopt-compressed glTF in metres. The human figure RSI
+ * stands beside every ship is packed the same way. Nothing on file, nothing written.
  */
-function copyDracoDecoder(): void {
-  const require = createRequire(import.meta.url);
-  // three does not export its package.json: walk up from its main entry to the package folder.
-  const entry = require.resolve("three", {
-    paths: [join(repoRoot, "apps", "web")],
-  });
-  const marker = join("node_modules", "three");
-  const three = entry.slice(0, entry.lastIndexOf(marker) + marker.length);
-  const from = join(three, "examples", "jsm", "libs", "draco", "gltf");
-  const to = join(mediaDir, "draco");
-  mkdirSync(to, { recursive: true });
-  for (const file of [
-    "draco_decoder.wasm",
-    "draco_wasm_wrapper.js",
-    "draco_decoder.js",
-  ]) {
-    copyFileSync(join(from, file), join(to, file));
+async function holoModels(): Promise<{
+  holo: HoloModel[];
+  figure: HoloFigure | null;
+}> {
+  const sourcesPath = join(holoDir, "sources.json");
+  if (!existsSync(sourcesPath)) return { holo: [], figure: null };
+  const rows = z
+    .array(HoloSource)
+    .parse(JSON.parse(readFileSync(sourcesPath, "utf8")));
+  mkdirSync(join(mediaDir, "holo"), { recursive: true });
+  const holo: HoloModel[] = [];
+  let figure: HoloFigure | null = null;
+  for (const row of rows) {
+    const file = join(holoDir, row.file);
+    if (!existsSync(file)) continue;
+    const packed = await packHoloModel(readCtm(readFileSync(file)));
+    const src = `/media/holo/${row.slug}.glb`;
+    writeFileSync(fileFor(src), packed.glb);
+    if (row.slug === HOLO_FIGURE.slug) {
+      figure = { src, bytes: packed.glb.length, height: packed.size[1] };
+      continue;
+    }
+    if (row.page === null) continue;
+    holo.push({
+      slug: row.slug,
+      src,
+      bytes: packed.glb.length,
+      page: row.page,
+      size: [...packed.size],
+      vertices: packed.vertices,
+      triangles: packed.triangles,
+    });
   }
+  return { holo, figure };
 }
 
 async function main(): Promise<void> {
@@ -331,13 +358,15 @@ async function main(): Promise<void> {
   rmSync(mediaDir, { recursive: true, force: true });
   mkdirSync(join(mediaDir, "ships"), { recursive: true });
   mkdirSync(join(mediaDir, "makers"), { recursive: true });
+  const models = await holoModels();
   const manifest = MediaManifest.parse({
     generated_at: new Date().toISOString(),
     ships: await ships(),
     makers: await makers(),
     showcase: await showcases(),
+    holo: models.holo,
+    holo_figure: models.figure,
   });
-  if (manifest.showcase.some((s) => s.model !== null)) copyDracoDecoder();
   writeFileSync(
     join(mediaDir, "manifest.json"),
     `${JSON.stringify(manifest, null, 2)}\n`,
@@ -350,7 +379,10 @@ async function main(): Promise<void> {
       makers: manifest.makers.length,
       showcase: manifest.showcase.map(
         (x) =>
-          `${x.slug}: ${x.images.length} images, ${x.videos.length} videos, ${x.chapters.length} chapters, model ${x.model === null ? "no" : "yes"}`,
+          `${x.slug}: ${x.images.length} images, ${x.videos.length} videos, ${x.chapters.length} chapters`,
+      ),
+      holo: manifest.holo.map(
+        (h) => `${h.slug}: ${(h.bytes / 1e6).toFixed(2)} MB`,
       ),
       errors: 0,
       duration_ms: Date.now() - started,

@@ -44,6 +44,8 @@ const manifest: MediaManifest = {
     },
   ],
   showcase: [],
+  holo: [],
+  holo_figure: null,
 };
 
 describe("createMedia", () => {

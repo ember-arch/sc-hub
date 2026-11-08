@@ -17,7 +17,7 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { ConceptShip, PledgeOffer, ShipLoaner, ShopPrice } from "schema";
+import { ConceptShip, PledgeOffer, ShopPrice } from "schema";
 import { z } from "zod";
 import { createWikiClient } from "./fetch.js";
 
@@ -85,10 +85,6 @@ const WikiVehicle = z.object({
     class_name: z.string(),
     version: z.string(),
     skus: z.array(AnySku).nullable().optional(),
-    loaner: z
-      .array(z.object({ uuid: z.uuid(), name: z.string().min(1) }).loose())
-      .nullable()
-      .optional(),
     uex_prices: z
       .object({ purchase: z.array(UexRow), rental: z.array(UexRow) })
       .nullable()
@@ -331,7 +327,6 @@ async function main(): Promise<void> {
   const fetchedAt = new Date().toISOString();
   const offers: PledgeOffer[] = [];
   const shops: ShopPrice[] = [];
-  const loaners: ShipLoaner[] = [];
   let skipped = 0;
   let staleSkus = 0;
   for (const row of [...stats].sort((a, b) =>
@@ -355,15 +350,6 @@ async function main(): Promise<void> {
     }
     const ship = { slug, class_name: row.class_name };
     const own = offersFromSkus(json.skus ?? [], ship, fetchedAt);
-    const lent = (json.loaner ?? []).map((l) =>
-      ShipLoaner.parse({
-        class_name: row.class_name,
-        loaner_name: l.name,
-        loaner_uuid: l.uuid,
-        via: "star_citizen_wiki_api",
-        fetched_at: fetchedAt,
-      }),
-    );
     const prices = shopRows(
       json.uex_prices ?? { purchase: [], rental: [] },
       ship,
@@ -372,7 +358,6 @@ async function main(): Promise<void> {
     );
     offers.push(...own.offers);
     shops.push(...prices.rows);
-    loaners.push(...lent);
     skipped += prices.skipped;
     staleSkus += own.skipped;
     console.log(
@@ -381,7 +366,6 @@ async function main(): Promise<void> {
         class_name: row.class_name,
         offers: own.offers.length,
         skipped_upgrade_api: own.skipped,
-        loaners: lent.length,
         purchase: prices.rows.filter((r) => r.kind === "purchase").length,
         rental: prices.rows.filter((r) => r.kind === "rental").length,
         skipped_other_version: prices.skipped,
@@ -412,13 +396,11 @@ async function main(): Promise<void> {
     );
   write("PledgeOffer.json", offers);
   write("ShopPrice.json", shops);
-  write("ShipLoaner.json", loaners);
   console.log(
     JSON.stringify({
       event: "acquisition.done",
       offers: offers.length,
       shop_prices: shops.length,
-      loaners: loaners.length,
       skipped_upgrade_api: staleSkus,
       skipped_other_version: skipped,
       requests: client.requests,

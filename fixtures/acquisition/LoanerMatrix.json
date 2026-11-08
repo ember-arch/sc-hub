@@ -1,0 +1,356 @@
+{
+  "article_url": "https://support.robertsspaceindustries.com/hc/en-us/articles/360003093114-Loaner-Ship-Matrix",
+  "api_url": "https://support.robertsspaceindustries.com/api/v2/help_center/en-us/articles/360003093114.json",
+  "title": "Loaner Ship Matrix",
+  "edited_at": "2026-08-26T18:35:09Z",
+  "stated_date": "August 26th, 2026",
+  "stated_build": "4.10.0-live.12519617",
+  "rows": [
+    {
+      "ships": "600i Explorer and Executive",
+      "loaners": [
+        "Cyclone"
+      ]
+    },
+    {
+      "ships": "890 Jump",
+      "loaners": [
+        "85x"
+      ]
+    },
+    {
+      "ships": "Arrastra",
+      "loaners": [
+        "Mole",
+        "Arrow"
+      ]
+    },
+    {
+      "ships": "Carrack / Carrack Expedition",
+      "loaners": [
+        "C8 Pisces",
+        "URSA Rover"
+      ]
+    },
+    {
+      "ships": "Carrack w/ C8X / Carrack Expedition w/C8X",
+      "loaners": [
+        "C8X Pisces Expedition",
+        "URSA Rover"
+      ]
+    },
+    {
+      "ships": "Centurion",
+      "loaners": [
+        "Mustang Alpha"
+      ]
+    },
+    {
+      "ships": "Constellation Andromeda",
+      "loaners": [
+        "P-52 Merlin"
+      ]
+    },
+    {
+      "ships": "Constellation Aquila",
+      "loaners": [
+        "P-52 Merlin",
+        "URSA Rover"
+      ]
+    },
+    {
+      "ships": "Constellation Phoenix",
+      "loaners": [
+        "P-72 Archimedes",
+        "Lynx Rover"
+      ]
+    },
+    {
+      "ships": "Constellation Phoenix Emerald",
+      "loaners": [
+        "P-72 Archimedes",
+        "Lynx Rover"
+      ]
+    },
+    {
+      "ships": "Crucible",
+      "loaners": [
+        "Constellation Andromeda"
+      ]
+    },
+    {
+      "ships": "CSV-SM",
+      "loaners": [
+        "Mustang Alpha"
+      ]
+    },
+    {
+      "ships": "Cyclone Variants",
+      "loaners": [
+        "Mustang Alpha"
+      ]
+    },
+    {
+      "ships": "Dragonfly",
+      "loaners": [
+        "Mustang Alpha"
+      ]
+    },
+    {
+      "ships": "E1 Spirit",
+      "loaners": [
+        "A1 Spirit"
+      ]
+    },
+    {
+      "ships": "Endeavor",
+      "loaners": [
+        "Starfarer",
+        "Cutlass Red"
+      ]
+    },
+    {
+      "ships": "Expanse",
+      "loaners": [
+        "Prospector",
+        "Reliant Kore"
+      ]
+    },
+    {
+      "ships": "Fury Variants",
+      "loaners": [
+        "Mustang Alpha"
+      ]
+    },
+    {
+      "ships": "G12 Variants",
+      "loaners": [
+        "Lynx"
+      ]
+    },
+    {
+      "ships": "Galaxy",
+      "loaners": [
+        "Carrack"
+      ]
+    },
+    {
+      "ships": "Genesis Starliner",
+      "loaners": [
+        "Hercules C2"
+      ]
+    },
+    {
+      "ships": "Hull D, E",
+      "loaners": [
+        "Hull C",
+        "Hercules C2"
+      ]
+    },
+    {
+      "ships": "Idris-M & P",
+      "loaners": [
+        "F7C-M Super Hornet",
+        "MPUV Passenger"
+      ]
+    },
+    {
+      "ships": "Javelin",
+      "loaners": [
+        "Idris-P",
+        "MPUV Cargo"
+      ]
+    },
+    {
+      "ships": "Kraken",
+      "loaners": [
+        "Polaris",
+        "Ironclad Assault",
+        "Buccaneer"
+      ]
+    },
+    {
+      "ships": "Kraken Privateer",
+      "loaners": [
+        "Polaris",
+        "Ironclad",
+        "Buccaneer"
+      ]
+    },
+    {
+      "ships": "Liberator",
+      "loaners": [
+        "Ironclad Assault",
+        "F7C-M Super Hornet"
+      ]
+    },
+    {
+      "ships": "Legionnaire",
+      "loaners": [
+        "Vanguard Hoplite"
+      ]
+    },
+    {
+      "ships": "Lynx",
+      "loaners": [
+        "Mustang Alpha"
+      ]
+    },
+    {
+      "ships": "Mantis",
+      "loaners": [
+        "Guardian QI"
+      ]
+    },
+    {
+      "ships": "Merchantman",
+      "loaners": [
+        "Hull C",
+        "Defender",
+        "Hercules C2"
+      ]
+    },
+    {
+      "ships": "MPUV-Tractor",
+      "loaners": [
+        "Mustang Alpha"
+      ]
+    },
+    {
+      "ships": "MXC",
+      "loaners": [
+        "Mustang Alpha"
+      ]
+    },
+    {
+      "ships": "Mule",
+      "loaners": [
+        "Mustang Alpha"
+      ]
+    },
+    {
+      "ships": "Nautilus",
+      "loaners": [
+        "Polaris",
+        "Avenger Titan"
+      ]
+    },
+    {
+      "ships": "Nova",
+      "loaners": [
+        "Mustang Alpha"
+      ]
+    },
+    {
+      "ships": "Nox",
+      "loaners": [
+        "Mustang Alpha"
+      ]
+    },
+    {
+      "ships": "Odin",
+      "loaners": [
+        "Idris-P"
+      ]
+    },
+    {
+      "ships": "Odyssey",
+      "loaners": [
+        "Carrack",
+        "Reliant Kore"
+      ]
+    },
+    {
+      "ships": "Orion",
+      "loaners": [
+        "Mole"
+      ]
+    },
+    {
+      "ships": "Pioneer",
+      "loaners": [
+        "Caterpillar",
+        "Nomad"
+      ]
+    },
+    {
+      "ships": "Pitbull",
+      "loaners": [
+        "Mustang Alpha"
+      ]
+    },
+    {
+      "ships": "Pulse (+ LX)",
+      "loaners": [
+        "Mustang Alpha"
+      ]
+    },
+    {
+      "ships": "Ranger CV",
+      "loaners": [
+        "Cyclone"
+      ]
+    },
+    {
+      "ships": "Ranger RC",
+      "loaners": [
+        "Cyclone RC"
+      ]
+    },
+    {
+      "ships": "Ranger TR",
+      "loaners": [
+        "Cyclone TR"
+      ]
+    },
+    {
+      "ships": "SRV",
+      "loaners": [
+        "Mustang Alpha"
+      ]
+    },
+    {
+      "ships": "S-65 Stingray",
+      "loaners": [
+        "Starfarer"
+      ]
+    },
+    {
+      "ships": "Storm Variants",
+      "loaners": [
+        "Mustang Alpha"
+      ]
+    },
+    {
+      "ships": "STV",
+      "loaners": [
+        "Mustang Alpha"
+      ]
+    },
+    {
+      "ships": "UTV",
+      "loaners": [
+        "Mustang Alpha"
+      ]
+    },
+    {
+      "ships": "Vulcan",
+      "loaners": [
+        "Starfarer"
+      ]
+    },
+    {
+      "ships": "X1 (+ Velocity, Force)",
+      "loaners": [
+        "Mustang Alpha"
+      ]
+    },
+    {
+      "ships": "Zeus Mk II MR",
+      "loaners": [
+        "Zeus Mk II ES"
+      ]
+    }
+  ],
+  "fetched_at": "2026-11-08T21:54:47.307Z"
+}

@@ -1,6 +1,6 @@
 # ADR-014: The ship file opens on its key art, and images sit in their sections
 
-- Status: accepted (owner direction 2026-11-08); amends ADR-012
+- Status: accepted (owner direction 2026-11-08); amends ADR-012; section order, cut-out position, render loops and art sizes amended by ADR-015
 - Date: 2026-11-08
 - Deciders: owner, Claude Code session 2026-11-08
 

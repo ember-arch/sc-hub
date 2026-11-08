@@ -3,60 +3,60 @@
     "class_name": "AEGS_Gladius",
     "file": "AEGS_Gladius.jpg",
     "page_url": "https://robertsspaceindustries.com/pledge/ships/gladius/Gladius",
-    "image_url": "https://media.robertsspaceindustries.com/asbrpwjjho1z0/wallpaper_1920x1080.jpg",
+    "image_url": "https://media.robertsspaceindustries.com/asbrpwjjho1z0/source.jpg",
     "content_type": "image/jpeg",
-    "bytes": 561427,
-    "sha256": "92c4a1143c15fe298c38c17382f4c6f16e12059c9832643a762470b5b4b54696",
-    "fetched_at": "2026-11-08T14:45:16.128Z"
+    "bytes": 1222424,
+    "sha256": "0997c6cbb5f79e8175fb7c7c6e9d8d7b8c99f71e58e03f6b146d264c5b0cfc52",
+    "fetched_at": "2026-11-08T21:56:50.977Z"
   },
   {
     "class_name": "ANVL_Carrack",
-    "file": "ANVL_Carrack.png",
+    "file": "ANVL_Carrack.jpg",
     "page_url": "https://robertsspaceindustries.com/pledge/ships/carrack/Carrack",
-    "image_url": "https://media.robertsspaceindustries.com/bau5bdotm8te8/wallpaper_1920x1080.png",
-    "content_type": "image/png",
-    "bytes": 2664931,
-    "sha256": "2f9470eb4a8bed5d5636397957d12bae22ccee2fc1282ac029d6a1b419a80d0e",
-    "fetched_at": "2026-11-08T14:45:20.725Z"
+    "image_url": "https://media.robertsspaceindustries.com/bau5bdotm8te8/source.png",
+    "content_type": "image/jpeg",
+    "bytes": 3924768,
+    "sha256": "f2c93edb629e8a1e0da5107d7fc9634104c36aa896537cba701ed3d8386fe0a9",
+    "fetched_at": "2026-11-08T21:56:56.060Z"
   },
   {
     "class_name": "DRAK_Cutlass_Black",
     "file": "DRAK_Cutlass_Black.jpg",
     "page_url": "https://robertsspaceindustries.com/pledge/ships/drake-cutlass/Cutlass-Black",
-    "image_url": "https://media.robertsspaceindustries.com/56iszc92bl9oi/wallpaper_1920x1080.jpg",
+    "image_url": "https://media.robertsspaceindustries.com/56iszc92bl9oi/source.jpg",
     "content_type": "image/jpeg",
-    "bytes": 1962712,
-    "sha256": "acbf97c45d80efdaeec76f18b28147b5d951df256cbd9f242e78a1daeb237ad1",
-    "fetched_at": "2026-11-08T14:45:25.725Z"
+    "bytes": 4943829,
+    "sha256": "b485e80e88102d02052d3996e85e135a29588ae589f6c200c8bbc4253ebabe61",
+    "fetched_at": "2026-11-08T21:57:03.195Z"
   },
   {
     "class_name": "MISC_Fury",
     "file": "MISC_Fury.jpg",
     "page_url": "https://robertsspaceindustries.com/pledge/ships/fury/Fury",
-    "image_url": "https://media.robertsspaceindustries.com/icoxi8ahyr0i9/wallpaper_1920x1080.jpg",
+    "image_url": "https://media.robertsspaceindustries.com/icoxi8ahyr0i9/source.jpg",
     "content_type": "image/jpeg",
-    "bytes": 2200058,
-    "sha256": "a4a8484f43e2da6659273e6f5bfc7fa4445241a10aad27de68a18fa3624263a9",
-    "fetched_at": "2026-11-08T14:45:31.732Z"
+    "bytes": 15266680,
+    "sha256": "a262e47059dd43de34e28babcba3a4765c5e8517b6ca6736466743355f1a32ea",
+    "fetched_at": "2026-11-08T21:57:06.747Z"
   },
   {
     "class_name": "RSI_Perseus",
     "file": "RSI_Perseus.jpg",
     "page_url": "https://robertsspaceindustries.com/pledge/ships/perseus/Perseus",
-    "image_url": "https://media.robertsspaceindustries.com/1zli0ngsh3vk7/wallpaper_1920x1080.jpg",
+    "image_url": "https://media.robertsspaceindustries.com/1zli0ngsh3vk7/source.jpg",
     "content_type": "image/jpeg",
-    "bytes": 1452366,
-    "sha256": "887382128c3e00d7a70daa19071308ec9b09c17923fb5b688377440e47491846",
-    "fetched_at": "2026-11-08T14:45:36.012Z"
+    "bytes": 3236489,
+    "sha256": "65306edd85c23f586b1df7100ea6a1c4a0432d66bf9b22f56737c2ed9123c39c",
+    "fetched_at": "2026-11-08T21:57:10.901Z"
   },
   {
     "class_name": "RSI_Polaris",
     "file": "RSI_Polaris.jpg",
     "page_url": "https://robertsspaceindustries.com/pledge/ships/polaris/Polaris",
-    "image_url": "https://media.robertsspaceindustries.com/oe0wikh6g3ltm/wallpaper_1920x1080.jpg",
+    "image_url": "https://media.robertsspaceindustries.com/oe0wikh6g3ltm/source.jpg",
     "content_type": "image/jpeg",
-    "bytes": 1312705,
-    "sha256": "a7277c53e7704766eae918698a79a530ad68c0f244aa632353cf5b38d4d7d59d",
-    "fetched_at": "2026-11-08T14:45:40.676Z"
+    "bytes": 3485632,
+    "sha256": "516123737af1a636b4e80c87532f29ce5dea92e8c3d3d731e9bebb3d3ea08e36",
+    "fetched_at": "2026-11-08T21:57:16.599Z"
   }
 ]

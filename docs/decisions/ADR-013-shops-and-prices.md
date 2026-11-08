@@ -1,6 +1,6 @@
 # ADR-013: Shops and prices in the ship file
 
-- Status: accepted (owner chose "Shops and prices" as the next gap, 2026-11-08); extends ADR-012
+- Status: accepted (owner chose "Shops and prices" as the next gap, 2026-11-08); extends ADR-012; loaners from RSI's loaner matrix by ADR-015
 - Date: 2026-11-08
 - Deciders: owner, Claude Code session 2026-11-08
 

@@ -20,6 +20,11 @@ fixtures/rsi-media/*
 !fixtures/rsi-media/README.md
 !fixtures/rsi-media/sources.json
 
+# RSI's holoviewer models (ADR-015): local only, never committed
+fixtures/holo/*
+!fixtures/holo/README.md
+!fixtures/holo/sources.json
+
 # web copies built by scripts/media/prepare.ts from the two folders above (ADR-009)
 apps/web/public/media/
 

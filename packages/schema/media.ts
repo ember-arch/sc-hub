@@ -53,6 +53,9 @@ export const ShowcaseVideo = z.strictObject({
   key: z.string().min(1),
   src: z.string().regex(/^\/media\/[a-z0-9/_.-]+\.mp4$/),
   poster: z.string().min(1).nullable(),
+  /** The loop's own picture size, so it shows whole at its proportions (ADR-015). */
+  width: z.number().int().positive().nullable().default(null),
+  height: z.number().int().positive().nullable().default(null),
 });
 export type ShowcaseVideo = z.infer<typeof ShowcaseVideo>;
 
@@ -105,6 +108,7 @@ export const Showcase = z.strictObject({
     .nullable(),
   images: z.array(ShowcaseImage),
   videos: z.array(ShowcaseVideo),
+  /** Superseded by the RSI holoviewer models in `MediaManifest.holo` (ADR-015); always null now. */
   model: z
     .strictObject({
       src: z.string().regex(/^\/media\/[a-z0-9/_.-]+\.glb$/),
@@ -127,10 +131,42 @@ export const Showcase = z.strictObject({
 });
 export type Showcase = z.infer<typeof Showcase>;
 
+/**
+ * A ship's RSI holoviewer model (ADR-015): the OpenCTM file its RSI pledge page loads, packed by
+ * `scripts/media/prepare.ts` into a meshopt-compressed glTF in metres.
+ */
+export const HoloModel = z.strictObject({
+  slug: z.string().min(1),
+  src: z.string().regex(/^\/media\/holo\/[a-z0-9-]+\.glb$/),
+  bytes: z.number().int().positive(),
+  /** The RSI pledge page whose holoviewer shows it. */
+  page: z.url(),
+  /** Width, height and length in metres. */
+  size: z.tuple([
+    z.number().positive(),
+    z.number().positive(),
+    z.number().positive(),
+  ]),
+  vertices: z.number().int().positive(),
+  triangles: z.number().int().positive(),
+});
+export type HoloModel = z.infer<typeof HoloModel>;
+
+/** The human figure RSI's holoviewer stands beside every ship, packed the same way. */
+export const HoloFigure = z.strictObject({
+  src: z.string().regex(/^\/media\/holo\/[a-z0-9-]+\.glb$/),
+  bytes: z.number().int().positive(),
+  /** In metres. */
+  height: z.number().positive(),
+});
+export type HoloFigure = z.infer<typeof HoloFigure>;
+
 export const MediaManifest = z.strictObject({
   generated_at: Timestamp,
   ships: z.array(ShipImage),
   makers: z.array(MakerLogo),
   showcase: z.array(Showcase).default([]),
+  holo: z.array(HoloModel).default([]),
+  holo_figure: HoloFigure.nullable().default(null),
 });
 export type MediaManifest = z.infer<typeof MediaManifest>;

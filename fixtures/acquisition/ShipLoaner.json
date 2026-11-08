@@ -1,0 +1,44 @@
+[
+  {
+    "class_name": "ANVL_Carrack",
+    "loaner_name": "C8X Pisces Expedition",
+    "loaner_uuid": "831fdcfc-337a-4350-967d-e693d19efeee",
+    "via": "star_citizen_wiki_api",
+    "fetched_at": "2026-11-08T19:31:32.567Z"
+  },
+  {
+    "class_name": "ANVL_Carrack",
+    "loaner_name": "Ursa",
+    "loaner_uuid": "8c375d7e-0e44-42e8-b84b-c8d6b2e1256c",
+    "via": "star_citizen_wiki_api",
+    "fetched_at": "2026-11-08T19:31:32.567Z"
+  },
+  {
+    "class_name": "MISC_Fury",
+    "loaner_name": "Mustang Alpha",
+    "loaner_uuid": "a852bb00-e395-468f-9adc-78b3df9c82f6",
+    "via": "star_citizen_wiki_api",
+    "fetched_at": "2026-11-08T19:31:32.567Z"
+  },
+  {
+    "class_name": "RSI_Perseus",
+    "loaner_name": "Vanguard Harbinger",
+    "loaner_uuid": "34295443-da9b-4e6c-9335-69d5f3b29a88",
+    "via": "star_citizen_wiki_api",
+    "fetched_at": "2026-11-08T19:31:32.567Z"
+  },
+  {
+    "class_name": "RSI_Perseus",
+    "loaner_name": "Polaris",
+    "loaner_uuid": "bc4aa5c5-2e9b-40d6-aa95-0757a763efff",
+    "via": "star_citizen_wiki_api",
+    "fetched_at": "2026-11-08T19:31:32.567Z"
+  },
+  {
+    "class_name": "RSI_Polaris",
+    "loaner_name": "F7C-M Super Hornet Mk I",
+    "loaner_uuid": "4f83f89d-480b-4d1b-867a-13772742d828",
+    "via": "star_citizen_wiki_api",
+    "fetched_at": "2026-11-08T19:31:32.567Z"
+  }
+]

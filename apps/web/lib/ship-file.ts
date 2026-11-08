@@ -117,3 +117,33 @@ export function rankAmong(values: readonly number[], value: number): number {
 export function rankWord(rank: number, word: string): string {
   return rank === 1 ? word : `${ordinal(rank)} ${word}`;
 }
+
+export interface Insurance {
+  readonly claim_min: number;
+  readonly expedite_min: number;
+  readonly expedite_auec: number;
+}
+
+/**
+ * The ship's insurance claim and expedite figures (ADR-013): game data the wiki API serves and the
+ * pack keeps in its raw remainder. Times are minutes, as starcitizen.tools labels the same values.
+ * Null unless all three are numbers.
+ */
+export function insuranceOf(raw: unknown): Insurance | null {
+  if (typeof raw !== "object" || raw === null) return null;
+  const block = (raw as Record<string, unknown>)["insurance"];
+  if (typeof block !== "object" || block === null) return null;
+  const { claim_time, expedite_time, expedite_cost } = block as Record<
+    string,
+    unknown
+  >;
+  return typeof claim_time === "number" &&
+    typeof expedite_time === "number" &&
+    typeof expedite_cost === "number"
+    ? {
+        claim_min: claim_time,
+        expedite_min: expedite_time,
+        expedite_auec: expedite_cost,
+      }
+    : null;
+}

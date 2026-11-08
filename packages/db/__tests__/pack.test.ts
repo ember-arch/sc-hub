@@ -13,7 +13,7 @@ describe("loadPack", () => {
     for (const file of pack.manifest.files) {
       expect(pack.rows[file.entity]).toHaveLength(file.count);
     }
-    expect(pack.rows.Vehicle).toHaveLength(5);
+    expect(pack.rows.Vehicle).toHaveLength(6);
     expect(pack.rows.GameVersion).toHaveLength(1);
   });
 

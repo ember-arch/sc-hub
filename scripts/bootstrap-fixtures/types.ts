@@ -140,7 +140,7 @@ export const WikiGameVersionResponse = z.looseObject({
 
 /** The five ships to fetch, by the identifier the wiki accepts (display name or slug). */
 export const ShipList = z.strictObject({
-  ships: z.array(z.string().min(1)).length(5),
+  ships: z.array(z.string().min(1)).min(5),
 });
 
 /** One entry of GET /api/vehicles?filter[class_name]=...: enough to pick the exact class name and fetch by uuid. */

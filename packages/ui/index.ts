@@ -66,6 +66,17 @@ export {
   type PatchStripProps,
 } from "./components/patch-strip";
 export {
+  RankBar,
+  type RankBarProps,
+  type RankValue,
+  rankOf,
+} from "./components/rank-bar";
+export {
+  type ScaleItem,
+  ScaleLineup,
+  type ScaleLineupProps,
+} from "./components/scale-lineup";
+export {
   type SegmentedLink,
   SegmentedLinks,
   type SegmentedLinksProps,

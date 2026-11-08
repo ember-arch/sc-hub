@@ -202,7 +202,9 @@ export function Related({ groups }: RelatedProps) {
 }
 
 export interface EntityPageProps {
-  readonly hero: HeroProps;
+  /** null when the page renders its hero full-bleed on the PageShell stage (ADR-008). */
+  readonly hero: HeroProps | null;
+  /** Empty when the stage carries the key facts as headline figures. */
   readonly facts: readonly KeyFact[];
   readonly children?: ReactNode;
   readonly related?: readonly RelatedGroup[] | undefined;
@@ -216,8 +218,8 @@ export function EntityPage({
 }: EntityPageProps) {
   return (
     <article className="flex flex-col gap-12">
-      <Hero {...hero} />
-      <KeyFacts facts={facts} />
+      {hero === null ? null : <Hero {...hero} />}
+      {facts.length === 0 ? null : <KeyFacts facts={facts} />}
       {children}
       {related !== undefined ? <Related groups={related} /> : null}
     </article>

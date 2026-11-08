@@ -6,10 +6,11 @@ export interface SiteProps {
   readonly children: ReactNode;
   readonly current?: NavSection | undefined;
   readonly theme?: "light" | "dark" | undefined;
+  readonly stage?: ReactNode;
 }
 
 /** Every route renders inside this: the shell with the search index and current versions filled in. */
-export function Site({ children, current, theme }: SiteProps) {
+export function Site({ children, current, theme, stage }: SiteProps) {
   const r = repo();
   return (
     <PageShell
@@ -17,6 +18,7 @@ export function Site({ children, current, theme }: SiteProps) {
       versions={r.versions}
       current={current}
       theme={theme}
+      stage={stage}
       wikiCredit={r.credit !== null}
     >
       {children}

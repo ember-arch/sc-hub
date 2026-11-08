@@ -10,6 +10,7 @@ import {
 } from "ui";
 import type { ItemStats, VehicleStats } from "schema";
 import type { ShipRow } from "../app/ships/ship-table";
+import { pricesFor } from "./acquisition";
 import { type Deltas, channelDeltas } from "./channel-diff";
 import type { ComponentView, ShipView } from "./data";
 
@@ -106,6 +107,7 @@ export function componentStatRows(c: ComponentView): ChannelStatRow[] {
 export function shipRows(ships: readonly ShipView[]): readonly ShipRow[] {
   return ships.map((ship) => {
     const s = ship.stats;
+    const prices = pricesFor(ship.vehicle.slug, ship.vehicle.class_name);
     return {
       key: ship.vehicle.class_name,
       slug: ship.vehicle.slug,
@@ -124,6 +126,9 @@ export function shipRows(ships: readonly ShipView[]): readonly ShipRow[] {
       length: s?.length_m ?? null,
       mass: s?.mass_kg ?? null,
       scmSpeed: s?.scm_speed ?? null,
+      pledge: prices.pledge?.price_usd ?? null,
+      pledgeOnSale: prices.pledge?.available ?? false,
+      buy: prices.buy_auec,
       status: vehicleStatusBadge(ship.vehicle.status).label,
     };
   });

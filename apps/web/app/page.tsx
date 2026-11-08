@@ -10,12 +10,14 @@ import {
   vehicleStatusBadge,
 } from "ui";
 import { SITE_NAME, SITE_TAGLINE } from "ui/brand";
+import { pricesFor } from "../lib/acquisition";
 import { repo } from "../lib/data";
 import { shipCardImage } from "../lib/media";
 import { conceptShips, showcaseFor } from "../lib/showcase";
 import { Site, now } from "../lib/site";
 import { crewRange } from "../lib/views";
 import { FeaturedFile, Register, type RegisterRow } from "./home-index";
+import { PriceCredit } from "./price-credit";
 import { FileStrip } from "./ships/[slug]/showcase/dossier";
 
 export const metadata: Metadata = {
@@ -23,6 +25,17 @@ export const metadata: Metadata = {
   description: SITE_TAGLINE,
   alternates: { canonical: "/" },
 };
+
+/** The register's pledge column (ADR-013): the headline price and whether it is on sale. */
+function pledgeCell(
+  slug: string,
+  className: string | null,
+): RegisterRow["pledge"] {
+  const pledge = pricesFor(slug, className).pledge;
+  return pledge === null
+    ? null
+    : { price: formatNumber(pledge.price_usd), onSale: pledge.available };
+}
 
 /** The owner's showcase pair (2026-11-08): the concept hero and the live example. */
 const CONCEPT_HERO = "odin";
@@ -67,6 +80,7 @@ export default function HomePage() {
           c.crew_min === null || c.crew_max === null
             ? null
             : crewRange(c.crew_min, c.crew_max),
+        pledge: pledgeCell(c.slug, null),
         thumb: poster,
       };
     }),
@@ -85,6 +99,7 @@ export default function HomePage() {
           ship.stats === null
             ? null
             : crewRange(ship.stats.crew_min, ship.stats.crew_max),
+        pledge: pledgeCell(ship.vehicle.slug, ship.vehicle.class_name),
         thumb: image === null ? null : { src: image.src, srcSet: image.srcSet },
       };
     }),
@@ -228,6 +243,7 @@ export default function HomePage() {
             </span>
           </div>
           <Register rows={rows} />
+          <PriceCredit inGame={false} />
         </section>
 
         <Section id="feed" title="Today">

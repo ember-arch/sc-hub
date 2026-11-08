@@ -13,6 +13,7 @@ import type { Query } from "../../lib/ship-filters";
 import { Site } from "../../lib/site";
 import { resolveSlugs } from "../../lib/slugs";
 import { SyncCompareBasket } from "./compare-controls";
+import { PriceCredit } from "../price-credit";
 import { CompareTable } from "./compare-table";
 
 export const metadata: Metadata = {
@@ -99,6 +100,7 @@ export default async function ComparePage({
             version={r.liveVersion}
           />
         )}
+        {ships.length === 0 ? null : <PriceCredit />}
         {ships.length < MAX_COMPARE && others.length > 0 ? (
           <FilterBar
             action="/compare"

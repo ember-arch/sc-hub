@@ -112,6 +112,8 @@ export interface RegisterRow {
   readonly status: { readonly tone: BadgeTone; readonly label: string };
   readonly length: string | null;
   readonly crew: string | null;
+  /** The headline pledge price in US dollars (ADR-013), or null when none is on file. */
+  readonly pledge: { readonly price: string; readonly onSale: boolean } | null;
   readonly thumb: { readonly src: string; readonly srcSet: string } | null;
 }
 
@@ -147,6 +149,9 @@ export function Register({ rows }: { readonly rows: readonly RegisterRow[] }) {
           </th>
           <th scope="col" className={`${th} text-right`}>
             Crew
+          </th>
+          <th scope="col" className={`${th} hidden text-right sm:table-cell`}>
+            Pledge (USD)
           </th>
         </tr>
       </thead>
@@ -204,6 +209,16 @@ export function Register({ rows }: { readonly rows: readonly RegisterRow[] }) {
               className={`${td} whitespace-nowrap text-right font-mono text-ui text-primary`}
             >
               {row.crew ?? "—"}
+            </td>
+            <td
+              className={`${td} hidden whitespace-nowrap text-right font-mono text-ui text-primary sm:table-cell`}
+            >
+              {row.pledge === null ? "—" : row.pledge.price}
+              {row.pledge === null || row.pledge.onSale ? null : (
+                <span className="block font-sans text-caption text-secondary">
+                  Not on sale
+                </span>
+              )}
             </td>
           </tr>
         ))}

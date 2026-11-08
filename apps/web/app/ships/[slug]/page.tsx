@@ -17,7 +17,7 @@ import { shipJsonLd } from "../../../lib/seo";
 import { Site } from "../../../lib/site";
 import { entityForSlug } from "../../../lib/entity-route";
 import { JsonLdScript } from "../../json-ld";
-import { shipCard, shipSpecRows } from "../../../lib/views";
+import { crewRange, shipCard, shipSpecRows } from "../../../lib/views";
 import { loadoutGroups } from "../../../lib/loadout";
 import { armament } from "../../../lib/armament";
 import { ArmamentStrip } from "./armament-strip";
@@ -25,13 +25,26 @@ import { ShipStage } from "./ship-stage";
 import { LoadoutPanels } from "./loadout-panels";
 import { PortTable } from "./port-table";
 import { media, shipCardImage } from "../../../lib/media";
+import {
+  conceptBySlug,
+  conceptShips,
+  showcaseFor,
+} from "../../../lib/showcase";
+import { CompareLink, CompareToggle } from "../../compare/compare-controls";
+import { ConceptShipPage } from "./concept-page";
+import { Figures } from "./showcase/figures";
+import { ShowcaseHero } from "./showcase/showcase-hero";
+import { ShowcaseSections } from "./showcase/showcase-sections";
 
 interface Params {
   readonly params: Promise<{ slug: string }>;
 }
 
 export function generateStaticParams() {
-  return repo().ships.map((s) => ({ slug: s.vehicle.slug }));
+  return [
+    ...repo().ships.map((s) => ({ slug: s.vehicle.slug })),
+    ...conceptShips().map((c) => ({ slug: c.slug })),
+  ];
 }
 
 /**
@@ -58,6 +71,14 @@ function describe(ship: ReturnType<typeof shipFor>): string {
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
+  const concept = conceptBySlug(slug);
+  if (concept !== undefined) {
+    return {
+      title: concept.name,
+      description: `Anvil ${concept.name}: CIG's art, story, 3D model and published figures. In concept.`,
+      alternates: { canonical: `/ships/${concept.slug}` },
+    };
+  }
   const ship = shipFor(slug);
   return {
     title: ship.vehicle.name,
@@ -74,8 +95,11 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
  */
 export default async function ShipPage({ params }: Params) {
   const { slug } = await params;
+  const concept = conceptBySlug(slug);
+  if (concept !== undefined) return <ConceptShipPage concept={concept} />;
   const r = repo();
   const ship = shipFor(slug);
+  const show = showcaseFor(ship.vehicle.slug, ship.vehicle.name);
   const status = vehicleStatusBadge(ship.vehicle.status);
   const s = ship.stats;
   const allPorts = flattenPorts(r.shipPorts(ship.vehicle.class_name));
@@ -143,17 +167,113 @@ export default async function ShipPage({ params }: Params) {
       current="ships"
       theme="dark"
       stage={
-        <ShipStage
-          ship={ship}
-          status={status}
-          version={version}
-          image={media().ship(ship.vehicle.class_name, ship.vehicle.name)}
-          mark={
-            ship.manufacturer === null
-              ? null
-              : media().maker(ship.manufacturer.code, ship.manufacturer.name)
-          }
-        />
+        show?.background ? (
+          <>
+            <ShowcaseHero
+              name={ship.vehicle.name}
+              maker={
+                ship.manufacturer === null
+                  ? null
+                  : {
+                      name: ship.manufacturer.name,
+                      href: `/manufacturers/${ship.manufacturer.slug}`,
+                    }
+              }
+              role={ship.vehicle.role}
+              status={status}
+              mark={
+                ship.manufacturer === null
+                  ? null
+                  : media().maker(
+                      ship.manufacturer.code,
+                      ship.manufacturer.name,
+                    )
+              }
+              background={show.background}
+              cutout={show.cutout}
+              tagline={show.intro?.heading ?? null}
+              lead={show.intro?.text[0] ?? ship.description?.text ?? null}
+              credit={
+                show.article === null
+                  ? null
+                  : {
+                      text: "Art: Roberts Space Industries",
+                      href: show.article.url,
+                    }
+              }
+            >
+              <div className="flex flex-wrap gap-2 pt-2">
+                <CompareToggle
+                  slug={ship.vehicle.slug}
+                  name={ship.vehicle.name}
+                />
+                <CompareLink />
+              </div>
+            </ShowcaseHero>
+            <Figures
+              figures={
+                s === null
+                  ? []
+                  : [
+                      {
+                        label: "Length",
+                        value: formatNumber(s.length_m, 2),
+                        unit: "m",
+                      },
+                      {
+                        label: "Crew",
+                        value: crewRange(s.crew_min, s.crew_max),
+                      },
+                      ...(s.cargo_scu === null
+                        ? []
+                        : [
+                            {
+                              label: "Cargo",
+                              value: formatNumber(s.cargo_scu),
+                              unit: "SCU",
+                            },
+                          ]),
+                      ...(s.scm_speed === null
+                        ? []
+                        : [
+                            {
+                              label: "SCM speed",
+                              value: formatNumber(s.scm_speed),
+                              unit: "m/s",
+                            },
+                          ]),
+                      ...(s.hull_hp === null
+                        ? []
+                        : [
+                            {
+                              label: "Hull",
+                              value: formatNumber(s.hull_hp),
+                              unit: "HP",
+                            },
+                          ]),
+                    ]
+              }
+              source={`Game data, LIVE ${version ?? ""}${ship.description === null ? "" : `. In-game description: “${ship.description.text}”`}`}
+            />
+            <ShowcaseSections
+              show={show}
+              name={ship.vehicle.name}
+              length={s?.length_m ?? null}
+            />
+          </>
+        ) : (
+          <ShipStage
+            ship={ship}
+            status={status}
+            version={version}
+            image={media().ship(ship.vehicle.class_name, ship.vehicle.name)}
+            mark={
+              ship.manufacturer === null
+                ? null
+                : media().maker(ship.manufacturer.code, ship.manufacturer.name)
+            }
+          />
+        )
       }
     >
       <JsonLdScript data={shipJsonLd(ship, describe(ship))} />

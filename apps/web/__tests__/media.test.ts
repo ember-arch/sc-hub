@@ -43,6 +43,7 @@ const manifest: MediaManifest = {
       on_dark: null,
     },
   ],
+  showcase: [],
 };
 
 describe("createMedia", () => {

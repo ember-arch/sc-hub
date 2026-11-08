@@ -24,14 +24,25 @@ async function drawnImages(page: Page) {
 }
 
 for (const route of [
+  "/",
   "/ships/gladius",
   "/ships/polaris",
+  "/ships/perseus",
+  "/ships/odin",
   "/manufacturers/aegis-dynamics",
   "/manufacturers/mirai",
 ]) {
   test(`every image drawn on ${route} loads and is sized`, async ({ page }) => {
+    test.setTimeout(90_000);
     await page.goto(route);
     await page.waitForLoadState("load");
+    // Scroll through like a reader so lazy images below the fold load too.
+    const height = await page.evaluate(() => document.body.scrollHeight);
+    for (let y = 0; y < height; y += 700) {
+      await page.evaluate((top) => window.scrollTo(0, top), y);
+      await page.waitForTimeout(60);
+    }
+    await page.waitForLoadState("networkidle");
     for (const img of await drawnImages(page)) {
       expect(img.complete, img.src).toBe(true);
       expect(img.naturalWidth, img.src).toBeGreaterThan(0);

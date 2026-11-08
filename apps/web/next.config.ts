@@ -13,6 +13,7 @@ const nextConfig: NextConfig = {
       "../../fixtures/bootstrap/**",
       "../../fixtures/news/**",
       "../../fixtures/descriptions/**",
+      "../../fixtures/ship-matrix/**",
       "../../pnpm-workspace.yaml",
     ],
   },

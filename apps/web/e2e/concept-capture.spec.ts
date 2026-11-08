@@ -12,6 +12,8 @@ import { test } from "@playwright/test";
 const out = process.env["CONCEPT_OUT"];
 
 const PAGES: readonly (readonly [string, string])[] = [
+  ["odin", "/ships/odin"],
+  ["perseus", "/ships/perseus"],
   ["gladius", "/ships/gladius"],
   ["polaris", "/ships/polaris"],
   ["fury", "/ships/fury"],

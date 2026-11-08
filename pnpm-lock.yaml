@@ -220,6 +220,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@google/model-viewer':
+        specifier: 4.0.0
+        version: 4.0.0(three@0.169.0)
       geist:
         specifier: ^1.9.2
         version: 1.9.2(next@16.4.5(@babel/core@7.29.13(supports-color@8.1.1))(@opentelemetry/api@1.10.0)(@playwright/test@1.65.0)(@types/node@26.6.6)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))
@@ -918,6 +921,12 @@ packages:
   '@formatjs/intl-localematcher@0.6.2':
     resolution: {integrity: sha512-XOMO2Hupl0wdd172Y06h6kLpBz6Dv+J4okPLl4LPtzbr8f66WbIoy4ev98EBuZ6ZK4h5ydTN6XneT4QVpD7cdA==}
 
+  '@google/model-viewer@4.0.0':
+    resolution: {integrity: sha512-hf4mixP178gGtvWQq97a0uULr7k98BwJGRU3lvt12XnurOdLmZA/RPdW4tPsINNNQxZvmvQsjud4lZWre6WGNw==}
+    engines: {node: '>=6.0.0'}
+    peerDependencies:
+      three: ^0.169.0
+
   '@humanfs/core@0.19.2':
     resolution: {integrity: sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA==}
     engines: {node: '>=18.18.0'}
@@ -1145,6 +1154,17 @@ packages:
   '@lhci/utils@0.16.0':
     resolution: {integrity: sha512-jTvAYsCFnRKmbs+qEyCXnXmxf85kBDAaGhvyEah7zT7AjLJc8XqPTKhALT9i31Kxm7rQAQnRx58NNRiGYjGY5Q==}
     engines: {node: '>=22.19.0'}
+
+  '@lit-labs/ssr-dom-shim@1.6.0':
+    resolution: {integrity: sha512-VHb0ALPMTlgKjM6yIxxoQNnpKyUKLD04VzeQdsiXkMqkvYlAHxq9glGLmgbb889/1GsohSOAjvQYoiBppXFqrQ==}
+
+  '@lit/reactive-element@1.6.3':
+    resolution: {integrity: sha512-QuTgnG52Poic7uM1AN5yJ09QMe0O28e10XzSvWDz02TJiiKee4stsiownEIadWm8nYzyDAyT+gKzUoZmiWQtsQ==}
+
+  '@monogrid/gainmap-js@3.7.3':
+    resolution: {integrity: sha512-YjgdH65wZ9lQnzkVWerrR9FJR0JYhn3ahV7DJqDZVtIvR/kWv7XzFbMSIOFS/47+nWbZ5zFTRxsFhq0OX//SuA==}
+    peerDependencies:
+      three: '>= 0.159.0'
 
   '@next/env@16.4.5':
     resolution: {integrity: sha512-JwSPwpdkZL5VMl2jA/q+JI8MZdweAL3xmw5/tb9y/TLtmS0YXZnmYDzSihwk8xTj1OL+WM53gTqaj96yuLp6Xw==}
@@ -1613,6 +1633,9 @@ packages:
 
   '@types/react@19.3.0':
     resolution: {integrity: sha512-N0rFCuH9YoxG9/m61l9MfpJKfmLOVU0em7ipIz6TRgSSkvReLB9vL85GB+yr8Bs5leqpvg96JSwF4ZS1s4viQg==}
+
+  '@types/trusted-types@2.0.7':
+    resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
 
   '@typescript-eslint/eslint-plugin@8.72.1':
     resolution: {integrity: sha512-5CokTWXpmbylfFabsbvHC0CAw3XLaGnoa+nFJX5FR592h/LoZsENUE6p/rg5xvkKrFEXz6pYmgI29AgXc2N3BQ==}
@@ -2452,6 +2475,9 @@ packages:
   image-ssim@0.2.0:
     resolution: {integrity: sha512-W7+sO6/yhxy83L0G7xR8YAc5Z5QFtYEXXRV6EaE8tuYBZJnA3gVgp3q7X7muhLZVodeb9UfvjSbwt9VJwjIYAg==}
 
+  immediate@3.0.6:
+    resolution: {integrity: sha512-XXOFtyqDjNDAQxVfYxuF7g9Il/IbWmmlQg2MYKOH8ExIT1qg6xc4zyS3HaEEATgs1btfzxq15ciUiY7gjSXRGQ==}
+
   imurmurhash@0.1.4:
     resolution: {integrity: sha512-JmXMZ6wuvDmLiHEml9ykzqO6lwFbof0GG4IkcGaENdCRDDmMVnny7s5HsIgHCbaq0w2MyPhDqkhTUgS2LU2PHA==}
     engines: {node: '>=0.8.19'}
@@ -2512,6 +2538,9 @@ packages:
   is-interactive@1.0.0:
     resolution: {integrity: sha512-2HvIEKRoqS62guEC+qBjpvRubdX910WCMuJTZ+I9yvqKU2/12eSL549HMwtabb4oupdj2sMP50k+XJfB/8JE6w==}
     engines: {node: '>=8'}
+
+  is-promise@2.2.2:
+    resolution: {integrity: sha512-+lP4/6lKUBfQjZ2pdxThZvLUAafmZb8OAxFb8XXtiQmS35INgr85hdOGoEs124ez1FCnZJt6jau/T+alh58QFQ==}
 
   is-safe-filename@0.1.1:
     resolution: {integrity: sha512-4SrR7AdnY11LHfDKTZY1u6Ga3RuxZdl3YKWWShO5iyuG5h8QS4GD2tOb04peBJ5I7pXbR+CGBNEhTcwK+FzN3g==}
@@ -2578,6 +2607,9 @@ packages:
   levn@0.4.1:
     resolution: {integrity: sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ==}
     engines: {node: '>= 0.8.0'}
+
+  lie@3.3.0:
+    resolution: {integrity: sha512-UaiMJzeWRlEujzAuw5LokY1L5ecNQYZKfmyZ9L7wDHb/p5etKaxXhohBcrw0EYby+G/NA52vRSN4N39dxHAIwQ==}
 
   lighthouse-logger@1.2.0:
     resolution: {integrity: sha512-wzUvdIeJZhRsG6gpZfmSCfysaxNEr43i+QT+Hie94wvHDKFLi4n7C2GqZ4sTC+PH5b5iktmXJvU87rWvhP3lHw==}
@@ -2666,6 +2698,15 @@ packages:
   lightningcss@1.33.0:
     resolution: {integrity: sha512-WkUDrojuJs0xkgGf2udWxa3yGBRxPtxUkB79i6aCZLRgc7PM8fZe9TosfPDcvEpQZbuFASnHYmRLBLUbmLOIIA==}
     engines: {node: '>= 12.0.0'}
+
+  lit-element@3.3.3:
+    resolution: {integrity: sha512-XbeRxmTHubXENkV4h8RIPyr8lXc+Ff28rkcQzw3G6up2xg5E8Zu1IgOWIwBLEQsu3cOVFqdYwiVi0hv0SlpqUA==}
+
+  lit-html@2.8.0:
+    resolution: {integrity: sha512-o9t+MQM3P4y7M7yNzqAyjp7z+mQGa4NS4CxiyLqFPyFWyc4O+nodLrkrxSaCTrla6M5YOLaT3RpbbqjszB5g3Q==}
+
+  lit@2.8.0:
+    resolution: {integrity: sha512-4Sc3OFX9QHOJaHbmTMk28SYgVxLN3ePDjg7hofEft2zWlehFL3LiAuapWc4U/kYwMYJSh2hTCPZ6/LIC7ii0MA==}
 
   locate-path@5.0.0:
     resolution: {integrity: sha512-t7hw9pI+WvuwNJXwk5zVHpyhIqzg2qTlklJOf0mVxGSbe3Fp2VieZcduNYjaLDoy6p9uGpQEGWG87WpMKlNq8g==}
@@ -2963,6 +3004,9 @@ packages:
     engines: {node: '>=14'}
     hasBin: true
 
+  promise-worker-transferable@1.0.4:
+    resolution: {integrity: sha512-bN+0ehEnrXfxV2ZQvU2PetO0n4gqBD4ulq3MI1WOPLgr7/Mg9yRQkX5+0v1vagr74ZTsl7XtzlaYDo2EuCeYJw==}
+
   proxy-addr@2.0.8:
     resolution: {integrity: sha512-5nnx0yGyVUcY6t9RnWcARWtwT9F1D8O9rt08htPvnd49W1IgZtmLkhu9WfMzQj1cFxjHIO6connUNVW5k7AVyQ==}
     engines: {node: '>= 0.10'}
@@ -3224,6 +3268,9 @@ packages:
 
   third-party-web@0.30.0:
     resolution: {integrity: sha512-p+PfyL5U0ediGzvwPzMSdD9MnC8rHW6nWJJVLIQvqN7RsSqfaZ+7n4c9GILqH36EYR0eXB9CzAeCRnKFr/9uJg==}
+
+  three@0.169.0:
+    resolution: {integrity: sha512-Ed906MA3dR4TS5riErd4QBsRGPcx+HBDX2O5yYE5GqJeFQTPU+M56Va/f/Oph9X7uZo3W3o4l2ZhBZ6f6qUv0w==}
 
   through@2.3.8:
     resolution: {integrity: sha512-w89qg7PI8wAdvX60bMDP+bFoD5Dvhm9oLheFp5O4a2QF0cSBGsBX4qZmadPMvVqlLJBBci+WqGGOAPvcDeNSVg==}
@@ -3942,6 +3989,12 @@ snapshots:
     dependencies:
       tslib: 2.9.1
 
+  '@google/model-viewer@4.0.0(three@0.169.0)':
+    dependencies:
+      '@monogrid/gainmap-js': 3.7.3(three@0.169.0)
+      lit: 2.8.0
+      three: 0.169.0
+
   '@humanfs/core@0.19.2':
     dependencies:
       '@humanfs/types': 0.15.0
@@ -4144,6 +4197,17 @@ snapshots:
       - utf-8-validate
       - webpack
       - yauzl
+
+  '@lit-labs/ssr-dom-shim@1.6.0': {}
+
+  '@lit/reactive-element@1.6.3':
+    dependencies:
+      '@lit-labs/ssr-dom-shim': 1.6.0
+
+  '@monogrid/gainmap-js@3.7.3(three@0.169.0)':
+    dependencies:
+      promise-worker-transferable: 1.0.4
+      three: 0.169.0
 
   '@next/env@16.4.5': {}
 
@@ -4441,6 +4505,8 @@ snapshots:
   '@types/react@19.3.0':
     dependencies:
       csstype: 3.2.3
+
+  '@types/trusted-types@2.0.7': {}
 
   '@typescript-eslint/eslint-plugin@8.72.1(@typescript-eslint/parser@8.72.1(eslint@10.14.0(jiti@2.7.0)(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3))(eslint@10.14.0(jiti@2.7.0)(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3)':
     dependencies:
@@ -5327,6 +5393,8 @@ snapshots:
 
   image-ssim@0.2.0: {}
 
+  immediate@3.0.6: {}
+
   imurmurhash@0.1.4: {}
 
   inflight@1.0.6:
@@ -5387,6 +5455,8 @@ snapshots:
 
   is-interactive@1.0.0: {}
 
+  is-promise@2.2.2: {}
+
   is-safe-filename@0.1.1: {}
 
   is-unicode-supported@0.1.0: {}
@@ -5438,6 +5508,10 @@ snapshots:
     dependencies:
       prelude-ls: 1.2.1
       type-check: 0.4.0
+
+  lie@3.3.0:
+    dependencies:
+      immediate: 3.0.6
 
   lighthouse-logger@1.2.0(supports-color@8.1.1):
     dependencies:
@@ -5537,6 +5611,22 @@ snapshots:
       lightningcss-linux-x64-musl: 1.33.0
       lightningcss-win32-arm64-msvc: 1.33.0
       lightningcss-win32-x64-msvc: 1.33.0
+
+  lit-element@3.3.3:
+    dependencies:
+      '@lit-labs/ssr-dom-shim': 1.6.0
+      '@lit/reactive-element': 1.6.3
+      lit-html: 2.8.0
+
+  lit-html@2.8.0:
+    dependencies:
+      '@types/trusted-types': 2.0.7
+
+  lit@2.8.0:
+    dependencies:
+      '@lit/reactive-element': 1.6.3
+      lit-element: 3.3.3
+      lit-html: 2.8.0
 
   locate-path@5.0.0:
     dependencies:
@@ -5819,6 +5909,11 @@ snapshots:
   prelude-ls@1.2.1: {}
 
   prettier@3.9.10: {}
+
+  promise-worker-transferable@1.0.4:
+    dependencies:
+      is-promise: 2.2.2
+      lie: 3.3.0
 
   proxy-addr@2.0.8:
     dependencies:
@@ -6138,6 +6233,8 @@ snapshots:
   tapable@2.3.3: {}
 
   third-party-web@0.30.0: {}
+
+  three@0.169.0: {}
 
   through@2.3.8: {}
 

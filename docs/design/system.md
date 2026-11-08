@@ -42,6 +42,7 @@ Rules: one accent. Manufacturer brand colors may appear only as a 3 px rule on t
 
 | Token | Size / line | Weight | Use |
 | --- | --- | --- | --- |
+| `marquee` | 144 / 136 | 500 | Ship name over the key art on showcase pages and the home spotlight, desktop (ADR-010) |
 | `hero` | 80 / 84 | 500 | Ship name on the full-bleed stage, desktop (ADR-008) |
 | `display` | 40 / 44 | 500 | Entity name in a hero; the stage's headline figures |
 | `title` | 28 / 34 | 500 | Page title |

@@ -13,6 +13,7 @@
     "licenses:generate": "tsx scripts/licenses.ts"
   },
   "dependencies": {
+    "@google/model-viewer": "4.0.0",
     "geist": "^1.9.2",
     "next": "16.4.5",
     "react": "19.3.1",

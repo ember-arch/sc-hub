@@ -21,7 +21,8 @@ import {
   shipIndexHref,
 } from "../../lib/ship-filters";
 import { Site } from "../../lib/site";
-import { shipCard, shipRows } from "../../lib/views";
+import { crewRange, shipCard, shipRows } from "../../lib/views";
+import { conceptShips, showcaseFor } from "../../lib/showcase";
 import { CompareLink, CompareToggle } from "../compare/compare-controls";
 import { ShipTable } from "./ship-table";
 import { shipCardImage } from "../../lib/media";
@@ -56,6 +57,8 @@ export default async function ShipsPage({
   const r = repo();
   const state = parseShipQuery(await searchParams);
   const ships = applyShipFilters(r.ships, state.filters);
+  // Concept ships sit outside the filters: they have no game data to filter on (ADR-010).
+  const concepts = hasShipFilters(state.filters) ? [] : conceptShips();
   const options = shipFacetOptions(r.ships, {
     status: (status) => vehicleStatusBadge(status).label,
     kind: sentence,
@@ -135,6 +138,62 @@ export default async function ShipsPage({
               </li>
             ))}
           </ul>
+        )}
+        {concepts.length === 0 ? null : (
+          <section
+            aria-labelledby="in-concept"
+            className="flex flex-col gap-4 pt-8"
+          >
+            <div className="flex items-baseline justify-between gap-4 border-b border-hairline pb-2">
+              <h2 id="in-concept" className="m-0 text-heading text-primary">
+                In concept
+              </h2>
+              <span className="text-caption text-secondary">
+                RSI ship matrix figures; not in the game yet
+              </span>
+            </div>
+            <ul className="m-0 grid list-none grid-cols-2 gap-4 p-0 md:grid-cols-3 lg:grid-cols-4">
+              {concepts.map((c) => {
+                const poster = showcaseFor(c.slug, c.name)?.poster ?? null;
+                return (
+                  <li key={c.slug}>
+                    <Card
+                      href={`/ships/${c.slug}`}
+                      name={c.name}
+                      manufacturer={
+                        r.manufacturers.find(
+                          (m) => m.code === c.manufacturer_code,
+                        )?.name ?? c.manufacturer_code
+                      }
+                      role={c.focus}
+                      stats={[
+                        { label: "Length", value: c.length_m, unit: "m" },
+                        {
+                          label: "Crew",
+                          value:
+                            c.crew_min === null || c.crew_max === null
+                              ? null
+                              : crewRange(c.crew_min, c.crew_max),
+                        },
+                      ]}
+                      image={
+                        poster === null
+                          ? null
+                          : {
+                              ...poster,
+                              alt: "",
+                              credit: {
+                                text: "Image: Roberts Space Industries",
+                                href: c.page_url,
+                              },
+                            }
+                      }
+                    />
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
         )}
       </div>
     </Site>

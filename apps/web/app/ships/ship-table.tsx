@@ -48,6 +48,7 @@ export function ShipTable({
       rows={rows}
       rowKey={(row) => row.key}
       defaultSort={{ key: "name", direction: "asc" }}
+      expandBelow="xl"
       columns={[
         {
           key: "name",

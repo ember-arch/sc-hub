@@ -27,9 +27,22 @@ export interface DataTableProps<T> {
   readonly rowKey: (row: T) => string;
   readonly defaultSort?:
     { readonly key: string; readonly direction: "asc" | "desc" } | undefined;
+  /**
+   * Below this breakpoint rows expand instead of showing every column. `md` suits a few columns;
+   * a wide table (the ships table's eleven) needs `xl` or it scrolls sideways between 768 px and
+   * the width it fits in (system.md principle 6).
+   */
+  readonly expandBelow?: "md" | "lg" | "xl" | undefined;
 }
 
 type Direction = "asc" | "desc";
+
+/** Literal class names per breakpoint, so Tailwind's scanner sees each one. */
+const BREAKPOINT = {
+  md: { cell: "hidden md:table-cell", phone: "md:hidden" },
+  lg: { cell: "hidden lg:table-cell", phone: "lg:hidden" },
+  xl: { cell: "hidden xl:table-cell", phone: "xl:hidden" },
+} as const;
 
 function compare(a: number | string | null, b: number | string | null): number {
   if (a === null) return b === null ? 0 : 1;
@@ -44,7 +57,9 @@ export function DataTable<T>({
   rows,
   rowKey,
   defaultSort,
+  expandBelow = "md",
 }: DataTableProps<T>) {
+  const bp = BREAKPOINT[expandBelow];
   const [sort, setSort] = useState<{
     key: string;
     direction: Direction;
@@ -107,7 +122,7 @@ export function DataTable<T>({
                 key={column.key}
                 scope="col"
                 aria-sort={ariaSort}
-                className={`sticky top-0 border-b border-hairline bg-inset px-3 py-2 text-caption text-secondary ${cellAlign(column)} ${isPrimary(column, index) ? "" : "hidden md:table-cell"}`}
+                className={`sticky top-0 border-b border-hairline bg-inset px-3 py-2 text-caption text-secondary ${cellAlign(column)} ${isPrimary(column, index) ? "" : bp.cell}`}
               >
                 {column.sortValue === undefined ? (
                   <span className="whitespace-nowrap">
@@ -137,7 +152,7 @@ export function DataTable<T>({
           {secondary.length > 0 ? (
             <th
               scope="col"
-              className="sticky top-0 border-b border-hairline bg-inset md:hidden"
+              className={`sticky top-0 border-b border-hairline bg-inset ${bp.phone}`}
             >
               <span className="sr-only">More</span>
             </th>
@@ -154,13 +169,13 @@ export function DataTable<T>({
                 {columns.map((column, index) => (
                   <td
                     key={column.key}
-                    className={`break-words px-3 py-2 align-top ${cellAlign(column)} ${isPrimary(column, index) ? "" : "hidden md:table-cell"} ${column.align === "right" ? "font-mono" : ""}`}
+                    className={`break-words px-3 py-2 align-top ${cellAlign(column)} ${isPrimary(column, index) ? "" : bp.cell} ${column.align === "right" ? "font-mono" : ""}`}
                   >
                     {column.render(row)}
                   </td>
                 ))}
                 {secondary.length > 0 ? (
-                  <td className="px-3 py-2 text-right md:hidden">
+                  <td className={`px-3 py-2 text-right ${bp.phone}`}>
                     <button
                       type="button"
                       aria-expanded={open}
@@ -173,7 +188,7 @@ export function DataTable<T>({
                 ) : null}
               </tr>
               {open ? (
-                <tr className="border-b border-hairline md:hidden">
+                <tr className={`border-b border-hairline ${bp.phone}`}>
                   <td colSpan={columns.length + 1} className="px-3 py-2">
                     <dl className="m-0 grid grid-cols-2 gap-x-4 gap-y-2">
                       {secondary.map((column) => (

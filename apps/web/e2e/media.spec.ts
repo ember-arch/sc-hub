@@ -101,3 +101,24 @@ test("a maker logo shows one version for the page's theme", async ({
   await expect(logos).toHaveCount(1);
   await expect(logos).toHaveAttribute("src", /aegs-on-dark/);
 });
+
+// ADR-015: with the models built, Scale lines every ship up in one holoviewer canvas.
+test("Scale lines the ships up in the holoviewer, opening on the page's ship and its neighbours", async ({
+  page,
+}) => {
+  await page.goto("/ships/gladius");
+  const scale = page.locator("#scale");
+  const lineup = scale.getByRole("img", {
+    name: /^To scale, from RSI's holoviewer models/,
+  });
+  if ((await lineup.count()) === 0) test.skip(true, "no models built locally");
+  await expect(lineup).toHaveAttribute("aria-label", /Gladius 21 m/);
+  await expect(
+    scale.getByRole("button", { name: "Around the Gladius" }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await scale.getByRole("button", { name: "All ships" }).click();
+  await expect(
+    scale.getByRole("button", { name: "All ships" }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await expect(scale.getByRole("button", { name: /^Odin/ })).toBeVisible();
+});

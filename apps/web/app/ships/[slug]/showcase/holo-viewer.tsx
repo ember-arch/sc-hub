@@ -1,8 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { BufferGeometry, Mesh } from "three";
 import { TextLink } from "ui";
+import {
+  HOLO,
+  holoBackdrop,
+  holoColor,
+  holoMaterial,
+  loadHoloGeometry,
+} from "./holo-kit";
 
 /**
  * The holoviewer (ADR-012, ADR-015): the model RSI's own pledge page loads into its holoviewer,
@@ -17,17 +23,6 @@ import { TextLink } from "ui";
  * this canvas. The shaders are this project's own. three.js loads only as the viewer approaches;
  * the models are meshopt-compressed glTF, which three decodes without a separate decoder file.
  */
-
-/** Viewer-only colours, close to CIG's holoviewer. Not interface colours (ADR-012). */
-const HOLO = {
-  background: [0.031, 0.075, 0.106],
-  backgroundGlow: [0.07, 0.16, 0.22],
-  base: [0.0, 0.07, 0.12],
-  light: [0.28, 0.72, 0.92],
-  rim: [0.55, 0.9, 1.0],
-  scan: [0.45, 1.0, 0.7],
-  line: [0.25, 0.81, 0.99],
-} as const;
 
 const VIEWS = [
   { id: "orbit", label: "Orbit" },
@@ -52,82 +47,6 @@ interface Api {
   setRender(render: Render): void;
   dispose(): void;
 }
-
-const VERTEX = /* glsl */ `
-  uniform vec3 uMin;
-  uniform vec3 uSize;
-  varying vec3 vNormal;
-  varying vec3 vView;
-  varying vec3 vUnit;
-  void main() {
-    vec4 view = modelViewMatrix * vec4(position, 1.0);
-    vNormal = normalize(normalMatrix * normal);
-    vView = normalize(-view.xyz);
-    vUnit = (position - uMin) / uSize;
-    gl_Position = projectionMatrix * view;
-  }
-`;
-
-const FRAGMENT = /* glsl */ `
-  uniform vec3 uBase;
-  uniform vec3 uLight;
-  uniform vec3 uRim;
-  uniform vec3 uScan;
-  uniform vec3 uLightDir;
-  uniform vec3 uScanAt;
-  uniform float uAppear;
-  uniform float uXray;
-  uniform float uGain;
-  uniform float uTime;
-  varying vec3 vNormal;
-  varying vec3 vView;
-  varying vec3 vUnit;
-
-  float hash(vec3 p) {
-    p = fract(p * 0.3183099 + 0.1);
-    p *= 17.0;
-    return fract(p.x * p.y * p.z * (p.x + p.y + p.z));
-  }
-  float noise(vec3 x) {
-    vec3 i = floor(x);
-    vec3 f = fract(x);
-    f = f * f * (3.0 - 2.0 * f);
-    return mix(
-      mix(mix(hash(i), hash(i + vec3(1, 0, 0)), f.x),
-          mix(hash(i + vec3(0, 1, 0)), hash(i + vec3(1, 1, 0)), f.x), f.y),
-      mix(mix(hash(i + vec3(0, 0, 1)), hash(i + vec3(1, 0, 1)), f.x),
-          mix(hash(i + vec3(0, 1, 1)), hash(i + vec3(1, 1, 1)), f.x), f.y),
-      f.z);
-  }
-  float band(float at, float coord, float width) {
-    if (at < 0.0 || at > 1.0) return 0.0;
-    return smoothstep(width, 0.0, abs(coord - at));
-  }
-
-  void main() {
-    // Materialise: noise over the hull against the appear front, with a bright seam at the edge.
-    float n = noise(vUnit * 14.0) * 0.75 + noise(vUnit * 41.0) * 0.25;
-    if (n > uAppear) discard;
-    float seam = smoothstep(0.06, 0.0, uAppear - n) * step(uAppear, 0.999);
-
-    vec3 normal = normalize(vNormal) * (gl_FrontFacing ? 1.0 : -1.0);
-    float facing = abs(dot(normal, normalize(vView)));
-    float rim = pow(1.0 - facing, 2.4);
-    float lit = max(dot(normal, normalize(uLightDir)), 0.0);
-
-    // Scan planes: a thin bright line with a softer wake, along each axis in turn.
-    float scan =
-      band(uScanAt.z, vUnit.z, 0.006) + band(uScanAt.x, vUnit.x, 0.006) + band(uScanAt.y, vUnit.y, 0.006);
-    float wake =
-      band(uScanAt.z, vUnit.z, 0.05) + band(uScanAt.x, vUnit.x, 0.05) + band(uScanAt.y, vUnit.y, 0.05);
-
-    vec3 solid = uBase + uLight * (0.12 + 0.88 * lit) + uRim * rim * 0.7;
-    vec3 ghost = uLight * (0.35 + rim * 1.1);
-    vec3 color = mix(solid, ghost, uXray) + uScan * (scan * 1.2 + wake * 0.18) + uRim * seam * 1.4;
-    float alpha = mix(1.0, (0.025 + rim * 0.5 + scan * 0.6 + wake * 0.08) * uGain, uXray);
-    gl_FragColor = vec4(color, alpha);
-  }
-`;
 
 export function HoloViewer({
   src,
@@ -322,32 +241,7 @@ async function start(
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
 
-  /** The glTF's quantized mesh as plain float geometry in metres, with smooth normals. */
-  const load = async (url: string): Promise<BufferGeometry> => {
-    const gltf = await loader.loadAsync(url);
-    gltf.scene.updateMatrixWorld(true);
-    let found: Mesh | null = null;
-    gltf.scene.traverse((node) => {
-      if (found === null && (node as Mesh).isMesh) found = node as Mesh;
-    });
-    const mesh = found as Mesh | null;
-    if (mesh === null) throw new Error("no mesh");
-    const source = mesh.geometry.getAttribute("position");
-    const out = new Float32Array(source.count * 3);
-    const v = new THREE.Vector3();
-    for (let i = 0; i < source.count; i += 1) {
-      v.fromBufferAttribute(source, i).applyMatrix4(mesh.matrixWorld);
-      out[i * 3] = v.x;
-      out[i * 3 + 1] = v.y;
-      out[i * 3 + 2] = v.z;
-    }
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute("position", new THREE.BufferAttribute(out, 3));
-    geometry.setIndex(mesh.geometry.getIndex());
-    geometry.computeVertexNormals();
-    mesh.geometry.dispose();
-    return geometry;
-  };
+  const load = (url: string) => loadHoloGeometry(THREE, loader, url);
 
   const ship = await load(src);
   const person =
@@ -378,56 +272,12 @@ async function start(
   el.insertBefore(renderer.domElement, el.firstChild);
 
   const scene = new THREE.Scene();
-  // A dark backdrop, lighter at the centre, painted once.
-  const backdrop = document.createElement("canvas");
-  backdrop.width = 512;
-  backdrop.height = 512;
-  const paint = backdrop.getContext("2d");
-  if (paint !== null) {
-    const rgb = (c: readonly number[]) =>
-      `rgb(${c.map((x) => Math.round(x * 255)).join(",")})`;
-    const glow = paint.createRadialGradient(256, 230, 20, 256, 256, 360);
-    glow.addColorStop(0, rgb(HOLO.backgroundGlow));
-    glow.addColorStop(1, rgb(HOLO.background));
-    paint.fillStyle = glow;
-    paint.fillRect(0, 0, 512, 512);
-  }
-  const backdropTexture = new THREE.CanvasTexture(backdrop);
-  backdropTexture.colorSpace = THREE.SRGBColorSpace;
+  const backdropTexture = holoBackdrop(THREE);
   scene.background = backdropTexture;
 
-  const color = (c: readonly [number, number, number]) =>
-    new THREE.Color(c[0], c[1], c[2]);
-  // In view space: the light stays above and to the right of the camera, so the side in view is lit.
-  const lightDir = new THREE.Vector3(0.35, 0.8, 0.45).normalize();
-  const material = (box: InstanceType<typeof THREE.Box3>, gain: number) => {
-    const extent = box.getSize(new THREE.Vector3());
-    return new THREE.ShaderMaterial({
-      vertexShader: VERTEX,
-      fragmentShader: FRAGMENT,
-      uniforms: {
-        uMin: { value: box.min.clone() },
-        uSize: {
-          value: new THREE.Vector3(
-            Math.max(extent.x, 1e-3),
-            Math.max(extent.y, 1e-3),
-            Math.max(extent.z, 1e-3),
-          ),
-        },
-        uBase: { value: color(HOLO.base) },
-        uLight: { value: color(HOLO.light) },
-        uRim: { value: color(HOLO.rim) },
-        uScan: { value: color(HOLO.scan) },
-        uLightDir: { value: lightDir.clone() },
-        uScanAt: { value: new THREE.Vector3(-1, -1, -1) },
-        uAppear: { value: reduced ? 1 : 0 },
-        uXray: { value: 0 },
-        uGain: { value: gain },
-        uTime: { value: 0 },
-      },
-      side: THREE.DoubleSide,
-    });
-  };
+  const color = (c: readonly [number, number, number]) => holoColor(THREE, c);
+  const material = (box: InstanceType<typeof THREE.Box3>, gain: number) =>
+    holoMaterial(THREE, box, { gain, appear: reduced ? 1 : 0 });
   // Dense meshes stack more translucent layers in X-ray; scale them so they stay cyan, not white.
   const vertexCount = ship.getAttribute("position").count;
   const shipMaterial = material(

@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { ConceptShip, HoloModel } from "schema";
 import {
   RankBar,
@@ -44,6 +45,7 @@ import {
 import {
   SHOWCASE_CREDITS,
   type ShowcaseView,
+  conceptShips,
   showcaseFor,
 } from "../../../lib/showcase";
 import { crewRange, shipSpecRows } from "../../../lib/views";
@@ -53,6 +55,7 @@ import { LoadoutEditor } from "./loadout-editor";
 import { LoadoutPanels } from "./loadout-panels";
 import { PortTable } from "./port-table";
 import { type SourceEntry, Sources } from "./showcase/dossier";
+import { HoloLineup, type LineupShip } from "./showcase/holo-lineup";
 import { Claims, Facts, Gap, type ShipFileProps } from "./ship-file";
 
 /**
@@ -306,6 +309,62 @@ const scaleLineup = (
     reference={{ key: "person", name: "A person", length: 0.5, height: 1.8 }}
   />
 );
+
+/**
+ * The Scale section (ADR-015): every ship with an RSI holoviewer model, lined up to scale in one
+ * holoviewer canvas, the page's ship lit full. Without the models built (a clone, CI, a deploy),
+ * or with no other ship to stand beside, the drawn lineup stays.
+ */
+function scaleView(slug: string, drawn: ReactNode): ReactNode {
+  const r = repo();
+  const ships: LineupShip[] = [
+    ...r.ships.flatMap((o) => {
+      const holo = media().holo(o.vehicle.slug);
+      return holo === null || o.stats === null
+        ? []
+        : [
+            {
+              slug: o.vehicle.slug,
+              name: o.vehicle.name,
+              length: o.stats.length_m,
+              src: holo.src,
+              bytes: holo.bytes,
+              current: o.vehicle.slug === slug,
+            },
+          ];
+    }),
+    ...conceptShips().flatMap((c) => {
+      const holo = media().holo(c.slug);
+      return holo === null || c.length_m === null
+        ? []
+        : [
+            {
+              slug: c.slug,
+              name: c.name,
+              length: c.length_m,
+              src: holo.src,
+              bytes: holo.bytes,
+              current: c.slug === slug,
+            },
+          ];
+    }),
+  ];
+  if (ships.length < 2 || !ships.some((s) => s.current)) return drawn;
+  const figure = media().holoFigure();
+  return (
+    <HoloLineup
+      ships={ships}
+      figure={
+        figure === null ? null : { src: figure.src, height: figure.height }
+      }
+      label="Fig. B"
+      credit={{
+        text: "Models: RSI holoviewer",
+        href: "https://robertsspaceindustries.com/pledge",
+      }}
+    />
+  );
+}
 
 export function packShipFile(ship: ShipView): ShipFileProps {
   const r = repo();
@@ -804,10 +863,13 @@ export function packShipFile(ship: ShipView): ShipFileProps {
           s === null ? (
             <Gap>No dimensions on record.</Gap>
           ) : (
-            scaleLineup(
-              v.name,
-              { key: v.class_name, length: s.length_m, height: s.height_m },
-              others,
+            scaleView(
+              v.slug,
+              scaleLineup(
+                v.name,
+                { key: v.class_name, length: s.length_m, height: s.height_m },
+                others,
+              ),
             )
           ),
       },
@@ -1151,14 +1213,17 @@ export function conceptShipFile(concept: ConceptShip): ShipFileProps {
           concept.length_m === null || concept.height_m === null ? (
             <Gap>No dimensions stated.</Gap>
           ) : (
-            scaleLineup(
-              concept.name,
-              {
-                key: concept.slug,
-                length: concept.length_m,
-                height: concept.height_m,
-              },
-              others,
+            scaleView(
+              concept.slug,
+              scaleLineup(
+                concept.name,
+                {
+                  key: concept.slug,
+                  length: concept.length_m,
+                  height: concept.height_m,
+                },
+                others,
+              ),
             )
           ),
       },

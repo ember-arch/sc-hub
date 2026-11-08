@@ -232,3 +232,35 @@ test("the components index filters by size and manufacturer as URL state", async
   await page.getByRole("link", { name: "Clear filters" }).click();
   await expect(page).toHaveURL(/\/components$/);
 });
+
+// system.md principle 6 between the two screenshot widths: tablets and narrow desktop windows.
+// The ships table has eleven columns, so it keeps the expand-row layout until it fits.
+for (const width of [820, 1024, 1180]) {
+  test(`no page with a wide table scrolls sideways at ${width} px`, async ({
+    browser,
+  }) => {
+    const context = await browser.newContext({
+      viewport: { width, height: 900 },
+    });
+    const page = await context.newPage();
+    const ship = vehicles[0]?.slug ?? "";
+    for (const path of [
+      "/ships?view=table",
+      "/components",
+      `/ships/${ship}`,
+      `/compare?ships=${vehicles
+        .slice(0, 4)
+        .map((v) => v.slug)
+        .join(",")}`,
+    ]) {
+      await page.goto(path);
+      const overflow = await page.evaluate(
+        () =>
+          document.documentElement.scrollWidth >
+          document.documentElement.clientWidth,
+      );
+      expect(overflow, `${path} scrolls sideways at ${width} px`).toBe(false);
+    }
+    await context.close();
+  });
+}

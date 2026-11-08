@@ -94,7 +94,9 @@ for (const screen of SCREENS) {
         // Port names in the opened port table must wrap at their parts (the break after each
         // underscore), never into fragments shorter than a word.
         if (viewport.name === "phone" && screen.name.startsWith("ship")) {
-          const summary = page.locator("#hardpoints details summary");
+          const summary = page.locator("#hardpoints details summary", {
+            hasText: /ports by game name$/,
+          });
           const hasTable = (await summary.count()) > 0;
           if (hasTable) await summary.click();
           const tooNarrow = await page.evaluate(() => {

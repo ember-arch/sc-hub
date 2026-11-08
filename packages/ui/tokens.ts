@@ -83,6 +83,7 @@ export const color: Record<Scheme, Record<ColorToken, string>> = {
 };
 
 export const typeTokens = [
+  "marquee",
   "hero",
   "display",
   "title",
@@ -103,6 +104,8 @@ export interface TypeStyle {
 }
 
 export const type: Record<TypeToken, TypeStyle> = {
+  /** Showcase pages only: the ship's name over its key art (ADR-010). */
+  marquee: { size: 144, line: 136, weight: 500 },
   hero: { size: 80, line: 84, weight: 500 },
   display: { size: 40, line: 44, weight: 500 },
   title: { size: 28, line: 34, weight: 500 },

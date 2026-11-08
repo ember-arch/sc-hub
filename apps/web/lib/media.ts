@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { MediaManifest } from "schema";
+import { MediaManifest, type Showcase } from "schema";
 import type { MakerMark, ResponsiveImage } from "ui";
 import { RSI_IMAGE_CREDIT } from "ui/legal";
 import { REPO_ROOT, type ShipView } from "./data";
@@ -26,10 +26,13 @@ export interface Media {
   /** The same image for a card, whose alt is empty: the card already names the ship. */
   shipCard(className: string): ResponsiveImage | null;
   maker(code: string, name: string): MakerMark | null;
+  /** A showcase ship's media and chapters (ADR-010). */
+  showcase(slug: string): Showcase | null;
 }
 
 export function createMedia(manifest: MediaManifest | null): Media {
   const ships = new Map(manifest?.ships.map((s) => [s.class_name, s]) ?? []);
+  const showcases = new Map(manifest?.showcase.map((s) => [s.slug, s]) ?? []);
   const makers = new Map(
     manifest?.makers.map((m) => [m.manufacturer_code, m]) ?? [],
   );
@@ -49,6 +52,7 @@ export function createMedia(manifest: MediaManifest | null): Media {
     };
   };
   return {
+    showcase: (slug) => showcases.get(slug) ?? null,
     ship: (className, name) => image(className, `The ${name}`),
     shipCard: (className) => image(className, ""),
     maker(code, name) {

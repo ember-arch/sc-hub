@@ -62,8 +62,9 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
 /**
  * Ship page on the EntityPage template (spec 02, "Ship page"): hero, key facts, specs by channel
- * with the PTU diff toggle, hardpoints and stock loadout, variants and paints, changed in this
- * version, in the news, related. Defaults to dark (system.md principle 3).
+ * with the PTU diff toggle, hardpoints and stock loadout, variants and paints when there are any,
+ * related. "Changed in this version" waits for diff.json; news is Phase 3. Defaults to dark
+ * (system.md principle 3).
  */
 export default async function ShipPage({ params }: Params) {
   const { slug } = await params;
@@ -225,47 +226,41 @@ export default async function ShipPage({ params }: Params) {
           <Section
             id="variants"
             title="Variants and paints"
-            aside={
-              variants.length + ship.paints.length === 0
-                ? undefined
-                : `${variants.length} variants · ${ship.paints.length} paints`
-            }
+            aside={`${variants.length} variants · ${ship.paints.length} paints`}
           >
-            {
-              <div className="flex flex-col gap-6">
-                {variants.length > 0 ? (
-                  <div className="flex flex-col gap-3">
-                    <h3 className="text-ui font-medium text-primary">
-                      {base === null
-                        ? "Variants"
-                        : `Variant of the ${base.vehicle.name}`}
-                    </h3>
-                    <ul className="m-0 grid list-none grid-cols-2 gap-4 p-0 md:grid-cols-3 lg:grid-cols-4">
-                      {variants.map((v) => (
-                        <li key={v.vehicle.class_name}>
-                          <Card {...shipCard(v)} />
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : null}
-                {ship.paints.length > 0 ? (
-                  <div className="flex flex-col gap-3">
-                    <h3 className="text-ui font-medium text-primary">Paints</h3>
-                    <ul className="m-0 flex list-none flex-wrap gap-2 p-0 text-ui">
-                      {ship.paints.map((paint) => (
-                        <li
-                          key={paint.id}
-                          className="rounded-control border border-hairline bg-surface px-3 py-1 text-primary"
-                        >
-                          {paint.name}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : null}
-              </div>
-            }
+            <div className="flex flex-col gap-6">
+              {variants.length > 0 ? (
+                <div className="flex flex-col gap-3">
+                  <h3 className="text-ui font-medium text-primary">
+                    {base === null
+                      ? "Variants"
+                      : `Variant of the ${base.vehicle.name}`}
+                  </h3>
+                  <ul className="m-0 grid list-none grid-cols-2 gap-4 p-0 md:grid-cols-3 lg:grid-cols-4">
+                    {variants.map((v) => (
+                      <li key={v.vehicle.class_name}>
+                        <Card {...shipCard(v)} />
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+              {ship.paints.length > 0 ? (
+                <div className="flex flex-col gap-3">
+                  <h3 className="text-ui font-medium text-primary">Paints</h3>
+                  <ul className="m-0 flex list-none flex-wrap gap-2 p-0 text-ui">
+                    {ship.paints.map((paint) => (
+                      <li
+                        key={paint.id}
+                        className="rounded-control border border-hairline bg-surface px-3 py-1 text-primary"
+                      >
+                        {paint.name}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+            </div>
           </Section>
         )}
         {/* "Changed in this version" renders from diff.json once spec 01 publishes a second

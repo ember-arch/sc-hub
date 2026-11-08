@@ -77,8 +77,12 @@ test("the patch strip shows each channel's current build from the pack in the fo
 }) => {
   // One strip per page, in the footer (owner decision 2026-11-07, ADR-007).
   await page.goto("/");
-  const strips = page.locator("footer dl").filter({ hasText: "LIVE" });
+  // Every LIVE strip on the page, not only the footer's, so a second one would fail here.
+  const strips = page.locator("dl").filter({ hasText: "LIVE" });
   await expect(strips).toHaveCount(1);
+  await expect(
+    page.locator("footer").last().locator("dl").filter({ hasText: "LIVE" }),
+  ).toHaveCount(1);
   for (const channel of ["LIVE", "PTU"]) {
     const version = current(channel);
     for (const strip of [strips.first(), strips.last()]) {

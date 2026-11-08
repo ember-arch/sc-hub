@@ -71,7 +71,7 @@ Faces: Geist Sans and Geist Mono, or Inter Tight and JetBrains Mono. Pick one pa
 - `PageShell` — top nav (Ships, Components, News), search button, theme follows system.
 - `CommandPalette` — ⌘K on desktop, persistent button on phone; results grouped by entity type; keyboard navigable; shows recent entities.
 - `EntityPage` — the template: `Hero` (name, manufacturer, status badge, one image or the viewer slot), `KeyFacts` (4 to 8 label/value pairs), `Section`s, `Related`.
-- `DataTable` — fixed columns, sticky header, sort, unit in header, phone expand-row mode.
+- `DataTable` — fixed columns, sticky header, sort, unit in header, expand-row mode below a breakpoint chosen per table (with a "Sort by" select for the hidden columns).
 - `StatRow` — label, value, unit, optional delta (for PTU diffs) with a muted arrow, never color-only.
 - `Badge` — status only; uses semantic colors.
 - `Card` — ship card: image, name, manufacturer, role, two stats.
@@ -89,9 +89,9 @@ Added by spec 02 (ADR-006):
 
 | Page | Layout |
 | --- | --- |
-| Home | Search field as the first element. Then: today's feed (news and dev posts merged, 10 items), one featured ship card, patch strip. No hero banner. |
+| Home | Search field as the first element. Then: today's feed (news and dev posts merged, 10 items), one featured ship card; the patch strip is in the footer. No hero banner. |
 | Ships index | Filter bar (manufacturer, role, size, status, kind) + card/table toggle. Cards in a 2/3/4 column grid by breakpoint, each with a Compare toggle. Table mode uses `DataTable` with a Compare column. |
-| Ship page | `EntityPage`. Hero holds the viewer (hero ships) or the best fankit render (others). Key facts: role, size, crew, cargo, length, mass (manufacturer and status are in the hero). Sections: specs by channel (with PTU diff toggle), hardpoints and stock loadout, variants and paints, changed in this version, in the news, dev posts; a section with nothing in it yet is left out. Related: same manufacturer, same role. |
+| Ship page | `EntityPage`. Hero holds the viewer (hero ships) or the best fankit render (others). Key facts: role, size, crew, cargo, length, mass (manufacturer and status are in the hero). Sections: specs by channel (with PTU diff toggle), hardpoints and stock loadout, variants and paints, changed in this version, in the news, dev posts; variants and paints, and changed in this version, are left out until there is something in them (ADR-007). Related: same manufacturer, same role. |
 | Component page | `EntityPage`. Key facts: type, size, grade, class, manufacturer. Sections: stats by channel, stock on (ships that carry it by default), in the news. |
 | Manufacturer page | `EntityPage` with a 3 px brand rule (the `border.strong` token until the fankit supplies brand colors). Sections: lineup (cards), in the news. |
 | News feed | Source filter chips, then `FeedItem` list, infinite scroll in pages of 20, RSS and JSON links in the header. Dev tracker is a tab: author filter, `DevPost` list, thread grouping. |

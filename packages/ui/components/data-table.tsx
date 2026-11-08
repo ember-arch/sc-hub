@@ -1,11 +1,12 @@
 "use client";
 
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useId, useState } from "react";
 
 /**
- * system.md principle 6: fixed column set, sticky header, unit in the header, sort on tap, and on
- * phone the row expands instead of the table scrolling sideways. Columns marked `primary` stay
- * visible on phone; the rest show inside the expanded row.
+ * system.md principle 6: fixed column set, sticky header, unit in the header, sort on tap, and
+ * below the table's breakpoint (`expandBelow`, md by default) the row expands instead of the
+ * table scrolling sideways. Columns marked `primary` stay visible there; the rest show inside the
+ * expanded row, and a "Sort by" select keeps every sortable column sortable (ADR-007).
  */
 
 export interface Column<T> {
@@ -60,6 +61,7 @@ export function DataTable<T>({
   expandBelow = "md",
 }: DataTableProps<T>) {
   const bp = BREAKPOINT[expandBelow];
+  const sortId = useId();
   const [sort, setSort] = useState<{
     key: string;
     direction: Direction;
@@ -104,8 +106,20 @@ export function DataTable<T>({
   const secondary = columns.filter((c, i) => !isPrimary(c, i));
   const cellAlign = (column: Column<T>): string =>
     column.align === "right" ? "text-right" : "text-left";
+  const sortable = columns.filter((c) => c.sortValue !== undefined);
+  const hiddenSortable = secondary.some((c) => c.sortValue !== undefined);
+  const heading = (c: Column<T>): string =>
+    c.unit === undefined ? c.header : `${c.header} (${c.unit})`;
+  const order = (c: Column<T>, direction: Direction): string =>
+    c.align === "right"
+      ? direction === "asc"
+        ? "low to high"
+        : "high to low"
+      : direction === "asc"
+        ? "A to Z"
+        : "Z to A";
 
-  return (
+  const table = (
     <table className="w-full border-collapse text-ui">
       <caption className="sr-only">{caption}</caption>
       <thead>
@@ -215,6 +229,45 @@ export function DataTable<T>({
         })}
       </tbody>
     </table>
+  );
+
+  if (!hiddenSortable) return table;
+  return (
+    <div className="flex flex-col gap-3">
+      {/* Hidden columns cannot be tapped to sort, so the same sort is offered here. */}
+      <div className={`flex items-center gap-2 ${bp.phone}`}>
+        <label htmlFor={sortId} className="text-caption text-secondary">
+          Sort by
+        </label>
+        <select
+          id={sortId}
+          value={sort === null ? "" : `${sort.key}:${sort.direction}`}
+          onChange={(event) => {
+            const [key, direction] = event.currentTarget.value.split(":");
+            if (
+              key !== undefined &&
+              (direction === "asc" || direction === "desc")
+            ) {
+              setSort({ key, direction });
+            }
+          }}
+          className="rounded-control border border-hairline bg-surface px-3 py-1 text-ui text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+        >
+          {sort === null ? <option value="">Unsorted</option> : null}
+          {sortable.flatMap((c) =>
+            (["asc", "desc"] as const).map((direction) => (
+              <option
+                key={`${c.key}:${direction}`}
+                value={`${c.key}:${direction}`}
+              >
+                {heading(c)}, {order(c, direction)}
+              </option>
+            )),
+          )}
+        </select>
+      </div>
+      {table}
+    </div>
   );
 }
 

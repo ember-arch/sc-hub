@@ -52,5 +52,7 @@ All unit tests on fixtures green; a full LIVE run from a clean `pipeline/out/` c
 
 ## Notes
 
+- When "Diff" lands, build the ship page's "Changed in this version" section from `diff.json` (spec 02 "Ship page"; the section is left out until a second version exists, ADR-007).
+
 - StarBreaker's output format is the one thing this phase cannot control. Pin its version in `pipeline/package.json` and record the pinned commit in an ADR.
 - Do not reach for the wiki API to fill gaps in extracted data. If a field is missing from the game files, it stays empty and the gap is noted.

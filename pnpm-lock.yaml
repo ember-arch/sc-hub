@@ -193,6 +193,9 @@ importers:
       globals:
         specifier: ^17.14.0
         version: 17.14.0
+      meshoptimizer:
+        specifier: 0.18.1
+        version: 0.18.1
       prettier:
         specifier: ^3.9.10
         version: 3.9.10

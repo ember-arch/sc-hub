@@ -1,0 +1,90 @@
+[
+  {
+    "slug": "odin",
+    "file": "odin.ctm",
+    "url": "https://media.robertsspaceindustries.com/mhwmpvt2e8h0w/source.ctm",
+    "page": "https://robertsspaceindustries.com/en/pledge/ships/odin/Odin",
+    "bytes": 3239067,
+    "sha256": "eae61175d595463e1b4821837c810ca7ae25df980d4c1552963043c973cb898b",
+    "vertices": 374467,
+    "triangles": 706429,
+    "fetched_at": "2026-11-08T22:00:31.835Z"
+  },
+  {
+    "slug": "perseus",
+    "file": "perseus.ctm",
+    "url": "https://media.robertsspaceindustries.com/8734v3ynju5cc/source.ctm",
+    "page": "https://robertsspaceindustries.com/en/pledge/ships/perseus/Perseus",
+    "bytes": 4547072,
+    "sha256": "912bab1f4d88a2d13934890fbbf759d870aee09ce30d60b55bff7cc89615f47a",
+    "vertices": 432149,
+    "triangles": 775312,
+    "fetched_at": "2026-11-08T22:00:37.304Z"
+  },
+  {
+    "slug": "gladius",
+    "file": "gladius.ctm",
+    "url": "https://robertsspaceindustries.com/media/oibvdxxco2narr/source/AEGIS-Gladius2.ctm",
+    "page": "https://robertsspaceindustries.com/en/pledge/ships/gladius/Gladius",
+    "bytes": 2198586,
+    "sha256": "ef7cde675e1a99c7e3ec23300963d7afb0f3e1471f3709a4a12c99373d311e2d",
+    "vertices": 221470,
+    "triangles": 417696,
+    "fetched_at": "2026-11-08T22:00:41.678Z"
+  },
+  {
+    "slug": "carrack",
+    "file": "carrack.ctm",
+    "url": "https://media.robertsspaceindustries.com/5d19z1ni409r5/source.ctm",
+    "page": "https://robertsspaceindustries.com/en/pledge/ships/carrack/Carrack",
+    "bytes": 859689,
+    "sha256": "c5264151a4b99a8202281e3d411479513c4265f33b6f20d09cf8e4df67d5700a",
+    "vertices": 109833,
+    "triangles": 187336,
+    "fetched_at": "2026-11-08T22:00:46.273Z"
+  },
+  {
+    "slug": "cutlass-black",
+    "file": "cutlass-black.ctm",
+    "url": "https://robertsspaceindustries.com/media/7w8rse7wgq0bir/source/DRAKE_CUTLASSBLACK.ctm",
+    "page": "https://robertsspaceindustries.com/en/pledge/ships/drake-cutlass/Cutlass-Black",
+    "bytes": 959166,
+    "sha256": "b46124a070c8c937782624f71384f537a0e4de443f7f7a5a0ef9c6c3dcc43ca7",
+    "vertices": 149983,
+    "triangles": 265504,
+    "fetched_at": "2026-11-08T22:00:51.474Z"
+  },
+  {
+    "slug": "fury",
+    "file": "fury.ctm",
+    "url": "https://media.robertsspaceindustries.com/kjtrayxqls6wk/source.ctm",
+    "page": "https://robertsspaceindustries.com/en/pledge/ships/fury/Fury",
+    "bytes": 815982,
+    "sha256": "2ee977c7fd405079362ae5f03b295b7b059b37760629519d3d8793c22e8ed2a1",
+    "vertices": 110738,
+    "triangles": 204227,
+    "fetched_at": "2026-11-08T22:00:56.994Z"
+  },
+  {
+    "slug": "polaris",
+    "file": "polaris.ctm",
+    "url": "https://robertsspaceindustries.com/media/l8fs5ivw36mdvr/source/RSI-Polaris.ctm",
+    "page": "https://robertsspaceindustries.com/en/pledge/ships/polaris/Polaris",
+    "bytes": 3968975,
+    "sha256": "7f03de5a897f4fde4f6385cf89c702cca4107638da55759689e4283333310ce5",
+    "vertices": 409297,
+    "triangles": 839714,
+    "fetched_at": "2026-11-08T22:01:02.164Z"
+  },
+  {
+    "slug": "person",
+    "file": "person.ctm",
+    "url": "https://cdn.robertsspaceindustries.com/static/ctm/man.ctm",
+    "page": null,
+    "bytes": 45213,
+    "sha256": "da49aaf7318de7286e32a3811dbecc47b7a1a7feab6363d7883f61bf32198e30",
+    "vertices": 4813,
+    "triangles": 7543,
+    "fetched_at": "2026-11-08T22:01:06.193Z"
+  }
+]

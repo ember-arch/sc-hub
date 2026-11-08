@@ -19,6 +19,7 @@ import {
   SHIP_MATRIX_URL,
   createSpacer,
   matchShips,
+  originalOf,
 } from "./sources.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -74,13 +75,20 @@ async function main(): Promise<void> {
   mkdirSync(outDir, { recursive: true });
   const rows: RsiSource[] = [];
   for (const match of matched) {
-    const response = await get(match.imageUrl);
+    // The original upload (ADR-015), or the listed wallpaper where the original is missing.
+    const original = originalOf(match.imageUrl);
+    await spacer();
+    const first = await fetch(original, {
+      headers: { "User-Agent": USER_AGENT },
+    });
+    const response = first.ok ? first : await get(match.imageUrl);
+    const imageUrl = first.ok ? original : match.imageUrl;
     const contentType = (response.headers.get("content-type") ?? "")
       .split(";")[0]!
       .trim();
     const extension = EXTENSIONS[contentType];
     if (extension === undefined) {
-      throw new Error(`${match.imageUrl}: unexpected type ${contentType}`);
+      throw new Error(`${imageUrl}: unexpected type ${contentType}`);
     }
     const bytes = Buffer.from(await response.arrayBuffer());
     const file = `${match.vehicle.class_name}.${extension}`;
@@ -90,7 +98,7 @@ async function main(): Promise<void> {
         class_name: match.vehicle.class_name,
         file,
         page_url: match.pageUrl,
-        image_url: match.imageUrl,
+        image_url: imageUrl,
         content_type: contentType,
         bytes: bytes.length,
         sha256: createHash("sha256").update(bytes).digest("hex"),

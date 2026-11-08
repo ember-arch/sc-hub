@@ -20,8 +20,8 @@ import { HoloViewer } from "./showcase/holo-viewer";
 export const SHIP_FILE_SECTIONS = [
   { id: "brief", title: "Brief" },
   { id: "acquisition", title: "Acquisition and status" },
+  { id: "combat", title: "Weapons and combat" },
   { id: "operations", title: "Crew and operations" },
-  { id: "combat", title: "Combat" },
   { id: "mobility", title: "Mobility" },
   { id: "scale", title: "Scale" },
   { id: "specifications", title: "Specifications" },
@@ -43,7 +43,12 @@ export interface ShipFileProps {
   /** The pack slug, for the compare basket; null for a concept ship. */
   readonly compareSlug: string | null;
   readonly visual: {
-    readonly model: { readonly src: string; readonly bytes: number } | null;
+    /** RSI's holoviewer model (ADR-015) and the person RSI stands beside it for scale. */
+    readonly model: {
+      readonly src: string;
+      readonly bytes: number;
+      readonly figure: { readonly src: string; readonly height: number } | null;
+    } | null;
     readonly poster: string | null;
     readonly length: number | null;
     /** The opening band's key art, with CIG's cut-out of the ship where it publishes one. */
@@ -209,6 +214,7 @@ export function ShipFile({
           <HoloViewer
             src={visual.model.src}
             bytes={visual.model.bytes}
+            figure={visual.model.figure}
             name={name}
             length={visual.length}
             poster={visual.poster}
@@ -374,6 +380,8 @@ function LeadFigure({
             src={figure.src}
             poster={figure.poster}
             label={figure.caption}
+            width={figure.width}
+            height={figure.height}
           />
         ) : (
           <FigureImage
@@ -409,6 +417,8 @@ function SupportingFigures({
                     src={figure.src}
                     poster={figure.poster}
                     label={figure.caption}
+                    width={figure.width}
+                    height={figure.height}
                   />
                 </div>
               ) : (

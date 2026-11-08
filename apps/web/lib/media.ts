@@ -1,6 +1,11 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { MediaManifest, type Showcase } from "schema";
+import {
+  type HoloFigure,
+  type HoloModel,
+  MediaManifest,
+  type Showcase,
+} from "schema";
 import type { MakerMark, ResponsiveImage } from "ui";
 import { RSI_IMAGE_CREDIT } from "ui/legal";
 import { REPO_ROOT, type ShipView } from "./data";
@@ -28,11 +33,16 @@ export interface Media {
   maker(code: string, name: string): MakerMark | null;
   /** A showcase ship's media and chapters (ADR-010). */
   showcase(slug: string): Showcase | null;
+  /** The ship's RSI holoviewer model (ADR-015). */
+  holo(slug: string): HoloModel | null;
+  /** The human figure the holoviewer stands beside the ship. */
+  holoFigure(): HoloFigure | null;
 }
 
 export function createMedia(manifest: MediaManifest | null): Media {
   const ships = new Map(manifest?.ships.map((s) => [s.class_name, s]) ?? []);
   const showcases = new Map(manifest?.showcase.map((s) => [s.slug, s]) ?? []);
+  const holos = new Map(manifest?.holo.map((h) => [h.slug, h]) ?? []);
   const makers = new Map(
     manifest?.makers.map((m) => [m.manufacturer_code, m]) ?? [],
   );
@@ -53,6 +63,8 @@ export function createMedia(manifest: MediaManifest | null): Media {
   };
   return {
     showcase: (slug) => showcases.get(slug) ?? null,
+    holo: (slug) => holos.get(slug) ?? null,
+    holoFigure: () => manifest?.holo_figure ?? null,
     ship: (className, name) => image(className, `The ${name}`),
     shipCard: (className) => image(className, ""),
     maker(code, name) {

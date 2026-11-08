@@ -52,13 +52,30 @@ export const ShopPrice = z.strictObject({
 });
 export type ShopPrice = z.infer<typeof ShopPrice>;
 
-/** A vehicle RSI lends to owners of the ship, as the Star Citizen Wiki API lists it. */
-export const ShipLoaner = z.strictObject({
-  class_name: ClassName,
-  loaner_name: z.string().min(1),
-  /** The loaner's wiki uuid, the identity the wiki uses for it. */
-  loaner_uuid: z.uuid(),
-  via: z.literal("star_citizen_wiki_api"),
+/** One row of RSI's loaner ship matrix: the ships as RSI names them, and what RSI lends for them. */
+export const LoanerRow = z.strictObject({
+  /** The "Your ship" cell, verbatim: one ship, several joined with "/" or "and", or "Fury Variants". */
+  ships: z.string().min(1),
+  /** The "Our loaner(s)" cell, split at its commas. */
+  loaners: z.array(z.string().min(1)).min(1),
+});
+export type LoanerRow = z.infer<typeof LoanerRow>;
+
+/**
+ * RSI's loaner ship matrix (ADR-015): the support article that lists, for every ship not yet
+ * flight ready, the ships RSI lends its owners. Copied whole by `scripts/bootstrap-fixtures/loaners.ts`
+ * from the help centre's public article API; a weekly workflow checks it for changes.
+ */
+export const LoanerMatrix = z.strictObject({
+  article_url: z.url(),
+  api_url: z.url(),
+  title: z.string().min(1),
+  /** When RSI last edited the article. */
+  edited_at: Timestamp,
+  /** The article's own "Last updated" date and build, as written, when it states them. */
+  stated_date: z.string().nullable(),
+  stated_build: z.string().nullable(),
+  rows: z.array(LoanerRow).min(1),
   fetched_at: Timestamp,
 });
-export type ShipLoaner = z.infer<typeof ShipLoaner>;
+export type LoanerMatrix = z.infer<typeof LoanerMatrix>;

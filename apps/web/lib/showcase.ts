@@ -48,6 +48,9 @@ export type FigureView =
       readonly kind: "video";
       readonly src: string;
       readonly poster: string | null;
+      /** The loop's own size, null when unknown (it then fills a 16:9 frame). */
+      readonly width: number | null;
+      readonly height: number | null;
       readonly caption: string;
     };
 
@@ -68,7 +71,6 @@ export interface ShowcaseView {
     readonly narrow: Picture | null;
     readonly caption: string;
   }[];
-  readonly model: { readonly src: string; readonly bytes: number } | null;
   /** Each section's figures, the first leading the section (ADR-014). */
   readonly figures: Readonly<
     Partial<Record<FigureSection, readonly FigureView[]>>
@@ -135,6 +137,8 @@ export function buildShowcase(raw: Showcase, name: string): ShowcaseView {
           kind: "video",
           src: video.src,
           poster: posterOf(video.poster),
+          width: video.width,
+          height: video.height,
           caption: f.caption,
         };
     } else {
@@ -177,7 +181,6 @@ export function buildShowcase(raw: Showcase, name: string): ShowcaseView {
             },
           ];
     }),
-    model: raw.model,
     figures,
   };
 }
@@ -210,8 +213,9 @@ export function conceptBySlug(slug: string): ConceptShip | undefined {
 
 export const SHOWCASE_CREDITS = {
   rsi: "Roberts Space Industries",
+  /** A model's own credit names its RSI pledge page (ADR-015); this is the fallback. */
   model: {
-    text: "3D model: CIG's in-game holoviewer model, converted by FleetYards.net",
-    href: "https://fleetyards.net",
+    text: "Model: RSI holoviewer",
+    href: "https://robertsspaceindustries.com/pledge",
   },
 } as const;

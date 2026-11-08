@@ -1,6 +1,6 @@
 # ADR-012: The ship file: one template for every ship, two columns, and a hologram viewer
 
-- Status: accepted (owner direction 2026-11-08); supersedes the ship-page parts of ADR-008, ADR-010 and ADR-011; shops and prices added by ADR-013; opening band, nine sections and figures in their sections by ADR-014
+- Status: accepted (owner direction 2026-11-08); supersedes the ship-page parts of ADR-008, ADR-010 and ADR-011; shops and prices added by ADR-013; opening band, nine sections and figures in their sections by ADR-014; RSI holoviewer models, viewer and section order by ADR-015
 - Date: 2026-11-08
 - Deciders: owner, Claude Code session 2026-11-08
 

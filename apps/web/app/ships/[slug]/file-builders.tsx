@@ -1,4 +1,4 @@
-import type { ConceptShip } from "schema";
+import type { ConceptShip, HoloModel } from "schema";
 import {
   RankBar,
   ScaleLineup,
@@ -13,7 +13,10 @@ import { PLEDGE_STORE_CREDIT, UEX_CREDIT, WIKI_CREDIT } from "ui/legal";
 import {
   type Acquisition,
   OFFER_KIND,
+  type LoanerView,
   acquisitionFor,
+  loanerFor,
+  loanerValue,
   lowestShopPrice,
   pledgeValue,
   shopRows,
@@ -68,9 +71,36 @@ function artCredit(show: ShowcaseView): { text: string; href: string } {
 }
 
 /** Sources in a fixed order; claims and captions cite them by number. */
+/** The holoviewer's model and the person beside it (ADR-015), with the model's credit. */
+function holoVisual(slug: string): {
+  model: ShipFileProps["visual"]["model"];
+  modelCredit: { text: string; href: string };
+} {
+  const holo = media().holo(slug);
+  const figure = media().holoFigure();
+  return {
+    model:
+      holo === null
+        ? null
+        : {
+            src: holo.src,
+            bytes: holo.bytes,
+            figure:
+              figure === null
+                ? null
+                : { src: figure.src, height: figure.height },
+          },
+    modelCredit:
+      holo === null
+        ? SHOWCASE_CREDITS.model
+        : { text: "Model: RSI holoviewer", href: holo.page },
+  };
+}
+
 function sourceList(
   show: ShowcaseView | null,
   extra: readonly SourceEntry[],
+  holo: HoloModel | null,
 ): SourceEntry[] {
   return [
     ...(show?.article == null
@@ -83,12 +113,13 @@ function sourceList(
           },
         ]),
     ...extra,
-    ...(show?.model == null
+    ...(holo === null
       ? []
       : [
           {
-            text: SHOWCASE_CREDITS.model.text,
-            href: SHOWCASE_CREDITS.model.href,
+            text: "RSI holoviewer model",
+            href: holo.page,
+            note: "3D model: the file the ship's RSI pledge page shows in its holoviewer",
           },
         ]),
     {
@@ -96,6 +127,19 @@ function sourceList(
       href: "https://robertsspaceindustries.com/fankit",
     },
   ];
+}
+
+/** RSI's loaner matrix in the source list, when it is on file (ADR-015). */
+function loanerSource(loaner: LoanerView | null): SourceEntry[] {
+  return loaner === null
+    ? []
+    : [
+        {
+          text: "RSI loaner ship matrix",
+          href: loaner.url,
+          note: `Loaners, as RSI last updated them on ${loaner.editedOn}${loaner.build === null ? "" : ` for ${loaner.build}`}; checked weekly`,
+        },
+      ];
 }
 
 const plural = (n: number, one: string): string =>
@@ -279,6 +323,7 @@ export function packShipFile(ship: ShipView): ShipFileProps {
   const variants = r.variantsOf(v.class_name);
   const image = media().ship(v.class_name, v.name);
   const acq = acquisitionFor(v.slug, v.class_name);
+  const loaner = loanerFor(v.name);
   const pledge = pledgeValue(acq.offers);
   const buy = lowestShopPrice(acq.shops, "purchase");
   const rent = lowestShopPrice(acq.shops, "rental");
@@ -311,34 +356,39 @@ export function packShipFile(ship: ShipView): ShipFileProps {
           ];
     });
 
-  const sources = sourceList(show, [
-    {
-      text: WIKI_CREDIT.text.replace(/\.$/, ""),
-      href: WIKI_CREDIT.url,
-      note: `Game data, LIVE ${version ?? ""}`,
-    },
-    ...(image === null
-      ? []
-      : [{ text: "RSI ship page and image", href: image.credit.href }]),
-    ...(acq.offers[0] === undefined
-      ? []
-      : [
-          {
-            text: "RSI pledge store, as the Star Citizen Wiki API relays it",
-            href: PLEDGE_STORE_CREDIT.url,
-            note: `Pledge prices, copied ${acq.offers[0].fetched_at.slice(0, 10)}`,
-          },
-        ]),
-    ...(acq.shops[0] === undefined
-      ? []
-      : [
-          {
-            text: "UEX Corp, community price reports",
-            href: UEX_CREDIT.url,
-            note: `In-game shop prices for LIVE ${version ?? ""}, via the Star Citizen Wiki API, copied ${acq.shops[0].fetched_at.slice(0, 10)}`,
-          },
-        ]),
-  ]);
+  const sources = sourceList(
+    show,
+    [
+      {
+        text: WIKI_CREDIT.text.replace(/\.$/, ""),
+        href: WIKI_CREDIT.url,
+        note: `Game data, LIVE ${version ?? ""}`,
+      },
+      ...(image === null
+        ? []
+        : [{ text: "RSI ship page and image", href: image.credit.href }]),
+      ...(acq.offers[0] === undefined
+        ? []
+        : [
+            {
+              text: "RSI pledge store, as the Star Citizen Wiki API relays it",
+              href: PLEDGE_STORE_CREDIT.url,
+              note: `Pledge prices, copied ${acq.offers[0].fetched_at.slice(0, 10)}`,
+            },
+          ]),
+      ...(acq.shops[0] === undefined
+        ? []
+        : [
+            {
+              text: "UEX Corp, community price reports",
+              href: UEX_CREDIT.url,
+              note: `In-game shop prices for LIVE ${version ?? ""}, via the Star Citizen Wiki API, copied ${acq.shops[0].fetched_at.slice(0, 10)}`,
+            },
+          ]),
+      ...loanerSource(loaner),
+    ],
+    media().holo(v.slug),
+  );
   const cite = (href: string): number =>
     sources.findIndex((x) => x.href === href) + 1;
 
@@ -449,10 +499,7 @@ export function packShipFile(ship: ShipView): ShipFileProps {
     },
     {
       label: "Loaners",
-      value:
-        acq.loaners.length === 0
-          ? "None listed"
-          : acq.loaners.map((l) => l.loaner_name).join(", "),
+      value: loanerValue(loaner, v.status === "flight_ready"),
     },
   ];
 
@@ -558,7 +605,7 @@ export function packShipFile(ship: ShipView): ShipFileProps {
     dek: brief[0] ?? "",
     figures: show?.figures ?? {},
     visual: {
-      model: show?.model ?? null,
+      ...holoVisual(v.slug),
       poster: show?.poster?.src ?? image?.src ?? null,
       length: s?.length_m ?? null,
       art:
@@ -584,7 +631,6 @@ export function packShipFile(ship: ShipView): ShipFileProps {
                   href: image.credit.href,
                 },
               },
-      modelCredit: SHOWCASE_CREDITS.model,
     },
     particulars: [
       ["Length", s === null ? null : formatNumber(s.length_m, 2), "m"],
@@ -815,14 +861,20 @@ export function conceptShipFile(concept: ConceptShip): ShipFileProps {
   const claims = claimsFor(concept.slug);
   const others = r.ships.filter((o) => o.stats !== null);
   const acq = acquisitionFor(concept.slug, null);
+  const loaner = loanerFor(concept.name);
   const pledge = pledgeValue(acq.offers);
-  const sources = sourceList(show, [
-    {
-      text: `RSI ship matrix, ${concept.name}`,
-      href: concept.page_url,
-      note: `Published figures, copied ${concept.fetched_at.slice(0, 10)}${acq.offers[0] === undefined ? "" : `; pledge price from the same page, copied ${acq.offers[0].fetched_at.slice(0, 10)}`}`,
-    },
-  ]);
+  const sources = sourceList(
+    show,
+    [
+      {
+        text: `RSI ship matrix, ${concept.name}`,
+        href: concept.page_url,
+        note: `Published figures, copied ${concept.fetched_at.slice(0, 10)}${acq.offers[0] === undefined ? "" : `; pledge price from the same page, copied ${acq.offers[0].fetched_at.slice(0, 10)}`}`,
+      },
+      ...loanerSource(loaner),
+    ],
+    media().holo(concept.slug),
+  );
   const matrix = sources.findIndex((x) => x.href === concept.page_url) + 1;
   const crew =
     concept.crew_min === null || concept.crew_max === null
@@ -869,7 +921,7 @@ export function conceptShipFile(concept: ConceptShip): ShipFileProps {
     dek: brief[0] ?? "",
     figures: show?.figures ?? {},
     visual: {
-      model: show?.model ?? null,
+      ...holoVisual(concept.slug),
       poster: show?.poster?.src ?? null,
       length: concept.length_m,
       art:
@@ -880,7 +932,6 @@ export function conceptShipFile(concept: ConceptShip): ShipFileProps {
               cutout: show.cutout,
               credit: artCredit(show),
             },
-      modelCredit: SHOWCASE_CREDITS.model,
     },
     particulars: [
       {
@@ -974,7 +1025,7 @@ export function conceptShipFile(concept: ConceptShip): ShipFileProps {
                   label: "Expedited claim",
                   value: "Not in the game data yet",
                 },
-                { label: "Loaners", value: "Not on file" },
+                { label: "Loaners", value: loanerValue(loaner, false) },
                 { label: "Variants", value: "None on record" },
                 { label: "Flyable", value: "No" },
               ]}

@@ -7,7 +7,9 @@ import {
   DISCLAIMER,
   DISCLAIMER_SOURCE,
   FANKIT_CREDIT,
+  LOANER_MATRIX_CREDIT,
   PLEDGE_STORE_CREDIT,
+  RSI_HOLO_CREDIT,
   RSI_IMAGE_CREDIT,
   STARBREAKER_CREDIT,
   TRADEMARK_LINE,
@@ -71,6 +73,16 @@ export default function AboutPage() {
             <li>
               <TextLink href={PLEDGE_STORE_CREDIT.url} external>
                 {PLEDGE_STORE_CREDIT.text}
+              </TextLink>
+            </li>
+            <li>
+              <TextLink href={LOANER_MATRIX_CREDIT.url} external>
+                {LOANER_MATRIX_CREDIT.text}
+              </TextLink>
+            </li>
+            <li>
+              <TextLink href={RSI_HOLO_CREDIT.url} external>
+                {RSI_HOLO_CREDIT.text}
               </TextLink>
             </li>
             <li>

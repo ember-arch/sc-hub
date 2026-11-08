@@ -1,70 +1,138 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import type { BufferGeometry, Mesh } from "three";
 import { TextLink } from "ui";
 
 /**
- * The holoviewer (ADR-012): CIG's in-game holoviewer model drawn the way RSI's own holoviewer
- * draws it, as a hologram: translucent, bright at the silhouette, horizontal scan bands drifting
- * up the hull, a faint flicker, edge lines and a projector ring underneath. "Solid" shows the same
- * model as a lit gunmetal render. Drag to orbit, scroll or pinch to zoom.
+ * The holoviewer (ADR-012, ADR-015): the model RSI's own pledge page loads into its holoviewer,
+ * drawn the way that holoviewer draws it. The ship materialises out of noise, scan planes sweep it
+ * nose to tail, across and up, and it settles as a lit cyan hologram over a floor grid with a
+ * person beside it for scale. X-ray shows it translucent, bright at the silhouette; Wireframe
+ * shows its edges. Seven view angles turn the camera to the ship's sides, top and bottom, or back
+ * to a slow orbit. Drag to turn, scroll or pinch to zoom.
  *
- * CLAUDE.md section 2 rules out glow and scanlines in the interface; the owner chose this look for
- * the model itself on 2026-11-08 because it reproduces CIG's holoviewer. It stays inside this
- * canvas. three.js loads only as the viewer approaches; the Draco decoder comes from /media/draco.
+ * CLAUDE.md section 2 rules out glow, scanlines and grids in the interface; the owner chose this
+ * look for the model on 2026-11-08 because it reproduces CIG's holoviewer, and it stays inside
+ * this canvas. The shaders are this project's own. three.js loads only as the viewer approaches;
+ * the models are meshopt-compressed glTF, which three decodes without a separate decoder file.
  */
 
-/** Close to the cyan of CIG's holoviewer. Viewer-only, not an interface colour (ADR-012). */
-const HOLO = [0.36, 0.83, 1.0] as const;
+/** Viewer-only colours, close to CIG's holoviewer. Not interface colours (ADR-012). */
+const HOLO = {
+  background: [0.031, 0.075, 0.106],
+  backgroundGlow: [0.07, 0.16, 0.22],
+  base: [0.0, 0.07, 0.12],
+  light: [0.28, 0.72, 0.92],
+  rim: [0.55, 0.9, 1.0],
+  scan: [0.45, 1.0, 0.7],
+  line: [0.25, 0.81, 0.99],
+} as const;
 
-type Mode = "hologram" | "solid";
+const VIEWS = [
+  { id: "orbit", label: "Orbit" },
+  { id: "front", label: "Front" },
+  { id: "back", label: "Back" },
+  { id: "left", label: "Left" },
+  { id: "right", label: "Right" },
+  { id: "top", label: "Top" },
+  { id: "bottom", label: "Bottom" },
+] as const;
+type View = (typeof VIEWS)[number]["id"];
+
+const RENDERS = [
+  { id: "default", label: "Default" },
+  { id: "xray", label: "X-ray" },
+  { id: "wire", label: "Wireframe" },
+] as const;
+type Render = (typeof RENDERS)[number]["id"];
 
 interface Api {
-  setMode(mode: Mode): void;
-  setSpin(spin: boolean): void;
-  reset(): void;
+  setView(view: View): void;
+  setRender(render: Render): void;
   dispose(): void;
 }
 
-const HOLO_VERTEX = /* glsl */ `
+const VERTEX = /* glsl */ `
+  uniform vec3 uMin;
+  uniform vec3 uSize;
   varying vec3 vNormal;
   varying vec3 vView;
-  varying float vHeight;
-  uniform float uMinY;
-  uniform float uSpanY;
+  varying vec3 vUnit;
   void main() {
-    vec4 world = modelMatrix * vec4(position, 1.0);
-    vec4 view = viewMatrix * world;
+    vec4 view = modelViewMatrix * vec4(position, 1.0);
     vNormal = normalize(normalMatrix * normal);
     vView = normalize(-view.xyz);
-    vHeight = (world.y - uMinY) / uSpanY;
+    vUnit = (position - uMin) / uSize;
     gl_Position = projectionMatrix * view;
   }
 `;
 
-const HOLO_FRAGMENT = /* glsl */ `
-  uniform vec3 uColor;
-  uniform float uTime;
-  uniform float uMotion;
+const FRAGMENT = /* glsl */ `
+  uniform vec3 uBase;
+  uniform vec3 uLight;
+  uniform vec3 uRim;
+  uniform vec3 uScan;
+  uniform vec3 uLightDir;
+  uniform vec3 uScanAt;
+  uniform float uAppear;
+  uniform float uXray;
   uniform float uGain;
+  uniform float uTime;
   varying vec3 vNormal;
   varying vec3 vView;
-  varying float vHeight;
+  varying vec3 vUnit;
+
+  float hash(vec3 p) {
+    p = fract(p * 0.3183099 + 0.1);
+    p *= 17.0;
+    return fract(p.x * p.y * p.z * (p.x + p.y + p.z));
+  }
+  float noise(vec3 x) {
+    vec3 i = floor(x);
+    vec3 f = fract(x);
+    f = f * f * (3.0 - 2.0 * f);
+    return mix(
+      mix(mix(hash(i), hash(i + vec3(1, 0, 0)), f.x),
+          mix(hash(i + vec3(0, 1, 0)), hash(i + vec3(1, 1, 0)), f.x), f.y),
+      mix(mix(hash(i + vec3(0, 0, 1)), hash(i + vec3(1, 0, 1)), f.x),
+          mix(hash(i + vec3(0, 1, 1)), hash(i + vec3(1, 1, 1)), f.x), f.y),
+      f.z);
+  }
+  float band(float at, float coord, float width) {
+    if (at < 0.0 || at > 1.0) return 0.0;
+    return smoothstep(width, 0.0, abs(coord - at));
+  }
+
   void main() {
-    float facing = abs(dot(normalize(vNormal), normalize(vView)));
-    float rim = pow(1.0 - facing, 2.2);
-    float bands = smoothstep(0.55, 1.0, sin((vHeight * 90.0 - uTime * 1.6 * uMotion) * 3.14159));
-    float sweep = smoothstep(0.0, 0.04, 0.04 - abs(fract(vHeight - uTime * 0.12 * uMotion) - 0.5) * 0.08);
-    float flicker = 1.0 - 0.06 * uMotion * step(0.97, fract(sin(floor(uTime * 12.0)) * 43758.5453));
-    float alpha = (0.018 + rim * 0.42 + bands * 0.035 + sweep * 0.14) * flicker;
-    vec3 color = uColor * (0.45 + rim * 0.9 + sweep * 0.5);
-    gl_FragColor = vec4(color, alpha * uGain);
+    // Materialise: noise over the hull against the appear front, with a bright seam at the edge.
+    float n = noise(vUnit * 14.0) * 0.75 + noise(vUnit * 41.0) * 0.25;
+    if (n > uAppear) discard;
+    float seam = smoothstep(0.06, 0.0, uAppear - n) * step(uAppear, 0.999);
+
+    vec3 normal = normalize(vNormal) * (gl_FrontFacing ? 1.0 : -1.0);
+    float facing = abs(dot(normal, normalize(vView)));
+    float rim = pow(1.0 - facing, 2.4);
+    float lit = max(dot(normal, normalize(uLightDir)), 0.0);
+
+    // Scan planes: a thin bright line with a softer wake, along each axis in turn.
+    float scan =
+      band(uScanAt.z, vUnit.z, 0.006) + band(uScanAt.x, vUnit.x, 0.006) + band(uScanAt.y, vUnit.y, 0.006);
+    float wake =
+      band(uScanAt.z, vUnit.z, 0.05) + band(uScanAt.x, vUnit.x, 0.05) + band(uScanAt.y, vUnit.y, 0.05);
+
+    vec3 solid = uBase + uLight * (0.12 + 0.88 * lit) + uRim * rim * 0.7;
+    vec3 ghost = uLight * (0.35 + rim * 1.1);
+    vec3 color = mix(solid, ghost, uXray) + uScan * (scan * 1.2 + wake * 0.18) + uRim * seam * 1.4;
+    float alpha = mix(1.0, (0.025 + rim * 0.5 + scan * 0.6 + wake * 0.08) * uGain, uXray);
+    gl_FragColor = vec4(color, alpha);
   }
 `;
 
 export function HoloViewer({
   src,
   bytes,
+  figure,
   name,
   length,
   poster,
@@ -73,19 +141,22 @@ export function HoloViewer({
 }: {
   readonly src: string;
   readonly bytes: number;
+  readonly figure: { readonly src: string; readonly height: number } | null;
   readonly name: string;
   readonly length: number | null;
   readonly poster: string | null;
   readonly credit: { readonly text: string; readonly href: string };
   readonly label: string;
 }) {
+  const frame = useRef<HTMLDivElement>(null);
   const box = useRef<HTMLDivElement>(null);
   const api = useRef<Api | null>(null);
   const [state, setState] = useState<"idle" | "loading" | "ready" | "error">(
     "idle",
   );
-  const [mode, setMode] = useState<Mode>("hologram");
-  const [spin, setSpin] = useState(true);
+  const [view, setView] = useState<View>("orbit");
+  const [render, setRender] = useState<Render>("default");
+  const [full, setFull] = useState(false);
 
   useEffect(() => {
     const el = box.current;
@@ -96,7 +167,7 @@ export function HoloViewer({
         if (entry?.isIntersecting !== true) return;
         near.disconnect();
         setState("loading");
-        void start(el, src)
+        void start(el, src, figure?.src ?? null, length)
           .then((made) => {
             if (cancelled) {
               made.dispose();
@@ -116,68 +187,100 @@ export function HoloViewer({
       api.current?.dispose();
       api.current = null;
     };
-  }, [src]);
+  }, [src, figure?.src, length]);
 
-  useEffect(() => api.current?.setMode(mode), [mode, state]);
-  useEffect(() => api.current?.setSpin(spin), [spin, state]);
+  useEffect(() => api.current?.setView(view), [view, state]);
+  useEffect(() => api.current?.setRender(render), [render, state]);
+  useEffect(() => {
+    const onChange = () => setFull(document.fullscreenElement !== null);
+    document.addEventListener("fullscreenchange", onChange);
+    return () => document.removeEventListener("fullscreenchange", onChange);
+  }, []);
 
-  const button =
-    "rounded-control border border-hairline-strong px-2 py-1 text-caption text-primary transition-colors duration-hover hover:border-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent";
   const megabytes = (bytes / 1_000_000).toLocaleString("en-US", {
     maximumFractionDigits: 1,
   });
+  const option =
+    "rounded-control border px-2 py-1 text-caption transition-colors duration-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent";
+  const choice = (on: boolean) =>
+    `${option} ${on ? "border-accent bg-accent-bg text-primary" : "border-hairline-strong text-secondary hover:text-primary"}`;
 
   return (
     <figure className="m-0 flex flex-col gap-2">
       <div
-        ref={box}
-        className="relative aspect-[4/3] w-full overflow-hidden rounded-card border border-hairline bg-inset"
-        role="img"
-        aria-label={`3D model of the ${name}${mode === "hologram" ? ", shown as a hologram" : ""}. Drag to rotate, scroll or pinch to zoom.`}
+        ref={frame}
+        className={`flex flex-col gap-2 ${full ? "bg-page p-4" : ""}`}
       >
-        {state === "ready" || poster === null ? null : (
-          <img
-            src={poster}
-            alt=""
-            // The frame is 4:3 and the image fills it; the size only reserves its box.
-            width={1280}
-            height={960}
-            className="absolute inset-0 h-full w-full object-cover opacity-40"
-          />
-        )}
-        {state === "ready" ? null : (
-          <p className="absolute bottom-3 left-3 m-0 text-caption text-secondary">
-            {state === "error"
-              ? "The model could not be loaded."
-              : `Loading the model (${megabytes} MB)`}
-          </p>
-        )}
-        <div className="absolute right-2 top-2 flex gap-1">
+        <div
+          ref={box}
+          className={`relative w-full overflow-hidden rounded-card border border-hairline bg-inset ${full ? "min-h-0 flex-1" : "aspect-[4/3]"}`}
+          role="img"
+          aria-label={`3D model of the ${name}, from RSI's holoviewer, with a person beside it for scale. Drag to turn, scroll or pinch to zoom.`}
+        >
+          {state === "ready" || poster === null ? null : (
+            <img
+              src={poster}
+              alt=""
+              // The frame is 4:3 and the image fills it; the size only reserves its box.
+              width={1280}
+              height={960}
+              className="absolute inset-0 h-full w-full object-cover opacity-40"
+            />
+          )}
+          {state === "ready" ? null : (
+            <p className="absolute bottom-3 left-3 m-0 text-caption text-secondary">
+              {state === "error"
+                ? "The model could not be loaded."
+                : `Loading the model (${megabytes} MB)`}
+            </p>
+          )}
           <button
             type="button"
-            className={button}
-            aria-pressed={mode === "hologram"}
-            onClick={() =>
-              setMode((m) => (m === "hologram" ? "solid" : "hologram"))
-            }
+            className={`${option} absolute right-2 top-2 border-hairline-strong bg-page text-primary hover:border-accent`}
+            onClick={() => {
+              const el = frame.current;
+              if (el === null) return;
+              if (document.fullscreenElement === null)
+                void el.requestFullscreen?.().catch(() => undefined);
+              else void document.exitFullscreen().catch(() => undefined);
+            }}
           >
-            {mode === "hologram" ? "Solid" : "Hologram"}
+            {full ? "Exit full screen" : "Full screen"}
           </button>
-          <button
-            type="button"
-            className={button}
-            aria-pressed={spin}
-            onClick={() => setSpin((s) => !s)}
-          >
-            {spin ? "Stop" : "Spin"}
-          </button>
-          <button
-            type="button"
-            className={button}
-            onClick={() => api.current?.reset()}
-          >
-            Reset
-          </button>
+        </div>
+        <div className="flex flex-col gap-2">
+          <fieldset className="m-0 flex flex-wrap items-center gap-1 border-0 p-0">
+            <legend className="float-left mr-2 p-0 text-caption text-secondary">
+              View
+            </legend>
+            {VIEWS.map((v) => (
+              <button
+                key={v.id}
+                type="button"
+                aria-pressed={view === v.id}
+                className={choice(view === v.id)}
+                onClick={() => setView(v.id)}
+              >
+                {v.label}
+              </button>
+            ))}
+          </fieldset>
+          <fieldset className="m-0 flex flex-wrap items-center gap-1 border-0 p-0">
+            <legend className="float-left mr-2 p-0 text-caption text-secondary">
+              Render
+            </legend>
+            {RENDERS.map((r) => (
+              <button
+                key={r.id}
+                type="button"
+                aria-pressed={render === r.id}
+                className={choice(render === r.id)}
+                onClick={() => setRender(r.id)}
+              >
+                {r.label}
+              </button>
+            ))}
+          </fieldset>
         </div>
       </div>
       <figcaption className="flex flex-wrap justify-between gap-x-3 gap-y-1 text-caption text-secondary">
@@ -187,6 +290,9 @@ export function HoloViewer({
           {length === null
             ? ""
             : `, to scale, ${length.toLocaleString("en-US")} m`}
+          {figure === null
+            ? ""
+            : `, beside a person ${figure.height.toFixed(1)} m tall`}
         </span>
         <TextLink href={credit.href} external className="text-secondary">
           {credit.text}
@@ -196,173 +302,282 @@ export function HoloViewer({
   );
 }
 
+const ease = (t: number): number =>
+  t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
+
 /** Builds the scene in `el` and returns its controls. Everything three.js is loaded here, lazily. */
-async function start(el: HTMLDivElement, src: string): Promise<Api> {
+async function start(
+  el: HTMLDivElement,
+  src: string,
+  figureSrc: string | null,
+  length: number | null,
+): Promise<Api> {
   const THREE = await import("three");
   const { GLTFLoader } =
     await import("three/examples/jsm/loaders/GLTFLoader.js");
-  const { DRACOLoader } =
-    await import("three/examples/jsm/loaders/DRACOLoader.js");
+  const { MeshoptDecoder } =
+    await import("three/examples/jsm/libs/meshopt_decoder.module.js");
   const { OrbitControls } =
     await import("three/examples/jsm/controls/OrbitControls.js");
-  const { RoomEnvironment } =
-    await import("three/examples/jsm/environments/RoomEnvironment.js");
-
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
+
+  /** The glTF's quantized mesh as plain float geometry in metres, with smooth normals. */
+  const load = async (url: string): Promise<BufferGeometry> => {
+    const gltf = await loader.loadAsync(url);
+    gltf.scene.updateMatrixWorld(true);
+    let found: Mesh | null = null;
+    gltf.scene.traverse((node) => {
+      if (found === null && (node as Mesh).isMesh) found = node as Mesh;
+    });
+    const mesh = found as Mesh | null;
+    if (mesh === null) throw new Error("no mesh");
+    const source = mesh.geometry.getAttribute("position");
+    const out = new Float32Array(source.count * 3);
+    const v = new THREE.Vector3();
+    for (let i = 0; i < source.count; i += 1) {
+      v.fromBufferAttribute(source, i).applyMatrix4(mesh.matrixWorld);
+      out[i * 3] = v.x;
+      out[i * 3 + 1] = v.y;
+      out[i * 3 + 2] = v.z;
+    }
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute("position", new THREE.BufferAttribute(out, 3));
+    geometry.setIndex(mesh.geometry.getIndex());
+    geometry.computeVertexNormals();
+    mesh.geometry.dispose();
+    return geometry;
+  };
+
+  const ship = await load(src);
+  const person =
+    figureSrc === null ? null : await load(figureSrc).catch(() => null);
+
+  ship.computeBoundingBox();
+  const shipBox = ship.boundingBox!;
+  const centre = shipBox.getCenter(new THREE.Vector3());
+  ship.translate(-centre.x, -centre.y, -centre.z);
+  // RSI's files are not all to scale (its holoviewer fits each to the frame): the Odin's is half
+  // size, the Polaris's two fifths. Scale to the length on record so the person beside it is true.
+  const modelLength = shipBox.max.z - shipBox.min.z;
+  if (length !== null && length > 0 && modelLength > 0) {
+    const k = length / modelLength;
+    ship.scale(k, k, k);
+  }
+  ship.computeBoundingBox();
+  const bounds = ship.boundingBox!;
+  const size = bounds.getSize(new THREE.Vector3());
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setSize(el.clientWidth, el.clientHeight);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.domElement.style.position = "absolute";
   renderer.domElement.style.inset = "0";
   renderer.domElement.style.touchAction = "none";
-  el.appendChild(renderer.domElement);
+  el.insertBefore(renderer.domElement, el.firstChild);
 
   const scene = new THREE.Scene();
-  const pmrem = new THREE.PMREMGenerator(renderer);
-  const environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-
-  const draco = new DRACOLoader().setDecoderPath("/media/draco/");
-  const loader = new GLTFLoader().setDRACOLoader(draco);
-  const gltf = await loader.loadAsync(src);
-  const model = gltf.scene;
-
-  // Centre the ship on the origin, keep metres.
-  const bounds = new THREE.Box3().setFromObject(model);
-  const centre = bounds.getCenter(new THREE.Vector3());
-  model.position.sub(centre);
-  bounds.setFromObject(model);
-  const size = bounds.getSize(new THREE.Vector3());
-  const radius = size.length() / 2;
-
-  const holo = new THREE.ShaderMaterial({
-    vertexShader: HOLO_VERTEX,
-    fragmentShader: HOLO_FRAGMENT,
-    uniforms: {
-      uColor: { value: new THREE.Color(...HOLO) },
-      uTime: { value: 0 },
-      uMotion: { value: reduced ? 0 : 1 },
-      uMinY: { value: bounds.min.y },
-      uSpanY: { value: Math.max(size.y, 1e-3) },
-      // Dense meshes stack more translucent layers; scale the glow so they stay cyan, not white.
-      uGain: { value: 1 },
-    },
-    transparent: true,
-    depthWrite: false,
-    blending: THREE.AdditiveBlending,
-    side: THREE.DoubleSide,
-  });
-  const solid = new THREE.MeshStandardMaterial({
-    color: new THREE.Color(0.46, 0.49, 0.54),
-    metalness: 0.72,
-    roughness: 0.38,
-    envMap: environment,
-    side: THREE.DoubleSide,
-  });
-  const edgeMaterial = new THREE.LineBasicMaterial({
-    color: new THREE.Color(...HOLO),
-    transparent: true,
-    opacity: 0.1,
-    blending: THREE.AdditiveBlending,
-    depthWrite: false,
-  });
-
-  const meshes: InstanceType<typeof THREE.Mesh>[] = [];
-  model.traverse((node) => {
-    if ((node as InstanceType<typeof THREE.Mesh>).isMesh)
-      meshes.push(node as InstanceType<typeof THREE.Mesh>);
-  });
-  // Edge lines read as the hologram's structure; skipped on very dense meshes to keep it quick.
-  const vertexCount = meshes.reduce(
-    (n, m) => n + (m.geometry.getAttribute("position")?.count ?? 0),
-    0,
-  );
-  holo.uniforms["uGain"]!.value = Math.min(
-    1,
-    Math.sqrt(200_000 / Math.max(vertexCount, 1)),
-  );
-  const edges: InstanceType<typeof THREE.LineSegments>[] = [];
-  if (vertexCount < 700_000) {
-    for (const mesh of meshes) {
-      const line = new THREE.LineSegments(
-        new THREE.EdgesGeometry(mesh.geometry, 28),
-        edgeMaterial,
-      );
-      mesh.add(line);
-      edges.push(line);
-    }
+  // A dark backdrop, lighter at the centre, painted once.
+  const backdrop = document.createElement("canvas");
+  backdrop.width = 512;
+  backdrop.height = 512;
+  const paint = backdrop.getContext("2d");
+  if (paint !== null) {
+    const rgb = (c: readonly number[]) =>
+      `rgb(${c.map((x) => Math.round(x * 255)).join(",")})`;
+    const glow = paint.createRadialGradient(256, 230, 20, 256, 256, 360);
+    glow.addColorStop(0, rgb(HOLO.backgroundGlow));
+    glow.addColorStop(1, rgb(HOLO.background));
+    paint.fillStyle = glow;
+    paint.fillRect(0, 0, 512, 512);
   }
+  const backdropTexture = new THREE.CanvasTexture(backdrop);
+  backdropTexture.colorSpace = THREE.SRGBColorSpace;
+  scene.background = backdropTexture;
 
-  // Projector ring under the ship, like the holoviewer's base.
-  const ringRadius = Math.max(size.x, size.z) * 0.62;
-  const base = new THREE.Group();
-  const ringMaterial = new THREE.MeshBasicMaterial({
-    color: new THREE.Color(...HOLO),
-    transparent: true,
-    opacity: 0.35,
-    blending: THREE.AdditiveBlending,
-    depthWrite: false,
-    side: THREE.DoubleSide,
-  });
-  for (const [inner, outer, opacity] of [
-    [0.98, 1.0, 0.5],
-    [0.7, 0.705, 0.25],
-    [0.4, 0.403, 0.18],
-  ] as const) {
-    const ring = new THREE.Mesh(
-      new THREE.RingGeometry(ringRadius * inner, ringRadius * outer, 128),
-      ringMaterial.clone(),
+  const color = (c: readonly [number, number, number]) =>
+    new THREE.Color(c[0], c[1], c[2]);
+  // In view space: the light stays above and to the right of the camera, so the side in view is lit.
+  const lightDir = new THREE.Vector3(0.35, 0.8, 0.45).normalize();
+  const material = (box: InstanceType<typeof THREE.Box3>, gain: number) => {
+    const extent = box.getSize(new THREE.Vector3());
+    return new THREE.ShaderMaterial({
+      vertexShader: VERTEX,
+      fragmentShader: FRAGMENT,
+      uniforms: {
+        uMin: { value: box.min.clone() },
+        uSize: {
+          value: new THREE.Vector3(
+            Math.max(extent.x, 1e-3),
+            Math.max(extent.y, 1e-3),
+            Math.max(extent.z, 1e-3),
+          ),
+        },
+        uBase: { value: color(HOLO.base) },
+        uLight: { value: color(HOLO.light) },
+        uRim: { value: color(HOLO.rim) },
+        uScan: { value: color(HOLO.scan) },
+        uLightDir: { value: lightDir.clone() },
+        uScanAt: { value: new THREE.Vector3(-1, -1, -1) },
+        uAppear: { value: reduced ? 1 : 0 },
+        uXray: { value: 0 },
+        uGain: { value: gain },
+        uTime: { value: 0 },
+      },
+      side: THREE.DoubleSide,
+    });
+  };
+  // Dense meshes stack more translucent layers in X-ray; scale them so they stay cyan, not white.
+  const vertexCount = ship.getAttribute("position").count;
+  const shipMaterial = material(
+    bounds,
+    Math.min(1, Math.sqrt(220_000 / Math.max(vertexCount, 1))),
+  );
+  const shipMesh = new THREE.Mesh(ship, shipMaterial);
+  scene.add(shipMesh);
+
+  // The person stands on the floor beside the ship's flank, a little ahead of midships.
+  let personMaterial: InstanceType<typeof THREE.ShaderMaterial> | null = null;
+  if (person !== null) {
+    person.computeBoundingBox();
+    const box = person.boundingBox!;
+    person.translate(
+      bounds.max.x + Math.max(size.x * 0.06, 1.5) - box.min.x,
+      bounds.min.y - box.min.y,
+      size.z * 0.12,
     );
-    (ring.material as InstanceType<typeof THREE.MeshBasicMaterial>).opacity =
-      opacity;
-    ring.rotation.x = -Math.PI / 2;
-    base.add(ring);
+    person.computeBoundingBox();
+    personMaterial = material(person.boundingBox!, 1);
+    scene.add(new THREE.Mesh(person, personMaterial));
   }
-  base.position.y = bounds.min.y - size.y * 0.25;
-  scene.add(base);
-  scene.add(model);
 
-  const camera = new THREE.PerspectiveCamera(
-    32,
-    el.clientWidth / el.clientHeight,
-    radius / 100,
-    radius * 40,
+  // Floor grid at the keel, in round metres.
+  const span = Math.max(size.x, size.z) * 1.35;
+  const step = [1, 2, 5, 10, 20, 50, 100].find((s) => span / s <= 40) ?? 200;
+  const cells = Math.ceil(span / step);
+  const grid = new THREE.GridHelper(
+    cells * step,
+    cells,
+    color(HOLO.line),
+    color(HOLO.line),
   );
-  // Far enough that the bounding sphere fits the narrower side of the frame, from three-quarters above.
-  const fitDistance =
-    (radius /
-      Math.sin(((32 / 2) * Math.PI) / 180) /
-      Math.min(1, el.clientWidth / el.clientHeight)) *
-    0.72;
-  const home = new THREE.Vector3(-0.55, 0.38, 0.74)
-    .normalize()
-    .multiplyScalar(fitDistance);
-  camera.position.copy(home);
+  const gridMaterial = grid.material as InstanceType<
+    typeof THREE.LineBasicMaterial
+  >;
+  gridMaterial.transparent = true;
+  gridMaterial.opacity = 0.08;
+  gridMaterial.depthWrite = false;
+  grid.position.y = bounds.min.y;
+  scene.add(grid);
+
+  // Wireframe edges, built the first time they are asked for.
+  let edges: InstanceType<typeof THREE.LineSegments> | null = null;
+  const edgeMaterial = new THREE.LineBasicMaterial({
+    color: color(HOLO.line),
+    transparent: true,
+    opacity: 0.55,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+  });
+
+  const fov = 30;
+  const camera = new THREE.PerspectiveCamera(
+    fov,
+    el.clientWidth / el.clientHeight,
+    size.length() / 400,
+    size.length() * 30,
+  );
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = 0.08;
-  controls.minDistance = radius * 0.6;
-  controls.maxDistance = fitDistance * 3;
-  controls.autoRotateSpeed = 0.7;
+  controls.autoRotateSpeed = 0.6;
+  controls.minDistance = size.length() * 0.15;
+  controls.maxDistance = size.length() * 6;
+
+  /** Far enough that a box `w` wide and `h` tall fits the frame with a margin. */
+  const fit = (w: number, h: number): number => {
+    const aspect = el.clientWidth / Math.max(el.clientHeight, 1);
+    const t = Math.tan(((fov / 2) * Math.PI) / 180);
+    return (Math.max(h, w / aspect) / (2 * t)) * 1.18;
+  };
+  // RSI's models point their nose down -Z; "front" looks at the nose.
+  const poses: Record<View, () => InstanceType<typeof THREE.Vector3>> = {
+    // Three-quarters from the front and above, far enough that the whole ship stays in frame as
+    // it turns: its bounding sphere fits the narrower side of the frame.
+    orbit: () =>
+      new THREE.Vector3(0.62, 0.42, -0.66)
+        .normalize()
+        .multiplyScalar(
+          ((size.length() / 2 / Math.sin(((fov / 2) * Math.PI) / 180)) * 0.8) /
+            Math.min(1, el.clientWidth / Math.max(el.clientHeight, 1)),
+        ),
+    front: () =>
+      new THREE.Vector3(0, 0, -1).multiplyScalar(
+        fit(size.x, size.y) + size.z / 2,
+      ),
+    back: () =>
+      new THREE.Vector3(0, 0, 1).multiplyScalar(
+        fit(size.x, size.y) + size.z / 2,
+      ),
+    left: () =>
+      new THREE.Vector3(-1, 0, 0).multiplyScalar(
+        fit(size.z, size.y) + size.x / 2,
+      ),
+    right: () =>
+      new THREE.Vector3(1, 0, 0).multiplyScalar(
+        fit(size.z, size.y) + size.x / 2,
+      ),
+    top: () =>
+      new THREE.Vector3(0, 1, 0.0001).multiplyScalar(
+        fit(size.x, size.z) + size.y / 2,
+      ),
+    bottom: () =>
+      new THREE.Vector3(0, -1, 0.0001).multiplyScalar(
+        fit(size.x, size.z) + size.y / 2,
+      ),
+  };
+  camera.position.copy(poses.orbit());
   controls.autoRotate = !reduced;
+
+  let tween: {
+    from: InstanceType<typeof THREE.Vector3>;
+    to: InstanceType<typeof THREE.Vector3>;
+    target: InstanceType<typeof THREE.Vector3>;
+    began: number;
+  } | null = null;
+  let current: View = "orbit";
   controls.addEventListener("start", () => {
     controls.autoRotate = false;
+    tween = null;
   });
 
-  const light = new THREE.DirectionalLight(0xffffff, 1.4);
-  light.position.set(radius, radius * 2, radius);
-  scene.add(light, new THREE.AmbientLight(0xffffff, 0.25));
-
-  let mode: Mode = "hologram";
-  const apply = () => {
-    for (const mesh of meshes)
-      mesh.material = mode === "hologram" ? holo : solid;
-    for (const line of edges) line.visible = mode === "hologram";
-    base.visible = mode === "hologram";
-    scene.environment = mode === "solid" ? environment : null;
+  let xrayTarget = 0;
+  const setRender = (render: Render) => {
+    xrayTarget = render === "default" ? 0 : 1;
+    const wire = render === "wire";
+    if (wire && edges === null) {
+      edges = new THREE.LineSegments(
+        new THREE.EdgesGeometry(ship, 24),
+        edgeMaterial,
+      );
+      scene.add(edges);
+    }
+    if (edges !== null) edges.visible = wire;
+    shipMaterial.uniforms["uGain"]!.value =
+      Math.min(1, Math.sqrt(220_000 / Math.max(vertexCount, 1))) *
+      (wire ? 0.35 : 1);
+    for (const m of [shipMaterial, personMaterial]) {
+      if (m === null) continue;
+      m.transparent = xrayTarget === 1;
+      m.depthWrite = xrayTarget === 0;
+      m.blending =
+        xrayTarget === 1 ? THREE.AdditiveBlending : THREE.NormalBlending;
+      m.needsUpdate = true;
+    }
+    grid.visible = true;
   };
-  apply();
+  setRender("default");
 
   let visible = true;
   const onScreen = new IntersectionObserver(([entry]) => {
@@ -379,49 +594,86 @@ async function start(el: HTMLDivElement, src: string): Promise<Api> {
   });
   resize.observe(el);
 
+  // Materialise over 1.4 s, then sweep a scan plane along the length, the beam and the height.
   const clock = new THREE.Clock();
+  const appearFor = 1.4;
+  const sweepFor = 1.3;
+  let xray = 0;
   let frame = 0;
   const tick = () => {
     frame = requestAnimationFrame(tick);
     if (!visible) return;
-    holo.uniforms["uTime"]!.value = clock.getElapsedTime();
+    const t = clock.getElapsedTime();
+    const mats = [shipMaterial, personMaterial].filter(
+      (m): m is InstanceType<typeof THREE.ShaderMaterial> => m !== null,
+    );
+    if (!reduced) {
+      const appear = Math.min(1, t / appearFor);
+      const s = (t - appearFor) / sweepFor;
+      const scan = new THREE.Vector3(
+        s >= 1 && s < 2 ? s - 1 : -1,
+        s >= 2 && s < 3 ? s - 2 : -1,
+        s >= 0 && s < 1 ? s : -1,
+      );
+      for (const m of mats) {
+        m.uniforms["uAppear"]!.value = 1.02 * (1 - (1 - appear) ** 3);
+        m.uniforms["uScanAt"]!.value.copy(scan);
+      }
+    }
+    xray += (xrayTarget - xray) * (reduced ? 1 : 0.15);
+    for (const m of mats) {
+      m.uniforms["uXray"]!.value = xray;
+      m.uniforms["uTime"]!.value = t;
+    }
+    if (tween !== null) {
+      const k = Math.min(1, (performance.now() - tween.began) / 900);
+      camera.position.lerpVectors(tween.from, tween.to, ease(k));
+      controls.target.copy(tween.target);
+      if (k >= 1) {
+        tween = null;
+        controls.autoRotate = current === "orbit" && !reduced;
+      }
+    }
     controls.update();
     renderer.render(scene, camera);
   };
   tick();
 
   return {
-    setMode(next) {
-      mode = next;
-      apply();
+    setView(view) {
+      current = view;
+      const to = poses[view]();
+      controls.autoRotate = false;
+      if (reduced) {
+        camera.position.copy(to);
+        controls.target.set(0, 0, 0);
+        controls.autoRotate = false;
+        return;
+      }
+      tween = {
+        from: camera.position.clone(),
+        to,
+        target: new THREE.Vector3(0, 0, 0),
+        began: performance.now(),
+      };
     },
-    setSpin(spin) {
-      controls.autoRotate = spin && !reduced;
-    },
-    reset() {
-      camera.position.copy(home);
-      controls.target.set(0, 0, 0);
-      controls.update();
-    },
+    setRender,
     dispose() {
       cancelAnimationFrame(frame);
       onScreen.disconnect();
       resize.disconnect();
       controls.dispose();
-      draco.dispose();
-      pmrem.dispose();
-      model.traverse((node) => {
-        const mesh = node as InstanceType<typeof THREE.Mesh>;
-        if (
-          mesh.isMesh ||
-          (node as InstanceType<typeof THREE.LineSegments>).isLineSegments
-        ) {
-          mesh.geometry.dispose();
-        }
-      });
-      holo.dispose();
-      solid.dispose();
+      ship.dispose();
+      person?.dispose();
+      (
+        edges as InstanceType<typeof THREE.LineSegments> | null
+      )?.geometry.dispose();
+      shipMaterial.dispose();
+      personMaterial?.dispose();
       edgeMaterial.dispose();
+      gridMaterial.dispose();
+      grid.geometry.dispose();
+      backdropTexture.dispose();
       renderer.dispose();
       renderer.domElement.remove();
     },

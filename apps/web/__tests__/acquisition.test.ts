@@ -2,6 +2,8 @@ import type { PledgeOffer, ShopPrice } from "schema";
 import { describe, expect, it } from "vitest";
 import {
   acquisitionFor,
+  loanerRowFor,
+  loanerValue,
   lowestShopPrice,
   pledgeValue,
   shopRows,
@@ -127,5 +129,58 @@ describe("insuranceOf", () => {
     ).toEqual({ claim_min: 5.83, expedite_min: 1.94, expedite_auec: 2335 });
     expect(insuranceOf({ insurance: { claim_time: 5.83 } })).toBeNull();
     expect(insuranceOf(null)).toBeNull();
+  });
+});
+
+describe("loaners from RSI's matrix (ADR-015)", () => {
+  const rows = [
+    {
+      ships: "Carrack w/ C8X / Carrack Expedition w/C8X",
+      loaners: ["C8X Pisces Expedition", "URSA Rover"],
+    },
+    {
+      ships: "Carrack / Carrack Expedition",
+      loaners: ["C8 Pisces", "URSA Rover"],
+    },
+    { ships: "Fury Variants", loaners: ["Mustang Alpha"] },
+    { ships: "600i Explorer and Executive", loaners: ["Cyclone"] },
+    { ships: "Odin", loaners: ["Idris-P"] },
+  ];
+
+  it("matches a ship named in a row, not a row that only mentions it", () => {
+    expect(loanerRowFor("Carrack", rows)?.loaners).toEqual([
+      "C8 Pisces",
+      "URSA Rover",
+    ]);
+    expect(loanerRowFor("Odin", rows)?.loaners).toEqual(["Idris-P"]);
+    expect(loanerRowFor("Carrack Expedition", rows)?.ships).toBe(
+      "Carrack / Carrack Expedition",
+    );
+  });
+
+  it("matches a ship through its family row", () => {
+    expect(loanerRowFor("Fury", rows)?.loaners).toEqual(["Mustang Alpha"]);
+  });
+
+  it("finds nothing for a ship the matrix does not list", () => {
+    expect(loanerRowFor("Perseus", rows)).toBeNull();
+    expect(loanerRowFor("Gladius", rows)).toBeNull();
+  });
+
+  it("says what the matrix says, with its date", () => {
+    const view = {
+      loaners: ["Idris-P"],
+      listedAs: "Odin",
+      editedOn: "2026-08-26",
+      build: "4.10.0-live.12519617",
+      url: "https://support.robertsspaceindustries.com/",
+    };
+    expect(loanerValue(view, false)).toBe(
+      "Idris-P, per RSI's loaner matrix (2026-08-26)",
+    );
+    expect(loanerValue({ ...view, loaners: [], listedAs: null }, true)).toBe(
+      "None; flight ready, not on RSI's loaner matrix (2026-08-26)",
+    );
+    expect(loanerValue(null, true)).toBe("Not on file");
   });
 });

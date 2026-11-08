@@ -11,12 +11,25 @@ export const SHIP_MATRIX_URL = `${RSI_ORIGIN}/ship-matrix/index`;
 /** CLAUDE.md section 9: one request every 5 seconds to robertsspaceindustries.com. */
 export const RSI_SPACING_MS = 5_000;
 
-/** The size RSI publishes for every ship; the site's widest rendition. */
+/** The size RSI's ship matrix lists for every ship; it names the image, whose original is wider. */
 export const RSI_IMAGE_SIZE = "wallpaper_1920x1080";
 
-/** Web copies of each ship image, widest first. */
-/** 960 serves phones at 2x and small laptops without the 1280 copy; 480 serves cards on phones (Lighthouse, 2026-11-08). */
-export const SHIP_WIDTHS: readonly number[] = [1920, 1280, 960, 640, 480];
+/**
+ * The same image at the size it was uploaded (ADR-015): RSI's media host serves every image's
+ * original under `source`. A 1920 copy is soft across a 4K or 5K screen; the original is not.
+ */
+export function originalOf(imageUrl: string): string {
+  return imageUrl.replace(/\/[a-z0-9_]+(\.[a-z]+)$/i, "/source$1");
+}
+
+/**
+ * Web copies of each ship image, widest first. 3840 and 2560 serve the full-bleed opening band on
+ * high-density and 4K screens (ADR-015); 960 serves phones at 2x and small laptops without the
+ * 1280 copy; 480 serves cards on phones (Lighthouse, 2026-11-08).
+ */
+export const SHIP_WIDTHS: readonly number[] = [
+  3840, 2560, 1920, 1280, 960, 640, 480,
+];
 
 /** Logo height in pixels: twice the largest size the site draws one. */
 export const LOGO_HEIGHT = 128;

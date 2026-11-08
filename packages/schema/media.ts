@@ -41,9 +41,70 @@ export const MakerLogo = z.strictObject({
 });
 export type MakerLogo = z.infer<typeof MakerLogo>;
 
+/** One image in a showcase, with its web renditions (widest first). */
+export const ShowcaseImage = z.strictObject({
+  key: z.string().min(1),
+  renditions: z.array(MediaRendition).min(1),
+  has_alpha: z.boolean(),
+});
+export type ShowcaseImage = z.infer<typeof ShowcaseImage>;
+
+export const ShowcaseVideo = z.strictObject({
+  key: z.string().min(1),
+  src: z.string().regex(/^\/media\/[a-z0-9/_.-]+\.mp4$/),
+  poster: z.string().min(1).nullable(),
+});
+export type ShowcaseVideo = z.infer<typeof ShowcaseVideo>;
+
+/** A chapter of the ship's own article: CIG's heading, kicker and text, verbatim. */
+export const ShowcaseChapter = z.strictObject({
+  heading: z.string().min(1),
+  kicker: z.string().nullable(),
+  text: z.array(z.string().min(1)),
+  image: z.string().nullable(),
+  video: z.string().nullable(),
+});
+export type ShowcaseChapter = z.infer<typeof ShowcaseChapter>;
+
+/**
+ * A showcase ship (ADR-010): the owner's concept hero (Anvil Odin) and live example (RSI Perseus).
+ * Built by `scripts/media/prepare.ts` from `fixtures/showcase/<slug>/`, all git-ignored.
+ */
+export const Showcase = z.strictObject({
+  slug: z.string().min(1),
+  article: z
+    .strictObject({
+      title: z.string(),
+      url: z.url(),
+      published_at: Timestamp,
+    })
+    .nullable(),
+  images: z.array(ShowcaseImage),
+  videos: z.array(ShowcaseVideo),
+  model: z
+    .strictObject({
+      src: z.string().regex(/^\/media\/[a-z0-9/_.-]+\.glb$/),
+      bytes: z.number().int().positive(),
+    })
+    .nullable(),
+  /** Roles name the images the page places: hero background, hero ship cut-out, header, logo. */
+  roles: z.record(z.string(), z.string()),
+  chapters: z.array(ShowcaseChapter),
+  gallery: z.array(z.string()),
+  schematics: z.array(
+    z.strictObject({
+      wide: z.string(),
+      narrow: z.string().nullable(),
+      caption: z.string(),
+    }),
+  ),
+});
+export type Showcase = z.infer<typeof Showcase>;
+
 export const MediaManifest = z.strictObject({
   generated_at: Timestamp,
   ships: z.array(ShipImage),
   makers: z.array(MakerLogo),
+  showcase: z.array(Showcase).default([]),
 });
 export type MediaManifest = z.infer<typeof MediaManifest>;

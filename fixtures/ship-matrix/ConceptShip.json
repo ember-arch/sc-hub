@@ -1,0 +1,22 @@
+[
+  {
+    "slug": "odin",
+    "name": "Odin",
+    "manufacturer_code": "ANVL",
+    "focus": "Battlecruiser",
+    "size": "capital",
+    "production_status": "in-concept",
+    "length_m": 752,
+    "beam_m": 222,
+    "height_m": 213,
+    "mass_kg": null,
+    "crew_min": 33,
+    "crew_max": 65,
+    "cargo_scu": 6000,
+    "scm_speed": null,
+    "description": "Centuries of conflict, innovation, and sacrifice have led to Anvil’s most ambitious undertaking yet. An entirely new classification of combat vessel, the Odin Battlecruiser carries naval tradition into the future with devastating firepower, strategic command capability, and overwhelming resilience to dominate in the field of battle.",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/odin/Odin",
+    "source": "rsi_ship_matrix",
+    "fetched_at": "2026-11-08T05:55:00.000Z"
+  }
+]

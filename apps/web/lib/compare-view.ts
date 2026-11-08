@@ -36,7 +36,7 @@ interface RowSpec {
   readonly value: (ship: ShipView) => Value;
 }
 
-/** The key-facts set (system.md section 4), in the ship page's order. */
+/** The key-facts set with manufacturer and status, which compare has no hero for (ADR-007). */
 const KEY_FACTS: readonly RowSpec[] = [
   {
     key: "manufacturer",

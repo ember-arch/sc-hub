@@ -72,12 +72,17 @@ const gameVersions = JSON.parse(
 const current = (channel: string): string | undefined =>
   gameVersions.find((v) => v.channel === channel && v.is_current)?.version;
 
-test("the patch strip shows each channel's current build from the pack on home and in the footer", async ({
+test("the patch strip shows each channel's current build from the pack in the footer, home included", async ({
   page,
 }) => {
+  // One strip per page, in the footer (owner decision 2026-11-07, ADR-007).
   await page.goto("/");
+  // Every LIVE strip on the page, not only the footer's, so a second one would fail here.
   const strips = page.locator("dl").filter({ hasText: "LIVE" });
-  await expect(strips).toHaveCount(2);
+  await expect(strips).toHaveCount(1);
+  await expect(
+    page.locator("footer").last().locator("dl").filter({ hasText: "LIVE" }),
+  ).toHaveCount(1);
   for (const channel of ["LIVE", "PTU"]) {
     const version = current(channel);
     for (const strip of [strips.first(), strips.last()]) {

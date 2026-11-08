@@ -153,14 +153,13 @@ export function crewRange(min: number, max: number): string {
   return min === max ? String(min) : `${min}–${max}`;
 }
 
-/** Key facts: manufacturer, role, size, crew, cargo, length, mass, status (system.md section 4). */
-export function shipFacts(ship: ShipView, statusLabel: string): KeyFact[] {
+/**
+ * Key facts: role, size, crew, cargo, length, mass (system.md section 4). Manufacturer and status
+ * are in the hero, above the name and beside it, so the block does not repeat them (ADR-007).
+ */
+export function shipFacts(ship: ShipView): KeyFact[] {
   const s = ship.stats;
   return [
-    {
-      label: "Manufacturer",
-      value: ship.manufacturer?.name ?? ship.vehicle.manufacturer_code,
-    },
     { label: "Role", value: ship.vehicle.role },
     {
       label: "Size",
@@ -187,7 +186,6 @@ export function shipFacts(ship: ShipView, statusLabel: string): KeyFact[] {
       unit: "kg",
       numeric: true,
     },
-    { label: "Status", value: statusLabel },
   ];
 }
 

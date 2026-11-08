@@ -21,9 +21,14 @@ import {
   pledgeValue,
   shopRows,
 } from "../../../lib/acquisition";
-import { armament } from "../../../lib/armament";
+import { armament, armamentPlan } from "../../../lib/armament";
 import { type ShipView, flattenPorts, repo } from "../../../lib/data";
 import { loadoutGroups } from "../../../lib/loadout";
+import {
+  editorModel,
+  optionStats,
+  partKind,
+} from "../../../lib/loadout-editor";
 import { media } from "../../../lib/media";
 import {
   type Fact,
@@ -43,7 +48,8 @@ import {
 } from "../../../lib/showcase";
 import { crewRange, shipSpecRows } from "../../../lib/views";
 import { type PledgeRow, PledgeTable, ShopTable } from "./acquisition-tables";
-import { ArmamentStrip } from "./armament-strip";
+import { ArmamentPlan } from "./armament-plan";
+import { LoadoutEditor } from "./loadout-editor";
 import { LoadoutPanels } from "./loadout-panels";
 import { PortTable } from "./port-table";
 import { type SourceEntry, Sources } from "./showcase/dossier";
@@ -315,6 +321,17 @@ export function packShipFile(ship: ShipView): ShipFileProps {
     (cls) => r.componentByClass(cls)?.stats ?? null,
   );
   const arms = armament(groups);
+  const plan = armamentPlan(groups, (entry) => {
+    const figures = optionStats(entry.stats);
+    return entry.item?.type === "weapon"
+      ? { damage: figures.dps, detail: partKind(entry.item, entry.stats) }
+      : {
+          damage: figures.damage,
+          detail:
+            figures.tracking === null ? null : `${figures.tracking} tracking`,
+        };
+  });
+  const editor = editorModel(r.shipPorts(v.class_name), r.components);
   const allPorts = flattenPorts(r.shipPorts(v.class_name));
   const ports = allPorts.filter(
     ({ node }) => node.port.port_type !== "other" || node.item !== null,
@@ -732,7 +749,7 @@ export function packShipFile(ship: ShipView): ShipFileProps {
         body: (
           <div className="flex flex-col gap-6">
             <Facts facts={combat} />
-            {arms.length === 0 ? null : <ArmamentStrip rows={arms} />}
+            {plan.length === 0 ? null : <ArmamentPlan mounts={plan} />}
             {claimsBlock(claims, ["combat"], sources)}
             {s === null ? null : (
               <div className="flex flex-col">
@@ -819,7 +836,21 @@ export function packShipFile(ship: ShipView): ShipFileProps {
             <Gap>No hardpoints are on record for this ship yet.</Gap>
           ) : (
             <div className="flex flex-col gap-4">
-              <LoadoutPanels groups={groups} />
+              {editor.slots.length === 0 ? null : (
+                <LoadoutEditor
+                  name={v.name}
+                  slots={editor.slots}
+                  options={editor.options}
+                />
+              )}
+              <details className="rounded-card border border-hairline bg-surface">
+                <summary className="cursor-pointer rounded-card px-4 py-3 text-ui text-secondary hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent">
+                  Every fitted part by system
+                </summary>
+                <div className="border-t border-hairline p-4">
+                  <LoadoutPanels groups={groups} />
+                </div>
+              </details>
               <details className="rounded-card border border-hairline bg-surface">
                 <summary className="cursor-pointer rounded-card px-4 py-3 text-ui text-secondary hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent">
                   All {ports.length} ports by game name

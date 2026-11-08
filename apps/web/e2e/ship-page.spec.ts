@@ -239,11 +239,12 @@ test("an unknown slug returns 404 with the search box and the disclaimer", async
   );
 });
 
-test("the stock loadout is grouped by system with nested items, and the raw port table is one disclosure away", async ({
+test("the stock loadout by system and the raw port table are each one disclosure away", async ({
   page,
 }) => {
   await page.goto(`/ships/${ship.slug}`);
   const section = page.locator("#hardpoints");
+  await section.getByText("Every fitted part by system").click();
   await expect(
     section.getByRole("heading", { level: 3, name: "Weapons" }),
   ).toBeVisible();
@@ -260,4 +261,67 @@ test("the stock loadout is grouped by system with nested items, and the raw port
   await section.getByText(/^All \d+ ports by game name$/).click();
   await expect(table).toBeVisible();
   await expect(table.getByRole("columnheader", { name: /Port/ })).toBeVisible();
+});
+
+// ADR-016: the loadout editor swaps a part for one that fits, sums the build against stock and
+// keeps it in the address.
+test("the loadout editor swaps a gun, shows the change against stock and keeps the build in the address", async ({
+  page,
+}) => {
+  await page.goto("/ships/gladius");
+  const section = page.locator("#hardpoints");
+  await expect(
+    section.getByRole("heading", { level: 3, name: "Stock build" }),
+  ).toBeVisible();
+  const guns = section.getByRole("region", { name: /Guns/ }).or(
+    section.locator("section", {
+      has: page.getByRole("heading", { level: 3, name: /^Guns/ }),
+    }),
+  );
+  await guns.getByRole("button", { name: "Change" }).first().click();
+  const picker = section.getByRole("region", { name: /^Parts that fit/ });
+  await expect(picker).toBeVisible();
+  // Every part offered is the slot's size.
+  const sizes = await picker.locator("tbody tr").allInnerTexts();
+  expect(sizes.length).toBeGreaterThan(1);
+  for (const row of sizes) expect(row).toContain("S3");
+  // Fit the first part that is not fitted now.
+  await picker.locator("tbody button:not([disabled])").first().click();
+  await expect(picker).toBeHidden();
+  await expect(
+    section.getByRole("heading", {
+      level: 3,
+      name: /^Your build: \d+ parts? changed$/,
+    }),
+  ).toBeVisible();
+  await expect(section.getByText(/on stock$/).first()).toBeVisible();
+  await expect(page).toHaveURL(/[?&]build=/);
+  // The address opens the same build; back to stock clears it.
+  await page.reload();
+  await expect(
+    section.getByRole("heading", { level: 3, name: /^Your build:/ }),
+  ).toBeVisible();
+  await section.getByRole("button", { name: "Back to stock" }).click();
+  await expect(
+    section.getByRole("heading", { level: 3, name: "Stock build" }),
+  ).toBeVisible();
+  await expect(page).not.toHaveURL(/[?&]build=/);
+});
+
+test("the armament is drawn by who fires it, every part linked", async ({
+  page,
+}) => {
+  await page.goto("/ships/gladius");
+  const combat = page.locator("#combat");
+  await expect(
+    combat.getByRole("region", { name: "Pilot guns" }),
+  ).toBeVisible();
+  await expect(
+    combat.getByRole("region", { name: "Missile racks" }),
+  ).toBeVisible();
+  const link = combat
+    .getByRole("region", { name: "Pilot guns" })
+    .getByRole("link")
+    .first();
+  await expect(link).toHaveAttribute("href", /^\/components\//);
 });

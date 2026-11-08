@@ -2,7 +2,7 @@
 
 Some game data via the Star Citizen Wiki API (api.star-citizen.wiki).
 
-Bootstrap placeholders for Phase 0: five ships, their stock loadouts and the components those loadouts reference, fetched from the Star Citizen Wiki API by `scripts/bootstrap-fixtures` on 2026-11-08T14:23:03.744Z. Phase 1 replaces this pack with records extracted from the game files; until then every page that shows this data carries the credit line above (`docs/legal/attribution.md`).
+Bootstrap placeholders for Phase 0: five ships, their stock loadouts, the components those loadouts reference and the catalogue of ship guns, missiles and torpedoes, shields, power plants, coolers and quantum drives the loadout editor offers (ADR-016), fetched from the Star Citizen Wiki API by `scripts/bootstrap-fixtures` on 2026-11-08T22:22:55.346Z. Phase 1 replaces this pack with records extracted from the game files; until then every page that shows this data carries the credit line above (`docs/legal/attribution.md`).
 
 **Do not edit these files by hand.** Regenerate with:
 
@@ -28,12 +28,12 @@ Game version `4.10.2-LIVE.12881860`, channel LIVE, as reported by the API's defa
 | File | Rows |
 | --- | --- |
 | GameVersion | 1 |
-| Manufacturer | 28 |
+| Manufacturer | 52 |
 | Vehicle | 6 |
 | VehicleStats | 6 |
 | Port | 966 |
-| Item | 174 |
-| ItemStats | 174 |
+| Item | 578 |
+| ItemStats | 578 |
 
 ## How the API's vocabulary was mapped
 
@@ -241,5 +241,11 @@ Every value is the API's own; the script only maps the API's type names onto the
 - https://api.star-citizen.wiki/api/items/d9870a05-1a66-4a9a-bec6-30eb67e3a3ce
 - https://api.star-citizen.wiki/api/items/86bfeaef-e0e2-4373-9dca-47e193c0b203
 - https://api.star-citizen.wiki/api/items/a113eb5a-2759-4a55-ac48-7170c7d17f50
+- https://api.star-citizen.wiki/api/items?filter[type]=WeaponGun&page[size]=200&page[number]=1
+- https://api.star-citizen.wiki/api/items?filter[type]=Missile&page[size]=200&page[number]=1
+- https://api.star-citizen.wiki/api/items?filter[type]=Shield&page[size]=200&page[number]=1
+- https://api.star-citizen.wiki/api/items?filter[type]=PowerPlant&page[size]=200&page[number]=1
+- https://api.star-citizen.wiki/api/items?filter[type]=Cooler&page[size]=200&page[number]=1
+- https://api.star-citizen.wiki/api/items?filter[type]=QuantumDrive&page[size]=200&page[number]=1
 
-187 requests, spaced at least 2.5 seconds apart. Non-commercial use; "Please credit api.star-citizen.wiki in public projects."
+193 requests, spaced at least 2.5 seconds apart. Non-commercial use; "Please credit api.star-citizen.wiki in public projects."

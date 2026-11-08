@@ -131,6 +131,25 @@ export type WikiItem = z.infer<typeof WikiItem>;
 
 export const WikiItemResponse = z.looseObject({ data: WikiItem });
 
+/** A page of `/api/items?filter[type]=…`: whole item records, as `/api/items/<uuid>` returns them. */
+export const WikiItemListResponse = z.looseObject({
+  data: z.array(WikiItem),
+  meta: z.looseObject({ last_page: z.number().int().positive() }),
+});
+
+/**
+ * The parts the loadout editor offers (ADR-016): every ship gun, missile and torpedo, shield,
+ * power plant, cooler and quantum drive the API lists, not only those on the five ships.
+ */
+export const CATALOG_TYPES = [
+  "WeaponGun",
+  "Missile",
+  "Shield",
+  "PowerPlant",
+  "Cooler",
+  "QuantumDrive",
+] as const;
+
 export const WikiGameVersionResponse = z.looseObject({
   data: z.looseObject({
     code: z.string().min(1),

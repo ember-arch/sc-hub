@@ -77,7 +77,8 @@ test("the Odin's images and render loops sit in the sections they show (ADR-014)
   const combat = page.locator("#combat");
   if ((await combat.locator("video").count()) === 0)
     test.skip(true, "no media built locally");
-  await expect(combat.locator("figcaption").first()).toContainText("Fig. 4.1");
+  // Weapons and combat is section 3 (ADR-015).
+  await expect(combat.locator("figcaption").first()).toContainText("Fig. 3.1");
   await expect(
     page.locator("#operations figcaption", { hasText: "The bridge" }),
   ).toHaveCount(1);

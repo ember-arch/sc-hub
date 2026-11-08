@@ -21,6 +21,8 @@ import {
   MapError,
   type Named,
   assignSlugs,
+  catalogRecord,
+  fitsAPort,
   mapChannel,
   mapGameVersion,
   mapItem,
@@ -31,8 +33,11 @@ import {
   mapVehicleStats,
 } from "./map.js";
 import {
+  CATALOG_TYPES,
   ShipList,
   WikiGameVersionResponse,
+  WikiItem,
+  WikiItemListResponse,
   WikiItemResponse,
   type WikiManufacturer,
   WikiVehicleListResponse,
@@ -218,6 +223,43 @@ async function main(): Promise<void> {
     manufacturerSources.push(raw.manufacturer);
   }
   log({ event: "bootstrap.fetched", kind: "items", count: items.length });
+
+  // The catalogue the loadout editor offers (ADR-016), 200 records a page. Stock parts are already
+  // in. A part that fits no port on the pack's ships, has the wiki's placeholder name or comes
+  // from another build is left out and counted; the rest keep a record trimmed by rule.
+  const stockCount = items.length;
+  let catalogSkipped = 0;
+  for (const type of CATALOG_TYPES) {
+    for (let page = 1; ; page += 1) {
+      const json = await get(
+        `/api/items?filter[type]=${type}&page[size]=200&page[number]=${page}`,
+      );
+      const list = WikiItemListResponse.parse(json);
+      const raws = (json as { data: Record<string, unknown>[] }).data;
+      list.data.forEach((raw, i) => {
+        if (itemRaws.has(raw.class_name)) return;
+        if (
+          /^<=.*=>$/.test(raw.name.trim()) ||
+          raw.version !== version ||
+          !fitsAPort(raw.type, raw.size, portRows)
+        ) {
+          catalogSkipped += 1;
+          return;
+        }
+        const record = catalogRecord(raws[i]!);
+        itemRaws.set(raw.class_name, record);
+        items.push(WikiItem.parse(record));
+        manufacturerSources.push(raw.manufacturer);
+      });
+      if (page >= list.meta.last_page) break;
+    }
+  }
+  log({
+    event: "bootstrap.fetched",
+    kind: "catalog",
+    count: items.length - stockCount,
+    skipped: catalogSkipped,
+  });
 
   const itemSlugs = assignSlugs(
     items.map((i) => ({

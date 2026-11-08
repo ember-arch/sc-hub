@@ -4,8 +4,11 @@ import {
   Card,
   EmptyState,
   EntityPage,
+  RankBar,
+  ScaleLineup,
   Section,
   StatsByChannel,
+  formatNumber,
   sentence,
   vehicleStatusBadge,
 } from "ui";
@@ -14,9 +17,11 @@ import { shipJsonLd } from "../../../lib/seo";
 import { Site } from "../../../lib/site";
 import { entityForSlug } from "../../../lib/entity-route";
 import { JsonLdScript } from "../../json-ld";
-import { shipCard, shipFacts, shipSpecRows } from "../../../lib/views";
+import { shipCard, shipSpecRows } from "../../../lib/views";
 import { loadoutGroups } from "../../../lib/loadout";
-import { CompareLink, CompareToggle } from "../../compare/compare-controls";
+import { armament } from "../../../lib/armament";
+import { ArmamentStrip } from "./armament-strip";
+import { ShipStage } from "./ship-stage";
 import { LoadoutPanels } from "./loadout-panels";
 import { PortTable } from "./port-table";
 
@@ -61,10 +66,10 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 }
 
 /**
- * Ship page on the EntityPage template (spec 02, "Ship page"): hero, key facts, specs by channel
- * with the PTU diff toggle, hardpoints and stock loadout, variants and paints when there are any,
- * related. "Changed in this version" waits for diff.json; news is Phase 3. Defaults to dark
- * (system.md principle 3).
+ * Ship page, cinematic concept (ADR-008): a full-bleed stage with the name, CIG's description and
+ * headline figures; then the ship to scale against every ship on record, where it ranks, and its
+ * armament at a glance; then the reference layer (specs by channel with the PTU toggle, the
+ * loadout panels, variants and paints when there are any) and related ships. Defaults to dark.
  */
 export default async function ShipPage({ params }: Params) {
   const { slug } = await params;
@@ -90,6 +95,24 @@ export default async function ShipPage({ params }: Params) {
       : (variants.find(
           (v) => v.vehicle.class_name === ship.vehicle.base_variant_of,
         ) ?? null);
+  const others = r.ships.filter((o) => o.stats !== null);
+  const rank = (
+    value: (o: (typeof others)[number]) => number | null,
+  ): { key: string; name: string; value: number; current: boolean }[] =>
+    others.flatMap((o) => {
+      const v = value(o);
+      return v === null
+        ? []
+        : [
+            {
+              key: o.vehicle.class_name,
+              name: o.vehicle.name,
+              value: v,
+              current: o.vehicle.class_name === ship.vehicle.class_name,
+            },
+          ];
+    });
+  const arms = armament(loadout);
   const related = [
     {
       title: `More from ${ship.manufacturer?.name ?? ship.vehicle.manufacturer_code}`,
@@ -115,40 +138,91 @@ export default async function ShipPage({ params }: Params) {
   ];
 
   return (
-    <Site current="ships" theme="dark">
+    <Site
+      current="ships"
+      theme="dark"
+      stage={<ShipStage ship={ship} status={status} version={version} />}
+    >
       <JsonLdScript data={shipJsonLd(ship, describe(ship))} />
-      <EntityPage
-        hero={{
-          name: ship.vehicle.name,
-          kicker:
-            ship.manufacturer === null
-              ? { label: ship.vehicle.manufacturer_code }
-              : {
-                  label: ship.manufacturer.name,
-                  href: `/manufacturers/${ship.manufacturer.slug}`,
-                },
-          status,
-          image: null,
-          children: (
-            <div className="flex flex-col gap-3">
-              {version === null ? null : (
-                <p className="m-0 text-caption text-secondary">
-                  Key facts and stats from LIVE {version}
-                </p>
+      <EntityPage hero={null} facts={[]} related={related}>
+        {s === null ? null : (
+          <Section
+            id="scale"
+            title="To scale"
+            aside={`Every ship on record and a person, ${formatNumber(s.length_m, 2)} m nose to tail`}
+          >
+            <ScaleLineup
+              label={`${ship.vehicle.name} drawn to scale beside ${others.length - 1} other ships and a person`}
+              items={others.flatMap((o) =>
+                o.stats === null
+                  ? []
+                  : [
+                      {
+                        key: o.vehicle.class_name,
+                        name: o.vehicle.name,
+                        length: o.stats.length_m,
+                        height: o.stats.height_m,
+                        current:
+                          o.vehicle.class_name === ship.vehicle.class_name,
+                      },
+                    ],
               )}
-              <div className="flex flex-wrap gap-2">
-                <CompareToggle
-                  slug={ship.vehicle.slug}
-                  name={ship.vehicle.name}
-                />
-                <CompareLink />
-              </div>
+              reference={{
+                key: "person",
+                name: "A person",
+                length: 0.5,
+                height: 1.8,
+              }}
+            />
+          </Section>
+        )}
+        {s === null || others.length < 2 ? null : (
+          <Section
+            id="rank"
+            title="Among the ships on record"
+            aside={`${others.length} ships, LIVE ${version ?? ""}`}
+          >
+            <div className="flex flex-col">
+              <RankBar
+                label="SCM speed"
+                unit="m/s"
+                most="Fastest"
+                values={rank((o) => o.stats?.scm_speed ?? null)}
+              />
+              <RankBar
+                label="NAV speed"
+                unit="m/s"
+                most="Fastest"
+                values={rank((o) => o.stats?.nav_speed ?? null)}
+              />
+              <RankBar
+                label="Hull"
+                unit="HP"
+                most="Toughest"
+                scale="log"
+                values={rank((o) => o.stats?.hull_hp ?? null)}
+              />
+              <RankBar
+                label="Mass"
+                unit="kg"
+                most="Heaviest"
+                scale="log"
+                values={rank((o) => o.stats?.mass_kg ?? null)}
+              />
+              <RankBar
+                label="Cargo"
+                unit="SCU"
+                most="Largest hold"
+                values={rank((o) => o.stats?.cargo_scu ?? null)}
+              />
             </div>
-          ),
-        }}
-        facts={shipFacts(ship)}
-        related={related}
-      >
+          </Section>
+        )}
+        {arms.length === 0 ? null : (
+          <Section id="armament" title="Armament" aside="Stock loadout">
+            <ArmamentStrip rows={arms} />
+          </Section>
+        )}
         <Section
           id="specs"
           title="Specifications"

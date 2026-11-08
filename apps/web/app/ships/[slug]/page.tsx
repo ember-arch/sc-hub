@@ -24,6 +24,7 @@ import { ArmamentStrip } from "./armament-strip";
 import { ShipStage } from "./ship-stage";
 import { LoadoutPanels } from "./loadout-panels";
 import { PortTable } from "./port-table";
+import { media, shipCardImage } from "../../../lib/media";
 
 interface Params {
   readonly params: Promise<{ slug: string }>;
@@ -119,7 +120,7 @@ export default async function ShipPage({ params }: Params) {
       items: r
         .lineup(ship.vehicle.manufacturer_code)
         .filter((o) => o.vehicle.class_name !== ship.vehicle.class_name)
-        .map(shipCard),
+        .map((s) => shipCard(s, shipCardImage(s))),
     },
     {
       title:
@@ -133,7 +134,7 @@ export default async function ShipPage({ params }: Params) {
             o.vehicle.role !== null &&
             o.vehicle.role === ship.vehicle.role,
         )
-        .map(shipCard),
+        .map((s) => shipCard(s, shipCardImage(s))),
     },
   ];
 
@@ -141,7 +142,19 @@ export default async function ShipPage({ params }: Params) {
     <Site
       current="ships"
       theme="dark"
-      stage={<ShipStage ship={ship} status={status} version={version} />}
+      stage={
+        <ShipStage
+          ship={ship}
+          status={status}
+          version={version}
+          image={media().ship(ship.vehicle.class_name, ship.vehicle.name)}
+          mark={
+            ship.manufacturer === null
+              ? null
+              : media().maker(ship.manufacturer.code, ship.manufacturer.name)
+          }
+        />
+      }
     >
       <JsonLdScript data={shipJsonLd(ship, describe(ship))} />
       <EntityPage hero={null} facts={[]} related={related}>
@@ -313,7 +326,7 @@ export default async function ShipPage({ params }: Params) {
                   <ul className="m-0 grid list-none grid-cols-2 gap-4 p-0 md:grid-cols-3 lg:grid-cols-4">
                     {variants.map((v) => (
                       <li key={v.vehicle.class_name}>
-                        <Card {...shipCard(v)} />
+                        <Card {...shipCard(v, shipCardImage(v))} />
                       </li>
                     ))}
                   </ul>

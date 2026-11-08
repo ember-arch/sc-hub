@@ -24,6 +24,7 @@ import { Site } from "../../lib/site";
 import { shipCard, shipRows } from "../../lib/views";
 import { CompareLink, CompareToggle } from "../compare/compare-controls";
 import { ShipTable } from "./ship-table";
+import { shipCardImage } from "../../lib/media";
 
 // The canonical is the unfiltered index: filters are views of one page, not pages of their own.
 export const metadata: Metadata = {
@@ -121,7 +122,7 @@ export default async function ShipsPage({
           <ul className="m-0 grid list-none grid-cols-2 gap-4 p-0 md:grid-cols-3 lg:grid-cols-4">
             {ships.map((ship) => (
               <li key={ship.vehicle.class_name} className="flex flex-col gap-2">
-                <Card {...shipCard(ship)} />
+                <Card {...shipCard(ship, shipCardImage(ship))} />
                 <div className="flex justify-end">
                   <CompareToggle
                     slug={ship.vehicle.slug}

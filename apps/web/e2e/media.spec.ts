@@ -1,0 +1,71 @@
+import { type Page, expect, test } from "@playwright/test";
+
+// ADR-009: images are local copies listed in a git-ignored manifest, so a fresh clone and CI have
+// none. These checks hold either way: whatever images a page draws have loaded, are sized, and a
+// ship image is credited to RSI with a link to its source. With no images they pass trivially.
+
+async function drawnImages(page: Page) {
+  return page.locator("img").evaluateAll((imgs) =>
+    imgs
+      .filter((img) => getComputedStyle(img).display !== "none")
+      .map((img) => {
+        const el = img as HTMLImageElement;
+        return {
+          src: el.currentSrc,
+          complete: el.complete,
+          naturalWidth: el.naturalWidth,
+          hasSize:
+            el.getAttribute("width") !== null &&
+            el.getAttribute("height") !== null,
+          alt: el.getAttribute("alt"),
+        };
+      }),
+  );
+}
+
+for (const route of [
+  "/ships/gladius",
+  "/ships/polaris",
+  "/manufacturers/aegis-dynamics",
+  "/manufacturers/mirai",
+]) {
+  test(`every image drawn on ${route} loads and is sized`, async ({ page }) => {
+    await page.goto(route);
+    await page.waitForLoadState("load");
+    for (const img of await drawnImages(page)) {
+      expect(img.complete, img.src).toBe(true);
+      expect(img.naturalWidth, img.src).toBeGreaterThan(0);
+      expect(img.hasSize, img.src).toBe(true);
+      expect(img.alt, img.src).not.toBeNull();
+    }
+  });
+}
+
+test("a ship image is described and credited to RSI with a link to its source", async ({
+  page,
+}) => {
+  await page.goto("/ships/gladius");
+  const stage = page.locator("section[aria-labelledby='ship-name']");
+  const image = stage.locator("figure img");
+  if ((await image.count()) === 0) test.skip(true, "no media built locally");
+  await expect(image).toHaveAttribute("alt", "The Gladius");
+  await expect(image).not.toHaveAttribute("loading", "lazy");
+  const credit = stage.getByRole("link", {
+    name: "Image: Roberts Space Industries",
+  });
+  await expect(credit).toHaveAttribute(
+    "href",
+    /^https:\/\/robertsspaceindustries\.com\/pledge\/ships\//,
+  );
+});
+
+test("a maker logo shows one version for the page's theme", async ({
+  page,
+}) => {
+  await page.goto("/ships/gladius");
+  const logos = page.getByRole("img", { name: "Aegis Dynamics logo" });
+  if ((await logos.count()) === 0) test.skip(true, "no media built locally");
+  // Ship pages are dark: only the light mark is drawn, and it is the one the reader can find.
+  await expect(logos).toHaveCount(1);
+  await expect(logos).toHaveAttribute("src", /aegs-on-dark/);
+});

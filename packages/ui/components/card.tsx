@@ -1,5 +1,6 @@
 import NextLink from "next/link";
 import { formatNumber } from "./format";
+import type { ResponsiveImage } from "./media";
 
 export interface CardStat {
   readonly label: string;
@@ -14,8 +15,8 @@ export interface CardProps {
   readonly role: string | null;
   /** Two stats (system.md section 3). */
   readonly stats: readonly [CardStat, CardStat] | readonly CardStat[];
-  readonly image?:
-    { readonly src: string; readonly alt: string } | null | undefined;
+  /** The card shows no credit line; the page it links to credits the image (ADR-009). */
+  readonly image?: ResponsiveImage | null | undefined;
 }
 
 /** Ship card: image, name, manufacturer, role, two stats. The whole card is the link. */
@@ -36,8 +37,14 @@ export function Card({
       {image === undefined || image === null ? null : (
         <img
           src={image.src}
+          srcSet={image.srcSet}
+          sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
+          width={image.width}
+          height={image.height}
           alt={image.alt}
-          className="aspect-video w-full rounded-control object-cover"
+          loading="lazy"
+          decoding="async"
+          className="aspect-video h-auto w-full rounded-control object-cover"
         />
       )}
       <div className="flex flex-col gap-1">

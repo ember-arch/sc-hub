@@ -6,6 +6,7 @@ import {
   formatNumber,
   sentence,
   vehicleStatusBadge,
+  type ResponsiveImage,
 } from "ui";
 import type { ItemStats, VehicleStats } from "schema";
 import type { ShipRow } from "../app/ships/ship-table";
@@ -129,7 +130,11 @@ export function shipRows(ships: readonly ShipView[]): readonly ShipRow[] {
 }
 
 /** Props shared by the ship index, related groups and manufacturer lineups. */
-export function shipCard(ship: ShipView): CardProps {
+/** `image` comes from `shipCardImage` (lib/media.ts); null draws the card without one. */
+export function shipCard(
+  ship: ShipView,
+  image: ResponsiveImage | null = null,
+): CardProps {
   return {
     href: `/ships/${ship.vehicle.slug}`,
     name: ship.vehicle.name,
@@ -145,7 +150,7 @@ export function shipCard(ship: ShipView): CardProps {
       },
       { label: "Cargo", value: ship.stats?.cargo_scu ?? null, unit: "SCU" },
     ],
-    image: null,
+    image,
   };
 }
 

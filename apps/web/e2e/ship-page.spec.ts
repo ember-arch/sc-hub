@@ -61,7 +61,7 @@ const shipStats = stats.find((s) => s.class_name === ship?.class_name);
 if (ship === undefined || shipStats === undefined || live === undefined)
   throw new Error("pack needs one ship with stats and a LIVE build");
 
-// ADR-012: every ship page is the same ship file, ten numbered sections in one order.
+// ADR-012, ADR-014: every ship page is the same ship file, nine numbered sections in one order.
 const SECTIONS = [
   "Brief",
   "Acquisition and status",
@@ -69,7 +69,6 @@ const SECTIONS = [
   "Combat",
   "Mobility",
   "Scale",
-  "Imagery",
   "Specifications",
   "Hardpoints and loadout",
   "Sources",
@@ -121,6 +120,8 @@ test("every ship file, concept or flying, has the same sections in the same orde
       );
     expect(titles, slug).toEqual(SECTIONS);
   }
+  // Images sit in the sections they show (ADR-014), never in a gallery section of their own.
+  await expect(page.getByRole("heading", { name: /Imagery/ })).toHaveCount(0);
   // A section with nothing on record says so rather than disappearing.
   await page.goto("/ships/odin");
   await expect(page.locator("#specifications")).toContainText(

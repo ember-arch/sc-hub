@@ -139,6 +139,9 @@ export function HoloViewer({
           <img
             src={poster}
             alt=""
+            // The frame is 4:3 and the image fills it; the size only reserves its box.
+            width={1280}
+            height={960}
             className="absolute inset-0 h-full w-full object-cover opacity-40"
           />
         )}

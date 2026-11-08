@@ -7,7 +7,7 @@ import { conceptBySlug, conceptShips } from "../../../lib/showcase";
 import { Site } from "../../../lib/site";
 import { JsonLdScript } from "../../json-ld";
 import { conceptShipFile, packShipFile } from "./file-builders";
-import { ShipFile } from "./ship-file";
+import { ShipFile, ShipFileHero } from "./ship-file";
 
 interface Params {
   readonly params: Promise<{ slug: string }>;
@@ -48,7 +48,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   if (concept !== undefined) {
     return {
       title: concept.name,
-      description: `${concept.name}: ship file with CIG's published figures, stated capabilities, imagery and holoviewer model. In concept.`,
+      description: `${concept.name}: ship file with CIG's published figures, stated capabilities, pledge price, imagery and holoviewer model. In concept.`,
       alternates: { canonical: `/ships/${concept.slug}` },
     };
   }
@@ -69,17 +69,19 @@ export default async function ShipPage({ params }: Params) {
   const { slug } = await params;
   const concept = conceptBySlug(slug);
   if (concept !== undefined) {
+    const file = conceptShipFile(concept);
     return (
-      <Site current="ships" theme="dark">
-        <ShipFile {...conceptShipFile(concept)} />
+      <Site current="ships" theme="dark" stage={<ShipFileHero {...file} />}>
+        <ShipFile {...file} />
       </Site>
     );
   }
   const ship = shipFor(slug);
+  const file = packShipFile(ship);
   return (
-    <Site current="ships" theme="dark">
+    <Site current="ships" theme="dark" stage={<ShipFileHero {...file} />}>
       <JsonLdScript data={shipJsonLd(ship, describe(ship))} />
-      <ShipFile {...packShipFile(ship)} />
+      <ShipFile {...file} />
     </Site>
   );
 }

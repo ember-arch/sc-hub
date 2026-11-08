@@ -57,7 +57,7 @@ test("a ship image is described and credited to RSI with a link to its source", 
 }) => {
   await page.goto("/ships/gladius");
   const stage = page.locator("section[aria-labelledby='ship-name']");
-  const image = stage.locator("figure img");
+  const image = stage.locator("img").first();
   if ((await image.count()) === 0) test.skip(true, "no media built locally");
   await expect(image).toHaveAttribute("alt", "The Gladius");
   await expect(image).not.toHaveAttribute("loading", "lazy");
@@ -68,6 +68,26 @@ test("a ship image is described and credited to RSI with a link to its source", 
     "href",
     /^https:\/\/robertsspaceindustries\.com\/pledge\/ships\//,
   );
+});
+
+test("the Odin's images and render loops sit in the sections they show (ADR-014)", async ({
+  page,
+}) => {
+  await page.goto("/ships/odin");
+  const combat = page.locator("#combat");
+  if ((await combat.locator("video").count()) === 0)
+    test.skip(true, "no media built locally");
+  await expect(combat.locator("figcaption").first()).toContainText("Fig. 4.1");
+  await expect(
+    page.locator("#operations figcaption", { hasText: "The bridge" }),
+  ).toHaveCount(1);
+  await expect(page.locator("#specifications img").first()).toBeAttached();
+  // The opening band carries the key art and its credit.
+  const stage = page.locator("section[aria-labelledby='ship-name']");
+  await expect(stage.locator("img").first()).toBeAttached();
+  await expect(
+    stage.getByRole("link", { name: "Art: Roberts Space Industries" }),
+  ).toBeVisible();
 });
 
 test("a maker logo shows one version for the page's theme", async ({

@@ -42,7 +42,7 @@ import {
   shipRenditionPath,
 } from "./sources.js";
 import { parseArticle } from "./article.js";
-import { SHOWCASE } from "./showcase.js";
+import { FILE_SECTIONS, SHOWCASE } from "./showcase.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(here, "..", "..");
@@ -198,12 +198,17 @@ async function showcases(): Promise<Showcase[]> {
       copyFileSync(join(dir, item.file), fileFor(src));
       // A chapter's own image is the poster when the video has no frame of its own.
       const chapter = ship.layout.chapters.find((c) => c.video === item.file);
+      // Or the still the ship file's figure names for it (ADR-014).
+      const figure = Object.values(ship.layout.sections)
+        .flat()
+        .find((f) => f?.file === item.file && f.poster !== undefined);
       videos.push({
         key,
         src,
         poster:
           imageKey(item.file.replace(/\.mp4$/i, ".jpg")) ??
-          imageKey(chapter?.image),
+          imageKey(chapter?.image) ??
+          imageKey(figure?.poster),
       });
     }
     const videoKey = (file: string | undefined): string | null => {
@@ -233,6 +238,22 @@ async function showcases(): Promise<Showcase[]> {
     for (const [role, file] of Object.entries(ship.layout.roles)) {
       const key = imageKey(file);
       if (key !== null) roles[role] = key;
+    }
+    // The ship file's figures (ADR-014): only files that were copied, in section order.
+    const figures: Showcase["figures"] = [];
+    for (const section of FILE_SECTIONS) {
+      for (const fig of ship.layout.sections[section] ?? []) {
+        const video = videoKey(fig.file);
+        const image = video === null ? imageKey(fig.file) : null;
+        if (video === null && image === null) continue;
+        figures.push({
+          section,
+          kind: video === null ? "image" : "video",
+          key: video ?? image ?? "",
+          narrow: imageKey(fig.narrow),
+          caption: fig.caption,
+        });
+      }
     }
     const schematics: Showcase["schematics"] = [];
     for (const sch of ship.layout.schematics) {
@@ -274,6 +295,7 @@ async function showcases(): Promise<Showcase[]> {
         .map((f) => imageKey(f))
         .filter((k): k is string => k !== null),
       schematics,
+      figures,
     });
   }
   return out;

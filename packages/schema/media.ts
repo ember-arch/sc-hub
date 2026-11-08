@@ -67,6 +67,30 @@ export const ShowcaseChapter = z.strictObject({
 export type ShowcaseChapter = z.infer<typeof ShowcaseChapter>;
 
 /**
+ * A figure in a ship file section (ADR-014): an image or render loop placed where it informs,
+ * with a phone layout for schematics and a caption.
+ */
+export const ShowcaseFigure = z.strictObject({
+  section: z.enum([
+    "brief",
+    "acquisition",
+    "operations",
+    "combat",
+    "mobility",
+    "scale",
+    "specifications",
+    "hardpoints",
+  ]),
+  kind: z.enum(["image", "video"]),
+  /** An image key, or a video key for a render loop. */
+  key: z.string().min(1),
+  /** An image key laid out for phones, or null. */
+  narrow: z.string().nullable(),
+  caption: z.string().min(1),
+});
+export type ShowcaseFigure = z.infer<typeof ShowcaseFigure>;
+
+/**
  * A showcase ship (ADR-010): the owner's concept hero (Anvil Odin) and live example (RSI Perseus).
  * Built by `scripts/media/prepare.ts` from `fixtures/showcase/<slug>/`, all git-ignored.
  */
@@ -98,6 +122,8 @@ export const Showcase = z.strictObject({
       caption: z.string(),
     }),
   ),
+  /** The ship file's figures in section order (ADR-014); absent in manifests built before it. */
+  figures: z.array(ShowcaseFigure).default([]),
 });
 export type Showcase = z.infer<typeof Showcase>;
 

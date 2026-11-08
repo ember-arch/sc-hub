@@ -15,7 +15,8 @@ export const RSI_SPACING_MS = 5_000;
 export const RSI_IMAGE_SIZE = "wallpaper_1920x1080";
 
 /** Web copies of each ship image, widest first. */
-export const SHIP_WIDTHS: readonly number[] = [1920, 1280, 640];
+/** 960 serves phones at 2x and small laptops without the 1280 copy; 480 serves cards on phones (Lighthouse, 2026-11-08). */
+export const SHIP_WIDTHS: readonly number[] = [1920, 1280, 960, 640, 480];
 
 /** Logo height in pixels: twice the largest size the site draws one. */
 export const LOGO_HEIGHT = 128;

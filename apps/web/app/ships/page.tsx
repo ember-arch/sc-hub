@@ -120,9 +120,12 @@ export default async function ShipsPage({
           <ShipTable rows={shipRows(ships)} version={r.liveVersion} />
         ) : (
           <ul className="m-0 grid list-none grid-cols-2 gap-4 p-0 md:grid-cols-3 lg:grid-cols-4">
-            {ships.map((ship) => (
+            {ships.map((ship, index) => (
               <li key={ship.vehicle.class_name} className="flex flex-col gap-2">
-                <Card {...shipCard(ship, shipCardImage(ship))} />
+                <Card
+                  {...shipCard(ship, shipCardImage(ship))}
+                  imageLoading={index === 0 ? "high" : "lazy"}
+                />
                 <div className="flex justify-end">
                   <CompareToggle
                     slug={ship.vehicle.slug}

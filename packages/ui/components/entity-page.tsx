@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Badge, type BadgeTone } from "./badge";
 import { Card, type CardProps } from "./card";
+import { type MakerMark, Mark } from "./media";
 import { TextLink } from "./text-link";
 
 /**
@@ -28,6 +29,8 @@ export interface HeroProps {
   readonly placeholder?: string | undefined;
   /** Manufacturer pages: a 3 px rule is the only place a brand color may appear (system.md section 2). */
   readonly brandRule?: boolean | undefined;
+  /** Manufacturer pages: the maker's own logo from the fankit, above the name (ADR-009). */
+  readonly mark?: MakerMark | null | undefined;
   readonly children?: ReactNode;
 }
 
@@ -38,6 +41,7 @@ export function Hero({
   image,
   placeholder,
   brandRule,
+  mark,
   children,
 }: HeroProps) {
   return (
@@ -45,6 +49,11 @@ export function Hero({
       className={`flex flex-col gap-6 pt-8 md:flex-row md:items-end md:justify-between ${brandRule === true ? "border-t-[3px] border-hairline-strong" : ""}`}
     >
       <div className="flex min-w-0 flex-col gap-2">
+        {mark === undefined || mark === null ? null : (
+          <div className="mb-4">
+            <Mark mark={mark} heightClass="h-16" />
+          </div>
+        )}
         {kicker !== undefined ? (
           <p className="text-ui text-secondary">
             {kicker.href !== undefined ? (

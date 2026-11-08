@@ -4,6 +4,13 @@ export * from "./tokens";
 export { Badge, type BadgeProps, type BadgeTone } from "./components/badge";
 export { Card, type CardProps, type CardStat } from "./components/card";
 export {
+  Mark,
+  type ImageFile,
+  type MakerMark,
+  type MarkProps,
+  type ResponsiveImage,
+} from "./components/media";
+export {
   CommandPalette,
   type CommandPaletteProps,
   OPEN_SEARCH_EVENT,

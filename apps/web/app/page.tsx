@@ -12,6 +12,7 @@ import { SITE_NAME, SITE_TAGLINE } from "ui/brand";
 import { repo } from "../lib/data";
 import { Site, now } from "../lib/site";
 import { shipCard } from "../lib/views";
+import { shipCardImage } from "../lib/media";
 
 export const metadata: Metadata = {
   title: { absolute: SITE_NAME },
@@ -63,7 +64,7 @@ export default function HomePage() {
           <div className="flex flex-col gap-12">
             {featured !== undefined ? (
               <Section id="featured" title="Featured ship">
-                <Card {...shipCard(featured)} />
+                <Card {...shipCard(featured, shipCardImage(featured))} />
               </Section>
             ) : null}
           </div>

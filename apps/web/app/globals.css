@@ -17,3 +17,31 @@
 .dev-post-body a {
   color: var(--accent);
 }
+
+/*
+ * Maker logos come in two official versions (ADR-009): the dark mark for light pages, the light
+ * mark for dark pages. Same selectors as the theme tokens, so the right one shows with no script.
+ */
+.theme-on-dark {
+  display: none;
+}
+@media (prefers-color-scheme: dark) {
+  .theme-on-light {
+    display: none;
+  }
+  .theme-on-dark {
+    display: block;
+  }
+}
+[data-theme="light"] .theme-on-light {
+  display: block;
+}
+[data-theme="light"] .theme-on-dark {
+  display: none;
+}
+[data-theme="dark"] .theme-on-light {
+  display: none;
+}
+[data-theme="dark"] .theme-on-dark {
+  display: block;
+}

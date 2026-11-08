@@ -7,7 +7,7 @@
     "content_type": "image/jpeg",
     "bytes": 561427,
     "sha256": "92c4a1143c15fe298c38c17382f4c6f16e12059c9832643a762470b5b4b54696",
-    "fetched_at": "2026-11-08T05:59:56.134Z"
+    "fetched_at": "2026-11-08T14:45:16.128Z"
   },
   {
     "class_name": "ANVL_Carrack",
@@ -17,7 +17,7 @@
     "content_type": "image/png",
     "bytes": 2664931,
     "sha256": "2f9470eb4a8bed5d5636397957d12bae22ccee2fc1282ac029d6a1b419a80d0e",
-    "fetched_at": "2026-11-08T06:00:01.189Z"
+    "fetched_at": "2026-11-08T14:45:20.725Z"
   },
   {
     "class_name": "DRAK_Cutlass_Black",
@@ -27,7 +27,7 @@
     "content_type": "image/jpeg",
     "bytes": 1962712,
     "sha256": "acbf97c45d80efdaeec76f18b28147b5d951df256cbd9f242e78a1daeb237ad1",
-    "fetched_at": "2026-11-08T06:00:06.818Z"
+    "fetched_at": "2026-11-08T14:45:25.725Z"
   },
   {
     "class_name": "MISC_Fury",
@@ -37,7 +37,17 @@
     "content_type": "image/jpeg",
     "bytes": 2200058,
     "sha256": "a4a8484f43e2da6659273e6f5bfc7fa4445241a10aad27de68a18fa3624263a9",
-    "fetched_at": "2026-11-08T06:00:11.493Z"
+    "fetched_at": "2026-11-08T14:45:31.732Z"
+  },
+  {
+    "class_name": "RSI_Perseus",
+    "file": "RSI_Perseus.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/perseus/Perseus",
+    "image_url": "https://media.robertsspaceindustries.com/1zli0ngsh3vk7/wallpaper_1920x1080.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 1452366,
+    "sha256": "887382128c3e00d7a70daa19071308ec9b09c17923fb5b688377440e47491846",
+    "fetched_at": "2026-11-08T14:45:36.012Z"
   },
   {
     "class_name": "RSI_Polaris",
@@ -47,6 +57,6 @@
     "content_type": "image/jpeg",
     "bytes": 1312705,
     "sha256": "a7277c53e7704766eae918698a79a530ad68c0f244aa632353cf5b38d4d7d59d",
-    "fetched_at": "2026-11-08T06:00:16.157Z"
+    "fetched_at": "2026-11-08T14:45:40.676Z"
   }
 ]

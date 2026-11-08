@@ -5,7 +5,7 @@
     "game_version": "4.10.2-LIVE.12881860",
     "text": "The Gladius is an older design which has been updated over the years to keep up with modern technology. In military circles, the Gladius is beloved for its performance and its simplicity. A fast, light fighter with a laser-focus on dogfighting, the Gladius is an ideal interceptor or escort ship.",
     "source": "localization",
-    "fetched_at": "2026-11-08T01:33:42.814Z"
+    "fetched_at": "2026-11-08T14:31:54.653Z"
   },
   {
     "class_name": "ANVL_Carrack",
@@ -13,7 +13,7 @@
     "game_version": "4.10.2-LIVE.12881860",
     "text": "Adventure calls and Anvil Aerospace answers with the Carrack. Built to endure extreme conditions in both space and atmosphere, this self-sustaining explorer has more than earned its long-standing status as the go-to pathfinder for both military and civilian service.",
     "source": "localization",
-    "fetched_at": "2026-11-08T01:33:42.814Z"
+    "fetched_at": "2026-11-08T14:31:54.653Z"
   },
   {
     "class_name": "DRAK_Cutlass_Black",
@@ -21,7 +21,7 @@
     "game_version": "4.10.2-LIVE.12881860",
     "text": "Drake Interplanetary claims that the Cutlass Black is a low-cost, easy-to-maintain solution for local in-system militia units. The larger-than-average cargo hold, RIO seat and dedicated tractor mount are, the company literature insists, for facilitating search and rescue operations.",
     "source": "localization",
-    "fetched_at": "2026-11-08T01:33:42.814Z"
+    "fetched_at": "2026-11-08T14:31:54.653Z"
   },
   {
     "class_name": "MISC_Fury",
@@ -29,7 +29,15 @@
     "game_version": "4.10.2-LIVE.12881860",
     "text": "Featuring best-in-class maneuverability and fully integrated, cutting-edge Xi'an tech, the next-generation Fury snub fighter from Mirai uses its four halo-mounted size 2 laser repeaters to redefine short-range space combat.",
     "source": "localization",
-    "fetched_at": "2026-11-08T01:33:42.814Z"
+    "fetched_at": "2026-11-08T14:31:54.653Z"
+  },
+  {
+    "class_name": "RSI_Perseus",
+    "channel": "LIVE",
+    "game_version": "4.10.2-LIVE.12881860",
+    "text": "When RSI set out to make the definitive modern statement in persuasive prevention, they looked into their own past, to the historic gunships designated Perseus. Capable of shredding sub-capital class goliaths, the mere presence of a Perseus gunship in a blockade or patrol squad is enough to make your most aggressive enemies think twice before engaging, just like its vintage namesake.",
+    "source": "localization",
+    "fetched_at": "2026-11-08T14:31:54.653Z"
   },
   {
     "class_name": "RSI_Polaris",
@@ -37,6 +45,6 @@
     "game_version": "4.10.2-LIVE.12881860",
     "text": "The Polaris is a nimble corvette-class capital ship that packs a powerful punch with a full armament of turrets and torpedoes. Intended for use as both a naval patrol ship and to serve as the flagship of militia operations, Polaris has the capacity to perform search and rescue operations, light strike missions and general security patrols. The Polaris includes the facilities to repair, rearm and refuel a single fighter, light bomber or support ship.",
     "source": "localization",
-    "fetched_at": "2026-11-08T01:33:42.814Z"
+    "fetched_at": "2026-11-08T14:31:54.653Z"
   }
 ]

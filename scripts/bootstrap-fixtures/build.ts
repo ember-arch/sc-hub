@@ -86,13 +86,13 @@ export function renderRows<K extends EntityName>(
   return `[\n${sorted.map((row) => `  ${JSON.stringify(row)}`).join(",\n")}\n]\n`;
 }
 
-/** The acceptance criterion in code: five ships, five manufacturers, five sizes. */
+/** The acceptance criterion in code: at least five ships, five manufacturers and five sizes (the live example ship, RSI Perseus, joined on 2026-11-08). */
 export function checkFiveShips(vehicles: readonly Vehicle[]): void {
   const manufacturers = new Set(vehicles.map((v) => v.manufacturer_code));
   const sizes = new Set(vehicles.map((v) => v.size_class));
-  if (vehicles.length !== 5 || manufacturers.size !== 5 || sizes.size !== 5) {
+  if (vehicles.length < 5 || manufacturers.size < 5 || sizes.size < 5) {
     throw new BuildError(
-      `the pack must hold five ships of five sizes from five manufacturers; got ${vehicles.length} ships, ${manufacturers.size} manufacturers, ${sizes.size} sizes`,
+      `the pack must hold at least five ships of five sizes from five manufacturers; got ${vehicles.length} ships, ${manufacturers.size} manufacturers, ${sizes.size} sizes`,
       {
         ships: vehicles.map((v) => ({
           class_name: v.class_name,

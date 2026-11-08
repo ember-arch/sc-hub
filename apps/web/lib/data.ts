@@ -12,6 +12,8 @@ import {
   type Paint,
   type Port,
   type Vehicle,
+  VehicleDescription as VehicleDescriptionSchema,
+  type VehicleDescription,
   type VehicleStats,
 } from "schema";
 import { parsePack } from "schema/pack";
@@ -38,6 +40,12 @@ function findRepoRoot(start: string): string {
 export const REPO_ROOT = findRepoRoot(process.cwd());
 const PACK_DIR = join(REPO_ROOT, "fixtures", "bootstrap");
 const NEWS_FILE = join(REPO_ROOT, "fixtures", "news", "ContentItem.json");
+const DESCRIPTIONS_FILE = join(
+  REPO_ROOT,
+  "fixtures",
+  "descriptions",
+  "VehicleDescription.json",
+);
 
 /** Reads and validates a pack folder; the unit tests use it on fixtures/bootstrap too. */
 export function loadPack(dir: string): DataPack {
@@ -64,6 +72,19 @@ function loadNews(): ContentItem[] {
     .sort((a, b) => b.published_at.localeCompare(a.published_at));
 }
 
+/**
+ * CIG's in-game text for a ship (ADR-008): copied from the game localization as the wiki API serves
+ * it by scripts/bootstrap-fixtures/descriptions.ts, never written by hand. Optional like the news
+ * fixture; validated at the boundary with the schema package type (ADR-008).
+ */
+
+function loadDescriptions(): VehicleDescription[] {
+  if (!existsSync(DESCRIPTIONS_FILE)) return [];
+  return VehicleDescriptionSchema.array().parse(
+    JSON.parse(readFileSync(DESCRIPTIONS_FILE, "utf8")),
+  );
+}
+
 export interface ShipView {
   readonly vehicle: Vehicle;
   /** Current LIVE stats, or null when the pack has none for this ship. */
@@ -72,6 +93,8 @@ export interface ShipView {
   readonly ptu: VehicleStats | null;
   readonly manufacturer: Manufacturer | null;
   readonly paints: readonly Paint[];
+  /** CIG's in-game description for the current LIVE build, or null. */
+  readonly description: VehicleDescription | null;
 }
 
 export interface ComponentView {
@@ -118,6 +141,7 @@ const byName = <T extends { name: string }>(a: T, b: T): number =>
 export function buildRepository(
   pack: DataPack,
   news: readonly ContentItem[],
+  descriptions: readonly VehicleDescription[] = [],
 ): Repository {
   const rows = pack.rows;
   const current = rows.GameVersion.filter((v) => v.is_current);
@@ -160,6 +184,15 @@ export function buildRepository(
     ptu: vehiclePtu.get(vehicle.class_name) ?? null,
     manufacturer: manufacturerByCode.get(vehicle.manufacturer_code) ?? null,
     paints: paintsByVehicle.get(vehicle.class_name) ?? [],
+    // Only text for the build the page shows; another version's text would mix versions.
+    description:
+      descriptions.find(
+        (d) =>
+          d.class_name === vehicle.class_name &&
+          live !== null &&
+          d.channel === live.channel &&
+          d.game_version === live.version,
+      ) ?? null,
   }));
   const components: ComponentView[] = [...rows.Item]
     .sort(byName)
@@ -295,7 +328,11 @@ let cached: Repository | undefined;
 
 /** The repository, built once per server process. Throws PackError on an invalid pack. */
 export function repo(): Repository {
-  cached ??= buildRepository(loadPack(PACK_DIR), loadNews());
+  cached ??= buildRepository(
+    loadPack(PACK_DIR),
+    loadNews(),
+    loadDescriptions(),
+  );
   return cached;
 }
 

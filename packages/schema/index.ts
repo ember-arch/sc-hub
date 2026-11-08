@@ -4,6 +4,7 @@ export * from "./entities/game-version.js";
 export * from "./entities/manufacturer.js";
 export * from "./entities/vehicle.js";
 export * from "./entities/vehicle-stats.js";
+export * from "./entities/vehicle-description.js";
 export * from "./entities/port.js";
 export * from "./entities/item.js";
 export * from "./entities/item-stats.js";

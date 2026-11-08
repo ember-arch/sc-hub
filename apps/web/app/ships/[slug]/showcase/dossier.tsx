@@ -30,6 +30,79 @@ export interface TocEntry {
 
 const pad = (n: number): string => String(n).padStart(2, "0");
 
+/** The file strip across the top of a dossier or the dossier index: what it is, then its metadata. */
+export function FileStrip({
+  document,
+  meta,
+  end,
+}: {
+  readonly document: string;
+  readonly meta: readonly MetaItem[];
+  readonly end?: ReactNode;
+}) {
+  return (
+    <dl className="m-0 flex flex-wrap items-center gap-x-6 gap-y-2 border-y border-hairline py-3 text-caption">
+      <div className="flex items-center gap-2">
+        <dt className="sr-only">Document</dt>
+        <dd className="m-0 font-mono text-primary">{document}</dd>
+      </div>
+      {meta.map((item) => (
+        <div key={item.label} className="flex items-baseline gap-2">
+          <dt className="text-secondary">{item.label}</dt>
+          <dd className="m-0 font-mono text-primary">{item.value}</dd>
+        </div>
+      ))}
+      {end === undefined ? null : <div className="ml-auto">{end}</div>}
+    </dl>
+  );
+}
+
+/** Key art in a frame, with the transparent cut-out layered over it where CIG made one. */
+export function FramedArt({
+  background,
+  cutout,
+  sizes,
+  priority,
+}: {
+  readonly background: Picture;
+  readonly cutout: Picture | null;
+  readonly sizes: string;
+  readonly priority: boolean;
+}) {
+  return (
+    <div className="relative aspect-video overflow-hidden rounded-card border border-hairline bg-inset">
+      <picture>
+        <img
+          src={background.src}
+          srcSet={background.srcSet}
+          sizes={sizes}
+          width={background.width}
+          height={background.height}
+          alt={background.alt}
+          fetchPriority={priority ? "high" : undefined}
+          loading={priority ? undefined : "lazy"}
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+      </picture>
+      {cutout === null ? null : (
+        <picture>
+          <img
+            src={cutout.src}
+            srcSet={cutout.srcSet}
+            sizes={sizes}
+            width={cutout.width}
+            height={cutout.height}
+            alt=""
+            fetchPriority={priority ? "high" : undefined}
+            loading={priority ? undefined : "lazy"}
+            className="dossier-cutout absolute h-auto"
+          />
+        </picture>
+      )}
+    </div>
+  );
+}
+
 export function DossierHeader({
   meta,
   status,
@@ -64,21 +137,11 @@ export function DossierHeader({
 }) {
   return (
     <header aria-labelledby="ship-name" className="flex flex-col gap-8 pt-8">
-      <dl className="m-0 flex flex-wrap items-center gap-x-6 gap-y-2 border-y border-hairline py-3 text-caption">
-        <div className="flex items-center gap-2">
-          <dt className="sr-only">Document</dt>
-          <dd className="m-0 font-mono text-primary">Ship dossier</dd>
-        </div>
-        {meta.map((item) => (
-          <div key={item.label} className="flex items-baseline gap-2">
-            <dt className="text-secondary">{item.label}</dt>
-            <dd className="m-0 font-mono text-primary">{item.value}</dd>
-          </div>
-        ))}
-        <div className="ml-auto">
-          <Badge tone={status.tone}>{status.label}</Badge>
-        </div>
-      </dl>
+      <FileStrip
+        document="Ship dossier"
+        meta={meta}
+        end={<Badge tone={status.tone}>{status.label}</Badge>}
+      />
 
       <div className="flex flex-wrap items-end justify-between gap-6">
         <div className="flex flex-col gap-3">
@@ -113,34 +176,12 @@ export function DossierHeader({
               No art on file
             </div>
           ) : (
-            <div className="relative aspect-video overflow-hidden rounded-card border border-hairline bg-inset">
-              <picture>
-                <img
-                  src={background.src}
-                  srcSet={background.srcSet}
-                  sizes="(min-width: 1024px) 66vw, 100vw"
-                  width={background.width}
-                  height={background.height}
-                  alt={background.alt}
-                  fetchPriority="high"
-                  className="absolute inset-0 h-full w-full object-cover"
-                />
-              </picture>
-              {cutout === null ? null : (
-                <picture>
-                  <img
-                    src={cutout.src}
-                    srcSet={cutout.srcSet}
-                    sizes="(min-width: 1024px) 72vw, 110vw"
-                    width={cutout.width}
-                    height={cutout.height}
-                    alt=""
-                    fetchPriority="high"
-                    className="dossier-cutout absolute h-auto"
-                  />
-                </picture>
-              )}
-            </div>
+            <FramedArt
+              background={background}
+              cutout={cutout}
+              sizes="(min-width: 1024px) 66vw, 100vw"
+              priority
+            />
           )}
           <figcaption className="flex flex-wrap justify-between gap-2 text-caption text-secondary">
             <span>

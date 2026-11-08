@@ -7,6 +7,7 @@ import {
   DISCLAIMER,
   DISCLAIMER_SOURCE,
   FANKIT_CREDIT,
+  RSI_IMAGE_CREDIT,
   STARBREAKER_CREDIT,
   TRADEMARK_LINE,
   UNP4K_CREDIT,
@@ -72,6 +73,11 @@ export default function AboutPage() {
             <li>
               {FANKIT_CREDIT.text} Shown under any image that comes from the
               fankit.
+            </li>
+            <li>
+              {RSI_IMAGE_CREDIT.text}. Shown under each ship image copied from
+              RSI&apos;s ship matrix, with a link to the ship&apos;s page on
+              robertsspaceindustries.com.
             </li>
             <li>
               Open-source libraries are listed on the{" "}

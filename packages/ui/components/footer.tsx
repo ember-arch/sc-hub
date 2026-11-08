@@ -2,6 +2,7 @@ import { OFFICIAL_SITE_URL, SITE_NAME } from "../brand";
 import {
   CONTACT_EMAIL,
   DISCLAIMER,
+  FANKIT_NOTICE,
   TRADEMARK_LINE,
   WIKI_CREDIT,
 } from "../legal";
@@ -17,7 +18,8 @@ export interface FooterProps {
 /**
  * Every page ends with this (CLAUDE.md section 2). The disclaimer is verbatim and set in the
  * interface size, not the caption size: CIG's FAQ says it must not be printed smaller than other
- * notices. The official-site link is also required by the same FAQ.
+ * notices. The official-site link is also required by the same FAQ. The fankit notice is the
+ * Fankit Agreement's, required wherever its assets appear (ADR-009).
  */
 export function Footer({ versions, wikiCredit }: FooterProps) {
   return (
@@ -30,6 +32,12 @@ export function Footer({ versions, wikiCredit }: FooterProps) {
           {DISCLAIMER}
         </p>
         <p className="max-w-prose text-ui text-secondary">{TRADEMARK_LINE}</p>
+        <p
+          className="max-w-prose text-ui text-secondary"
+          data-testid="fankit-notice"
+        >
+          {FANKIT_NOTICE}
+        </p>
         <ul className="m-0 flex list-none flex-col gap-1 p-0 text-caption text-secondary">
           {wikiCredit ? (
             <li>

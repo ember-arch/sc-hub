@@ -45,8 +45,19 @@ describe("compareGroups", () => {
     expect(groups.map((g) => g.title)).toEqual([
       "Key facts",
       "Acquisition",
+      "Combat, stock loadout",
       "Specifications",
     ]);
+  });
+
+  it("sums each stock loadout by the editor's rules (ADR-016)", () => {
+    const combat = groups.find((g) => g.title === "Combat, stock loadout");
+    const dps = combat?.rows.find((row) => row.key === "gun_dps");
+    expect(dps?.unit).toBe("per s");
+    expect(dps?.values).toHaveLength(ships.length);
+    for (const v of dps?.values ?? []) {
+      expect(typeof v === "number" && v > 0).toBe(true);
+    }
   });
 
   it("shows each ship's headline prices from fixtures/acquisition (ADR-013)", () => {

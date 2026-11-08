@@ -5,6 +5,7 @@ import type {
   CompareRow,
 } from "../app/compare/compare-table";
 import { pricesFor } from "./acquisition";
+import { stockCombat } from "./combat";
 import { compareHref, withoutShip } from "./compare";
 import type { ShipView } from "./data";
 import { insuranceOf } from "./ship-file";
@@ -12,7 +13,8 @@ import { VEHICLE_STATS, crewRange } from "./views";
 
 /**
  * Rows for the compare page (spec 02, "Compare"): the key-facts set first, then prices and
- * insurance (ADR-013), then every other VehicleStats field from the ship page's own field table,
+ * insurance (ADR-013), then what the stock loadout adds up to (ADR-016), then every other
+ * VehicleStats field from the ship page's own field table,
  * one column per ship. A row every ship
  * lacks is omitted (spec 02 notes: omit null rows); a ship missing a stat the others have shows a
  * dash in the table.
@@ -135,6 +137,49 @@ const ACQUISITION: readonly RowSpec[] = [
   },
 ];
 
+const combat = (s: ShipView) => stockCombat(s.vehicle.class_name);
+
+/**
+ * What each stock loadout adds up to (ADR-016), by the loadout editor's rules: the figures a
+ * captain weighs a fight by. Summed from the parts' records; a ship with no swappable ports on
+ * record shows dashes.
+ */
+const COMBAT: readonly RowSpec[] = [
+  {
+    key: "gun_dps",
+    label: "Gun damage",
+    unit: "per s",
+    value: (s) => combat(s)?.gunDps ?? null,
+  },
+  {
+    key: "gun_alpha",
+    label: "Damage per volley",
+    value: (s) => combat(s)?.gunAlpha ?? null,
+  },
+  {
+    key: "missiles",
+    label: "Missiles and torpedoes",
+    value: (s) => combat(s)?.missiles ?? null,
+  },
+  {
+    key: "missile_damage",
+    label: "Missile damage",
+    value: (s) => combat(s)?.missileDamage ?? null,
+  },
+  {
+    key: "shield_hp",
+    label: "Shields",
+    unit: "HP",
+    value: (s) => combat(s)?.shieldHp ?? null,
+  },
+  {
+    key: "shield_regen",
+    label: "Shield regeneration",
+    unit: "HP/s",
+    value: (s) => combat(s)?.shieldRegen ?? null,
+  },
+];
+
 /** The stats the key facts already cover; everything else in VEHICLE_STATS makes the second group. */
 const IN_KEY_FACTS = new Set<string>(["cargo_scu", "length_m", "mass_kg"]);
 
@@ -165,6 +210,7 @@ export function compareGroups(ships: readonly ShipView[]): CompareGroup[] {
   return [
     { title: "Key facts", rows: rows(KEY_FACTS, ships) },
     { title: "Acquisition", rows: rows(ACQUISITION, ships) },
+    { title: "Combat, stock loadout", rows: rows(COMBAT, ships) },
     { title: "Specifications", rows: rows(STATS, ships) },
   ].filter((group) => group.rows.length > 0);
 }

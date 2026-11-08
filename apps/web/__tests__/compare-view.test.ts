@@ -29,7 +29,7 @@ describe("compareColumns", () => {
 describe("compareGroups", () => {
   const groups = compareGroups(ships);
 
-  it("puts the key-facts set first, in the ship page's order", () => {
+  it("puts the key-facts set first, with manufacturer and status since compare has no hero", () => {
     expect(groups[0]?.title).toBe("Key facts");
     expect(groups[0]?.rows.map((row) => row.label)).toEqual([
       "Manufacturer",

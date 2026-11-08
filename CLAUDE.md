@@ -93,7 +93,7 @@ Full system in `docs/design/system.md`. Non-negotiables:
 
 - Tokens live in `packages/ui/tokens.ts` and nowhere else. Tailwind config is generated from them.
 - One accent color. Semantic colors (success, warning, danger) only for status.
-- Two type weights (400, 500). Three sizes per page. Tabular figures for every number.
+- Two type weights (400, 500). At most three sizes per page besides interface text (`ui`) and captions. Tabular figures for every number.
 - Light and dark both first-class; both are screenshot-tested.
 - Every entity page uses the `EntityPage` template: hero, key facts, body sections, related entities.
 - Tables: fixed column sets, sticky header, unit in header, sort on tap, and on phone the row expands rather than the table scrolling sideways.

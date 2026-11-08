@@ -197,7 +197,6 @@ const renderers: Record<string, { title: string; render: Story["render"] }> = {
     render: (s) => (
       <KeyFacts
         facts={[
-          { label: "Manufacturer", value: s.manufacturer.name },
           { label: "Role", value: s.vehicle.role },
           {
             label: "Size",
@@ -206,17 +205,19 @@ const renderers: Record<string, { title: string; render: Story["render"] }> = {
                 ? null
                 : sentence(s.vehicle.size_class),
           },
-          { label: "Crew", value: crew(s) },
+          { label: "Crew", value: crew(s), numeric: true },
           { label: "Cargo", value: s.stats.cargo_scu, unit: "SCU" },
           {
             label: "Length",
             value: formatNumber(s.stats.length_m, 2),
             unit: "m",
+            numeric: true,
           },
-          { label: "Mass", value: formatNumber(s.stats.mass_kg), unit: "kg" },
           {
-            label: "Status",
-            value: vehicleStatusBadge(s.vehicle.status).label,
+            label: "Mass",
+            value: formatNumber(s.stats.mass_kg),
+            unit: "kg",
+            numeric: true,
           },
         ]}
       />
@@ -233,7 +234,7 @@ const renderers: Record<string, { title: string; render: Story["render"] }> = {
         }}
         status={vehicleStatusBadge(s.vehicle.status)}
         image={null}
-        placeholder="Render placeholder"
+        placeholder="No image yet"
       />
     ),
   },
@@ -388,12 +389,11 @@ const renderers: Record<string, { title: string; render: Story["render"] }> = {
             kicker: { label: s.manufacturer.name },
             status: vehicleStatusBadge(s.vehicle.status),
             image: null,
-            placeholder: "Render placeholder",
+            placeholder: "No image yet",
           }}
           facts={[
-            { label: "Manufacturer", value: s.manufacturer.name },
             { label: "Role", value: s.vehicle.role },
-            { label: "Crew", value: crew(s) },
+            { label: "Crew", value: crew(s), numeric: true },
             { label: "Cargo", value: s.stats.cargo_scu, unit: "SCU" },
           ]}
           related={[

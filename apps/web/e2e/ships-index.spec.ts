@@ -162,7 +162,9 @@ test("on a phone the table keeps name and cargo and expands a row for the rest",
   await expect(
     page.getByRole("button", { name: "Less" }).first(),
   ).toBeVisible();
-  await expect(page.getByText("Mass (kg)").first()).toBeVisible();
+  await expect(
+    page.locator("tbody dt").filter({ hasText: "Mass (kg)" }).first(),
+  ).toBeVisible();
   await context.close();
 });
 
@@ -231,4 +233,57 @@ test("the components index filters by size and manufacturer as URL state", async
   await expect(page.getByTestId("component-count")).toContainText(" of ");
   await page.getByRole("link", { name: "Clear filters" }).click();
   await expect(page).toHaveURL(/\/components$/);
+});
+
+// system.md principle 6 between the two screenshot widths: tablets and narrow desktop windows.
+// The ships table has eleven columns, so it keeps the expand-row layout until it fits.
+for (const width of [820, 1024, 1180]) {
+  test(`no page with a wide table scrolls sideways at ${width} px`, async ({
+    browser,
+  }) => {
+    const context = await browser.newContext({
+      viewport: { width, height: 900 },
+    });
+    const page = await context.newPage();
+    const ship = vehicles[0]?.slug ?? "";
+    for (const path of [
+      "/ships?view=table",
+      "/components",
+      `/ships/${ship}`,
+      `/compare?ships=${vehicles
+        .slice(0, 4)
+        .map((v) => v.slug)
+        .join(",")}`,
+    ]) {
+      await page.goto(path);
+      const overflow = await page.evaluate(
+        () =>
+          document.documentElement.scrollWidth >
+          document.documentElement.clientWidth,
+      );
+      expect(overflow, `${path} scrolls sideways at ${width} px`).toBe(false);
+    }
+    await context.close();
+  });
+}
+
+test("where columns are hidden, the Sort by select sorts by any of them", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({
+    viewport: { width: 1024, height: 900 },
+  });
+  const page = await context.newPage();
+  await page.goto("/ships?view=table");
+  const names = page.getByRole("table").locator("tbody tr td:first-child");
+  // Mass is hidden at this width; the select still offers it.
+  await expect(page.getByRole("columnheader", { name: /Mass/ })).toBeHidden();
+  await page
+    .getByLabel("Sort by")
+    .selectOption({ label: "Mass (kg), high to low" });
+  const mass = (v: VehicleRow): number => liveMass.get(v.class_name) ?? -1;
+  await expect(names).toHaveText(
+    [...byName].sort((a, b) => mass(b) - mass(a)).map((v) => v.name),
+  );
+  await context.close();
 });

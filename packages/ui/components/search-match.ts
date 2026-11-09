@@ -3,7 +3,7 @@
  * Meilisearch replaces it in spec 02 and the palette keeps its keyboard model.
  */
 
-export type SearchEntryType = "ship" | "component" | "manufacturer";
+export type SearchEntryType = "ship" | "component" | "manufacturer" | "title";
 
 export interface SearchEntry {
   readonly type: SearchEntryType;
@@ -20,6 +20,7 @@ export const SEARCH_GROUPS: readonly {
   { type: "ship", title: "Ships" },
   { type: "component", title: "Components" },
   { type: "manufacturer", title: "Manufacturers" },
+  { type: "title", title: "Titles" },
 ];
 
 export const PER_GROUP = 6;

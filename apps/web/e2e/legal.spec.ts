@@ -20,6 +20,7 @@ const ROUTES = [
   "/compare",
   "/components",
   "/news",
+  "/titles",
   "/about",
 ] as const;
 

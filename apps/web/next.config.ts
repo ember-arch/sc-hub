@@ -17,6 +17,7 @@ const nextConfig: NextConfig = {
       // Prices, loaners and claims are read per request by /compare and /ships?view=table too.
       "../../fixtures/acquisition/**",
       "../../fixtures/ship-claims/**",
+      "../../fixtures/titles/Titles.json",
       "../../pnpm-workspace.yaml",
     ],
   },

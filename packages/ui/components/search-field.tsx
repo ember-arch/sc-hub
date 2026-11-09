@@ -17,7 +17,7 @@ export function SearchField() {
       aria-haspopup="dialog"
       className="flex w-full items-center justify-between rounded-card border border-hairline bg-surface px-4 py-3 text-left text-ui text-secondary transition-colors duration-hover hover:border-hairline-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
     >
-      <span>Search ships, components and manufacturers</span>
+      <span>Search ships, components, manufacturers and titles</span>
       <kbd className="hidden rounded-control border border-hairline bg-inset px-1 font-mono text-caption md:inline">
         ⌘K
       </kbd>

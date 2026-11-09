@@ -48,27 +48,29 @@ export function PageShell({
         Skip to content
       </a>
       <header className="border-b border-hairline">
-        <div className="mx-auto flex w-full max-w-content items-center justify-between gap-4 px-4 py-3">
-          <div className="flex items-center gap-6">
-            <NextLink
-              href="/"
-              className="text-ui font-medium text-primary no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
-            >
-              {SITE_NAME}
-            </NextLink>
-            <nav aria-label="Primary" className="flex items-center gap-4">
-              {NAV.map((item) => (
-                <NextLink
-                  key={item.section}
-                  href={item.href}
-                  aria-current={current === item.section ? "page" : undefined}
-                  className={`rounded-control text-ui no-underline transition-colors duration-hover hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent ${current === item.section ? "text-primary" : "text-secondary"}`}
-                >
-                  {item.label}
-                </NextLink>
-              ))}
-            </nav>
-          </div>
+        {/* On a phone the nav takes its own row under the name and search, so four sections fit at 390 px (ADR-017). */}
+        <div className="mx-auto flex w-full max-w-content flex-wrap items-center justify-between gap-x-6 gap-y-2 px-4 py-3">
+          <NextLink
+            href="/"
+            className="whitespace-nowrap text-ui font-medium text-primary no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+          >
+            {SITE_NAME}
+          </NextLink>
+          <nav
+            aria-label="Primary"
+            className="order-last flex w-full items-center gap-4 md:order-none md:w-auto md:flex-1"
+          >
+            {NAV.map((item) => (
+              <NextLink
+                key={item.section}
+                href={item.href}
+                aria-current={current === item.section ? "page" : undefined}
+                className={`rounded-control text-ui no-underline transition-colors duration-hover hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent ${current === item.section ? "text-primary" : "text-secondary"}`}
+              >
+                {item.label}
+              </NextLink>
+            ))}
+          </nav>
           <CommandPalette entries={searchEntries} />
         </div>
       </header>

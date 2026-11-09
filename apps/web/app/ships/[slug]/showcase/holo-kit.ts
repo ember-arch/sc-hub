@@ -86,9 +86,16 @@ export function inkEdges(
   );
 }
 
-/** Soft daylight from above with a key and a fill, so the flat shading reads as a drawing. */
-export function inkLights(THREE: Three, scene: Scene): () => void {
-  const sky = new THREE.HemisphereLight(0xffffff, 0x808080, 1.6);
+/**
+ * Soft daylight from above with a key and a fill, so the flat shading reads as a drawing. The
+ * lights are white; the ground bounce takes the palette's dim body tone, so no colour lives here.
+ */
+export function inkLights(
+  THREE: Three,
+  scene: Scene,
+  ground: Color,
+): () => void {
+  const sky = new THREE.HemisphereLight(0xffffff, ground, 1.6);
   const key = new THREE.DirectionalLight(0xffffff, 1.2);
   key.position.set(3, 5, 2);
   const fill = new THREE.DirectionalLight(0xffffff, 0.4);

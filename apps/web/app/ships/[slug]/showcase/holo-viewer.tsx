@@ -119,9 +119,9 @@ export function HoloViewer({
     maximumFractionDigits: 1,
   });
   const option =
-    "lab rounded-control border px-2 py-1 transition-colors duration-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent";
+    "rounded-control border px-2 py-1 text-caption transition-colors duration-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent";
   const choice = (on: boolean) =>
-    `${option} ${on ? "border-primary bg-primary text-page" : "border-hairline-strong bg-surface text-secondary hover:text-primary"}`;
+    `${option} ${on ? "border-accent bg-accent-bg text-primary" : "border-hairline-strong bg-surface text-secondary hover:text-primary"}`;
 
   return (
     <figure className="m-0 flex flex-col">
@@ -146,10 +146,10 @@ export function HoloViewer({
             />
           )}
           {state === "ready" ? null : (
-            <p className="lab absolute bottom-3 left-3 m-0 text-secondary">
+            <p className="absolute bottom-3 left-3 m-0 text-caption text-secondary">
               {state === "error"
-                ? "The model could not be loaded"
-                : `Loading the holomodel (${megabytes} MB)`}
+                ? "The model could not be loaded."
+                : `Loading the holomodel (${megabytes} MB).`}
             </p>
           )}
           <div className="absolute left-3 top-3 flex flex-wrap gap-1">
@@ -266,7 +266,7 @@ async function start(
   el.insertBefore(renderer.domElement, el.firstChild);
 
   const scene = new THREE.Scene();
-  const removeLights = inkLights(THREE, scene);
+  const removeLights = inkLights(THREE, scene, palette.bodyDim);
 
   const body = inkBody(THREE, palette.body);
   const ink = inkLine(THREE, palette.ink, 0.6);

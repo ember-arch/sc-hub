@@ -149,24 +149,26 @@ export function ShipFileOpening({
           <div
             className={`flex flex-col gap-4 ${figure === null ? "max-w-prose" : ""}`}
           >
-            <p className="lab m-0 flex flex-wrap items-center gap-x-3 gap-y-1 text-secondary">
-              <span>Entry {file}</span>
-              {maker === null ? null : (
-                <>
-                  <span aria-hidden="true">·</span>
-                  <TextLink href={maker.href} className="text-secondary">
-                    {maker.name}
-                  </TextLink>
-                </>
-              )}
-              {role === null ? null : (
-                <>
-                  <span aria-hidden="true">·</span>
-                  <span>{role}</span>
-                </>
-              )}
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+              <p className="lab m-0 flex flex-wrap items-center gap-x-3 gap-y-1 text-secondary">
+                <span>Entry {file}</span>
+                {maker === null ? null : (
+                  <>
+                    <span aria-hidden="true">·</span>
+                    <TextLink href={maker.href} className="text-secondary">
+                      {maker.name}
+                    </TextLink>
+                  </>
+                )}
+                {role === null ? null : (
+                  <>
+                    <span aria-hidden="true">·</span>
+                    <span>{role}</span>
+                  </>
+                )}
+              </p>
               <Badge tone={status.tone}>{status.label}</Badge>
-            </p>
+            </div>
             <div className="flex flex-col gap-3">
               {mark === null ? null : <Mark mark={mark} heightClass="h-8" />}
               <h1
@@ -175,7 +177,9 @@ export function ShipFileOpening({
               >
                 {name}
               </h1>
-              <p className="m-0 max-w-prose text-body text-secondary">{dek}</p>
+              <p className="m-0 max-w-prose text-heading font-regular text-secondary">
+                {dek}
+              </p>
             </div>
             <SpecTable rows={particulars} source={particularsSource} />
             {compareSlug === null ? null : (

@@ -29,5 +29,5 @@ Rebuild the site's look as an illustrated almanac (ADR-020): paper and ink, two 
 
 ## Notes
 
-- Imagery and models stay git-ignored and local (ADR-009, ADR-019); CI and deployments render the plates' frames and captions with no picture inside.
+- Imagery and models stay git-ignored and local (ADR-009, ADR-019); CI and deployments render the front page's plates as frames with their captions and no picture inside, and the entry's opening without its figure, the head at a reading width. The ink holomodel can only be seen with the models built locally, so its evidence is the owner's local preview and the session's review screenshots, not the committed ones.
 - Branch prefix: `spec/06-almanac/…`. The foundation shipped from `spec/03-almanac/foundation` before this spec existed.

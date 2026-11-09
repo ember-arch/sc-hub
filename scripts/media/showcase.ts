@@ -239,10 +239,12 @@ export const SHOWCASE: readonly ShowcaseShip[] = [
     ],
     layout: {
       roles: {
-        background: "SC_Odin_Key_Background_2.jpg",
+        // The cover shows the whole ship (owner, 2026-11-09): the wide exterior, not the key
+        // background the overlay once sat on. The overlay stays on file; nothing draws it (ADR-021).
+        background: "SC_ANVIL_Odin_Exterior-5.jpg",
         cutout: "ODIN_SHIP_OVERLAY.png",
         topdown: "SHIP_TOPDOWN.png",
-        poster: "SC_ANVIL_Odin_Exterior-5.jpg",
+        poster: "All-Weapons-Opening0001-0240.jpg",
       },
       chapters: [
         { heading: "THE ALLFATHER OF WAR" },

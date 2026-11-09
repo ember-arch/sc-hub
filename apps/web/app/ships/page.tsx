@@ -48,8 +48,8 @@ const FACET_LABELS: Readonly<
 };
 
 /**
- * Ships index (spec 02, "Ship index"): filters as URL state, card and table views, sorted by name
- * by default and by any stat column in table mode.
+ * The register of ships (spec 02, "Ship index"; ADR-020): filters as URL state, entry cards or the
+ * register table with plates, sorted by name by default and by any stat column in table mode.
  */
 export default async function ShipsPage({
   searchParams,
@@ -85,8 +85,8 @@ export default async function ShipsPage({
             r.liveVersion ?? "no LIVE build",
             ...(concepts.length > 0 ? [`${concepts.length} in concept`] : []),
           ]}
-          title="Ships"
-          lede="Every ship and vehicle on record: CIG's art, the game's numbers by build, what it carries and where it ranks."
+          title="The register of ships"
+          lede="Every ship and vehicle on record, one entry each: its plate, its maker and role, and the figures that matter by build. Sort on any column; the name opens the entry."
           aside={<CompareLink />}
         />
       }
@@ -129,11 +129,14 @@ export default async function ShipsPage({
           </EmptyState>
         ) : state.view === "table" ? (
           <div className="flex flex-col gap-3">
-            <ShipTable rows={shipRows(ships)} version={r.liveVersion} />
+            <ShipTable
+              rows={shipRows(ships, shipCardImage)}
+              version={r.liveVersion}
+            />
             <PriceCredit />
           </div>
         ) : (
-          <ul className="m-0 grid list-none grid-cols-2 gap-4 p-0 md:grid-cols-3 lg:grid-cols-4">
+          <ul className="m-0 grid list-none grid-cols-2 gap-3 p-0 md:grid-cols-3 lg:grid-cols-4">
             {ships.map((ship, index) => (
               <li key={ship.vehicle.class_name} className="flex flex-col gap-2">
                 <Card
@@ -163,7 +166,7 @@ export default async function ShipsPage({
                 RSI ship matrix figures; not in the game yet
               </span>
             </div>
-            <ul className="m-0 grid list-none grid-cols-2 gap-4 p-0 md:grid-cols-3 lg:grid-cols-4">
+            <ul className="m-0 grid list-none grid-cols-2 gap-3 p-0 md:grid-cols-3 lg:grid-cols-4">
               {concepts.map((c) => {
                 const poster = showcaseFor(c.slug, c.name)?.poster ?? null;
                 return (

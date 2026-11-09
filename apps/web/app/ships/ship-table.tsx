@@ -27,6 +27,8 @@ export interface ShipRow {
   /** The lowest in-game purchase price reported to UEX. */
   readonly buy: number | null;
   readonly status: string;
+  /** The ship's plate for the register (ADR-020); null without media. */
+  readonly plate: { readonly src: string; readonly srcSet: string } | null;
 }
 
 const dash = <span className="text-secondary">—</span>;
@@ -36,8 +38,9 @@ const dec = (value: number | null): ReactNode =>
   value === null ? dash : formatNumber(value, 2);
 
 /**
- * Table mode of the ships index (spec 02, "Ship index"): a fixed column set, sorted by name by
- * default and by any stat column on tap. Name and cargo stay visible on phone; the rest expand.
+ * The register (spec 02, "Ship index"; ADR-020): a fixed column set, sorted by name by default and
+ * by any stat column on tap, each row opening on its plate and the name in the display face. Name
+ * and cargo stay visible on phone; the rest expand.
  * The caption names the build the numbers come from for readers who do not see the count line.
  */
 export function ShipTable({
@@ -60,9 +63,27 @@ export function ShipTable({
           key: "name",
           header: "Name",
           render: (row) => (
-            <TextLink href={row.href} className="whitespace-nowrap">
-              {row.name}
-            </TextLink>
+            <span className="flex items-center gap-4">
+              {row.plate === null ? null : (
+                <img
+                  src={row.plate.src}
+                  srcSet={row.plate.srcSet}
+                  sizes="171px"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  width={171}
+                  height={96}
+                  className="hidden aspect-video h-24 w-auto shrink-0 border border-hairline-strong object-cover lg:block"
+                />
+              )}
+              <TextLink
+                href={row.href}
+                className="whitespace-nowrap text-heading text-primary"
+              >
+                {row.name}
+              </TextLink>
+            </span>
           ),
           sortValue: (row) => row.name,
         },

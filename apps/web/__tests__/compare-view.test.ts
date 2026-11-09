@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { pricesFor } from "../lib/acquisition";
 import { compareColumns, compareGroups } from "../lib/compare-view";
 import { buildRepository } from "../lib/data";
 import { VEHICLE_STATS } from "../lib/views";
@@ -41,10 +42,38 @@ describe("compareGroups", () => {
       "Mass",
       "Status",
     ]);
-    expect(groups[1]?.title).toBe("Specifications");
+    expect(groups.map((g) => g.title)).toEqual([
+      "Key facts",
+      "Acquisition",
+      "Combat, stock loadout",
+      "Specifications",
+    ]);
   });
 
-  it("covers every VehicleStats field exactly once across the two groups", () => {
+  it("sums each stock loadout by the editor's rules (ADR-016)", () => {
+    const combat = groups.find((g) => g.title === "Combat, stock loadout");
+    const dps = combat?.rows.find((row) => row.key === "gun_dps");
+    expect(dps?.unit).toBe("per s");
+    expect(dps?.values).toHaveLength(ships.length);
+    for (const v of dps?.values ?? []) {
+      expect(typeof v === "number" && v > 0).toBe(true);
+    }
+  });
+
+  it("shows each ship's headline prices from fixtures/acquisition (ADR-013)", () => {
+    const acquisition = groups.find((g) => g.title === "Acquisition");
+    const pledge = acquisition?.rows.find((row) => row.key === "pledge");
+    expect(pledge?.unit).toBe("USD");
+    expect(pledge?.values).toEqual(
+      ships.map(
+        (s) =>
+          pricesFor(s.vehicle.slug, s.vehicle.class_name).pledge?.price_usd ??
+          null,
+      ),
+    );
+  });
+
+  it("covers every VehicleStats field exactly once across the groups", () => {
     const keys = groups.flatMap((g) => g.rows.map((row) => row.key));
     const stats = new Set(VEHICLE_STATS.map((spec) => spec.key as string));
     const lackedByAll = new Set(
@@ -76,7 +105,8 @@ describe("compareGroups", () => {
     const byKey = new Map(
       VEHICLE_STATS.map((spec) => [spec.key as string, spec]),
     );
-    for (const row of groups[1]?.rows ?? []) {
+    const specs = groups.find((g) => g.title === "Specifications");
+    for (const row of specs?.rows ?? []) {
       const spec = byKey.get(row.key);
       expect(spec, row.key).toBeDefined();
       expect(row.unit).toBe(spec?.unit);

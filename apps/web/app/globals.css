@@ -17,3 +17,92 @@
 .dev-post-body a {
   color: var(--accent);
 }
+
+/*
+ * Maker logos come in two official versions (ADR-009): the dark mark for light pages, the light
+ * mark for dark pages. Same selectors as the theme tokens, so the right one shows with no script.
+ */
+.theme-on-dark {
+  display: none;
+}
+@media (prefers-color-scheme: dark) {
+  .theme-on-light {
+    display: none;
+  }
+  .theme-on-dark {
+    display: block;
+  }
+}
+[data-theme="light"] .theme-on-light {
+  display: block;
+}
+[data-theme="light"] .theme-on-dark {
+  display: none;
+}
+[data-theme="dark"] .theme-on-light {
+  display: none;
+}
+[data-theme="dark"] .theme-on-dark {
+  display: block;
+}
+
+/* Ship names in a dossier header are set slightly tight (ADR-011). */
+.showcase-name {
+  letter-spacing: -0.03em;
+}
+
+/*
+ * Ship file opening band (ADR-014): the key art full-bleed, CIG's cut-out of the ship breaking out
+ * to the right as CIG composes it, and a fade into the page under the text. Nothing is drawn over
+ * the ship itself; the cut-out arrives once on load, not with reduced motion.
+ */
+.file-hero {
+  background: var(--bg-page);
+}
+/* The whole ship stays in frame, bow included: CIG's cut-outs face right. */
+.file-hero-cutout {
+  width: 112vw;
+  max-width: none;
+  right: -2vw;
+  top: 14%;
+}
+@media (min-width: 768px) {
+  .file-hero-cutout {
+    width: min(86vw, 1760px);
+    right: 2vw;
+    top: 2%;
+  }
+}
+/* The ship file's sticky left column scrolls on short screens; its scrollbar stays quiet. */
+.file-aside {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-hairline-strong) transparent;
+}
+
+/* Under the ship: darkens the art behind the text column only. */
+.file-hero-scrim {
+  z-index: -15;
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--bg-page) 70%, transparent),
+    transparent 55%
+  );
+}
+/* Over the ship: its lower part fades into the page under the name and figures. */
+.file-hero-fade {
+  z-index: -5;
+  background: linear-gradient(
+    to top,
+    var(--bg-page) 4%,
+    color-mix(in srgb, var(--bg-page) 70%, transparent) 30%,
+    transparent 58%
+  );
+}
+
+/* Dossier key-art figure (ADR-011): the cut-out layered over the art inside the frame. */
+.dossier-cutout {
+  width: 112%;
+  max-width: none;
+  right: -10%;
+  top: 9%;
+}

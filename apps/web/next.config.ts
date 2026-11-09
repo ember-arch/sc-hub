@@ -12,6 +12,11 @@ const nextConfig: NextConfig = {
     "/**": [
       "../../fixtures/bootstrap/**",
       "../../fixtures/news/**",
+      "../../fixtures/descriptions/**",
+      "../../fixtures/ship-matrix/**",
+      // Prices, loaners and claims are read per request by /compare and /ships?view=table too.
+      "../../fixtures/acquisition/**",
+      "../../fixtures/ship-claims/**",
       "../../pnpm-workspace.yaml",
     ],
   },

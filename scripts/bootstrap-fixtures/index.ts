@@ -16,11 +16,15 @@ import {
   trimItemSample,
   trimVehicleSample,
 } from "./build.js";
+import { type Entity, ROW_KEYS, appendRows, pinSlugs } from "./append.js";
 import { createWikiClient } from "./fetch.js";
 import {
   MapError,
   type Named,
   assignSlugs,
+  slugify,
+  catalogRecord,
+  fitsAPort,
   mapChannel,
   mapGameVersion,
   mapItem,
@@ -31,13 +35,17 @@ import {
   mapVehicleStats,
 } from "./map.js";
 import {
+  CATALOG_TYPES,
   ShipList,
   WikiGameVersionResponse,
+  WikiItem,
+  WikiItemListResponse,
   WikiItemResponse,
   type WikiManufacturer,
   WikiVehicleListResponse,
   WikiVehicleResponse,
 } from "./types.js";
+import { userAgent } from "../user-agent.js";
 
 /**
  * One-off dev script (CLAUDE.md section 4: nothing in scripts/ runs in production). Fetches the
@@ -52,8 +60,32 @@ const outDir = join(repoRoot, PACK_DIR);
 const runId = randomUUID();
 const startedAt = Date.now();
 
-const USER_AGENT =
-  "sc-hub-bootstrap/0.0 (non-commercial fan reference; github.com/ember-arch/sc-hub)";
+const USER_AGENT = userAgent("bootstrap");
+
+type PackRows = Partial<Record<Entity, Record<string, unknown>[]>>;
+
+/** The pack on disk, when its manifest is for `version`; null otherwise (a new build starts clean). */
+function previousPack(version: string): PackRows | null {
+  const manifestPath = join(outDir, "manifest.json");
+  if (!existsSync(manifestPath)) return null;
+  const manifest = JSON.parse(readFileSync(manifestPath, "utf8")) as {
+    game_version?: string;
+  };
+  if (manifest.game_version !== version) return null;
+  const out: PackRows = {};
+  for (const entity of Object.keys(ROW_KEYS) as Entity[]) {
+    const file = join(outDir, `${entity}.json`);
+    if (existsSync(file))
+      out[entity] = JSON.parse(readFileSync(file, "utf8")) as Record<
+        string,
+        unknown
+      >[];
+  }
+  return out;
+}
+
+const slugsOf = (rows: readonly Record<string, unknown>[]) =>
+  new Map(rows.map((r) => [String(r["class_name"]), String(r["slug"])]));
 
 function log(event: Record<string, unknown>): void {
   process.stderr.write(`${JSON.stringify({ run_id: runId, ...event })}\n`);
@@ -154,7 +186,24 @@ async function main(): Promise<void> {
     name: v.name,
     manufacturer_code: v.manufacturer.code,
   }));
-  const vehicleSlugs = assignSlugs(vehicleNames);
+  // The pack on disk, when it is for this build: its rows and slugs are kept (append.ts).
+  const previous = previousPack(version);
+  const fallbacks =
+    (named: readonly Named[]) =>
+    (cls: string): string[] => {
+      const row = named.find((n) => n.class_name === cls);
+      return row === undefined
+        ? [slugify(cls)]
+        : [
+            `${slugify(row.manufacturer_code)}-${slugify(row.name)}`,
+            slugify(cls),
+          ];
+    };
+  const vehicleSlugs = pinSlugs(
+    assignSlugs(vehicleNames),
+    slugsOf(previous?.Vehicle ?? []),
+    fallbacks(vehicleNames),
+  );
 
   const vehicleRows = vehicles.map((raw) =>
     mapVehicle(raw, vehicleSlugs.get(raw.class_name) ?? "", version),
@@ -219,12 +268,52 @@ async function main(): Promise<void> {
   }
   log({ event: "bootstrap.fetched", kind: "items", count: items.length });
 
-  const itemSlugs = assignSlugs(
-    items.map((i) => ({
-      class_name: i.class_name,
-      name: i.name,
-      manufacturer_code: i.manufacturer.code,
-    })),
+  // The catalogue the loadout editor offers (ADR-016), 200 records a page. Stock parts are already
+  // in. A part that fits no port on the pack's ships, has the wiki's placeholder name or comes
+  // from another build is left out and counted; the rest keep a record trimmed by rule.
+  const stockCount = items.length;
+  let catalogSkipped = 0;
+  for (const type of CATALOG_TYPES) {
+    for (let page = 1; ; page += 1) {
+      const json = await get(
+        `/api/items?filter[type]=${type}&page[size]=200&page[number]=${page}`,
+      );
+      const list = WikiItemListResponse.parse(json);
+      const raws = (json as { data: Record<string, unknown>[] }).data;
+      list.data.forEach((raw, i) => {
+        if (itemRaws.has(raw.class_name)) return;
+        if (
+          /^<=.*=>$/.test(raw.name.trim()) ||
+          raw.version !== version ||
+          !fitsAPort(raw.type, raw.size, portRows)
+        ) {
+          catalogSkipped += 1;
+          return;
+        }
+        const record = catalogRecord(raws[i]!);
+        itemRaws.set(raw.class_name, record);
+        items.push(WikiItem.parse(record));
+        manufacturerSources.push(raw.manufacturer);
+      });
+      if (page >= list.meta.last_page) break;
+    }
+  }
+  log({
+    event: "bootstrap.fetched",
+    kind: "catalog",
+    count: items.length - stockCount,
+    skipped: catalogSkipped,
+  });
+
+  const itemNames: Named[] = items.map((i) => ({
+    class_name: i.class_name,
+    name: i.name,
+    manufacturer_code: i.manufacturer.code,
+  }));
+  const itemSlugs = pinSlugs(
+    assignSlugs(itemNames),
+    slugsOf(previous?.Item ?? []),
+    fallbacks(itemNames),
   );
   const itemRows: Item[] = items.map((raw) =>
     mapItem(raw, itemSlugs.get(raw.class_name) ?? "", version),
@@ -269,14 +358,27 @@ async function main(): Promise<void> {
     }
   }
 
+  const keep = <T extends Record<string, unknown>>(
+    entity: Entity,
+    next: readonly T[],
+  ): T[] =>
+    appendRows(entity, (previous?.[entity] ?? []) as unknown as T[], next);
+  // Samples follow their rows: for the same build, the published sample is kept.
+  if (previous !== null) {
+    for (const name of [...extras.keys()]) {
+      const file = join(outDir, name);
+      if (name.startsWith("samples/") && existsSync(file))
+        extras.set(name, readFileSync(file, "utf8"));
+    }
+  }
   const rows = {
-    GameVersion: [gameVersionRow],
-    Manufacturer: manufacturerRows,
-    Vehicle: vehicleRows,
-    VehicleStats: vehicleStatsRows,
-    Port: portRows,
-    Item: itemRows,
-    ItemStats: itemStatsRows,
+    GameVersion: keep("GameVersion", [gameVersionRow]),
+    Manufacturer: keep("Manufacturer", manufacturerRows),
+    Vehicle: keep("Vehicle", vehicleRows),
+    VehicleStats: keep("VehicleStats", vehicleStatsRows),
+    Port: keep("Port", portRows),
+    Item: keep("Item", itemRows),
+    ItemStats: keep("ItemStats", itemStatsRows),
   };
   const counts = Object.fromEntries(
     Object.entries(rows).map(([entity, list]) => [entity, list.length]),

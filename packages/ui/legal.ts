@@ -27,6 +27,34 @@ export const WIKI_CREDIT = {
   url: "https://api.star-citizen.wiki/",
 } as const;
 
+/**
+ * docs/legal/attribution.md, "UEX Corp" row (ADR-013): wherever in-game shop prices appear, and on
+ * the about page. `notice` is UEX's own wording from its site footer.
+ */
+export const UEX_CREDIT = {
+  text: "In-game shop prices: UEX Corp community reports (uexcorp.space), via the Star Citizen Wiki API.",
+  notice: "Data is community-maintained and may not reflect live servers.",
+  url: "https://uexcorp.space/",
+} as const;
+
+/** docs/legal/attribution.md, "RSI pledge store" row (ADR-013). No referral codes, ever. */
+export const PLEDGE_STORE_CREDIT = {
+  text: "Pledge prices: the Roberts Space Industries pledge store.",
+  url: "https://robertsspaceindustries.com/pledge",
+} as const;
+
+/** docs/legal/attribution.md, "RSI holoviewer models" row (ADR-015). */
+export const RSI_HOLO_CREDIT = {
+  text: "3D models: Roberts Space Industries' holoviewer, from each ship's pledge page.",
+  url: "https://robertsspaceindustries.com/pledge",
+} as const;
+
+/** docs/legal/attribution.md, "RSI loaner ship matrix" row (ADR-015). */
+export const LOANER_MATRIX_CREDIT = {
+  text: "Loaners: the Roberts Space Industries loaner ship matrix, checked weekly.",
+  url: "https://support.robertsspaceindustries.com/hc/en-us/articles/360003093114-Loaner-Ship-Matrix",
+} as const;
+
 export const STARBREAKER_CREDIT = {
   text: "Game data and models extracted with StarBreaker.",
   url: "https://github.com/hpbgithub/StarBreaker",
@@ -38,6 +66,25 @@ export const UNP4K_CREDIT = {
 } as const;
 
 export const FANKIT_CREDIT = { text: "Image: CIG fankit." } as const;
+
+/**
+ * The notice the Fankit Agreement, clause 2(g), requires wherever fankit assets appear, copied
+ * verbatim (double full stop included) from 06_Fankit_Agreement_2025_11_19.pdf in the fankit
+ * downloaded 2026-11-07. The footer carries it on every page (ADR-009).
+ */
+export const FANKIT_NOTICE =
+  "This site is not endorsed by or affiliated with the Cloud Imperium or Roberts Space Industries group of companies. All game content and materials are copyright Cloud Imperium Rights LLC and Cloud Imperium Rights Ltd.. Star Citizen®, Squadron 42®, Roberts Space Industries®, and Cloud Imperium® are registered trademarks of Cloud Imperium Rights LLC. All rights reserved.";
+
+export const FANKIT_NOTICE_SOURCE = {
+  document: "Fankit Agreement, clause 2(g)",
+  fankitVersion: "2025_11_19",
+  copiedOn: "2026-11-07",
+} as const;
+
+/** Under every ship image copied from RSI's ship matrix, linked to the ship's RSI page (ADR-009). */
+export const RSI_IMAGE_CREDIT = {
+  text: "Image: Roberts Space Industries",
+} as const;
 
 /**
  * The published contact address for corrections and takedowns (docs/legal/takedown.md). The owner

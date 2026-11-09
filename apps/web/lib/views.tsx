@@ -6,9 +6,11 @@ import {
   formatNumber,
   sentence,
   vehicleStatusBadge,
+  type ResponsiveImage,
 } from "ui";
 import type { ItemStats, VehicleStats } from "schema";
 import type { ShipRow } from "../app/ships/ship-table";
+import { pricesFor } from "./acquisition";
 import { type Deltas, channelDeltas } from "./channel-diff";
 import type { ComponentView, ShipView } from "./data";
 
@@ -105,6 +107,7 @@ export function componentStatRows(c: ComponentView): ChannelStatRow[] {
 export function shipRows(ships: readonly ShipView[]): readonly ShipRow[] {
   return ships.map((ship) => {
     const s = ship.stats;
+    const prices = pricesFor(ship.vehicle.slug, ship.vehicle.class_name);
     return {
       key: ship.vehicle.class_name,
       slug: ship.vehicle.slug,
@@ -123,13 +126,20 @@ export function shipRows(ships: readonly ShipView[]): readonly ShipRow[] {
       length: s?.length_m ?? null,
       mass: s?.mass_kg ?? null,
       scmSpeed: s?.scm_speed ?? null,
+      pledge: prices.pledge?.price_usd ?? null,
+      pledgeOnSale: prices.pledge?.available ?? false,
+      buy: prices.buy_auec,
       status: vehicleStatusBadge(ship.vehicle.status).label,
     };
   });
 }
 
 /** Props shared by the ship index, related groups and manufacturer lineups. */
-export function shipCard(ship: ShipView): CardProps {
+/** `image` comes from `shipCardImage` (lib/media.ts); null draws the card without one. */
+export function shipCard(
+  ship: ShipView,
+  image: ResponsiveImage | null = null,
+): CardProps {
   return {
     href: `/ships/${ship.vehicle.slug}`,
     name: ship.vehicle.name,
@@ -145,7 +155,7 @@ export function shipCard(ship: ShipView): CardProps {
       },
       { label: "Cargo", value: ship.stats?.cargo_scu ?? null, unit: "SCU" },
     ],
-    image: null,
+    image,
   };
 }
 

@@ -23,7 +23,7 @@ The full scope and plan live in `docs/scope.md`. Phase specs live in `docs/specs
 - Never mutate a published data version. A fix is a new version.
 - Never hand-enter game data. Every stat comes from the pipeline; if the pipeline cannot produce it, the field stays empty.
 - Never add a color, type size, spacing value, or radius outside `packages/ui` tokens without an ADR.
-- Never use emoji, glow, scanlines, hex grids, bevels, neon-on-black, or sci-fi display fonts anywhere in the UI. This is a reference product, not a game HUD.
+- Never use emoji, glow, scanlines, hex grids, bevels, neon-on-black, or sci-fi display fonts anywhere in the UI. This is a reference product, not a game HUD. One owner-approved exception (2026-11-08, ADR-012, ADR-015): inside the 3D holoviewer canvases (the holoviewer and the Scale lineup) the models may be drawn as CIG draws them in its own holoviewer, with glow, scan bands, a floor grid and a dark backdrop; never outside those canvases.
 - Never infer a game stat, a dev post's meaning, or an entity link with less than the confidence thresholds in `docs/data-model.md`.
 - Never claim to CIG, in code comments, UI copy, or docs, that the site is official or endorsed.
 
@@ -52,7 +52,7 @@ pipeline/        Windows-only: detect, extract, normalize, optimize, publish
 apps/web/        Next.js app
 workers/         pollers (news, spectrum), import job, link-entities job
 fixtures/        real extracted records per game version; small, committed
-scripts/         one-off dev scripts; nothing here runs in production
+scripts/         one-off dev scripts; nothing here runs in production (one runs weekly in CI to propose a fixture update for review: the loaner-matrix check, ADR-015)
 ```
 
 Create exactly this layout in Phase 0. Add folders only with an ADR.
@@ -95,7 +95,7 @@ Full system in `docs/design/system.md`. Non-negotiables:
 - One accent color. Semantic colors (success, warning, danger) only for status.
 - Two type weights (400, 500). At most three sizes per page besides interface text (`ui`) and captions. Tabular figures for every number.
 - Light and dark both first-class; both are screenshot-tested.
-- Every entity page uses the `EntityPage` template: hero, key facts, body sections, related entities.
+- Every entity page uses the `EntityPage` template: hero, key facts, body sections, related entities. Ship pages use the ship file (owner direction, ADR-012), which keeps the same parts: an opening band, the particulars, numbered sections and related ships.
 - Tables: fixed column sets, sticky header, unit in header, sort on tap, and on phone the row expands rather than the table scrolling sideways.
 - Motion only for viewer transitions and loading states.
 - Copy: sentence case everywhere, no exclamation marks, no "please", no "click here".
@@ -132,6 +132,7 @@ SENTRY_DSN
 SITE_URL (the public origin; canonical URLs, sitemap.xml and Open Graph resolve against it)
 SC_INSTALL_ROOT (Windows only, for example C:\Program Files\Roberts Space Industries\StarCitizen)
 STARBREAKER_BIN (Windows only)
+SC_HUB_CONTACT_EMAIL (dev scripts and the weekly loaner check; the contact address RSI requests carry, ADR-015; a repository variable in CI)
 ```
 
 When `DATABASE_URL` is unset, `pnpm db:migrate` and `pnpm db:seed` use an embedded PGlite database in `packages/db/.pglite/` (local development only; ADR-004). Every deployed runtime requires it.
@@ -174,7 +175,7 @@ If a step cannot be completed (missing credential, unknown record shape, a desig
 | --- | --- | --- |
 | Project name | Undecided; "SC Hub" is a working title | `SITE_NAME` constant in `packages/ui/brand.ts` |
 | License | Undecided; MIT for code with assets and data excluded is the recommendation | `LICENSE` file is absent until decided; do not add one |
-| Hero ship list | Undecided until Phase 4 | `pipeline/hero-ships.json` |
+| Hero ship list | Undecided until Phase 4 (the showcase pair, Odin and Perseus, is a separate owner choice, ADR-010) | `pipeline/hero-ships.json` |
 | Spectrum access method | Ask CIG for a feed; build the poller behind the adapter either way | `SPECTRUM_MODE` |
 
 Do not resolve these yourself. Flag them when they block work.

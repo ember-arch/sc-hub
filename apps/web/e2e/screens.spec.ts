@@ -35,6 +35,8 @@ const SCREENS = [
   { name: "home", path: "/", status: 200 },
   { name: "ship", path: `/ships/${smallShip}`, status: 200 },
   { name: "ship-capital", path: `/ships/${capitalShip}`, status: 200 },
+  // The concept hero (ADR-010): a ship file with no game data.
+  { name: "ship-concept", path: "/ships/odin", status: 200 },
   { name: "news", path: "/news", status: 200 },
   { name: "ships", path: "/ships", status: 200 },
   { name: "ships-table", path: "/ships?view=table", status: 200 },
@@ -94,7 +96,9 @@ for (const screen of SCREENS) {
         // Port names in the opened port table must wrap at their parts (the break after each
         // underscore), never into fragments shorter than a word.
         if (viewport.name === "phone" && screen.name.startsWith("ship")) {
-          const summary = page.locator("#hardpoints details summary");
+          const summary = page.locator("#hardpoints details summary", {
+            hasText: /ports by game name$/,
+          });
           const hasTable = (await summary.count()) > 0;
           if (hasTable) await summary.click();
           const tooNarrow = await page.evaluate(() => {

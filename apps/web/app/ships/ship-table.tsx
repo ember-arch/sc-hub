@@ -21,6 +21,11 @@ export interface ShipRow {
   readonly length: number | null;
   readonly mass: number | null;
   readonly scmSpeed: number | null;
+  /** The headline pledge price (ADR-013) and whether it is on sale. */
+  readonly pledge: number | null;
+  readonly pledgeOnSale: boolean;
+  /** The lowest in-game purchase price reported to UEX. */
+  readonly buy: number | null;
   readonly status: string;
 }
 
@@ -49,6 +54,7 @@ export function ShipTable({
       rowKey={(row) => row.key}
       defaultSort={{ key: "name", direction: "asc" }}
       expandBelow="xl"
+      unitsBelow
       columns={[
         {
           key: "name",
@@ -117,6 +123,34 @@ export function ShipTable({
           align: "right",
           render: (row) => num(row.scmSpeed),
           sortValue: (row) => row.scmSpeed,
+        },
+        {
+          key: "pledge",
+          header: "Pledge",
+          unit: "USD",
+          align: "right",
+          render: (row) =>
+            row.pledge === null ? (
+              dash
+            ) : (
+              <>
+                {formatNumber(row.pledge)}
+                {row.pledgeOnSale ? null : (
+                  <span className="block font-sans text-caption text-secondary">
+                    Not on sale
+                  </span>
+                )}
+              </>
+            ),
+          sortValue: (row) => row.pledge,
+        },
+        {
+          key: "buy",
+          header: "Buy in game",
+          unit: "aUEC",
+          align: "right",
+          render: (row) => num(row.buy),
+          sortValue: (row) => row.buy,
         },
         {
           key: "status",

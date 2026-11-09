@@ -4,6 +4,13 @@ export * from "./tokens";
 export { Badge, type BadgeProps, type BadgeTone } from "./components/badge";
 export { Card, type CardProps, type CardStat } from "./components/card";
 export {
+  Mark,
+  type ImageFile,
+  type MakerMark,
+  type MarkProps,
+  type ResponsiveImage,
+} from "./components/media";
+export {
   CommandPalette,
   type CommandPaletteProps,
   OPEN_SEARCH_EVENT,
@@ -65,6 +72,17 @@ export {
   PatchStrip,
   type PatchStripProps,
 } from "./components/patch-strip";
+export {
+  RankBar,
+  type RankBarProps,
+  type RankValue,
+  rankOf,
+} from "./components/rank-bar";
+export {
+  type ScaleItem,
+  ScaleLineup,
+  type ScaleLineupProps,
+} from "./components/scale-lineup";
 export {
   type SegmentedLink,
   SegmentedLinks,

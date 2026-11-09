@@ -7,8 +7,13 @@ import {
   DISCLAIMER,
   DISCLAIMER_SOURCE,
   FANKIT_CREDIT,
+  LOANER_MATRIX_CREDIT,
+  PLEDGE_STORE_CREDIT,
+  RSI_HOLO_CREDIT,
+  RSI_IMAGE_CREDIT,
   STARBREAKER_CREDIT,
   TRADEMARK_LINE,
+  UEX_CREDIT,
   UNP4K_CREDIT,
   WIKI_CREDIT,
 } from "ui/legal";
@@ -60,6 +65,27 @@ export default function AboutPage() {
               </TextLink>
             </li>
             <li>
+              <TextLink href={UEX_CREDIT.url} external>
+                {UEX_CREDIT.text}
+              </TextLink>{" "}
+              {UEX_CREDIT.notice}
+            </li>
+            <li>
+              <TextLink href={PLEDGE_STORE_CREDIT.url} external>
+                {PLEDGE_STORE_CREDIT.text}
+              </TextLink>
+            </li>
+            <li>
+              <TextLink href={LOANER_MATRIX_CREDIT.url} external>
+                {LOANER_MATRIX_CREDIT.text}
+              </TextLink>
+            </li>
+            <li>
+              <TextLink href={RSI_HOLO_CREDIT.url} external>
+                {RSI_HOLO_CREDIT.text}
+              </TextLink>
+            </li>
+            <li>
               <TextLink href={STARBREAKER_CREDIT.url} external>
                 {STARBREAKER_CREDIT.text}
               </TextLink>
@@ -72,6 +98,11 @@ export default function AboutPage() {
             <li>
               {FANKIT_CREDIT.text} Shown under any image that comes from the
               fankit.
+            </li>
+            <li>
+              {RSI_IMAGE_CREDIT.text}. Shown under each ship image copied from
+              RSI&apos;s ship matrix, with a link to the ship&apos;s page on
+              robertsspaceindustries.com.
             </li>
             <li>
               Open-source libraries are listed on the{" "}

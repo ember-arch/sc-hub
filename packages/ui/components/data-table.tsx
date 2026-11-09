@@ -34,6 +34,11 @@ export interface DataTableProps<T> {
    * the width it fits in (system.md principle 6).
    */
   readonly expandBelow?: "md" | "lg" | "xl" | undefined;
+  /**
+   * Header text may wrap and the unit sits on its own line under it, so a wide table (the ships
+   * table with prices, ADR-013) fits the page instead of scrolling sideways.
+   */
+  readonly unitsBelow?: boolean | undefined;
 }
 
 type Direction = "asc" | "desc";
@@ -59,6 +64,7 @@ export function DataTable<T>({
   rowKey,
   defaultSort,
   expandBelow = "md",
+  unitsBelow = false,
 }: DataTableProps<T>) {
   const bp = BREAKPOINT[expandBelow];
   const sortId = useId();
@@ -149,15 +155,20 @@ export function DataTable<T>({
                   <button
                     type="button"
                     onClick={() => toggleSort(column)}
-                    className="inline-flex items-center gap-1 whitespace-nowrap rounded-control hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+                    className={`inline-flex items-center gap-x-1 rounded-control hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent ${unitsBelow ? `flex-wrap ${column.align === "right" ? "justify-end" : ""}` : "whitespace-nowrap"}`}
                   >
                     {column.header}
-                    {column.unit !== undefined ? (
+                    {column.unit !== undefined && !unitsBelow ? (
                       <span className="text-secondary">({column.unit})</span>
                     ) : null}
                     <span aria-hidden="true" className="text-secondary">
                       {active ? (sort?.direction === "asc" ? "↑" : "↓") : "↕"}
                     </span>
+                    {column.unit !== undefined && unitsBelow ? (
+                      <span className="basis-full text-secondary">
+                        ({column.unit})
+                      </span>
+                    ) : null}
                   </button>
                 )}
               </th>

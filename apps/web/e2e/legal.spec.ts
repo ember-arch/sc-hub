@@ -3,6 +3,7 @@ import { fileURLToPath } from "node:url";
 import { expect, test } from "@playwright/test";
 import {
   DISCLAIMER,
+  FANKIT_NOTICE,
   TRADEMARK_LINE,
   WIKI_CREDIT,
 } from "../../../packages/ui/legal";
@@ -31,6 +32,7 @@ for (const route of ROUTES) {
     const footer = page.locator("footer").last();
     await expect(footer.getByTestId("disclaimer")).toHaveText(DISCLAIMER);
     await expect(footer).toContainText(TRADEMARK_LINE);
+    await expect(footer.getByTestId("fankit-notice")).toHaveText(FANKIT_NOTICE);
     await expect(footer).toContainText(WIKI_CREDIT.text);
     await expect(
       footer.getByRole("link", { name: "robertsspaceindustries.com" }),

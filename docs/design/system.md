@@ -30,6 +30,8 @@ All tokens live in `packages/ui/tokens.ts`. Tailwind config is generated from th
 | `text.primary` | `#1A1917` | `#F1EEE6` | Body: ink |
 | `text.secondary` | `#5A5852` | `#B5B1A6` | Supporting |
 | `text.muted` | `#67635B` | `#9B968B` | Captions, placeholders |
+| `text.on-art` | `#F6F4EF` | `#F6F4EF` | Text over CIG's art, on the scrim (ADR-021) |
+| `scrim` | `rgba(12,11,10,0.78)` | `rgba(12,11,10,0.78)` | The gradient under text over art (`.art-scrim`), the same in both schemes |
 | `border.default` | `rgba(26,25,23,0.10)` | `rgba(241,238,230,0.10)` | Hairlines, the only dividers |
 | `border.strong` | `rgba(26,25,23,0.24)` | `rgba(241,238,230,0.24)` | A firmer hairline where a table or a field needs one |
 | `accent` | `#B8381F` | `#EE7A5F` | Links, focus, selected, primary action: oxblood |
@@ -110,10 +112,10 @@ Added with the ship file (ADR-008, ADR-012 to ADR-016):
 
 | Page | Layout |
 | --- | --- |
-| Home | The front page of the almanac (ADR-020): the date as a label, the title in the display face beside the numbered contents, the counters (pledged, citizens, this year, ships and parts on record, each a link), three plates (the live example wide, the concept hero and the longest other ship beside it), the first ten entries A to Z as cards with a link to the register, then six dispatches; the builds stay in the footer's patch strip (ADR-007). Follows the reader's light or dark setting. Without media the plates hold their captions alone. |
+| Home | The front page (ADR-020, ADR-021): the date as a label, the title beside the numbered contents, the figure strip (pledged, citizens, this year, ships and parts on record, each a link), the bento (the live example large, the concept hero tall, the three longest other ships with pictures across; each an image card with its name over a scrim, credited once below), the first ten entries A to Z as cards with a link to the register, then six dispatches; the builds stay in the footer's patch strip (ADR-007). Without media the bento's cards are toned panels with the names. |
 | Ships index | "The register of ships": `Masthead` (ADR-020), the compare link on its right. Filter bar (manufacturer, role, size, status, kind) + card/table toggle. Cards in a 2/3/4 column grid by breakpoint, art to the card's edges and the name in `heading`, each with a Compare toggle. Table mode is the register: `DataTable` with each row's plate over its name in the display face (from lg; smaller at xl, where every column shows; none without media) and a Compare column. Components, Titles, Funding and News open on a `Masthead` the same way. |
 | Components index | "Parts, by type" (ADR-020): `Masthead`, the filter bar (size, manufacturer), the type counts as a figure strip (each a jump to its table), then one ruled section per type with its `DataTable`. |
-| Ship page | The ship entry (ADR-012, ADR-014, ADR-015, ADR-020, ADR-021), in the reader's scheme. The opening: the holomodel in ink (or the key art as a plate when no model is built) beside the entry's head (entry code, maker, role, status), the name in the display face, a factual sentence and the particulars as a ruled table; under them the key art as Plate I, credited. Below, the contents stay in view on wide screens beside the same nine numbered sections for every ship (Brief, Acquisition and status, Weapons and combat, Crew and operations, Mobility, Scale, Specifications, Hardpoints and loadout, Sources), each section opening on a hairline with its number as a label, its images and render loops as captioned cards, every game figure with its build, and related ships with the sources. |
+| Ship page | The ship entry (ADR-012, ADR-014, ADR-015, ADR-020, ADR-021), in the reader's scheme. The opening: the key art as the cover, full width and rounded with a soft shadow, the status, maker and role as pills and the credit pill over its top, the entry code and the name over its lower part on a scrim; then the holomodel in ink and the particulars (a factual sentence, the ruled particulars, compare) in two rounded panels; without art the head stands on the page, without a model the particulars stand alone. Below, the contents stay in view on wide screens beside the same nine numbered sections for every ship (Brief, Acquisition and status, Weapons and combat, Crew and operations, Mobility, Scale, Specifications, Hardpoints and loadout, Sources), each section opening on a hairline with its number as a label, its images and render loops as captioned cards, every game figure with its build, and related ships with the sources. |
 | Component page | `EntityPage`. Key facts: type, size, grade, class, manufacturer. Sections: stats by channel, stock on (ships that carry it by default), in the news. |
 | Manufacturer page | `EntityPage` with a 3 px brand rule (the `border.strong` token until the fankit supplies brand colors). Sections: lineup (cards), in the news. |
 | News feed | "Dispatches" (ADR-020): source filter chips as labels, then the `FeedItem` list, each dispatch opening on a label line (source, time) over its title in the display face, ruled by hairlines; infinite scroll in pages of 20, RSS and JSON links in the header. Dev tracker is a tab: author filter, `DevPost` list, thread grouping. |
@@ -142,7 +144,7 @@ Added with the ship file (ADR-008, ADR-012 to ADR-016):
 
 1. Any color outside the token table?
 2. Any type size or weight outside the type table?
-3. Any decoration: gradient, glow, texture, emoji, icon used as ornament? (One gradient is allowed because it keeps text legible over CIG's art, never as decoration: the scrim over the entry's cover, ADR-021.)
+3. Any decoration: gradient, glow, texture, emoji, icon used as ornament? (One gradient is allowed because it keeps text legible over CIG's art, never as decoration: the scrim under text over CIG's art, on the entry's cover and the bento's cards, ADR-021.)
 4. Any page element the reader could lose without losing meaning?
 5. Does the ship page key-facts block read in one glance at 390 px?
 6. Does every table pass the phone rule (no sideways scroll)?

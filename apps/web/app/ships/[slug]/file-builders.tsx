@@ -401,19 +401,25 @@ const scaleLineup = (
  * that model, the rest as their envelope. With no other ship to stand beside, or without the
  * page's ship's dimensions, the drawn lineup stays.
  */
-function scaleView(slug: string, drawn: ReactNode): ReactNode {
-  const r = repo();
-  const dims = (
-    length: number | null,
-    beam: number | null,
-    height: number | null,
-  ) =>
+/** Three dimensions on record and above zero: what the row and the envelope need. */
+function hasDimensions(
+  length: number | null,
+  beam: number | null,
+  height: number | null,
+): boolean {
+  return (
     length !== null &&
     beam !== null &&
     height !== null &&
     length > 0 &&
     beam > 0 &&
-    height > 0;
+    height > 0
+  );
+}
+
+function scaleView(slug: string, drawn: ReactNode): ReactNode {
+  const r = repo();
+  const dims = hasDimensions;
   const ships: LineupShip[] = [
     ...r.entries.flatMap((o) => {
       const s = o.stats;
@@ -427,7 +433,6 @@ function scaleView(slug: string, drawn: ReactNode): ReactNode {
           beam: s.beam_m,
           height: s.height_m,
           src: holo?.src ?? null,
-          bytes: holo?.bytes ?? 0,
           current: o.vehicle.slug === slug,
         },
       ];
@@ -443,7 +448,6 @@ function scaleView(slug: string, drawn: ReactNode): ReactNode {
           beam: c.beam_m!,
           height: c.height_m!,
           src: holo?.src ?? null,
-          bytes: holo?.bytes ?? 0,
           current: c.slug === slug,
         },
       ];
@@ -974,12 +978,13 @@ export function packShipFile(ship: ShipView): ShipFileProps {
         ),
       },
       scale: {
+        // A build can carry zeroes for a ship it has no measurements for (the Javelin, the MOTH).
         aside:
-          s === null
+          s === null || !hasDimensions(s.length_m, s.beam_m, s.height_m)
             ? undefined
             : `${formatNumber(s.length_m, 2)} m nose to tail`,
         body:
-          s === null ? (
+          s === null || !hasDimensions(s.length_m, s.beam_m, s.height_m) ? (
             <Gap>No dimensions on record.</Gap>
           ) : (
             scaleView(
@@ -1350,23 +1355,27 @@ export function conceptShipFile(concept: ConceptShip): ShipFileProps {
           concept.length_m === null
             ? undefined
             : `${n0(concept.length_m)} m nose to tail`,
-        body:
-          concept.length_m === null || concept.height_m === null ? (
-            <Gap>No dimensions stated.</Gap>
-          ) : (
-            scaleView(
-              concept.slug,
-              scaleLineup(
-                concept.name,
-                {
-                  key: concept.slug,
-                  length: concept.length_m,
-                  height: concept.height_m,
-                },
-                others,
-              ),
-            )
-          ),
+        body: !hasDimensions(
+          concept.length_m,
+          concept.beam_m,
+          concept.height_m,
+        ) ? (
+          <Gap>No dimensions stated.</Gap>
+        ) : (
+          scaleView(
+            concept.slug,
+            scaleLineup(
+              concept.name,
+              {
+                key: concept.slug,
+                // Guarded by hasDimensions above.
+                length: concept.length_m!,
+                height: concept.height_m!,
+              },
+              others,
+            ),
+          )
+        ),
       },
       specifications: {
         body: (

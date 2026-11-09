@@ -1,7 +1,7 @@
 "use client";
 
 import type { BufferGeometry } from "three";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { THEME_CHANGE_EVENT, TextLink } from "ui";
 import {
   inkBody,
@@ -37,7 +37,6 @@ export interface LineupShip {
   readonly height: number;
   /** The holoviewer model, when one is built; null draws the envelope. */
   readonly src: string | null;
-  readonly bytes: number;
   readonly current: boolean;
 }
 
@@ -92,6 +91,7 @@ export function HoloLineup({
   // The largest ship's neighbourhood is the whole row.
   const largest = current !== undefined && order[0]?.slug === current.slug;
   const [focus, setFocus] = useState<Focus>(largest ? "all" : "around");
+  const captionId = useId();
 
   useEffect(() => {
     const el = box.current;
@@ -153,7 +153,8 @@ export function HoloLineup({
           <div
             ref={box}
             role="img"
-            aria-label={`To scale: ${order.map((s) => `${s.name} ${n0(s.length)} m`).join(", ")}${figure === null ? "" : `, and a person ${figure.height.toFixed(1)} m tall`}. ${modelled} drawn from RSI's holoviewer models, the rest as their envelopes.`}
+            aria-label={`To scale: ${ships.length} ships${current === undefined ? "" : `, the ${current.name} in full ink`}${figure === null ? "" : `, and a person ${figure.height.toFixed(1)} m tall`}`}
+            aria-describedby={captionId}
             className="absolute inset-0"
           />
           <div
@@ -199,7 +200,11 @@ export function HoloLineup({
             {full ? "Exit full screen" : "Full screen"}
           </button>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+        <div
+          role="group"
+          aria-label="Look at"
+          className="flex flex-wrap items-center gap-2"
+        >
           <span className="text-caption text-secondary">Look at</span>
           {current === undefined || largest ? null : (
             <button
@@ -241,16 +246,20 @@ export function HoloLineup({
         </div>
       </div>
       <figcaption className="flex flex-wrap justify-between gap-x-3 gap-y-1 text-caption text-secondary">
-        <span>
+        <span id={captionId}>
           <span className="font-mono text-primary">{label}</span> To scale: the{" "}
           {current?.name ?? "ship"} beside every ship on record
           {figure === null ? "" : " and a person"}, each sized to its recorded
-          length; a ship with a holoviewer model is drawn as that model, the
-          rest as their envelope of length, beam and height
+          length
+          {modelled === 0
+            ? ", each as its envelope of length, beam and height"
+            : `; ${modelled === ships.length ? "every ship" : `${modelled} of them`} drawn from RSI's holoviewer model, the rest as their envelope of length, beam and height`}
         </span>
-        <TextLink href={credit.href} external className="text-secondary">
-          {credit.text}
-        </TextLink>
+        {modelled === 0 ? null : (
+          <TextLink href={credit.href} external className="text-secondary">
+            {credit.text}
+          </TextLink>
+        )}
       </figcaption>
     </figure>
   );
@@ -325,7 +334,12 @@ async function start(
   const dimInk = inkLine(THREE, palette.inkDim, 0.45);
   materials.push(fullBody, dimBody, fullInk, dimInk);
 
-  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  // A row of kilometres seen from one end needs more depth precision than a linear buffer
+  // gives, or the inked edges flicker against the faces they sit on.
+  const renderer = new THREE.WebGLRenderer({
+    antialias: true,
+    logarithmicDepthBuffer: true,
+  });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setSize(el.clientWidth, el.clientHeight);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -336,6 +350,8 @@ async function start(
   el.insertBefore(renderer.domElement, el.firstChild);
 
   // The switch (ADR-021) changes the tokens under the canvas; repaint from them.
+  // Frames are drawn only when something moved or landed: the row is still most of the time.
+  let dirty = true;
   const repaint = (): void => {
     const next = inkPalette(THREE, el);
     renderer.setClearColor(next.paper, 1);
@@ -343,6 +359,7 @@ async function start(
     dimBody.color.copy(next.bodyDim);
     fullInk.color.copy(next.ink);
     dimInk.color.copy(next.inkDim);
+    dirty = true;
   };
   window.addEventListener(THEME_CHANGE_EVENT, repaint);
 
@@ -368,6 +385,7 @@ async function start(
     const job = inking.shift();
     if (job === undefined || disposed) return;
     job();
+    dirty = true;
     if (inking.length > 0) cancelIdle = whenIdle(drainInk);
   };
   const ink = (job: () => void): void => {
@@ -389,6 +407,7 @@ async function start(
     const mesh = new THREE.Mesh(g, slot.ship.current ? fullBody : dimBody);
     slot.mesh = mesh;
     scene.add(mesh);
+    dirty = true;
     ink(() => {
       if (slot.mesh !== mesh) return;
       const line = inkEdges(
@@ -468,6 +487,7 @@ async function start(
   // Models: wanted for the ships the camera looks at that are wide enough to show detail, a few
   // at a time, replacing their envelope as they land. The page's ship always gets its model.
   const queue: Slot[] = [];
+  const queued = new Set<Slot>();
   let inFlight = 0;
   let wanted = 0;
   let done = 0;
@@ -495,10 +515,10 @@ async function start(
   const pump = (): void => {
     while (inFlight < MODELS_IN_FLIGHT && queue.length > 0) {
       const slot = queue.shift()!;
+      queued.delete(slot);
       if (slot.model !== "wanted" || slot.ship.src === null) continue;
       slot.model = "loading";
       inFlight += 1;
-      wanted += 1;
       report();
       loadHoloGeometry(THREE, loader, slot.ship.src)
         .then((g) => {
@@ -527,14 +547,25 @@ async function start(
     const left = centre - span.width / 2;
     const right = centre + span.width / 2;
     for (const slot of slots) {
-      if (slot.model !== "wanted") continue;
+      if (slot.model !== "wanted" || queued.has(slot)) continue;
       const inView =
         slot.x + slot.length / 2 >= left && slot.x - slot.length / 2 <= right;
       if (slot.ship.current || (inView && slot.length * px >= DETAIL_PX)) {
-        queue.push(slot);
+        queued.add(slot);
+        wanted += 1;
+        if (slot.ship.current) queue.unshift(slot);
+        else queue.push(slot);
       }
     }
+    report();
     pump();
+  };
+  /** What the camera shows now, from its distance and the frame: for a hand-turned view. */
+  const seen = (): { width: number; centre: number } => {
+    const d = camera.position.distanceTo(controls.target);
+    const t = Math.tan(((fov / 2) * Math.PI) / 180);
+    const aspect = el.clientWidth / Math.max(el.clientHeight, 1);
+    return { width: 2 * d * t * aspect, centre: controls.target.x };
   };
 
   const extras: (
@@ -577,6 +608,13 @@ async function start(
   controls.addEventListener("start", () => {
     tween = null;
   });
+  controls.addEventListener("change", () => {
+    dirty = true;
+  });
+  controls.addEventListener("end", () => {
+    const s = seen();
+    wantModels(s, s.centre);
+  });
 
   // Labels: one per ship, over its highest point, stepped up where they would collide.
   const tagEls = slots.map((s) => {
@@ -613,11 +651,15 @@ async function start(
     let level = 0;
     for (const s of shown) {
       const tag = tagEls[s.i]!;
+      const inside = s.visible && s.x > -40 && s.x < w + 40 && s.y > 0;
+      if (!inside) {
+        if (tag.style.display !== "none") tag.style.display = "none";
+        continue;
+      }
       // Neighbours step up to three rows, then start again, so a crowd never climbs off the top.
       level = s.x - lastX < 110 ? (level + 1) % 3 : 0;
       lastX = s.x;
-      const inside = s.visible && s.x > -40 && s.x < w + 40 && s.y > 0;
-      tag.style.display = inside ? "block" : "none";
+      tag.style.display = "block";
       tag.style.left = `${s.x}px`;
       tag.style.top = `${s.y - level * 20}px`;
     }
@@ -635,6 +677,7 @@ async function start(
     renderer.setSize(w, h);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
+    dirty = true;
   });
   resize.observe(el);
 
@@ -647,8 +690,12 @@ async function start(
       camera.position.lerpVectors(tween.from, tween.to, ease(k));
       controls.target.lerpVectors(tween.fromTarget, tween.toTarget, ease(k));
       if (k >= 1) tween = null;
+      dirty = true;
     }
-    controls.update();
+    // Damping keeps the camera moving a few frames after the hand lets go.
+    if (controls.update()) dirty = true;
+    if (!dirty) return;
+    dirty = false;
     renderer.render(scene, camera);
     placeTags();
   };
@@ -662,6 +709,7 @@ async function start(
       if (reduced) {
         camera.position.copy(to.position);
         controls.target.copy(to.target);
+        dirty = true;
         return;
       }
       tween = {
@@ -671,12 +719,14 @@ async function start(
         toTarget: to.target,
         began: performance.now(),
       };
+      dirty = true;
     },
     dispose() {
       disposed = true;
       cancelIdle?.();
       inking.length = 0;
       queue.length = 0;
+      queued.clear();
       window.removeEventListener(THEME_CHANGE_EVENT, repaint);
       cancelAnimationFrame(frame);
       onScreen.disconnect();

@@ -110,9 +110,9 @@ test("Scale lines every ship up to scale, opening on the page's ship and its nei
 }) => {
   await page.goto("/ships/gladius");
   const scale = page.locator("#scale");
-  const lineup = scale.getByRole("img", { name: /^To scale: / });
-  await expect(lineup).toHaveAttribute("aria-label", /Gladius 21 m/);
-  await expect(lineup).toHaveAttribute("aria-label", /Polaris 181 m/);
+  const lineup = scale.getByRole("img", { name: /^To scale: \d+ ships/ });
+  await expect(lineup).toHaveAttribute("aria-label", /the Gladius in full ink/);
+  await expect(lineup).toHaveAttribute("aria-describedby", /./);
   await expect(
     scale.getByRole("button", { name: "Around the Gladius" }),
   ).toHaveAttribute("aria-pressed", "true");
@@ -121,6 +121,9 @@ test("Scale lines every ship up to scale, opening on the page's ship and its nei
     scale.getByRole("button", { name: "All ships" }),
   ).toHaveAttribute("aria-pressed", "true");
   const picker = scale.getByRole("combobox", { name: "One ship" });
+  await expect(
+    picker.getByRole("option", { name: "Gladius, 21 m" }),
+  ).toHaveCount(1);
   await expect(picker.getByRole("option", { name: /^Polaris, / })).toHaveCount(
     1,
   );

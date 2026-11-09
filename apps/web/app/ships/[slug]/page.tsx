@@ -7,7 +7,7 @@ import { conceptBySlug, conceptShips } from "../../../lib/showcase";
 import { Site } from "../../../lib/site";
 import { JsonLdScript } from "../../json-ld";
 import { conceptShipFile, packShipFile } from "./file-builders";
-import { ShipFile, ShipFileHero } from "./ship-file";
+import { ShipFile, ShipFileOpening } from "./ship-file";
 
 interface Params {
   readonly params: Promise<{ slug: string }>;
@@ -71,7 +71,7 @@ export default async function ShipPage({ params }: Params) {
   if (concept !== undefined) {
     const file = conceptShipFile(concept);
     return (
-      <Site current="ships" theme="dark" stage={<ShipFileHero {...file} />}>
+      <Site current="ships" theme="dark" stage={<ShipFileOpening {...file} />}>
         <ShipFile {...file} />
       </Site>
     );
@@ -79,7 +79,7 @@ export default async function ShipPage({ params }: Params) {
   const ship = shipFor(slug);
   const file = packShipFile(ship);
   return (
-    <Site current="ships" theme="dark" stage={<ShipFileHero {...file} />}>
+    <Site current="ships" theme="dark" stage={<ShipFileOpening {...file} />}>
       <JsonLdScript data={shipJsonLd(ship, describe(ship))} />
       <ShipFile {...file} />
     </Site>

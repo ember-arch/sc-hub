@@ -1,16 +1,10 @@
 import type { ReactNode } from "react";
 import { TextLink } from "ui";
-import type { Picture } from "../../../../lib/showcase";
 
 /**
- * Pieces shared by the ship file (ADR-012) and the dossier index on the home page (ADR-011): the
- * file strip, framed key art, a numbered section and the numbered source list.
+ * Pieces of the ship entry (ADR-012, ADR-020): a particulars row, a numbered section and the
+ * numbered source list.
  */
-
-export interface MetaItem {
-  readonly label: string;
-  readonly value: string;
-}
 
 export interface SheetRow {
   readonly label: string;
@@ -22,79 +16,7 @@ export interface SheetRow {
 
 const pad = (n: number): string => String(n).padStart(2, "0");
 
-/** The strip across the top of a file or the index: what it is, then its metadata. */
-export function FileStrip({
-  document,
-  meta,
-  end,
-}: {
-  readonly document: string;
-  readonly meta: readonly MetaItem[];
-  readonly end?: ReactNode;
-}) {
-  return (
-    <dl className="m-0 flex flex-wrap items-center gap-x-6 gap-y-2 border-y border-hairline py-3 text-caption">
-      <div className="flex items-center gap-2">
-        <dt className="sr-only">Document</dt>
-        <dd className="m-0 font-mono text-primary">{document}</dd>
-      </div>
-      {meta.map((item) => (
-        <div key={item.label} className="flex items-baseline gap-2">
-          <dt className="text-secondary">{item.label}</dt>
-          <dd className="m-0 font-mono text-primary">{item.value}</dd>
-        </div>
-      ))}
-      {end === undefined ? null : <div className="ml-auto">{end}</div>}
-    </dl>
-  );
-}
-
-/** Key art in a frame, with the transparent cut-out layered over it where CIG made one. */
-export function FramedArt({
-  background,
-  cutout,
-  sizes,
-  priority,
-}: {
-  readonly background: Picture;
-  readonly cutout: Picture | null;
-  readonly sizes: string;
-  readonly priority: boolean;
-}) {
-  return (
-    <div className="relative aspect-video overflow-hidden rounded-card border border-hairline bg-inset">
-      <picture>
-        <img
-          src={background.src}
-          srcSet={background.srcSet}
-          sizes={sizes}
-          width={background.width}
-          height={background.height}
-          alt={background.alt}
-          fetchPriority={priority ? "high" : undefined}
-          loading={priority ? undefined : "lazy"}
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-      </picture>
-      {cutout === null ? null : (
-        <picture>
-          <img
-            src={cutout.src}
-            srcSet={cutout.srcSet}
-            sizes={sizes}
-            width={cutout.width}
-            height={cutout.height}
-            alt=""
-            fetchPriority={priority ? "high" : undefined}
-            loading={priority ? undefined : "lazy"}
-            className="dossier-cutout absolute h-auto"
-          />
-        </picture>
-      )}
-    </div>
-  );
-}
-
+/** A numbered section: the number as a label in the accent, the title in the display face. */
 export function DossierSection({
   id,
   number,
@@ -114,12 +36,12 @@ export function DossierSection({
       aria-labelledby={`${id}-title`}
       className="flex scroll-mt-6 flex-col gap-6"
     >
-      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-t border-hairline-strong pt-4">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-t-2 border-primary pt-4">
         <h2
           id={`${id}-title`}
           className="m-0 flex items-baseline gap-3 text-title text-primary"
         >
-          <span className="font-mono text-ui text-accent">{pad(number)}</span>
+          <span className="lab text-accent">{pad(number)}</span>
           {title}
         </h2>
         {aside === undefined ? null : (

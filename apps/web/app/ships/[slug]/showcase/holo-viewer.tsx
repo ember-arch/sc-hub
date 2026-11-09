@@ -3,29 +3,28 @@
 import { useEffect, useRef, useState } from "react";
 import { TextLink } from "ui";
 import {
-  HOLO,
-  holoBackdrop,
-  holoColor,
-  holoMaterial,
+  inkBody,
+  inkEdges,
+  inkLights,
+  inkLine,
+  inkPalette,
   loadHoloGeometry,
 } from "./holo-kit";
 
 /**
- * The holoviewer (ADR-012, ADR-015): the model RSI's own pledge page loads into its holoviewer,
- * drawn the way that holoviewer draws it. The ship materialises out of noise, scan planes sweep it
- * nose to tail, across and up, and it settles as a lit cyan hologram over a floor grid with a
- * person beside it for scale. X-ray shows it translucent, bright at the silhouette; Wireframe
- * shows its edges. Seven view angles turn the camera to the ship's sides, top and bottom, or back
- * to a slow orbit. Drag to turn, scroll or pinch to zoom.
+ * The holomodel (ADR-020; models from ADR-015): the model RSI's own pledge page loads into its
+ * holoviewer, drawn in ink on the page's paper: a flat-shaded body with its edges inked, slowly
+ * turning, with a person beside it for scale. Three renders: Ink (body and lines), Lines (the
+ * edges alone, a drawing) and Solid (the body alone). Seven view angles turn the camera to the
+ * ship's sides, top and bottom, or back to the slow turn. Drag to turn, scroll or pinch to zoom.
  *
- * CLAUDE.md section 2 rules out glow, scanlines and grids in the interface; the owner chose this
- * look for the model on 2026-11-08 because it reproduces CIG's holoviewer, and it stays inside
- * this canvas. The shaders are this project's own. three.js loads only as the viewer approaches;
- * the models are meshopt-compressed glTF, which three decodes without a separate decoder file.
+ * This replaces the CIG-holoviewer look of ADR-012 and ADR-015 (glow, scan bands, floor grid,
+ * dark backdrop): the almanac draws the model as a figure, in the page's own ink. three.js loads
+ * only as the viewer approaches; the models are meshopt-compressed glTF.
  */
 
 const VIEWS = [
-  { id: "orbit", label: "Orbit" },
+  { id: "orbit", label: "Turning" },
   { id: "front", label: "Front" },
   { id: "back", label: "Back" },
   { id: "left", label: "Left" },
@@ -36,9 +35,9 @@ const VIEWS = [
 type View = (typeof VIEWS)[number]["id"];
 
 const RENDERS = [
-  { id: "default", label: "Default" },
-  { id: "xray", label: "X-ray" },
-  { id: "wire", label: "Wireframe" },
+  { id: "ink", label: "Ink" },
+  { id: "lines", label: "Lines" },
+  { id: "solid", label: "Solid" },
 ] as const;
 type Render = (typeof RENDERS)[number]["id"];
 
@@ -74,7 +73,7 @@ export function HoloViewer({
     "idle",
   );
   const [view, setView] = useState<View>("orbit");
-  const [render, setRender] = useState<Render>("default");
+  const [render, setRender] = useState<Render>("ink");
   const [full, setFull] = useState(false);
 
   useEffect(() => {
@@ -122,21 +121,18 @@ export function HoloViewer({
   const option =
     "rounded-control border px-2 py-1 text-caption transition-colors duration-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent";
   const choice = (on: boolean) =>
-    `${option} ${on ? "border-accent bg-accent-bg text-primary" : "border-hairline-strong text-secondary hover:text-primary"}`;
+    `${option} ${on ? "border-accent bg-accent-bg text-primary" : "border-hairline-strong bg-surface text-secondary hover:text-primary"}`;
 
   return (
-    <figure className="m-0 flex flex-col gap-2">
-      <div
-        ref={frame}
-        className={`flex flex-col gap-2 ${full ? "bg-page p-4" : ""}`}
-      >
+    <figure className="m-0 flex flex-col">
+      <div ref={frame} className={`flex flex-col ${full ? "bg-page p-4" : ""}`}>
         <div
-          className={`relative w-full overflow-hidden rounded-card border border-hairline bg-inset ${full ? "min-h-0 flex-1" : "aspect-[4/3]"}`}
+          className={`relative w-full overflow-hidden border border-hairline-strong bg-inset ${full ? "min-h-0 flex-1" : "aspect-[4/3]"}`}
         >
           <div
             ref={box}
             role="img"
-            aria-label={`3D model of the ${name}, from RSI's holoviewer, with a person beside it for scale. Drag to turn, scroll or pinch to zoom.`}
+            aria-label={`3D model of the ${name}, from RSI's holoviewer, drawn in ink, with a person beside it for scale. Drag to turn, scroll or pinch to zoom.`}
             className="absolute inset-0"
           />
           {state === "ready" || poster === null ? null : (
@@ -153,44 +149,10 @@ export function HoloViewer({
             <p className="absolute bottom-3 left-3 m-0 text-caption text-secondary">
               {state === "error"
                 ? "The model could not be loaded."
-                : `Loading the model (${megabytes} MB)`}
+                : `Loading the holomodel (${megabytes} MB).`}
             </p>
           )}
-          <button
-            type="button"
-            className={`${option} absolute right-2 top-2 border-hairline-strong bg-page text-primary hover:border-accent`}
-            onClick={() => {
-              const el = frame.current;
-              if (el === null) return;
-              if (document.fullscreenElement === null)
-                void el.requestFullscreen?.().catch(() => undefined);
-              else void document.exitFullscreen().catch(() => undefined);
-            }}
-          >
-            {full ? "Exit full screen" : "Full screen"}
-          </button>
-        </div>
-        <div className="flex flex-col gap-2">
-          <fieldset className="m-0 flex flex-wrap items-center gap-1 border-0 p-0">
-            <legend className="float-left mr-2 p-0 text-caption text-secondary">
-              View
-            </legend>
-            {VIEWS.map((v) => (
-              <button
-                key={v.id}
-                type="button"
-                aria-pressed={view === v.id}
-                className={choice(view === v.id)}
-                onClick={() => setView(v.id)}
-              >
-                {v.label}
-              </button>
-            ))}
-          </fieldset>
-          <fieldset className="m-0 flex flex-wrap items-center gap-1 border-0 p-0">
-            <legend className="float-left mr-2 p-0 text-caption text-secondary">
-              Render
-            </legend>
+          <div className="absolute left-3 top-3 flex flex-wrap gap-1">
             {RENDERS.map((r) => (
               <button
                 key={r.id}
@@ -202,13 +164,40 @@ export function HoloViewer({
                 {r.label}
               </button>
             ))}
-          </fieldset>
+          </div>
+          <button
+            type="button"
+            className={`${option} absolute right-3 top-3 border-hairline-strong bg-surface text-primary hover:border-accent`}
+            onClick={() => {
+              const el = frame.current;
+              if (el === null) return;
+              if (document.fullscreenElement === null)
+                void el.requestFullscreen?.().catch(() => undefined);
+              else void document.exitFullscreen().catch(() => undefined);
+            }}
+          >
+            {full ? "Exit full screen" : "Full screen"}
+          </button>
         </div>
+        <fieldset className="m-0 flex flex-wrap items-center gap-1 border-0 border-x border-b border-hairline-strong bg-surface p-2">
+          <legend className="sr-only">View</legend>
+          {VIEWS.map((v) => (
+            <button
+              key={v.id}
+              type="button"
+              aria-pressed={view === v.id}
+              className={choice(view === v.id)}
+              onClick={() => setView(v.id)}
+            >
+              {v.label}
+            </button>
+          ))}
+        </fieldset>
       </div>
-      <figcaption className="flex flex-wrap justify-between gap-x-3 gap-y-1 text-caption text-secondary">
+      <figcaption className="flex flex-wrap justify-between gap-x-3 gap-y-1 pt-2 text-caption text-secondary">
         <span>
-          <span className="font-mono text-primary">{label}</span> Holoviewer
-          model
+          <span className="lab text-primary">{label}</span> The holoviewer
+          model, drawn in ink
           {length === null
             ? ""
             : `, to scale, ${length.toLocaleString("en-US")} m`}
@@ -243,6 +232,7 @@ async function start(
     await import("three/examples/jsm/controls/OrbitControls.js");
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
+  const palette = inkPalette(THREE, el);
 
   const load = (url: string) => loadHoloGeometry(THREE, loader, url);
 
@@ -269,30 +259,34 @@ async function start(
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setSize(el.clientWidth, el.clientHeight);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.setClearColor(palette.paper, 1);
   renderer.domElement.style.position = "absolute";
   renderer.domElement.style.inset = "0";
   renderer.domElement.style.touchAction = "none";
   el.insertBefore(renderer.domElement, el.firstChild);
 
   const scene = new THREE.Scene();
-  const backdropTexture = holoBackdrop(THREE);
-  scene.background = backdropTexture;
+  const removeLights = inkLights(THREE, scene, palette.bodyDim);
 
-  const color = (c: readonly [number, number, number]) => holoColor(THREE, c);
-  const material = (box: InstanceType<typeof THREE.Box3>, gain: number) =>
-    holoMaterial(THREE, box, { gain, appear: reduced ? 1 : 0 });
-  // Dense meshes stack more translucent layers in X-ray; scale them so they stay cyan, not white.
-  const vertexCount = ship.getAttribute("position").count;
-  const shipMaterial = material(
-    bounds,
-    Math.min(1, Math.sqrt(220_000 / Math.max(vertexCount, 1))),
-  );
-  const shipMesh = new THREE.Mesh(ship, shipMaterial);
-  scene.add(shipMesh);
+  const body = inkBody(THREE, palette.body);
+  const ink = inkLine(THREE, palette.ink, 0.6);
+  const shipMesh = new THREE.Mesh(ship, body);
+  const shipEdges = inkEdges(THREE, ship, ink);
+  scene.add(shipMesh, shipEdges);
 
-  // The person stands on the floor beside the ship's flank, a little ahead of midships.
-  let personMaterial: InstanceType<typeof THREE.ShaderMaterial> | null = null;
-  if (person !== null) {
+  // The person stands beside the ship's flank, a little ahead of midships, in dimmer ink.
+  const personMaterials: {
+    body: ReturnType<typeof inkBody>;
+    ink: ReturnType<typeof inkLine>;
+  } | null =
+    person === null
+      ? null
+      : {
+          body: inkBody(THREE, palette.bodyDim),
+          ink: inkLine(THREE, palette.inkDim, 0.6),
+        };
+  let personEdges: ReturnType<typeof inkEdges> | null = null;
+  if (person !== null && personMaterials !== null) {
     person.computeBoundingBox();
     const box = person.boundingBox!;
     person.translate(
@@ -300,39 +294,20 @@ async function start(
       bounds.min.y - box.min.y,
       size.z * 0.12,
     );
-    person.computeBoundingBox();
-    personMaterial = material(person.boundingBox!, 1);
-    scene.add(new THREE.Mesh(person, personMaterial));
+    personEdges = inkEdges(THREE, person, personMaterials.ink, 40);
+    scene.add(new THREE.Mesh(person, personMaterials.body), personEdges);
   }
 
-  // Floor grid at the keel, in round metres.
-  const span = Math.max(size.x, size.z) * 1.35;
-  const step = [1, 2, 5, 10, 20, 50, 100].find((s) => span / s <= 40) ?? 200;
-  const cells = Math.ceil(span / step);
-  const grid = new THREE.GridHelper(
-    cells * step,
-    cells,
-    color(HOLO.line),
-    color(HOLO.line),
+  // The ground: one line under the keel, the length of the ship and a little more.
+  const groundInk = inkLine(THREE, palette.inkDim, 0.5);
+  const ground = new THREE.Line(
+    new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(-size.x * 0.9, bounds.min.y, 0),
+      new THREE.Vector3(size.x * 0.9, bounds.min.y, 0),
+    ]),
+    groundInk,
   );
-  const gridMaterial = grid.material as InstanceType<
-    typeof THREE.LineBasicMaterial
-  >;
-  gridMaterial.transparent = true;
-  gridMaterial.opacity = 0.08;
-  gridMaterial.depthWrite = false;
-  grid.position.y = bounds.min.y;
-  scene.add(grid);
-
-  // Wireframe edges, built the first time they are asked for.
-  let edges: InstanceType<typeof THREE.LineSegments> | null = null;
-  const edgeMaterial = new THREE.LineBasicMaterial({
-    color: color(HOLO.line),
-    transparent: true,
-    opacity: 0.55,
-    depthWrite: false,
-    blending: THREE.AdditiveBlending,
-  });
+  scene.add(ground);
 
   const fov = 30;
   const camera = new THREE.PerspectiveCamera(
@@ -344,7 +319,7 @@ async function start(
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = 0.08;
-  controls.autoRotateSpeed = 0.6;
+  controls.autoRotateSpeed = 0.5;
   controls.minDistance = size.length() * 0.15;
   controls.maxDistance = size.length() * 6;
 
@@ -405,32 +380,12 @@ async function start(
     tween = null;
   });
 
-  let xrayTarget = 0;
   const setRender = (render: Render) => {
-    xrayTarget = render === "default" ? 0 : 1;
-    const wire = render === "wire";
-    if (wire && edges === null) {
-      edges = new THREE.LineSegments(
-        new THREE.EdgesGeometry(ship, 24),
-        edgeMaterial,
-      );
-      scene.add(edges);
-    }
-    if (edges !== null) edges.visible = wire;
-    shipMaterial.uniforms["uGain"]!.value =
-      Math.min(1, Math.sqrt(220_000 / Math.max(vertexCount, 1))) *
-      (wire ? 0.35 : 1);
-    for (const m of [shipMaterial, personMaterial]) {
-      if (m === null) continue;
-      m.transparent = xrayTarget === 1;
-      m.depthWrite = xrayTarget === 0;
-      m.blending =
-        xrayTarget === 1 ? THREE.AdditiveBlending : THREE.NormalBlending;
-      m.needsUpdate = true;
-    }
-    grid.visible = true;
+    shipMesh.visible = render !== "lines";
+    shipEdges.visible = render !== "solid";
+    if (personEdges !== null) personEdges.visible = render !== "solid";
   };
-  setRender("default");
+  setRender("ink");
 
   let visible = true;
   const onScreen = new IntersectionObserver(([entry]) => {
@@ -447,37 +402,10 @@ async function start(
   });
   resize.observe(el);
 
-  // Materialise over 1.4 s, then sweep a scan plane along the length, the beam and the height.
-  const clock = new THREE.Clock();
-  const appearFor = 1.4;
-  const sweepFor = 1.3;
-  let xray = 0;
   let frame = 0;
   const tick = () => {
     frame = requestAnimationFrame(tick);
     if (!visible) return;
-    const t = clock.getElapsedTime();
-    const mats = [shipMaterial, personMaterial].filter(
-      (m): m is InstanceType<typeof THREE.ShaderMaterial> => m !== null,
-    );
-    if (!reduced) {
-      const appear = Math.min(1, t / appearFor);
-      const s = (t - appearFor) / sweepFor;
-      const scan = new THREE.Vector3(
-        s >= 1 && s < 2 ? s - 1 : -1,
-        s >= 2 && s < 3 ? s - 2 : -1,
-        s >= 0 && s < 1 ? s : -1,
-      );
-      for (const m of mats) {
-        m.uniforms["uAppear"]!.value = 1.02 * (1 - (1 - appear) ** 3);
-        m.uniforms["uScanAt"]!.value.copy(scan);
-      }
-    }
-    xray += (xrayTarget - xray) * (reduced ? 1 : 0.15);
-    for (const m of mats) {
-      m.uniforms["uXray"]!.value = xray;
-      m.uniforms["uTime"]!.value = t;
-    }
     if (tween !== null) {
       const k = Math.min(1, (performance.now() - tween.began) / 900);
       camera.position.lerpVectors(tween.from, tween.to, ease(k));
@@ -500,7 +428,6 @@ async function start(
       if (reduced) {
         camera.position.copy(to);
         controls.target.set(0, 0, 0);
-        controls.autoRotate = false;
         return;
       }
       tween = {
@@ -516,17 +443,17 @@ async function start(
       onScreen.disconnect();
       resize.disconnect();
       controls.dispose();
+      removeLights();
       ship.dispose();
       person?.dispose();
-      (
-        edges as InstanceType<typeof THREE.LineSegments> | null
-      )?.geometry.dispose();
-      shipMaterial.dispose();
-      personMaterial?.dispose();
-      edgeMaterial.dispose();
-      gridMaterial.dispose();
-      grid.geometry.dispose();
-      backdropTexture.dispose();
+      shipEdges.geometry.dispose();
+      personEdges?.geometry.dispose();
+      body.dispose();
+      ink.dispose();
+      personMaterials?.body.dispose();
+      personMaterials?.ink.dispose();
+      ground.geometry.dispose();
+      groundInk.dispose();
       renderer.dispose();
       renderer.domElement.remove();
     },

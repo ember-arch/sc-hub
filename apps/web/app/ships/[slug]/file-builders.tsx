@@ -742,7 +742,6 @@ export function packShipFile(ship: ShipView): ShipFileProps {
         show?.background != null
           ? {
               background: show.background,
-              cutout: show.cutout,
               credit: artCredit(show),
             }
           : image === null
@@ -755,7 +754,6 @@ export function packShipFile(ship: ShipView): ShipFileProps {
                   height: image.height,
                   alt: image.alt,
                 },
-                cutout: null,
                 credit: {
                   text: image.credit.text,
                   href: image.credit.href,
@@ -1101,7 +1099,6 @@ export function conceptShipFile(concept: ConceptShip): ShipFileProps {
           ? null
           : {
               background: show.background,
-              cutout: show.cutout,
               credit: artCredit(show),
             },
     },

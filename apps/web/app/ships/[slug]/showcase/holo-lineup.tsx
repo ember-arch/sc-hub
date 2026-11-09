@@ -3,21 +3,20 @@
 import { useEffect, useRef, useState } from "react";
 import { TextLink } from "ui";
 import {
-  HOLO,
-  holoBackdrop,
-  holoColor,
-  holoMaterial,
+  inkBody,
+  inkEdges,
+  inkLights,
+  inkLine,
+  inkPalette,
   loadHoloGeometry,
 } from "./holo-kit";
 
 /**
- * The Scale section's lineup (ADR-015): every ship on record that has an RSI holoviewer model,
- * drawn as the holoviewer draws it, each scaled to its recorded length and standing in profile
- * on one floor grid, largest first, with a person beside the smallest. The page's ship is lit
- * full; the others are dimmed. Labels name each ship and its length; the buttons below fly the
- * camera to any one ship or back to the whole line. Drag to turn, scroll or pinch to zoom.
- *
- * The look stays inside this canvas (CLAUDE.md section 2 exception, ADR-012, ADR-015).
+ * The Scale section's lineup (ADR-015, drawn in ink per ADR-020): every ship on record that has an
+ * RSI holoviewer model, each scaled to its recorded length and standing in profile on one ground
+ * line, largest first, with a person beside the smallest. The page's ship is drawn in full ink;
+ * the others dimmer. Labels name each ship and its length; the buttons below fly the camera to
+ * any one ship or back to the whole line. Drag to turn, scroll or pinch to zoom.
  */
 
 export interface LineupShip {
@@ -118,7 +117,7 @@ export function HoloLineup({
         className={`flex flex-col gap-2 ${full ? "bg-page p-4" : ""}`}
       >
         <div
-          className={`relative w-full overflow-hidden rounded-card border border-hairline bg-inset ${full ? "min-h-0 flex-1" : "aspect-video lg:aspect-[2/1]"}`}
+          className={`relative w-full overflow-hidden border border-hairline-strong bg-inset ${full ? "min-h-0 flex-1" : "aspect-video lg:aspect-[2/1]"}`}
         >
           <div
             ref={box}
@@ -223,6 +222,7 @@ async function start(
     await import("three/examples/jsm/controls/OrbitControls.js");
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
+  const palette = inkPalette(THREE, el);
 
   const order = [...ships].sort((a, b) => b.length - a.length);
   const [geometries, person] = await Promise.all([
@@ -242,7 +242,13 @@ async function start(
   }[] = [];
   let cursor = 0;
   const meshes: InstanceType<typeof THREE.Mesh>[] = [];
-  const materials: InstanceType<typeof THREE.ShaderMaterial>[] = [];
+  const lines: InstanceType<typeof THREE.LineSegments>[] = [];
+  const materials: InstanceType<typeof THREE.Material>[] = [];
+  const fullBody = inkBody(THREE, palette.body);
+  const dimBody = inkBody(THREE, palette.bodyDim);
+  const fullInk = inkLine(THREE, palette.ink, 0.6);
+  const dimInk = inkLine(THREE, palette.inkDim, 0.45);
+  materials.push(fullBody, dimBody, fullInk, dimInk);
   let tallest = 0;
   let widest = 0;
   order.forEach((ship, i) => {
@@ -273,14 +279,8 @@ async function start(
     cursor =
       box.max.x +
       Math.max(2, 0.22 * Math.min(ship.length, next?.length ?? ship.length));
-    const vertices = g.getAttribute("position").count;
-    const m = holoMaterial(THREE, box, {
-      gain: Math.min(1, Math.sqrt(220_000 / Math.max(vertices, 1))),
-      appear: reduced ? 1 : 0,
-      dim: ship.current ? 1 : 0.72,
-    });
-    materials.push(m);
-    meshes.push(new THREE.Mesh(g, m));
+    meshes.push(new THREE.Mesh(g, ship.current ? fullBody : dimBody));
+    lines.push(inkEdges(THREE, g, ship.current ? fullInk : dimInk));
   });
   let rowEnd = cursor;
   if (person !== null) {
@@ -288,17 +288,14 @@ async function start(
     const pb = person.boundingBox!;
     person.translate(cursor - pb.min.x, -pb.min.y, -(pb.min.z + pb.max.z) / 2);
     person.computeBoundingBox();
-    const m = holoMaterial(THREE, person.boundingBox!, {
-      gain: 1,
-      appear: reduced ? 1 : 0,
-    });
-    materials.push(m);
-    meshes.push(new THREE.Mesh(person, m));
+    meshes.push(new THREE.Mesh(person, dimBody));
+    lines.push(inkEdges(THREE, person, dimInk, 40));
     rowEnd = person.boundingBox!.max.x;
   }
   // Centre the row on the origin.
   const shift = -rowEnd / 2;
   for (const mesh of meshes) mesh.position.x = shift;
+  for (const line of lines) line.position.x = shift;
   for (const p of placed) p.x += shift;
   const rowLength = rowEnd;
 
@@ -306,34 +303,27 @@ async function start(
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setSize(el.clientWidth, el.clientHeight);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.setClearColor(palette.paper, 1);
   renderer.domElement.style.position = "absolute";
   renderer.domElement.style.inset = "0";
   renderer.domElement.style.touchAction = "none";
   el.insertBefore(renderer.domElement, el.firstChild);
 
   const scene = new THREE.Scene();
-  const backdrop = holoBackdrop(THREE);
-  scene.background = backdrop;
+  const removeLights = inkLights(THREE, scene, palette.bodyDim);
   for (const mesh of meshes) scene.add(mesh);
+  for (const line of lines) scene.add(line);
 
-  // Floor grid in round metres under the whole row.
+  // The ground: one line under every keel, the row and a little more.
   const span = Math.max(rowLength * 1.15, widest * 3);
-  const step =
-    [1, 2, 5, 10, 20, 50, 100, 200].find((s) => span / s <= 60) ?? 500;
-  const cells = Math.ceil(span / step);
-  const grid = new THREE.GridHelper(
-    cells * step,
-    cells,
-    holoColor(THREE, HOLO.line),
-    holoColor(THREE, HOLO.line),
+  const ground = new THREE.Line(
+    new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(-span / 2, 0, 0),
+      new THREE.Vector3(span / 2, 0, 0),
+    ]),
+    dimInk,
   );
-  const gridMaterial = grid.material as InstanceType<
-    typeof THREE.LineBasicMaterial
-  >;
-  gridMaterial.transparent = true;
-  gridMaterial.opacity = 0.08;
-  gridMaterial.depthWrite = false;
-  scene.add(grid);
+  scene.add(ground);
 
   const fov = 28;
   const camera = new THREE.PerspectiveCamera(
@@ -443,17 +433,10 @@ async function start(
   });
   resize.observe(el);
 
-  const clock = new THREE.Clock();
   let frame = 0;
   const tick = () => {
     frame = requestAnimationFrame(tick);
     if (!visible) return;
-    const t = clock.getElapsedTime();
-    if (!reduced) {
-      const appear = Math.min(1, t / 1.6);
-      for (const m of materials)
-        m.uniforms["uAppear"]!.value = 1.02 * (1 - (1 - appear) ** 3);
-    }
     if (tween !== null) {
       const k = Math.min(1, (performance.now() - tween.began) / 1000);
       camera.position.lerpVectors(tween.from, tween.to, ease(k));
@@ -493,11 +476,11 @@ async function start(
       onScreen.disconnect();
       resize.disconnect();
       controls.dispose();
+      removeLights();
       for (const mesh of meshes) mesh.geometry.dispose();
+      for (const line of lines) line.geometry.dispose();
       for (const m of materials) m.dispose();
-      gridMaterial.dispose();
-      grid.geometry.dispose();
-      backdrop.dispose();
+      ground.geometry.dispose();
       for (const tag of tagEls) tag.remove();
       renderer.dispose();
       renderer.domElement.remove();

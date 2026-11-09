@@ -1,22 +1,12 @@
-import { existsSync, readFileSync } from "node:fs";
-import { join } from "node:path";
-import { type Title, TitleIconManifest, type TitleIconMedia } from "schema";
-import { REPO_ROOT } from "./data";
+import type { Title, TitleIconMedia } from "schema";
+import { loadMediaManifest } from "./media";
 
 /**
  * Which title icons have web copies (ADR-017). They are CIG's art, copied from the Star Citizen
- * Wiki for local development only: the copies and the manifest that lists them are git-ignored,
- * so a fresh clone, CI and every deploy have none and the page shows titles without icons.
+ * Wiki for local development only: the copies and the media manifest that lists them under
+ * `titles` are git-ignored, so a fresh clone, CI and every deploy have none and the page shows
+ * titles without icons.
  */
-
-export const TITLE_ICON_MANIFEST = join(
-  REPO_ROOT,
-  "apps",
-  "web",
-  "public",
-  "media",
-  "manifest.json",
-);
 
 /** The image a title shows: the smallest copy as the fallback, every copy by pixel density. */
 export interface TitleIconImage {
@@ -48,18 +38,12 @@ export function iconImage(entry: TitleIconMedia): TitleIconImage {
   };
 }
 
-/** The manifest's `titles` list; empty when nothing has been built. */
-export function loadTitleIcons(): TitleIconMedia[] {
-  if (!existsSync(TITLE_ICON_MANIFEST)) return [];
-  return TitleIconManifest.parse(
-    JSON.parse(readFileSync(TITLE_ICON_MANIFEST, "utf8")),
-  ).titles;
-}
-
 let cached: Map<string, TitleIconImage> | undefined;
 
 /** The icon for a title, or null when none was built. */
 export function titleIcon(title: Title): TitleIconImage | null {
-  cached ??= new Map(loadTitleIcons().map((e) => [e.file, iconImage(e)]));
+  cached ??= new Map(
+    (loadMediaManifest()?.titles ?? []).map((e) => [e.file, iconImage(e)]),
+  );
   return title.icon === null ? null : (cached.get(title.icon.file) ?? null);
 }

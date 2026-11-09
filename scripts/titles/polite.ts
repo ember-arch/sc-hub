@@ -5,8 +5,9 @@
  * project User-Agent. `fetch`, `sleep` and `now` are injected so tests run with no network.
  */
 
-export const USER_AGENT =
-  "sc-hub-titles/0.0 (non-commercial fan reference in development; github.com/ember-arch/sc-hub)";
+import { userAgent } from "../user-agent.js";
+
+export const USER_AGENT = userAgent("titles");
 
 export const WIKI_SPACING_MS = 5_000;
 export const BACKOFF_MS: readonly number[] = [30_000, 120_000];

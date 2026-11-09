@@ -137,11 +137,6 @@ export const TitleIconMedia = z.strictObject({
 });
 export type TitleIconMedia = z.infer<typeof TitleIconMedia>;
 
-/** The part of the media manifest the titles page reads; other keys are left to their owners. */
-export const TitleIconManifest = z.object({
-  titles: z.array(TitleIconMedia).default([]),
-});
-
 /** `fixtures/titles/Titles.json`: the whole catalogue from one revision of the article. */
 export const TitleCatalog = z
   .strictObject({

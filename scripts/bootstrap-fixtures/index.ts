@@ -34,6 +34,7 @@ import {
   mapVehicle,
   mapVehicleStats,
 } from "./map.js";
+import { linkEditions } from "./editions.js";
 import {
   CATALOG_TYPES,
   ShipList,
@@ -250,9 +251,19 @@ async function main(): Promise<void> {
     fallbacks(vehicleNames),
   );
 
-  const vehicleRows = vehicles.map((raw) =>
-    mapVehicle(raw, vehicleSlugs.get(raw.class_name) ?? "", version),
+  // Editions (showroom copies, sale editions) point at their base (ADR-022, editions.ts).
+  const linked = linkEditions(
+    vehicles.map((raw) =>
+      mapVehicle(raw, vehicleSlugs.get(raw.class_name) ?? "", version),
+    ),
   );
+  const vehicleRows = linked.vehicles;
+  log({
+    event: "bootstrap.editions",
+    count: linked.editions.length,
+    editions: linked.editions,
+    unlinked: linked.unlinked,
+  });
   const vehicleStatsRows = vehicles.map((raw) =>
     mapVehicleStats(raw, channel, version),
   );

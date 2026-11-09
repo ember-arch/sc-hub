@@ -369,7 +369,8 @@ function scaleView(slug: string, drawn: ReactNode): ReactNode {
   const ships: LineupShip[] = [
     ...r.ships.flatMap((o) => {
       const holo = media().holo(o.vehicle.slug);
-      return holo === null || o.stats === null
+      // A ship with no length on record, or none above zero, cannot be scaled.
+      return holo === null || o.stats === null || !(o.stats.length_m > 0)
         ? []
         : [
             {
@@ -384,7 +385,7 @@ function scaleView(slug: string, drawn: ReactNode): ReactNode {
     }),
     ...conceptShips().flatMap((c) => {
       const holo = media().holo(c.slug);
-      return holo === null || c.length_m === null
+      return holo === null || c.length_m === null || !(c.length_m > 0)
         ? []
         : [
             {
@@ -742,6 +743,7 @@ export function packShipFile(ship: ShipView): ShipFileProps {
         show?.background != null
           ? {
               background: show.background,
+              cutout: show.cutout,
               credit: artCredit(show),
             }
           : image === null
@@ -754,6 +756,7 @@ export function packShipFile(ship: ShipView): ShipFileProps {
                   height: image.height,
                   alt: image.alt,
                 },
+                cutout: null,
                 credit: {
                   text: image.credit.text,
                   href: image.credit.href,
@@ -1099,6 +1102,7 @@ export function conceptShipFile(concept: ConceptShip): ShipFileProps {
           ? null
           : {
               background: show.background,
+              cutout: show.cutout,
               credit: artCredit(show),
             },
     },

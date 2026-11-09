@@ -1,0 +1,102 @@
+[
+  {
+    "slug": "odin",
+    "section": "operations",
+    "label": "Central hangar",
+    "value": "Heavy support craft, for example the Anvil Asgard or Valkyrie",
+    "quote": "Deploy heavy support craft, such as the Anvil Asgard or Valkyrie, from the central hangar",
+    "source_url": "https://robertsspaceindustries.com/en/comm-link/transmission/21133-Anvil-Odin",
+    "source_title": "Anvil Odin | Star Citizen",
+    "published_at": "2026-05-24T16:00:00+00:00"
+  },
+  {
+    "slug": "odin",
+    "section": "operations",
+    "label": "Side hangars",
+    "value": "Six, for repair, refuel, rearm and redeploy",
+    "quote": "Rapidly repair, refuel, rearm, and redeploy support ships from six integrated side hangars",
+    "source_url": "https://robertsspaceindustries.com/en/comm-link/transmission/21133-Anvil-Odin",
+    "source_title": "Anvil Odin | Star Citizen",
+    "published_at": "2026-05-24T16:00:00+00:00"
+  },
+  {
+    "slug": "odin",
+    "section": "combat",
+    "label": "Turrets",
+    "value": "23 operable",
+    "quote": "An incomparable 23 operable turrets",
+    "source_url": "https://robertsspaceindustries.com/en/comm-link/transmission/21133-Anvil-Odin",
+    "source_title": "Anvil Odin | Star Citizen",
+    "published_at": "2026-05-24T16:00:00+00:00"
+  },
+  {
+    "slug": "odin",
+    "section": "combat",
+    "label": "Payload types",
+    "value": "Torpedoes, ballistics, energy weapons",
+    "quote": "Torpedoes. Ballistics. Energy payloads.",
+    "source_url": "https://robertsspaceindustries.com/en/comm-link/transmission/21133-Anvil-Odin",
+    "source_title": "Anvil Odin | Star Citizen",
+    "published_at": "2026-05-24T16:00:00+00:00"
+  },
+  {
+    "slug": "odin",
+    "section": "combat",
+    "label": "Retractable weapons",
+    "value": "Weapon systems stay inside the hull until used",
+    "quote": "Entire weapons systems remain concealed within the Odin’s hull until the instant of attack.",
+    "source_url": "https://robertsspaceindustries.com/en/comm-link/transmission/21133-Anvil-Odin",
+    "source_title": "Anvil Odin | Star Citizen",
+    "published_at": "2026-05-24T16:00:00+00:00"
+  },
+  {
+    "slug": "odin",
+    "section": "combat",
+    "label": "Main gun",
+    "value": "Twelve-emitter beam weapon, anti-capital",
+    "quote": "Capital ships perish beneath the Odin’s mortal gaze",
+    "source_url": "https://robertsspaceindustries.com/en/comm-link/transmission/21133-Anvil-Odin",
+    "source_title": "Anvil Odin | Star Citizen",
+    "published_at": "2026-05-24T16:00:00+00:00"
+  },
+  {
+    "slug": "odin",
+    "section": "command",
+    "label": "Bridge",
+    "value": "Raised above the hull",
+    "quote": "Positioned high above the hull in classic naval tradition, the Odin’s reinforced bridge",
+    "source_url": "https://robertsspaceindustries.com/en/comm-link/transmission/21133-Anvil-Odin",
+    "source_title": "Anvil Odin | Star Citizen",
+    "published_at": "2026-05-24T16:00:00+00:00"
+  },
+  {
+    "slug": "odin",
+    "section": "command",
+    "label": "Briefing room",
+    "value": "War room for planning",
+    "quote": "Coordinate assaults, track emerging threats, and prepare for battles ahead from a war room",
+    "source_url": "https://robertsspaceindustries.com/en/comm-link/transmission/21133-Anvil-Odin",
+    "source_title": "Anvil Odin | Star Citizen",
+    "published_at": "2026-05-24T16:00:00+00:00"
+  },
+  {
+    "slug": "odin",
+    "section": "logistics",
+    "label": "Cargo",
+    "value": "8,000 SCU stated (the ship matrix lists 6,000), including a 2,000 SCU cargo lift",
+    "quote": "An astonishing 8000 SCU cargo capacity",
+    "source_url": "https://robertsspaceindustries.com/en/comm-link/transmission/21133-Anvil-Odin",
+    "source_title": "Anvil Odin | Star Citizen",
+    "published_at": "2026-05-24T16:00:00+00:00"
+  },
+  {
+    "slug": "odin",
+    "section": "logistics",
+    "label": "Ammunition",
+    "value": "Ship-wide ammunition reserve",
+    "quote": "A vast ship-spanning ammunition reserve",
+    "source_url": "https://robertsspaceindustries.com/en/comm-link/transmission/21133-Anvil-Odin",
+    "source_title": "Anvil Odin | Star Citizen",
+    "published_at": "2026-05-24T16:00:00+00:00"
+  }
+]

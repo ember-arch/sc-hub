@@ -1,0 +1,7 @@
+{
+  "article": {
+    "title": "Loaner Ship Matrix",
+    "edited_at": "2026-08-26T18:35:09Z",
+    "body": "<p><strong>Last Updated: </strong>August 26th, 2026 | 4.10.0-live.12519617</p><table><tbody><tr style=\"height: 22px;\">\n<th style=\"background-color: #0b6fa4; color: #ffffff; height: 22px; padding: 5p; text-align: center; width: 45.2857%;\" scope=\"rowGroup\">YOUR SHIP</th>\n<th style=\"background-color: #0b6fa4; color: #ffffff; height: 22px; padding: 5p; text-align: center; width: 57.8571%;\" scope=\"rowGroup\">OUR LOANER(S)</th>\n</tr><tr style=\"height: 22px;\">\n<td style=\"height: 22px; padding: 3px 5px; width: 45.2857%;\">Carrack / Carrack Expedition</td>\n<td style=\"height: 22px; padding: 3px 5px; width: 57.8571%;\">C8 Pisces, URSA Rover</td>\n</tr><tr style=\"height: 22px;\">\n<td style=\"height: 22px; padding: 3px 5px; width: 45.2857%;\">Fury Variants</td>\n<td style=\"height: 22px; padding: 3px 5px; width: 57.8571%;\">Mustang Alpha</td>\n</tr><tr style=\"height: 44px;\">\n<td style=\"height: 10px; padding: 3px 5px; width: 45.2857%;\">Idris-M &amp; P</td>\n<td style=\"height: 10px; padding: 3px 5px; width: 57.8571%;\">F7C-M Super Hornet, MPUV Passenger</td>\n</tr><tr>\n<td>Odin</td>\n<td>Idris-P</td>\n</tr><tr style=\"height: 22px;\">\n<td style=\"height: 22px; padding: 3px 5px; width: 45.2857%;\">Carrack / Carrack Expedition</td>\n<td style=\"height: 22px; padding: 3px 5px; width: 57.8571%;\">C8 Pisces, URSA Rover</td>\n</tr></tbody></table>"
+  }
+}

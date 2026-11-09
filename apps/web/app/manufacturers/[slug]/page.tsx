@@ -7,6 +7,7 @@ import { Site } from "../../../lib/site";
 import { JsonLdScript } from "../../json-ld";
 import { componentRows, shipCard } from "../../../lib/views";
 import { ComponentTable } from "../../components/component-table";
+import { media, shipCardImage } from "../../../lib/media";
 
 interface Params {
   readonly params: Promise<{ slug: string }>;
@@ -43,6 +44,7 @@ export default async function ManufacturerPage({ params }: Params) {
           name: m.name,
           kicker: { label: "Manufacturer" },
           brandRule: true,
+          mark: media().maker(m.code, m.name),
         }}
         facts={[
           { label: "Code", value: m.code },
@@ -67,7 +69,7 @@ export default async function ManufacturerPage({ params }: Params) {
             <ul className="m-0 grid list-none grid-cols-2 gap-4 p-0 md:grid-cols-3 lg:grid-cols-4">
               {lineup.map((ship) => (
                 <li key={ship.vehicle.class_name}>
-                  <Card {...shipCard(ship)} />
+                  <Card {...shipCard(ship, shipCardImage(ship))} />
                 </li>
               ))}
             </ul>

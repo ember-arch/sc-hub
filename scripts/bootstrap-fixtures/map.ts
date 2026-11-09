@@ -607,3 +607,154 @@ export function mapItemStats(
     raw: pruneRaw(raw, ITEM_RAW_DROP),
   });
 }
+
+// ---------------------------------------------------------------------------
+// Catalogue (ADR-016)
+// ---------------------------------------------------------------------------
+
+type Loose = Record<string, unknown>;
+const looseObject = (v: unknown): Loose | undefined =>
+  v !== null && typeof v === "object" && !Array.isArray(v)
+    ? (v as Loose)
+    : undefined;
+const keep = (v: unknown, keys: readonly string[]): Loose | undefined => {
+  const o = looseObject(v);
+  if (o === undefined) return undefined;
+  const out = Object.fromEntries(
+    keys
+      .filter((k) => o[k] !== undefined && o[k] !== null)
+      .map((k) => [k, o[k]]),
+  );
+  return Object.keys(out).length === 0 ? undefined : out;
+};
+
+/**
+ * A catalogue part's record trimmed by rule (ADR-016): its identity and the blocks the loadout
+ * editor and the stat mapper read (durability, signatures, gun, ammunition, missile, shield,
+ * power plant, cooler and quantum drive figures, and the power network's online deltas), each
+ * cut to the fields used. Everything else the API sends (fire modes, spread, tags, interactions,
+ * blueprints, prices, translations) is left out to keep the pack small. Stock parts keep their
+ * whole record.
+ */
+export function catalogRecord(raw: Loose): Loose {
+  const weapon = looseObject(raw["vehicle_weapon"]);
+  const quantum = looseObject(raw["quantum_drive"]);
+  const network = looseObject(raw["resource_network"]);
+  const states = Array.isArray(network?.["states"])
+    ? (network["states"] as unknown[]).map((s) => {
+        const state = looseObject(s) ?? {};
+        return {
+          name: state["name"],
+          signature: state["signature"],
+          deltas: Array.isArray(state["deltas"])
+            ? (state["deltas"] as unknown[]).map((d) =>
+                keep(d, [
+                  "type",
+                  "resource",
+                  "rate",
+                  "minimum_fraction",
+                  "generated_resource",
+                  "generated_rate",
+                ]),
+              )
+            : [],
+        };
+      })
+    : undefined;
+  const record: Loose = {
+    ...keep(raw, [
+      "uuid",
+      "name",
+      "class_name",
+      "type",
+      "sub_type",
+      "size",
+      "grade",
+      "class",
+      "version",
+      "mass",
+      "manufacturer",
+      "emission",
+    ]),
+    durability: keep(raw["durability"], ["health"]),
+    vehicle_weapon:
+      weapon === undefined
+        ? undefined
+        : {
+            ...keep(weapon, [
+              "class",
+              "type",
+              "capacity",
+              "range",
+              "damage_per_shot",
+              "regeneration",
+              "rpm",
+            ]),
+            damage: keep(weapon["damage"], [
+              "alpha_total",
+              "sustained_60s",
+              "burst",
+              "dps",
+              "alpha",
+            ]),
+          },
+    ammunition: keep(raw["ammunition"], [
+      "speed",
+      "range",
+      "lifetime",
+      "capacity",
+    ]),
+    missile: keep(raw["missile"], [
+      "signal_type",
+      "lock_time",
+      "lock_range_max",
+      "lock_range_min",
+      "lock_angle",
+      "speed",
+      "damage_total",
+      "damage_map",
+      "explosion_radius_min",
+      "explosion_radius_max",
+    ]),
+    shield: keep(raw["shield"], [
+      "max_health",
+      "regen_rate",
+      "regen_time",
+      "regen_delay",
+      "absorption",
+      "resistance",
+    ]),
+    power_plant: keep(raw["power_plant"], ["power_segment_generation"]),
+    cooler: keep(raw["cooler"], ["coolant_segment_generation"]),
+    quantum_drive:
+      quantum === undefined
+        ? undefined
+        : {
+            ...keep(quantum, ["quantum_fuel_requirement", "jump_range"]),
+            standard_jump: keep(quantum["standard_jump"], [
+              "drive_speed",
+              "spool_up_time",
+              "cooldown_time",
+              "stage_one_accel_rate",
+              "stage_two_accel_rate",
+            ]),
+          },
+    resource_network: states === undefined ? undefined : { states },
+  };
+  return Object.fromEntries(
+    Object.entries(record).filter(([, v]) => v !== undefined),
+  );
+}
+
+/** True when a part of this wiki type and size fits a port on one of the pack's ships. */
+export function fitsAPort(
+  type: string,
+  size: number | null | undefined,
+  ports: readonly Pick<Port, "port_type" | "size_min" | "size_max">[],
+): boolean {
+  const portType = TYPE_MAP[type];
+  if (portType === undefined || typeof size !== "number") return false;
+  return ports.some(
+    (p) => p.port_type === portType && size >= p.size_min && size <= p.size_max,
+  );
+}

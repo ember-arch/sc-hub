@@ -131,6 +131,25 @@ export type WikiItem = z.infer<typeof WikiItem>;
 
 export const WikiItemResponse = z.looseObject({ data: WikiItem });
 
+/** A page of `/api/items?filter[type]=…`: whole item records, as `/api/items/<uuid>` returns them. */
+export const WikiItemListResponse = z.looseObject({
+  data: z.array(WikiItem),
+  meta: z.looseObject({ last_page: z.number().int().positive() }),
+});
+
+/**
+ * The parts the loadout editor offers (ADR-016): every ship gun, missile and torpedo, shield,
+ * power plant, cooler and quantum drive the API lists, not only those on the five ships.
+ */
+export const CATALOG_TYPES = [
+  "WeaponGun",
+  "Missile",
+  "Shield",
+  "PowerPlant",
+  "Cooler",
+  "QuantumDrive",
+] as const;
+
 export const WikiGameVersionResponse = z.looseObject({
   data: z.looseObject({
     code: z.string().min(1),
@@ -140,7 +159,7 @@ export const WikiGameVersionResponse = z.looseObject({
 
 /** The five ships to fetch, by the identifier the wiki accepts (display name or slug). */
 export const ShipList = z.strictObject({
-  ships: z.array(z.string().min(1)).length(5),
+  ships: z.array(z.string().min(1)).min(5),
 });
 
 /** One entry of GET /api/vehicles?filter[class_name]=...: enough to pick the exact class name and fetch by uuid. */

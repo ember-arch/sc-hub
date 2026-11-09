@@ -45,7 +45,7 @@ describe("the committed bootstrap pack", () => {
       0,
     );
     expect(bytes).toBeLessThan(PACK_BYTE_LIMIT);
-    expect(pack.rows.Vehicle).toHaveLength(5);
+    expect(pack.rows.Vehicle).toHaveLength(6);
   });
 
   it("holds five ships of five sizes from five manufacturers", () => {

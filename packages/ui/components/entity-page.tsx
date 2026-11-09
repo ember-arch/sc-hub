@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Badge, type BadgeTone } from "./badge";
 import { Card, type CardProps } from "./card";
+import { type MakerMark, Mark } from "./media";
 import { TextLink } from "./text-link";
 
 /**
@@ -28,6 +29,8 @@ export interface HeroProps {
   readonly placeholder?: string | undefined;
   /** Manufacturer pages: a 3 px rule is the only place a brand color may appear (system.md section 2). */
   readonly brandRule?: boolean | undefined;
+  /** Manufacturer pages: the maker's own logo from the fankit, above the name (ADR-009). */
+  readonly mark?: MakerMark | null | undefined;
   readonly children?: ReactNode;
 }
 
@@ -38,6 +41,7 @@ export function Hero({
   image,
   placeholder,
   brandRule,
+  mark,
   children,
 }: HeroProps) {
   return (
@@ -45,6 +49,11 @@ export function Hero({
       className={`flex flex-col gap-6 pt-8 md:flex-row md:items-end md:justify-between ${brandRule === true ? "border-t-[3px] border-hairline-strong" : ""}`}
     >
       <div className="flex min-w-0 flex-col gap-2">
+        {mark === undefined || mark === null ? null : (
+          <div className="mb-4">
+            <Mark mark={mark} heightClass="h-16" />
+          </div>
+        )}
         {kicker !== undefined ? (
           <p className="text-ui text-secondary">
             {kicker.href !== undefined ? (
@@ -139,18 +148,35 @@ export interface SectionProps {
   readonly title: string;
   /** A short line beside the title: version, count, source. */
   readonly aside?: ReactNode;
+  /** In a ship dossier (ADR-011): the section's number, set before the title with a strong rule. */
+  readonly number?: number | undefined;
   readonly children: ReactNode;
 }
 
-export function Section({ id, title, aside, children }: SectionProps) {
+export function Section({ id, title, aside, number, children }: SectionProps) {
+  const dossier = number !== undefined;
   return (
     <section
       id={id}
       aria-labelledby={`${id}-heading`}
-      className="flex flex-col gap-4"
+      className={`flex flex-col ${dossier ? "scroll-mt-6 gap-6" : "gap-4"}`}
     >
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h2 id={`${id}-heading`} className="text-heading text-primary">
+      <div
+        className={`flex flex-wrap items-baseline justify-between gap-2 ${dossier ? "border-t border-hairline-strong pt-4" : ""}`}
+      >
+        <h2
+          id={`${id}-heading`}
+          className={
+            dossier
+              ? "m-0 flex items-baseline gap-3 text-title text-primary"
+              : "text-heading text-primary"
+          }
+        >
+          {dossier ? (
+            <span className="font-mono text-ui text-accent">
+              {String(number).padStart(2, "0")}
+            </span>
+          ) : null}
           {title}
         </h2>
         {aside !== undefined ? (
@@ -202,7 +228,9 @@ export function Related({ groups }: RelatedProps) {
 }
 
 export interface EntityPageProps {
-  readonly hero: HeroProps;
+  /** null when the page renders its hero full-bleed on the PageShell stage (ADR-008). */
+  readonly hero: HeroProps | null;
+  /** Empty when the stage carries the key facts as headline figures. */
   readonly facts: readonly KeyFact[];
   readonly children?: ReactNode;
   readonly related?: readonly RelatedGroup[] | undefined;
@@ -216,8 +244,8 @@ export function EntityPage({
 }: EntityPageProps) {
   return (
     <article className="flex flex-col gap-12">
-      <Hero {...hero} />
-      <KeyFacts facts={facts} />
+      {hero === null ? null : <Hero {...hero} />}
+      {facts.length === 0 ? null : <KeyFacts facts={facts} />}
       {children}
       {related !== undefined ? <Related groups={related} /> : null}
     </article>

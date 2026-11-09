@@ -1,5 +1,6 @@
 import NextLink from "next/link";
 import { formatNumber } from "./format";
+import type { ResponsiveImage } from "./media";
 
 export interface CardStat {
   readonly label: string;
@@ -14,8 +15,13 @@ export interface CardProps {
   readonly role: string | null;
   /** Two stats (system.md section 3). */
   readonly stats: readonly [CardStat, CardStat] | readonly CardStat[];
-  readonly image?:
-    { readonly src: string; readonly alt: string } | null | undefined;
+  /** The card shows no credit line; the page it links to credits the image (ADR-009). */
+  readonly image?: ResponsiveImage | null | undefined;
+  /**
+   * "lazy" (the default) waits until the card nears the screen. "eager" is for a list's first row,
+   * on screen at once; "high" for the first card, usually the page's largest paint.
+   */
+  readonly imageLoading?: "lazy" | "eager" | "high" | undefined;
 }
 
 /** Ship card: image, name, manufacturer, role, two stats. The whole card is the link. */
@@ -26,6 +32,7 @@ export function Card({
   role,
   stats,
   image,
+  imageLoading = "lazy",
 }: CardProps) {
   return (
     <NextLink
@@ -34,11 +41,22 @@ export function Card({
     >
       {/* No image, no well: an empty box is chrome the reader could lose (design review, ADR-006). */}
       {image === undefined || image === null ? null : (
-        <img
-          src={image.src}
-          alt={image.alt}
-          className="aspect-video w-full rounded-control object-cover"
-        />
+        // Inside <picture> React adds no preload hint, so a page that merely links to this list
+        // (the nav does, everywhere) does not download its images when it prefetches it.
+        <picture>
+          <img
+            src={image.src}
+            srcSet={image.srcSet}
+            sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
+            width={image.width}
+            height={image.height}
+            alt={image.alt}
+            loading={imageLoading === "lazy" ? "lazy" : "eager"}
+            fetchPriority={imageLoading === "high" ? "high" : undefined}
+            decoding="async"
+            className="block aspect-video h-auto w-full rounded-control object-cover"
+          />
+        </picture>
       )}
       <div className="flex flex-col gap-1">
         <p className="text-ui font-medium text-primary group-hover:text-accent">

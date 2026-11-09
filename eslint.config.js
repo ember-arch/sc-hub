@@ -18,6 +18,8 @@ export default defineConfig(
       "pipeline/out/**",
       "**/next-env.d.ts",
       "**/*.tsbuildinfo",
+      // Local media and the vendored Draco decoder, git-ignored (ADR-009, ADR-010).
+      "apps/web/public/media/**",
     ],
   },
   js.configs.recommended,

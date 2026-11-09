@@ -4,13 +4,18 @@ import type {
   CompareGroup,
   CompareRow,
 } from "../app/compare/compare-table";
+import { pricesFor } from "./acquisition";
+import { stockCombat } from "./combat";
 import { compareHref, withoutShip } from "./compare";
 import type { ShipView } from "./data";
+import { insuranceOf } from "./ship-file";
 import { VEHICLE_STATS, crewRange } from "./views";
 
 /**
- * Rows for the compare page (spec 02, "Compare"): the key-facts set first, then every other
- * VehicleStats field from the ship page's own field table, one column per ship. A row every ship
+ * Rows for the compare page (spec 02, "Compare"): the key-facts set first, then prices and
+ * insurance (ADR-013), then what the stock loadout adds up to (ADR-016), then every other
+ * VehicleStats field from the ship page's own field table,
+ * one column per ship. A row every ship
  * lacks is omitted (spec 02 notes: omit null rows); a ship missing a stat the others have shows a
  * dash in the table.
  */
@@ -83,6 +88,98 @@ const KEY_FACTS: readonly RowSpec[] = [
   },
 ];
 
+const prices = (s: ShipView) => pricesFor(s.vehicle.slug, s.vehicle.class_name);
+
+/**
+ * Prices and insurance for acquisition planning (ADR-013): the pledge store, UEX Corp's lowest
+ * reported shop prices and the game's insurance figures. The page credits both price sources.
+ */
+const ACQUISITION: readonly RowSpec[] = [
+  {
+    key: "pledge",
+    label: "Pledge",
+    unit: "USD",
+    value: (s) => prices(s).pledge?.price_usd ?? null,
+  },
+  {
+    key: "pledge_status",
+    label: "Pledge status",
+    value: (s) => {
+      const pledge = prices(s).pledge;
+      if (pledge === null) return null;
+      return pledge.available ? "On sale" : "Not on sale";
+    },
+  },
+  {
+    key: "buy",
+    label: "Buy in game, lowest",
+    unit: "aUEC",
+    value: (s) => prices(s).buy_auec,
+  },
+  {
+    key: "rent",
+    label: "Rent in game, lowest",
+    unit: "aUEC",
+    value: (s) => prices(s).rent_auec,
+  },
+  {
+    key: "insurance_claim",
+    label: "Insurance claim",
+    unit: "min",
+    digits: 2,
+    value: (s) => insuranceOf(s.stats?.raw)?.claim_min ?? null,
+  },
+  {
+    key: "expedite_fee",
+    label: "Expedite fee",
+    unit: "aUEC",
+    value: (s) => insuranceOf(s.stats?.raw)?.expedite_auec ?? null,
+  },
+];
+
+const combat = (s: ShipView) => stockCombat(s.vehicle.class_name);
+
+/**
+ * What each stock loadout adds up to (ADR-016), by the loadout editor's rules: the figures a
+ * captain weighs a fight by. Summed from the parts' records; a ship with no swappable ports on
+ * record shows dashes.
+ */
+const COMBAT: readonly RowSpec[] = [
+  {
+    key: "gun_dps",
+    label: "Gun damage",
+    unit: "per s",
+    value: (s) => combat(s)?.gunDps ?? null,
+  },
+  {
+    key: "gun_alpha",
+    label: "Damage per volley",
+    value: (s) => combat(s)?.gunAlpha ?? null,
+  },
+  {
+    key: "missiles",
+    label: "Missiles and torpedoes",
+    value: (s) => combat(s)?.missiles ?? null,
+  },
+  {
+    key: "missile_damage",
+    label: "Missile damage",
+    value: (s) => combat(s)?.missileDamage ?? null,
+  },
+  {
+    key: "shield_hp",
+    label: "Shields",
+    unit: "HP",
+    value: (s) => combat(s)?.shieldHp ?? null,
+  },
+  {
+    key: "shield_regen",
+    label: "Shield regeneration",
+    unit: "HP/s",
+    value: (s) => combat(s)?.shieldRegen ?? null,
+  },
+];
+
 /** The stats the key facts already cover; everything else in VEHICLE_STATS makes the second group. */
 const IN_KEY_FACTS = new Set<string>(["cargo_scu", "length_m", "mass_kg"]);
 
@@ -112,6 +209,8 @@ function rows(specs: readonly RowSpec[], ships: readonly ShipView[]) {
 export function compareGroups(ships: readonly ShipView[]): CompareGroup[] {
   return [
     { title: "Key facts", rows: rows(KEY_FACTS, ships) },
+    { title: "Acquisition", rows: rows(ACQUISITION, ships) },
+    { title: "Combat, stock loadout", rows: rows(COMBAT, ships) },
     { title: "Specifications", rows: rows(STATS, ships) },
   ].filter((group) => group.rows.length > 0);
 }

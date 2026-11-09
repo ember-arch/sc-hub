@@ -65,26 +65,30 @@ export interface PlateCandidate {
 }
 
 /**
- * The three plates: the live example first and largest, the concept hero beside it, then the
- * longest other ship that has a picture (the longest of all when none has one). A missing
- * showcase ship leaves its plate out rather than promoting another: the pair is the owner's
- * choice (ADR-010), not a ranking.
+ * The cards of the front page's bento: the live example first and largest, the concept hero beside
+ * it, then the `others` longest ships that have a picture (the longest of all when none has one),
+ * longest first. A missing showcase ship leaves its card out rather than promoting another: the
+ * pair is the owner's choice (ADR-010), not a ranking.
  */
 export function pickPlates<T extends PlateCandidate>(
   candidates: readonly T[],
   liveExample: string,
   conceptHero: string,
+  others = 1,
 ): readonly T[] {
   const live = candidates.find((c) => c.slug === liveExample);
   const concept = candidates.find((c) => c.slug === conceptHero);
   const rest = candidates.filter(
     (c) => c.slug !== liveExample && c.slug !== conceptHero,
   );
-  const longest = (list: readonly T[]): T | undefined =>
-    [...list].sort((a, b) => (b.length ?? -1) - (a.length ?? -1))[0];
-  const third =
-    longest(rest.filter((c) => c.hasPicture)) ?? longest(rest) ?? undefined;
-  return [live, concept, third].filter((c): c is T => c !== undefined);
+  const byLength = (list: readonly T[]): T[] =>
+    [...list].sort((a, b) => (b.length ?? -1) - (a.length ?? -1));
+  const pictured = byLength(rest.filter((c) => c.hasPicture));
+  const more = (pictured.length > 0 ? pictured : byLength(rest)).slice(
+    0,
+    others,
+  );
+  return [live, concept, ...more].filter((c): c is T => c !== undefined);
 }
 
 /** "+21.2K", "−3", "0": a signed figure for a counter's note. */

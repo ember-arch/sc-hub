@@ -36,7 +36,7 @@ The pages' structure and copy: the front page's contents and counters, the regis
 ## Consequences
 
 - `tokens.ts`: colours, type weights, the label size, the faces, the radii (plus `pill`) and the shadows change; `tokens.css` is regenerated; the token, contrast and gallery tests read the new values.
-- The gradient scrim on the entry's cover is the one gradient on the site, for legibility over CIG's art (as ADR-014 once allowed); the review checklist says so.
+- Text over CIG's art (the bento's cards, the entry's cover) sits on one gradient, `.art-scrim`, from the `scrim` token to transparent, and is set in `text.on-art`, the same light tone in both schemes; it is the one gradient on the site, for legibility, and the review checklist says so.
 - ADR-020's faces, frames, labels and plate rules are superseded by this ADR; its palette principle, pages and holomodel stand. ADR-012's dark default for ship pages ends.
 - The switch is rendered off on the server and corrected on hydration, so a reader whose system is dark and who has not chosen sees the knob move once on the first paint; a cookie would avoid it, and is not worth one.
 - The ink holomodel and the Scale lineup repaint when the switch is used: they re-read the tokens on the switch's event.

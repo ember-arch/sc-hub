@@ -9,6 +9,8 @@
   --text-primary: #1A1917;
   --text-secondary: #5A5852;
   --text-muted: #67635B;
+  --text-on-art: #F6F4EF;
+  --scrim: rgba(12,11,10,0.78);
   --border-default: rgba(26,25,23,0.10);
   --border-strong: rgba(26,25,23,0.24);
   --accent: #B8381F;
@@ -28,6 +30,8 @@
     --text-primary: #F1EEE6;
     --text-secondary: #B5B1A6;
     --text-muted: #9B968B;
+    --text-on-art: #F6F4EF;
+    --scrim: rgba(12,11,10,0.78);
     --border-default: rgba(241,238,230,0.10);
     --border-strong: rgba(241,238,230,0.24);
     --accent: #EE7A5F;
@@ -47,6 +51,8 @@
   --text-primary: #F1EEE6;
   --text-secondary: #B5B1A6;
   --text-muted: #9B968B;
+  --text-on-art: #F6F4EF;
+  --scrim: rgba(12,11,10,0.78);
   --border-default: rgba(241,238,230,0.10);
   --border-strong: rgba(241,238,230,0.24);
   --accent: #EE7A5F;
@@ -66,6 +72,8 @@
   --color-primary: var(--text-primary);
   --color-secondary: var(--text-secondary);
   --color-muted: var(--text-muted);
+  --color-on-art: var(--text-on-art);
+  --color-scrim: var(--scrim);
   --color-hairline: var(--border-default);
   --color-hairline-strong: var(--border-strong);
   --color-accent: var(--accent);
@@ -180,6 +188,9 @@
   }
   .text-heading {
     letter-spacing: -0.01em;
+  }
+  .art-scrim {
+    background: linear-gradient(to top, var(--scrim), transparent 62%);
   }
   .lab {
     font-size: 12px;

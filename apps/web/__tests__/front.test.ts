@@ -87,6 +87,14 @@ describe("pickPlates", () => {
     const unknown = bare.map((s) => ({ ...s, length: null }));
     expect(pickPlates(unknown, "perseus", "odin")).toHaveLength(3);
   });
+  it("takes more of the longest pictured ships when asked", () => {
+    expect(pickPlates(ships, "perseus", "odin", 3).map((s) => s.slug)).toEqual([
+      "perseus",
+      "odin",
+      "polaris",
+      "gladius",
+    ]);
+  });
   it("leaves a missing showcase ship's plate out instead of promoting another", () => {
     expect(pickPlates(ships, "perseus", "nova").map((s) => s.slug)).toEqual([
       "perseus",

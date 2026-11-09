@@ -51,11 +51,14 @@ function Tile({
   value,
   note,
   lead = false,
+  short,
 }: {
   readonly label: string;
   readonly value: string;
   readonly note?: ReactNode;
   readonly lead?: boolean;
+  /** A shorter form of the value for phones, where the full one would not fit. */
+  readonly short?: string;
 }) {
   return (
     <div
@@ -65,7 +68,14 @@ function Tile({
       <span
         className={`font-mono ${lead ? "text-display" : "text-heading"} text-primary`}
       >
-        {value}
+        {short === undefined ? (
+          value
+        ) : (
+          <>
+            <span className="md:hidden">{short}</span>
+            <span className="hidden md:inline">{value}</span>
+          </>
+        )}
       </span>
       {note === undefined ? null : (
         <span className="text-caption text-secondary">{note}</span>
@@ -234,6 +244,7 @@ export default async function FundingPage({
                 lead
                 label={measure === "pledges" ? "Total pledged" : "Citizens"}
                 value={formatValue(head.latest.value, measure)}
+                short={formatCompact(head.latest.value, measure)}
                 note={`as of ${formatDay(head.latest.day)}`}
               />
               <Tile

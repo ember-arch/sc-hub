@@ -31,7 +31,7 @@ import {
   Contents,
   type Counter,
   Counters,
-  HeroPlates,
+  Bento,
   type PlateEntry,
   RunningHead,
 } from "./front";
@@ -144,7 +144,7 @@ export default function HomePage() {
     },
   ];
 
-  // Plates: the live example, the concept hero, then the longest other ship with a picture.
+  // The bento: the live example, the concept hero, then the three longest other ships with pictures.
   const candidates = [
     ...concepts.map((c) => ({
       slug: c.slug,
@@ -161,6 +161,7 @@ export default function HomePage() {
     candidates,
     LIVE_EXAMPLE,
     CONCEPT_HERO,
+    3,
   ).map((pick) => {
     const concept = concepts.find((c) => c.slug === pick.slug);
     if (concept !== undefined) {
@@ -231,8 +232,8 @@ export default function HomePage() {
           <p className="lab m-0 text-secondary">{formatFrontDate(at)}</p>
           <div className="grid items-end gap-8 md:grid-cols-[3fr_2fr] md:gap-12">
             <h1 className="m-0 text-display text-primary lg:text-hero">
-              An almanac of <em className="font-regular">every ship,</em> part
-              and honour on record.
+              Every ship, part and honour{" "}
+              <span className="font-medium">on record.</span>
             </h1>
             <Contents />
           </div>
@@ -240,7 +241,7 @@ export default function HomePage() {
 
         <Counters counters={counters} />
 
-        <HeroPlates plates={plates} />
+        <Bento cards={plates} />
 
         <section aria-labelledby="entries" className="flex flex-col gap-4">
           <RunningHead

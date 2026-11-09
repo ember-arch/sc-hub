@@ -59,9 +59,10 @@ export interface ShipFileProps {
     } | null;
     readonly poster: string | null;
     readonly length: number | null;
-    /** The key art, drawn as a plate (ADR-020). */
+    /** The key art as the cover (ADR-021), with CIG's cut-out of the ship laid over it where it publishes one. */
     readonly art: {
       readonly background: Picture;
+      readonly cutout: Picture | null;
       readonly credit: { readonly text: string; readonly href: string };
     } | null;
     readonly modelCredit: { readonly text: string; readonly href: string };
@@ -155,6 +156,26 @@ export function ShipFileOpening({
             decoding="async"
             className="block aspect-[4/5] h-auto w-full object-cover md:aspect-[21/9]"
           />
+          {art.cutout === null ? null : (
+            // CIG's cut-out of the ship over its key background, the whole ship in frame: it sits
+            // in the band above the name (the title block is under 96 px tall), scaled to fit, to
+            // the right on wide screens as RSI composes its own page. Spacing from the scale only.
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 flex items-center justify-center px-6 pb-24 pt-12 md:justify-end md:px-12 md:pb-24 md:pt-8"
+            >
+              <img
+                src={art.cutout.src}
+                srcSet={art.cutout.srcSet}
+                sizes="(min-width: 768px) 75vw, 90vw"
+                width={art.cutout.width}
+                height={art.cutout.height}
+                alt=""
+                decoding="async"
+                className="max-h-full max-w-full object-contain"
+              />
+            </div>
+          )}
           <div aria-hidden="true" className="art-scrim absolute inset-0" />
           <div className="absolute inset-x-4 top-4 flex flex-wrap items-center gap-2 md:inset-x-8 md:top-6">
             {pills(true)}

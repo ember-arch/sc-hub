@@ -233,7 +233,7 @@ export default function HomePage() {
             <span>PTU {r.ptuVersion ?? "no build"}</span>
           </p>
           <div className="grid items-end gap-8 md:grid-cols-[3fr_2fr] md:gap-12">
-            <h1 className="m-0 text-display text-primary md:text-hero">
+            <h1 className="m-0 text-display text-primary lg:text-hero">
               An almanac of <em className="font-regular">every ship,</em> part
               and honour on record.
             </h1>

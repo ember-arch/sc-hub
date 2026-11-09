@@ -1,7 +1,8 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { DataTable, TextLink, formatNumber } from "ui";
+import NextLink from "next/link";
+import { DataTable, formatNumber } from "ui";
 import { CompareToggle } from "../compare/compare-controls";
 
 export interface ShipRow {
@@ -63,26 +64,26 @@ export function ShipTable({
           key: "name",
           header: "Name",
           render: (row) => (
-            <span className="flex items-center gap-4">
+            <span className="flex flex-col items-start gap-2">
               {row.plate === null ? null : (
                 <img
                   src={row.plate.src}
                   srcSet={row.plate.srcSet}
-                  sizes="171px"
+                  sizes="114px"
                   alt=""
                   loading="lazy"
                   decoding="async"
-                  width={171}
-                  height={96}
-                  className="hidden aspect-video h-24 w-auto shrink-0 border border-hairline-strong object-cover lg:block"
+                  width={114}
+                  height={64}
+                  className="hidden aspect-video h-16 w-auto shrink-0 border border-hairline-strong object-cover xl:block"
                 />
               )}
-              <TextLink
+              <NextLink
                 href={row.href}
-                className="whitespace-nowrap text-heading text-primary"
+                className="whitespace-nowrap rounded-control text-heading text-primary no-underline hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
               >
                 {row.name}
-              </TextLink>
+              </NextLink>
             </span>
           ),
           sortValue: (row) => row.name,

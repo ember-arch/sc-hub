@@ -1,8 +1,8 @@
 import NextLink from "next/link";
 import type { ReactNode } from "react";
-import { Plate, type PlatePicture } from "ui";
+import type { PlatePicture } from "ui";
 import { RSI_IMAGE_CREDIT } from "ui/legal";
-import { CONTENTS, romanNumeral } from "../lib/front";
+import { CONTENTS } from "../lib/front";
 import { type Figure, FigureStrip } from "./strip";
 
 export type Counter = Figure;
@@ -60,55 +60,78 @@ export interface PlateEntry {
   readonly picture: PlatePicture | null;
 }
 
-/** The hero plate with two beside it; one wide frame alone when only one ship has a picture. */
-export function HeroPlates({
-  plates,
-}: {
-  readonly plates: readonly PlateEntry[];
-}) {
-  const [first, ...side] = plates;
-  if (first === undefined) return null;
-  const caption = (p: PlateEntry): ReactNode => (
-    <>
-      <NextLink
-        href={`/ships/${p.slug}`}
-        className={`${link} text-primary hover:text-accent`}
-      >
-        {p.maker} {p.name}
-      </NextLink>
-      {p.note === "" ? null : `, ${p.note}`}
-    </>
-  );
+/**
+ * The front page's bento (ADR-021): the live example large, the concept hero tall beside it, then
+ * three more across; each an image card with the ship's name over a scrim. Without a picture a
+ * card is a toned panel with the name, so the layout keeps its shape on CI and a deployment.
+ */
+export function Bento({ cards }: { readonly cards: readonly PlateEntry[] }) {
+  if (cards.length === 0) return null;
+  const place = (i: number): string =>
+    i === 0
+      ? "md:col-span-8 md:row-span-2"
+      : i === 1
+        ? "md:col-span-4 md:row-span-2"
+        : "md:col-span-4";
+  const aspect = (i: number): string =>
+    i === 0
+      ? "aspect-[2/1]"
+      : i === 1
+        ? "aspect-square md:aspect-auto"
+        : "aspect-video";
+  const anyPicture = cards.some((c) => c.picture !== null);
   return (
-    <div
-      className={`grid gap-3 ${side.length === 0 ? "" : "md:grid-cols-[2fr_1fr]"}`}
-    >
-      <Plate
-        picture={first.picture}
-        numeral={`Plate ${romanNumeral(1)}`}
-        caption={caption(first)}
-        credit={RSI_IMAGE_CREDIT.text}
-        href={`/ships/${first.slug}`}
-        aspect="wide"
-        sizes="(min-width: 768px) 66vw, 100vw"
-        priority
-      />
-      {side.length === 0 ? null : (
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-1">
-          {side.map((p, i) => (
-            <Plate
-              key={p.slug}
-              picture={p.picture}
-              numeral={`Plate ${romanNumeral(i + 2)}`}
-              caption={caption(p)}
-              credit={RSI_IMAGE_CREDIT.text}
-              href={`/ships/${p.slug}`}
-              aspect="panorama"
-              sizes="(min-width: 768px) 33vw, 50vw"
-            />
-          ))}
-        </div>
-      )}
+    <div className="flex flex-col gap-2">
+      <ul className="m-0 grid list-none grid-cols-1 gap-3 p-0 md:grid-cols-12">
+        {cards.map((c, i) => (
+          <li key={c.slug} className={place(i)}>
+            <NextLink
+              href={`/ships/${c.slug}`}
+              className={`group relative block h-full overflow-hidden rounded-card bg-inset no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent ${i === 0 ? "shadow-lift" : "shadow-soft"}`}
+            >
+              {c.picture === null ? (
+                <div className={`${aspect(i)} h-full w-full`} />
+              ) : (
+                <img
+                  src={c.picture.src}
+                  srcSet={c.picture.srcSet}
+                  sizes={
+                    i === 0
+                      ? "(min-width: 768px) 66vw, 100vw"
+                      : "(min-width: 768px) 33vw, 100vw"
+                  }
+                  width={c.picture.width}
+                  height={c.picture.height}
+                  alt=""
+                  fetchPriority={i === 0 ? "high" : undefined}
+                  loading={i === 0 ? undefined : "lazy"}
+                  decoding="async"
+                  className={`block h-full w-full object-cover ${aspect(i)}`}
+                />
+              )}
+              <div
+                className={`absolute inset-x-0 bottom-0 flex flex-col gap-1 p-4 md:p-6 ${c.picture === null ? "" : "art-scrim pt-16"}`}
+              >
+                <p
+                  className={`m-0 text-heading ${c.picture === null ? "text-primary" : "text-on-art"}`}
+                >
+                  {c.maker} {c.name}
+                </p>
+                {c.note === "" ? null : (
+                  <p
+                    className={`m-0 text-caption ${c.picture === null ? "text-secondary" : "text-on-art/80"}`}
+                  >
+                    {c.note}
+                  </p>
+                )}
+              </div>
+            </NextLink>
+          </li>
+        ))}
+      </ul>
+      {anyPicture ? (
+        <p className="m-0 text-caption text-muted">{RSI_IMAGE_CREDIT.text}</p>
+      ) : null}
     </div>
   );
 }

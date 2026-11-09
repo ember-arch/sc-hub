@@ -146,6 +146,13 @@ export function renderTokensCss(): string {
   push("  .text-heading {");
   push("    letter-spacing: -0.01em;");
   push("  }");
+  // Text over CIG's art (ADR-021) sits on this scrim, the same in both schemes, so the bento and
+  // the entry's cover stay legible; the one gradient on the site.
+  push("  .art-scrim {");
+  push(
+    "    background: linear-gradient(to top, var(--scrim), transparent 62%);",
+  );
+  push("  }");
   push("  .lab {");
   push(`    font-size: ${type.label.size}px;`);
   push(`    line-height: ${type.label.line}px;`);

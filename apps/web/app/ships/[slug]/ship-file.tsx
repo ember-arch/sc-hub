@@ -1,12 +1,6 @@
 import type { ReactNode } from "react";
-import {
-  Badge,
-  type BadgeTone,
-  type MakerMark,
-  Mark,
-  Plate,
-  TextLink,
-} from "ui";
+import NextLink from "next/link";
+import { Badge, type BadgeTone, type MakerMark, Mark, TextLink } from "ui";
 import type { Fact, ShipClaim } from "../../../lib/ship-file";
 import type { FigureView, Picture } from "../../../lib/showcase";
 import { CompareLink, CompareToggle } from "../../compare/compare-controls";
@@ -82,9 +76,11 @@ export interface ShipFileProps {
 const pad = (n: number): string => String(n).padStart(2, "0");
 
 /**
- * The opening: the holomodel in ink (or the key art, when no model is built) beside the entry's
- * head, name, summary and particulars; under them, the key art as Plate I when the model took
- * the figure's place. It renders in the shell's full-bleed stage slot.
+ * The opening (ADR-021): the key art as the cover, full width and rounded, with the entry's head,
+ * name and status over its lower part on a scrim and the credit in a pill at the top right; then
+ * the holomodel in ink and the particulars in two rounded panels. Without art the head stands on
+ * the page; without a model the particulars panel stands alone. It renders in the shell's
+ * full-bleed stage slot.
  */
 export function ShipFileOpening({
   name,
@@ -100,94 +96,113 @@ export function ShipFileOpening({
   particularsSource,
 }: ShipFileProps) {
   const art = visual.art;
-  const keyArt =
-    art === null ? null : (
-      <Plate
-        picture={art.background}
-        numeral="Plate I"
-        caption={`${name}, key art`}
-        credit={art.credit.text}
-        creditHref={art.credit.href}
-        aspect={visual.model === null ? "card" : "panorama"}
-        sizes={
-          visual.model === null ? "(min-width: 1024px) 55vw, 100vw" : "100vw"
-        }
-        priority
-      />
-    );
-  const figure =
-    visual.model === null ? (
-      keyArt
-    ) : (
-      <HoloViewer
-        src={visual.model.src}
-        bytes={visual.model.bytes}
-        figure={visual.model.figure}
-        name={name}
-        length={visual.length}
-        poster={visual.poster}
-        credit={visual.modelCredit}
-        label="Fig. A"
-      />
-    );
-  return (
-    <section aria-labelledby="ship-name" className="border-b border-hairline">
-      <div className="mx-auto flex w-full max-w-content flex-col gap-8 px-4 pb-8 pt-8">
-        {/* The key art reads first in the document so its description and credit lead; it is drawn last, under the opening. */}
-        {visual.model !== null && keyArt !== null ? (
-          <div className="order-last">{keyArt}</div>
-        ) : null}
-        <div
-          className={`grid gap-8 ${figure === null ? "" : "lg:grid-cols-[5fr_4fr] lg:gap-12"}`}
+  const pill =
+    "rounded-pill px-3 py-1 text-caption font-medium no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent";
+  const onArt = `${pill} bg-on-art/15 text-on-art`;
+  const onPage = `${pill} bg-inset text-secondary`;
+  const pills = (overArt: boolean): ReactNode => (
+    <>
+      {overArt ? (
+        <span className={`${pill} bg-accent text-on-art`}>{status.label}</span>
+      ) : (
+        <Badge tone={status.tone}>{status.label}</Badge>
+      )}
+      {maker === null ? null : (
+        <NextLink
+          href={maker.href}
+          className={`${overArt ? onArt : onPage} hover:text-accent`}
         >
-          {/* With a model, a phone reads the head and name before the figure and a wide screen draws the figure first; without one the key art leads, so its description reads first. */}
-          {visual.model === null ? figure : null}
-          {/* Without a figure (no media built) the head keeps a reading width instead of spanning the page. */}
-          <div
-            className={`flex flex-col gap-4 ${figure === null ? "max-w-prose" : ""}`}
+          {maker.name}
+        </NextLink>
+      )}
+      {role === null ? null : (
+        <span className={overArt ? onArt : onPage}>{role}</span>
+      )}
+    </>
+  );
+  return (
+    <section
+      aria-labelledby="ship-name"
+      className="mx-auto flex w-full max-w-content flex-col gap-6 px-4 pb-8 pt-4"
+    >
+      {art === null ? (
+        <div className="flex flex-col gap-4 pt-4">
+          <p className="lab m-0 text-muted">Entry {file}</p>
+          <h1
+            id="ship-name"
+            className="m-0 text-display text-primary lg:text-hero"
           >
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-              <p className="lab m-0 flex flex-wrap items-center gap-x-3 gap-y-1 text-secondary">
-                <span>Entry {file}</span>
-                {maker === null ? null : (
-                  <>
-                    <span aria-hidden="true">·</span>
-                    <TextLink href={maker.href} className="text-secondary">
-                      {maker.name}
-                    </TextLink>
-                  </>
-                )}
-                {role === null ? null : (
-                  <>
-                    <span aria-hidden="true">·</span>
-                    <span>{role}</span>
-                  </>
-                )}
-              </p>
-              <Badge tone={status.tone}>{status.label}</Badge>
-            </div>
-            <div className="flex flex-col gap-3">
-              {mark === null ? null : <Mark mark={mark} heightClass="h-8" />}
-              <h1
-                id="ship-name"
-                className="m-0 text-display text-primary lg:text-hero"
-              >
-                {name}
-              </h1>
-              <p className="m-0 max-w-prose text-heading font-regular text-secondary">
-                {dek}
-              </p>
-            </div>
-            <SpecTable rows={particulars} source={particularsSource} />
-            {compareSlug === null ? null : (
-              <div className="flex flex-wrap gap-2">
-                <CompareToggle slug={compareSlug} name={name} />
-                <CompareLink />
-              </div>
-            )}
+            {name}
+          </h1>
+          <div className="flex flex-wrap items-center gap-2">
+            {pills(false)}
           </div>
-          {visual.model === null ? null : (
-            <div className="lg:order-first">{figure}</div>
+        </div>
+      ) : (
+        <div className="relative overflow-hidden rounded-card bg-inset shadow-lift">
+          <img
+            src={art.background.src}
+            srcSet={art.background.srcSet}
+            sizes="100vw"
+            width={art.background.width}
+            height={art.background.height}
+            alt={art.background.alt}
+            fetchPriority="high"
+            decoding="async"
+            className="block aspect-[4/5] h-auto w-full object-cover md:aspect-[21/9]"
+          />
+          <div aria-hidden="true" className="art-scrim absolute inset-0" />
+          <div className="absolute inset-x-4 top-4 flex flex-wrap items-center gap-2 md:inset-x-8 md:top-6">
+            {pills(true)}
+            {/* The credit sits at the row's end; on a phone it wraps under the pills rather than over them. */}
+            <a
+              href={art.credit.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`${onArt} md:ml-auto`}
+            >
+              {art.credit.text}
+            </a>
+          </div>
+          <div className="absolute inset-x-4 bottom-4 flex flex-col gap-2 md:inset-x-8 md:bottom-8">
+            <p className="lab m-0 text-on-art/80">Entry {file}</p>
+            <h1
+              id="ship-name"
+              className="m-0 text-display text-on-art lg:text-hero"
+            >
+              {name}
+            </h1>
+          </div>
+        </div>
+      )}
+      <div
+        className={`grid gap-6 ${visual.model === null ? "" : "lg:grid-cols-[5fr_4fr]"}`}
+      >
+        {visual.model === null ? null : (
+          <div className="overflow-hidden rounded-card bg-surface p-4 shadow-soft">
+            <HoloViewer
+              src={visual.model.src}
+              bytes={visual.model.bytes}
+              figure={visual.model.figure}
+              name={name}
+              length={visual.length}
+              poster={visual.poster}
+              credit={visual.modelCredit}
+              label="Fig. A"
+            />
+          </div>
+        )}
+        <div className="flex flex-col gap-4 rounded-card bg-surface p-6 shadow-soft">
+          {mark === null ? null : <Mark mark={mark} heightClass="h-8" />}
+          <p className="m-0 max-w-prose text-heading font-regular text-secondary">
+            {dek}
+          </p>
+          <SpecTable rows={particulars} source={particularsSource} />
+          {compareSlug === null ? null : (
+            <div className="flex flex-wrap gap-2">
+              <CompareToggle slug={compareSlug} name={name} />
+              <CompareLink />
+            </div>
           )}
         </div>
       </div>

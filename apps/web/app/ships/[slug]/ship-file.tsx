@@ -1,5 +1,12 @@
 import type { ReactNode } from "react";
-import { Badge, type BadgeTone, type MakerMark, Mark, TextLink } from "ui";
+import {
+  Badge,
+  type BadgeTone,
+  type MakerMark,
+  Mark,
+  Plate,
+  TextLink,
+} from "ui";
 import type { Fact, ShipClaim } from "../../../lib/ship-file";
 import type { FigureView, Picture } from "../../../lib/showcase";
 import { CompareLink, CompareToggle } from "../../compare/compare-controls";
@@ -8,13 +15,13 @@ import { DossierSection, type SheetRow } from "./showcase/dossier";
 import { HoloViewer } from "./showcase/holo-viewer";
 
 /**
- * The ship file (ADR-012, ADR-014): one template for every ship, concept or flying. It opens on a
- * full-bleed band of the ship's key art with its name, a factual one-line summary and its headline
- * figures. Below, two columns: the left holds the holoviewer model, the particulars and the
- * contents, and stays in view on wide screens; the right holds the same nine numbered sections, in
- * the same order, for every ship. Each section carries the images and render loops that show what
- * it describes, not a gallery. Where the game has no data the section says so, and CIG's stated
- * claims fill in, labelled and cited.
+ * The ship entry (ADR-012, ADR-014, ADR-020): one template for every ship, concept or flying. It
+ * opens on the holomodel drawn in ink beside the ship's name, a factual one-line summary and the
+ * particulars as a ruled table, with the key art as a plate under them. Below, the contents stay
+ * in view on wide screens beside the same nine numbered sections, in the same order, for every
+ * ship. Each section carries the images and render loops that show what it describes as captioned
+ * plates, not a gallery. Where the game has no data the section says so, and CIG's stated claims
+ * fill in, labelled and cited.
  */
 
 export const SHIP_FILE_SECTIONS = [
@@ -51,10 +58,9 @@ export interface ShipFileProps {
     } | null;
     readonly poster: string | null;
     readonly length: number | null;
-    /** The opening band's key art, with CIG's cut-out of the ship where it publishes one. */
+    /** The key art, drawn as a plate (ADR-020). */
     readonly art: {
       readonly background: Picture;
-      readonly cutout: Picture | null;
       readonly credit: { readonly text: string; readonly href: string };
     } | null;
     readonly modelCredit: { readonly text: string; readonly href: string };
@@ -75,11 +81,12 @@ export interface ShipFileProps {
 
 const pad = (n: number): string => String(n).padStart(2, "0");
 
-/** The figures the opening band shows, in this order, when the particulars have them. */
-const HEADLINE = ["Length", "Crew", "Cargo", "Pledge"] as const;
-
-/** The opening band: key art full-bleed, the name and the headline figures over its lower part. */
-export function ShipFileHero({
+/**
+ * The opening: the holomodel in ink (or the key art, when no model is built) beside the entry's
+ * head, name, summary and particulars; under them, the key art as Plate I when the model took
+ * the figure's place. It renders in the shell's full-bleed stage slot.
+ */
+export function ShipFileOpening({
   name,
   file,
   maker,
@@ -87,47 +94,134 @@ export function ShipFileHero({
   status,
   mark,
   dek,
+  compareSlug,
   visual,
   particulars,
+  particularsSource,
 }: ShipFileProps) {
-  const headline = HEADLINE.flatMap((label) => {
-    const row = particulars.find((p) => p.label === label);
-    return row === undefined || row.numeric !== true ? [] : [row];
-  });
   const art = visual.art;
-  const text = (
-    <div className="mx-auto flex w-full max-w-content flex-col gap-4 px-4 pb-8 pt-24 md:pb-12">
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-caption">
-        <span className="font-mono text-primary">Ship file</span>
-        <span className="text-secondary">
-          File <span className="font-mono text-primary">{file}</span>
-        </span>
-        <Badge tone={status.tone}>{status.label}</Badge>
-      </div>
-      <div className="flex items-center gap-3">
-        {mark === null ? null : <Mark mark={mark} heightClass="h-8" />}
-        <p className="m-0 text-ui text-secondary">
-          {maker === null ? null : (
-            <TextLink href={maker.href}>{maker.name}</TextLink>
+  const keyArt =
+    art === null ? null : (
+      <Plate
+        picture={art.background}
+        numeral="Plate I"
+        caption={`${name}, key art`}
+        credit={art.credit.text}
+        creditHref={art.credit.href}
+        aspect={visual.model === null ? "card" : "panorama"}
+        sizes={
+          visual.model === null ? "(min-width: 1024px) 55vw, 100vw" : "100vw"
+        }
+        priority
+      />
+    );
+  const figure =
+    visual.model === null ? (
+      keyArt
+    ) : (
+      <HoloViewer
+        src={visual.model.src}
+        bytes={visual.model.bytes}
+        figure={visual.model.figure}
+        name={name}
+        length={visual.length}
+        poster={visual.poster}
+        credit={visual.modelCredit}
+        label="Fig. A"
+      />
+    );
+  return (
+    <section
+      aria-labelledby="ship-name"
+      className="border-b border-hairline-strong"
+    >
+      <div className="mx-auto flex w-full max-w-content flex-col gap-8 px-4 pb-8 pt-8">
+        {/* The key art reads first in the document so its description and credit lead; it is drawn last, under the opening. */}
+        {visual.model !== null && keyArt !== null ? (
+          <div className="order-last">{keyArt}</div>
+        ) : null}
+        <div
+          className={`grid gap-8 ${figure === null ? "" : "lg:grid-cols-[5fr_4fr] lg:gap-12"}`}
+        >
+          {/* With a model, a phone reads the head and name before the figure and a wide screen draws the figure first; without one the key art leads, so its description reads first. */}
+          {visual.model === null ? figure : null}
+          {/* Without a figure (no media built) the head keeps a reading width instead of spanning the page. */}
+          <div
+            className={`flex flex-col gap-4 ${figure === null ? "max-w-prose" : ""}`}
+          >
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+              <p className="lab m-0 flex flex-wrap items-center gap-x-3 gap-y-1 text-secondary">
+                <span>Entry {file}</span>
+                {maker === null ? null : (
+                  <>
+                    <span aria-hidden="true">·</span>
+                    <TextLink href={maker.href} className="text-secondary">
+                      {maker.name}
+                    </TextLink>
+                  </>
+                )}
+                {role === null ? null : (
+                  <>
+                    <span aria-hidden="true">·</span>
+                    <span>{role}</span>
+                  </>
+                )}
+              </p>
+              <Badge tone={status.tone}>{status.label}</Badge>
+            </div>
+            <div className="flex flex-col gap-3">
+              {mark === null ? null : <Mark mark={mark} heightClass="h-8" />}
+              <h1
+                id="ship-name"
+                className="m-0 text-display text-primary lg:text-hero"
+              >
+                {name}
+              </h1>
+              <p className="m-0 max-w-prose text-heading font-regular text-secondary">
+                {dek}
+              </p>
+            </div>
+            <SpecTable rows={particulars} source={particularsSource} />
+            {compareSlug === null ? null : (
+              <div className="flex flex-wrap gap-2">
+                <CompareToggle slug={compareSlug} name={name} />
+                <CompareLink />
+              </div>
+            )}
+          </div>
+          {visual.model === null ? null : (
+            <div className="lg:order-first">{figure}</div>
           )}
-          {role === null ? null : <> · {role}</>}
-        </p>
+        </div>
       </div>
-      <h1
-        id="ship-name"
-        className="showcase-name m-0 text-display text-primary md:text-hero"
-      >
-        {name}
-      </h1>
-      <p className="m-0 max-w-prose text-heading font-regular text-secondary">
-        {dek}
-      </p>
-      {headline.length === 0 ? null : (
-        <dl className="m-0 flex flex-wrap gap-x-12 gap-y-4 pt-2">
-          {headline.map((row) => (
-            <div key={row.label} className="flex flex-col gap-1">
-              <dt className="text-caption text-secondary">{row.label}</dt>
-              <dd className="m-0 font-mono text-title text-primary">
+    </section>
+  );
+}
+
+/** The particulars as a ruled table: labels left, figures in the mono, a 2 px rule to close. */
+function SpecTable({
+  rows,
+  source,
+}: {
+  readonly rows: readonly SheetRow[];
+  readonly source: string;
+}) {
+  return (
+    <div className="flex flex-col gap-2">
+      <table className="w-full border-collapse border-b-2 border-primary text-ui">
+        <caption className="sr-only">Particulars</caption>
+        <tbody>
+          {rows.map((row) => (
+            <tr key={row.label} className="border-t border-hairline">
+              <th
+                scope="row"
+                className="w-2/5 py-2 pr-4 text-left font-regular text-secondary"
+              >
+                {row.label}
+              </th>
+              <td
+                className={`py-2 text-primary ${row.numeric === true ? "font-mono" : ""}`}
+              >
                 {row.value}
                 {row.unit === undefined ? null : (
                   <span className="font-sans text-caption text-secondary">
@@ -135,149 +229,42 @@ export function ShipFileHero({
                     {row.unit}
                   </span>
                 )}
-              </dd>
-            </div>
+              </td>
+            </tr>
           ))}
-        </dl>
-      )}
+        </tbody>
+      </table>
+      <p className="m-0 text-caption text-secondary">{source}</p>
     </div>
-  );
-
-  if (art === null) {
-    return (
-      <section aria-labelledby="ship-name" className="border-b border-hairline">
-        {text}
-      </section>
-    );
-  }
-  return (
-    <section
-      aria-labelledby="ship-name"
-      className="file-hero relative isolate overflow-hidden border-b border-hairline"
-    >
-      <div aria-hidden="true" className="file-hero-scrim absolute inset-0" />
-      <picture>
-        <img
-          src={art.background.src}
-          srcSet={art.background.srcSet}
-          sizes="100vw"
-          width={art.background.width}
-          height={art.background.height}
-          alt={art.background.alt}
-          fetchPriority="high"
-          className="absolute inset-0 -z-20 h-full w-full object-cover"
-        />
-      </picture>
-      {art.cutout === null ? null : (
-        <picture>
-          <img
-            src={art.cutout.src}
-            srcSet={art.cutout.srcSet}
-            sizes="(min-width: 768px) 100vw, 170vw"
-            width={art.cutout.width}
-            height={art.cutout.height}
-            alt=""
-            fetchPriority="high"
-            className="file-hero-cutout absolute -z-10 h-auto"
-          />
-        </picture>
-      )}
-      <div aria-hidden="true" className="file-hero-fade absolute inset-0" />
-      <div className="flex min-h-[72svh] flex-col justify-end md:min-h-[80svh]">
-        {text}
-      </div>
-      <p className="absolute right-4 top-4 m-0 text-caption text-secondary">
-        <TextLink href={art.credit.href} external className="text-secondary">
-          {art.credit.text}
-        </TextLink>
-      </p>
-    </section>
   );
 }
 
-export function ShipFile({
-  name,
-  compareSlug,
-  visual,
-  particulars,
-  particularsSource,
-  figures,
-  sections,
-}: ShipFileProps) {
+export function ShipFile({ figures, sections }: ShipFileProps) {
   return (
     <div className="grid gap-12 pt-12 lg:grid-cols-12">
-      <aside
-        aria-label={`${name}: model and particulars`}
-        className="file-aside flex flex-col gap-6 lg:sticky lg:top-6 lg:col-span-5 lg:max-h-[calc(100svh-3rem)] lg:self-start lg:overflow-y-auto lg:pr-2"
+      <nav
+        aria-label="Contents"
+        className="flex flex-col gap-2 lg:sticky lg:top-6 lg:col-span-3 lg:self-start"
       >
-        {visual.model === null ? null : (
-          <HoloViewer
-            src={visual.model.src}
-            bytes={visual.model.bytes}
-            figure={visual.model.figure}
-            name={name}
-            length={visual.length}
-            poster={visual.poster}
-            credit={visual.modelCredit}
-            label="Fig. A"
-          />
-        )}
-
-        <section aria-label="Particulars" className="flex flex-col gap-2">
-          <p className="m-0 text-caption text-secondary">Particulars</p>
-          <dl className="m-0 grid grid-cols-2 gap-x-6 border-t border-hairline">
-            {particulars.map((row) => (
-              <div
-                key={row.label}
-                className="flex items-baseline justify-between gap-3 border-b border-hairline py-2"
+        <p className="lab m-0 text-secondary">Contents</p>
+        <ol className="m-0 flex list-none flex-col p-0">
+          {SHIP_FILE_SECTIONS.map((s, i) => (
+            <li key={s.id} className="border-t border-hairline">
+              <a
+                href={`#${s.id}`}
+                className="flex items-baseline gap-3 rounded-control py-2 text-ui text-primary no-underline transition-colors duration-hover hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
               >
-                <dt className="text-caption text-secondary">{row.label}</dt>
-                <dd
-                  className={`m-0 text-right text-ui text-primary ${row.numeric === true ? "font-mono" : ""}`}
-                >
-                  {row.value}
-                  {row.unit === undefined ? null : (
-                    <span className="font-sans text-caption text-secondary">
-                      {" "}
-                      {row.unit}
-                    </span>
-                  )}
-                </dd>
-              </div>
-            ))}
-          </dl>
-          <p className="m-0 text-caption text-secondary">{particularsSource}</p>
-        </section>
+                <span className="lab w-6 shrink-0 text-muted">
+                  {pad(i + 1)}
+                </span>
+                {s.title}
+              </a>
+            </li>
+          ))}
+        </ol>
+      </nav>
 
-        {compareSlug === null ? null : (
-          <div className="flex flex-wrap gap-2">
-            <CompareToggle slug={compareSlug} name={name} />
-            <CompareLink />
-          </div>
-        )}
-
-        <nav
-          aria-label="Contents"
-          className="flex flex-col gap-1 border-t border-hairline pt-3"
-        >
-          <p className="m-0 text-caption text-secondary">Contents</p>
-          <ol className="m-0 grid list-none grid-cols-2 gap-x-4 p-0">
-            {SHIP_FILE_SECTIONS.map((s, i) => (
-              <li key={s.id}>
-                <a
-                  href={`#${s.id}`}
-                  className="flex gap-2 rounded-control py-1 text-ui text-secondary no-underline transition-colors duration-hover hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
-                >
-                  <span className="font-mono text-muted">{pad(i + 1)}</span>
-                  {s.title}
-                </a>
-              </li>
-            ))}
-          </ol>
-        </nav>
-      </aside>
-
-      <div className="flex min-w-0 flex-col gap-16 lg:col-span-7">
+      <div className="flex min-w-0 flex-col gap-16 lg:col-span-9">
         {SHIP_FILE_SECTIONS.map((s, i) => {
           const own = s.id === "sources" ? [] : (figures[s.id] ?? []);
           const [lead, ...rest] = own;
@@ -304,6 +291,7 @@ export function ShipFile({
   );
 }
 
+/** A plate's caption, inside its frame: the figure number as a label, then the words. */
 function Caption({
   label,
   text,
@@ -312,8 +300,8 @@ function Caption({
   readonly text: string;
 }) {
   return (
-    <figcaption className="text-caption text-secondary">
-      <span className="font-mono text-primary">{label}</span> {text}
+    <figcaption className="border-t border-hairline-strong bg-surface px-3 py-2 text-caption text-secondary">
+      <span className="lab text-primary">{label}</span> {text}
     </figcaption>
   );
 }
@@ -364,7 +352,7 @@ function FigureImage({
 const largest = (p: Picture): string =>
   p.srcSet.split(", ")[0]?.split(" ")[0] ?? p.src;
 
-/** The section's leading image or render loop, across the column at its own proportions. */
+/** The section's leading image or render loop as a plate across the column, at its own proportions. */
 function LeadFigure({
   figure,
   label,
@@ -373,30 +361,28 @@ function LeadFigure({
   readonly label: string;
 }) {
   return (
-    <figure className="m-0 flex flex-col gap-2">
-      <div className="overflow-hidden rounded-card border border-hairline bg-inset">
-        {figure.kind === "video" ? (
-          <AutoVideo
-            src={figure.src}
-            poster={figure.poster}
-            label={figure.caption}
-            width={figure.width}
-            height={figure.height}
-          />
-        ) : (
-          <FigureImage
-            figure={figure}
-            sizes="(min-width: 1200px) 680px, (min-width: 1024px) 56vw, 100vw"
-            fill={false}
-          />
-        )}
-      </div>
+    <figure className="m-0 flex flex-col overflow-hidden border border-hairline-strong bg-inset">
+      {figure.kind === "video" ? (
+        <AutoVideo
+          src={figure.src}
+          poster={figure.poster}
+          label={figure.caption}
+          width={figure.width}
+          height={figure.height}
+        />
+      ) : (
+        <FigureImage
+          figure={figure}
+          sizes="(min-width: 1400px) 1000px, (min-width: 1024px) 70vw, 100vw"
+          fill={false}
+        />
+      )}
       <Caption label={label} text={figure.caption} />
     </figure>
   );
 }
 
-/** The section's other figures, two to a row; an image opens full size in a new tab. */
+/** The section's other figures as plates, two to a row; an image opens full size in a new tab. */
 function SupportingFigures({
   figures,
   section,
@@ -405,37 +391,37 @@ function SupportingFigures({
   readonly section: number;
 }) {
   return (
-    <ul className="m-0 grid list-none gap-4 p-0 sm:grid-cols-2">
+    <ul className="m-0 grid list-none gap-3 p-0 sm:grid-cols-2">
       {figures.map((figure, i) => {
         const label = `Fig. ${section}.${i + 2}`;
         return (
           <li key={figure.kind === "video" ? figure.src : figure.picture.src}>
-            <figure className="m-0 flex flex-col gap-2">
+            <figure className="m-0 flex h-full flex-col overflow-hidden border border-hairline-strong bg-inset">
               {figure.kind === "video" ? (
-                <div className="overflow-hidden rounded-card border border-hairline bg-inset">
-                  <AutoVideo
-                    src={figure.src}
-                    poster={figure.poster}
-                    label={figure.caption}
-                    width={figure.width}
-                    height={figure.height}
-                  />
-                </div>
+                <AutoVideo
+                  src={figure.src}
+                  poster={figure.poster}
+                  label={figure.caption}
+                  width={figure.width}
+                  height={figure.height}
+                />
               ) : (
                 <a
                   href={largest(figure.picture)}
                   target="_blank"
                   rel="noreferrer"
-                  className="block aspect-video overflow-hidden rounded-card border border-hairline bg-inset focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+                  className="block aspect-video overflow-hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
                 >
                   <FigureImage
                     figure={figure}
-                    sizes="(min-width: 1024px) 330px, (min-width: 640px) 50vw, 100vw"
+                    sizes="(min-width: 1400px) 500px, (min-width: 640px) 45vw, 100vw"
                     fill
                   />
                 </a>
               )}
-              <Caption label={label} text={figure.caption} />
+              <div className="mt-auto">
+                <Caption label={label} text={figure.caption} />
+              </div>
             </figure>
           </li>
         );
@@ -489,8 +475,8 @@ export function Claims({
 }) {
   if (claims.length === 0) return null;
   return (
-    <div className="flex flex-col gap-2 rounded-card border border-hairline bg-surface p-4">
-      <p className="m-0 text-caption text-secondary">
+    <div className="flex flex-col gap-2 border border-hairline-strong bg-surface p-4">
+      <p className="lab m-0 text-secondary">
         Stated by CIG, not in the game data
       </p>
       <dl className="m-0 flex flex-col">
@@ -529,7 +515,7 @@ export function Related({
   if (shown.length === 0) return null;
   return (
     <nav aria-label="Related ships" className="flex flex-col gap-2">
-      <h3 className="m-0 text-ui font-medium text-primary">Related ships</h3>
+      <h3 className="lab m-0 text-primary">Related ships</h3>
       <dl className="m-0 flex flex-col border-t border-hairline">
         {shown.map((g) => (
           <div

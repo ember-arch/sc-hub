@@ -18,7 +18,7 @@ Rebuild the site's look as an illustrated almanac (ADR-020): paper and ink, two 
 
 - [x] **Foundation.** Tokens (palette, radii, shadow, width, faces, the `label` size), the generated CSS, the fonts, the shell (running head, search field, footer), the masthead without art and the card frame carry ADR-020; `system.md` reads as the almanac; every page wears the new tokens on its existing layout; token, contrast and e2e tests pass.
 - [x] **Front page and register.** Home opens on the date, the title and the contents, then the counters, a hero plate with side plates, the first entry cards and the dispatches; the ships index is a register table with a plate per row (larger from lg, smaller at xl where every column shows; none without media), sortable, phone rows expanding (section 7 of `CLAUDE.md`).
-- [ ] **Entry.** The ship file draws the holomodel in ink (monochrome, inked edges, slowly turning, in a framed plate with a scale bar and tabs), with the particulars as a ruled table, chapter plates and a figure strip; the ADR-012/015 holoviewer look is replaced inside the canvas.
+- [x] **Entry.** The ship file draws the holomodel in ink (a flat-shaded body with inked edges on the page's paper, slowly turning, in a framed plate with its length and a person for scale; renders Ink, Lines, Solid), beside the name and the particulars as a ruled table, the key art as a plate under them, and each section's figures as captioned plates; the Scale lineup is drawn the same way and the ADR-012/015 holoviewer look is withdrawn (the mockup's scale bar, chapter cards and figure strip are not carried over; ADR-020 says why).
 - [ ] **Ledger, honours, parts and dispatches.** Funding as a ledger on graph paper with a year table of inline bars and a daily strip; titles as stamps on slate wells with the guide table and events list; components and news as the almanac's parts and dispatches.
 
 ## Verification
@@ -29,5 +29,5 @@ Rebuild the site's look as an illustrated almanac (ADR-020): paper and ink, two 
 
 ## Notes
 
-- Imagery and models stay git-ignored and local (ADR-009, ADR-019); CI and deployments render the plates' frames and captions with no picture inside.
+- Imagery and models stay git-ignored and local (ADR-009, ADR-019); CI and deployments render the front page's plates as frames with their captions and no picture inside, and the entry's opening without its figure, the head at a reading width. The ink holomodel can only be seen with the models built locally, so its evidence is the owner's local preview and the session's review screenshots, not the committed ones.
 - Branch prefix: `spec/06-almanac/…`. The foundation shipped from `spec/03-almanac/foundation` before this spec existed.

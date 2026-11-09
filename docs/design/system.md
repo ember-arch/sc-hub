@@ -42,8 +42,8 @@ Rules: one accent. Manufacturer brand colors may appear only as a 3 px rule on t
 
 | Token | Size / line | Weight | Use |
 | --- | --- | --- | --- |
-| `hero` | 80 / 84 | 500 | Ship name on the full-bleed stage, desktop (ADR-008) |
-| `display` | 40 / 44 | 500 | Entity name in a hero; the stage's headline figures |
+| `hero` | 80 / 84 | 500 | The front page's title and an entry's name, desktop (ADR-020) |
+| `display` | 40 / 44 | 500 | Page and entry titles on phones; headline figures |
 | `title` | 28 / 34 | 500 | Page title |
 | `heading` | 20 / 28 | 500 | Section heading |
 | `body` | 16 / 26 | 400 | Prose |
@@ -65,7 +65,7 @@ Faces: Newsreader (ADR-020, replacing the Phase 0 pair) for text and interface, 
 - Durations: 120 ms (hover, toggle), 200 ms (panel, palette), 320 ms (viewer camera preset).
 - Easing: `cubic-bezier(0.2, 0, 0, 1)`.
 - No ambient animation, no parallax, no auto-playing turntables above the fold.
-- Exceptions (ADR-012, ADR-015): inside the holoviewer canvases the model materialises and scan planes sweep it once on load, and the holoviewer orbits slowly; CIG's render loops play while on screen and each carries a Pause control. All stop with reduced motion.
+- Exceptions (ADR-015, ADR-020): the holomodel turns slowly until the reader takes hold of it; CIG's render loops play while on screen and each carries a Pause control. All stop with reduced motion.
 
 ## 3. Components (Phase 0 set)
 
@@ -98,8 +98,8 @@ Added with the ship file (ADR-008, ADR-012 to ADR-016):
 
 - `ScaleLineup` — ships on record and a person drawn to scale from length and height, the page's ship in the accent; the Scale section's fallback when no models are built.
 - `RankBar` — where one ship sits among the ships on record for one stat, linear or log scale, with its rank in words.
-- `HoloViewer` — RSI's holoviewer model of the ship in a 3D canvas: render (Default, X-ray, Wireframe), seven view angles, full screen, a person for scale.
-- `HoloLineup` — the Scale section: every ship's model to scale in one canvas, the page's ship lit, a camera button per ship.
+- `HoloViewer` — RSI's holoviewer model of the ship drawn in ink (ADR-020): a flat-shaded body with inked edges on the page's paper, colours read from the tokens at run time; renders Ink, Lines and Solid; seven view angles; full screen; a person for scale; a ground line.
+- `HoloLineup` — the Scale section: every ship's model to scale in one canvas on one ground line, the page's ship in full ink and the others dimmer, a camera button per ship.
 - `AutoVideo` — a render loop at its own proportions, playing while on screen, with a Pause control.
 - `ArmamentPlan` — the armament by who fires it, each gun, missile or torpedo drawn in profile at its size class.
 - `LoadoutEditor` — swap each swappable part for one that fits, with the build summed and ranked against stock (ADR-016).
@@ -111,7 +111,7 @@ Added with the ship file (ADR-008, ADR-012 to ADR-016):
 | --- | --- |
 | Home | The front page of the almanac (ADR-020): the date as a label, the title in the display face beside the numbered contents, the counters (pledged, citizens, this year, ships and parts on record, each a link), three plates (the live example wide, the concept hero and the longest other ship beside it), the first ten entries A to Z as cards with a link to the register, then six dispatches; the builds stay in the footer's patch strip (ADR-007). Follows the reader's light or dark setting. Without media the plates hold their captions alone. |
 | Ships index | "The register of ships": `Masthead` (ADR-020), the compare link on its right. Filter bar (manufacturer, role, size, status, kind) + card/table toggle. Cards in a 2/3/4 column grid by breakpoint, art to the card's edges and the name in `heading`, each with a Compare toggle. Table mode is the register: `DataTable` with each row's plate over its name in the display face (from lg; smaller at xl, where every column shows; none without media) and a Compare column. Components, Titles, Funding and News open on a `Masthead` the same way. |
-| Ship page | The ship file (ADR-012, ADR-014, ADR-015), dark by default. A full-bleed opening band of the ship's key art (with CIG's cut-out where it publishes one) under a scrim that keeps the name, a factual sentence and four headline figures legible; credited. Two columns below: on the left, sticky on wide screens, the holoviewer, the particulars and the contents; on the right the same nine numbered sections for every ship (Brief, Acquisition and status, Weapons and combat, Crew and operations, Mobility, Scale, Specifications, Hardpoints and loadout, Sources), each with its images and render loops, every game figure with its build, and related ships with the sources. |
+| Ship page | The ship entry (ADR-012, ADR-014, ADR-015, ADR-020), dark by default. The opening: the holomodel in ink (or the key art as a plate when no model is built) beside the entry's head (entry code, maker, role, status), the name in the display face, a factual sentence and the particulars as a ruled table; under them the key art as Plate I, credited. Below, the contents stay in view on wide screens beside the same nine numbered sections for every ship (Brief, Acquisition and status, Weapons and combat, Crew and operations, Mobility, Scale, Specifications, Hardpoints and loadout, Sources), each section opening on a 2 px rule with its number as a label, its images and render loops as captioned plates, every game figure with its build, and related ships with the sources. |
 | Component page | `EntityPage`. Key facts: type, size, grade, class, manufacturer. Sections: stats by channel, stock on (ships that carry it by default), in the news. |
 | Manufacturer page | `EntityPage` with a 3 px brand rule (the `border.strong` token until the fankit supplies brand colors). Sections: lineup (cards), in the news. |
 | News feed | Source filter chips, then `FeedItem` list, infinite scroll in pages of 20, RSS and JSON links in the header. Dev tracker is a tab: author filter, `DevPost` list, thread grouping. |
@@ -140,7 +140,7 @@ Added with the ship file (ADR-008, ADR-012 to ADR-016):
 
 1. Any color outside the token table?
 2. Any type size or weight outside the type table?
-3. Any decoration: gradient, glow, texture, emoji, icon used as ornament? (Two gradients are allowed because they keep text legible over CIG's art, never as decoration: the ship file's fade, ADR-014, and the masthead scrim, ADR-019.)
+3. Any decoration: gradient, glow, texture, emoji, icon used as ornament? (None is allowed; the ship file's fade and the masthead scrim of ADR-014 and ADR-019 are gone with ADR-020: pictures are plates.)
 4. Any page element the reader could lose without losing meaning?
 5. Does the ship page key-facts block read in one glance at 390 px?
 6. Does every table pass the phone rule (no sideways scroll)?

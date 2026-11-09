@@ -34,11 +34,20 @@ test("shows the counters, every section and the credits, with Funding current in
       .locator("#sources")
       .getByRole("link", { name: FUNDING_INSPIRATION.linkText }),
   ).toHaveAttribute("href", FUNDING_INSPIRATION.url);
-  // Every chart is described for assistive tech and carries hover titles.
-  expect(
-    await page.locator("main svg[role='img']").count(),
-  ).toBeGreaterThanOrEqual(3);
-  expect(await page.locator("main svg title").count()).toBeGreaterThan(100);
+  // Every chart is a figure with a sentence for assistive tech; the drawing is hidden from it
+  // and carries a title per mark for pointer readers.
+  const figures = page.locator("main figure");
+  expect(await figures.count()).toBeGreaterThanOrEqual(3);
+  for (const figure of await figures.all()) {
+    await expect(figure.locator("figcaption")).toHaveText(/\d/);
+    await expect(figure.locator("svg").first()).toHaveAttribute(
+      "aria-hidden",
+      "true",
+    );
+  }
+  await expect(
+    page.locator("#year-vs-year svg title", { hasText: /^Day 1\n/ }),
+  ).toHaveCount(1);
 });
 
 test("the measure is URL state", async ({ page }) => {

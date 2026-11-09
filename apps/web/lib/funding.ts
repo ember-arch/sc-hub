@@ -50,7 +50,8 @@ export const fundingHref = (measure: Measure): string =>
   measure === "pledges" ? "/funding" : `/funding?measure=${measure}`;
 
 const DAY_MS = 86_400_000;
-const dayNumber = (day: string): number => Math.round(Date.parse(day) / DAY_MS);
+export const dayNumber = (day: string): number =>
+  Math.round(Date.parse(day) / DAY_MS);
 const dayString = (n: number): string =>
   new Date(n * DAY_MS).toISOString().slice(0, 10);
 
@@ -202,7 +203,7 @@ export function headline(list: readonly Reading[]): Headline | null {
   const ratio = (a: number | null, b: number | null): number | null =>
     a === null || b === null || b === 0 ? null : a / b - 1;
   const lastYearEnd = at(`${year - 1}-12-31`);
-  const sameDayLastYear = at(dayString(n - 365));
+  const sameDayLastYear = at(sameDayPriorYear(latest.day));
   const yearBeforeEnd = at(`${year - 2}-12-31`);
   const yearToDate = diff(latest.value, lastYearEnd);
   const lastYearToSameDay = diff(sameDayLastYear, yearBeforeEnd);
@@ -292,6 +293,32 @@ export function dailyRate(list: readonly Reading[]): DailyPoint[] {
 }
 
 /** The amount added across a gap in the data, for the note under the monthly grid. */
+/** The same calendar date a year earlier; 29 February falls back to 28 February. */
+export function sameDayPriorYear(day: string): string {
+  const year = Number(day.slice(0, 4)) - 1;
+  const rest = day.slice(5);
+  return `${year}-${rest === "02-29" ? "02-28" : rest}`;
+}
+
+export interface Decline {
+  readonly day: string;
+  /** How far the reading fell from the previous one. */
+  readonly by: number;
+}
+
+/** Days on which the counter read lower than the reading before, as recorded. */
+export function declines(list: readonly Reading[]): Decline[] {
+  const out: Decline[] = [];
+  for (let i = 1; i < list.length; i += 1) {
+    const prev = list[i - 1];
+    const r = list[i];
+    if (prev !== undefined && r !== undefined && r.value < prev.value) {
+      out.push({ day: r.day, by: prev.value - r.value });
+    }
+  }
+  return out;
+}
+
 export function gapTotal(
   list: readonly Reading[],
   gap: { readonly from: string; readonly to: string },

@@ -14,6 +14,7 @@ import {
   formatValue,
   funding,
   fundingHref,
+  declines,
   gapTotal,
   headline,
   parseMeasure,
@@ -180,6 +181,7 @@ export default async function FundingPage({
   const paths = yearPaths(list, [latestYear, latestYear - 1, latestYear - 2]);
   const trend = trailingTrend(list);
   const daily = dailyRate(list);
+  const fell = declines(list);
   const words = LABEL[measure];
   const longGap = series.source.gaps.find((g) => g.days >= 60);
   const longGapTotal = longGap === undefined ? null : gapTotal(list, longGap);
@@ -192,9 +194,9 @@ export default async function FundingPage({
             <div className="flex flex-col gap-2">
               <h1 className="text-title text-primary">Funding</h1>
               <p className="m-0 max-w-prose text-body text-secondary">
-                Star Citizen is the largest crowdfunded game there has been. RSI
-                publishes two running counters, money pledged and citizens
-                registered; this page reads them day by day since November 2012.
+                Star Citizen has been crowdfunded since 2012. RSI publishes two
+                running counters, money pledged and citizens registered; this
+                page reads them day by day since November 2012.
               </p>
             </div>
             <SegmentedLinks
@@ -288,7 +290,11 @@ export default async function FundingPage({
             }
             intro={`The running total ${words.verb} since 1 January, laid over the same days of ${paths.length > 2 ? "the two years before" : "last year"}.`}
           >
-            <YearVsYear paths={paths} measure={measure} />
+            <YearVsYear
+              paths={paths}
+              measure={measure}
+              latestYear={latestYear}
+            />
           </Section>
         ) : null}
 
@@ -330,9 +336,10 @@ export default async function FundingPage({
             ; copied {formatDay(series.source.fetched_at.slice(0, 10))}. Months,
             years and comparisons are differences between snapshots; where the
             API has none within three days of a period&apos;s ends, the period
-            is left blank rather than estimated. The counter fell for some days
-            in November and December 2019 before RSI corrected it; those days
-            are shown as recorded.
+            is left blank rather than estimated.
+            {fell.length === 0
+              ? null
+              : ` The counter read lower than the day before on ${fell.length} ${fell.length === 1 ? "day" : "days"} (${formatDay(fell[0]?.day ?? "")}${fell.length > 1 ? ` to ${formatDay(fell.at(-1)?.day ?? "")}` : ""}) and rose again; those days are shown as recorded.`}
             {series.source.dropped.length === 0
               ? null
               : ` ${series.source.dropped.length === 1 ? "One snapshot" : `${series.source.dropped.length} snapshots`} whose total fell to a fraction of the day before (${series.source.dropped.map((d) => formatDay(d.day)).join(", ")}) ${series.source.dropped.length === 1 ? "is" : "are"} left out as a recording failure.`}

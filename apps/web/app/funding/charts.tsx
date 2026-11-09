@@ -6,6 +6,7 @@ import {
   type TrendPoint,
   type YearPath,
   type YearRow,
+  dayNumber,
   formatChange,
   formatCompact,
   formatDay,
@@ -17,7 +18,9 @@ import {
  * and single series in the accent, earlier years in the ink tokens with a dash as the second cue,
  * magnitude as the accent's tint. Lines live in a viewBox-scaled SVG with non-scaling strokes;
  * every label is HTML in text tokens, so nothing scales down on a phone. Every mark carries a
- * title, so hovering (or a screen reader) reads the exact value; a table view sits under each.
+ * title for pointer readers; each chart also carries a sentence for screen readers, and a table
+ * of every month sits under the grid. Sizes come from the spacing tokens, the plot's shape from
+ * an aspect ratio (ADR-018).
  */
 
 const W = 1000;
@@ -49,16 +52,16 @@ export function YearBars({
           <li
             key={r.year}
             title={title}
-            className="grid grid-cols-[3.5rem_1fr_11rem] items-center gap-3 text-ui"
+            className="grid grid-cols-[auto_1fr_auto] items-center gap-3 text-ui"
           >
-            <span className="font-mono text-secondary">{r.year}</span>
+            <span className="w-12 font-mono text-secondary">{r.year}</span>
             <span
               className="relative h-6 rounded-control bg-inset"
               aria-hidden="true"
             >
               {r.total === null ? null : (
                 <span
-                  className={`absolute inset-y-0 left-0 rounded-control ${r.partial ? "bg-accent/55" : "bg-accent"}`}
+                  className={`absolute inset-y-0 left-0 rounded-control ${r.partial ? "bg-accent/50" : "bg-accent"}`}
                   style={{ width: `${Math.max((r.total / max) * 100, 0.5)}%` }}
                 />
               )}
@@ -90,7 +93,7 @@ export function YearBars({
   );
 }
 
-/** The accent's tint for a month, by its share of the largest month on the grid. */
+/** The accent's tint for a month, by its share of the largest month on the grid (ADR-018). */
 function tint(value: number, max: number): string {
   const share = max <= 0 ? 0 : value / max;
   if (share <= 0) return "";
@@ -103,7 +106,8 @@ function tint(value: number, max: number): string {
 
 /**
  * Every month of every year, shaded by size: a table on wide screens, one block per year on
- * phones (system.md: no table scrolls sideways). Unknown months say so.
+ * phones (system.md: no table scrolls sideways). Unknown months say so; a year with no known
+ * month is one line on a phone.
  */
 export function MonthGrid({
   rows,
@@ -113,16 +117,33 @@ export function MonthGrid({
   readonly measure: Measure;
 }) {
   const max = Math.max(...rows.flatMap((r) => r.months.map((m) => m ?? 0)), 1);
+  const last = rows.at(-1);
+  const currentMonth =
+    last?.partial === true
+      ? last.months.reduce((at, m, i) => (m === null ? at : i), -1)
+      : -1;
+  const isCurrent = (r: YearRow, i: number): boolean =>
+    r.partial && i === currentMonth;
   const cellTitle = (r: YearRow, i: number): string => {
     const v = r.months[i];
     return v === null || v === undefined
       ? `${MONTHS[i]} ${r.year}: no data`
-      : `${MONTHS[i]} ${r.year}: ${formatValue(v, measure)}`;
+      : `${MONTHS[i]} ${r.year}${isCurrent(r, i) ? " so far" : ""}: ${formatValue(v, measure)}`;
+  };
+  const cellText = (r: YearRow, i: number): string => {
+    const v = r.months[i];
+    if (v === null || v === undefined) return "·";
+    return isCurrent(r, i)
+      ? `${formatCompact(v, measure)}…`
+      : formatCompact(v, measure);
   };
   return (
     <>
-      <table className="hidden w-full border-separate border-spacing-0.5 text-caption md:table">
-        <caption className="sr-only">Amount added each month, by year</caption>
+      <table className="hidden w-full border-separate border-spacing-1 text-caption md:table">
+        <caption className="sr-only">
+          Amount added each month, by year. An ellipsis marks the current month,
+          which is not over.
+        </caption>
         <thead>
           <tr>
             <th
@@ -155,13 +176,13 @@ export function MonthGrid({
                 <td
                   key={i}
                   title={cellTitle(r, i)}
-                  className={`rounded-control px-1 py-2 text-right font-mono tabular-nums ${
+                  className={`rounded-control px-1 py-2 text-right font-mono ${
                     v === null
                       ? "bg-inset text-muted"
                       : `${tint(v, max)} text-primary`
                   }`}
                 >
-                  {v === null ? "·" : formatCompact(v, measure)}
+                  {cellText(r, i)}
                 </td>
               ))}
             </tr>
@@ -175,32 +196,37 @@ export function MonthGrid({
               <span className="font-mono text-primary">{r.year}</span>
               {r.total === null ? (
                 <span className="text-caption text-muted">
-                  no complete data
+                  {r.months.every((m) => m === null)
+                    ? "no data for any month"
+                    : "no complete data"}
                 </span>
               ) : (
                 <span className="font-mono text-secondary">
                   {formatCompact(r.total, measure)}
+                  {r.partial ? " so far" : ""}
                 </span>
               )}
             </p>
-            <ul className="m-0 grid list-none grid-cols-4 gap-1 p-0">
-              {r.months.map((v, i) => (
-                <li
-                  key={i}
-                  title={cellTitle(r, i)}
-                  className={`flex flex-col rounded-control px-2 py-1 text-caption ${
-                    v === null ? "bg-inset" : tint(v, max)
-                  }`}
-                >
-                  <span className="text-secondary">{MONTHS[i]}</span>
-                  <span
-                    className={`font-mono ${v === null ? "text-muted" : "text-primary"}`}
+            {r.months.every((m) => m === null) ? null : (
+              <ul className="m-0 grid list-none grid-cols-4 gap-1 p-0">
+                {r.months.map((v, i) => (
+                  <li
+                    key={i}
+                    title={cellTitle(r, i)}
+                    className={`flex flex-col rounded-control px-2 py-1 text-caption ${
+                      v === null ? "bg-inset" : tint(v, max)
+                    }`}
                   >
-                    {v === null ? "·" : formatCompact(v, measure)}
-                  </span>
-                </li>
-              ))}
-            </ul>
+                    <span className="text-secondary">{MONTHS[i]}</span>
+                    <span
+                      className={`font-mono ${v === null ? "text-muted" : "text-primary"}`}
+                    >
+                      {cellText(r, i)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </li>
         ))}
       </ol>
@@ -227,23 +253,30 @@ const pathOf = (pts: readonly { x: number; y: number }[]): string =>
     .map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)} ${p.y.toFixed(1)}`)
     .join(" ");
 
-/** The chart frame: the SVG plot with HTML labels laid over it by percentage. */
+const pct = (v: number, of: number): number => (v / of) * 100;
+
+/**
+ * The chart frame: the SVG plot with HTML labels laid over it by percentage. The plot's shape is
+ * an aspect ratio (2:1 on phones, 3:1 from md), so it has a height without a size outside the
+ * tokens (ADR-018). `summary` is read instead of the drawing by assistive tech.
+ */
 function Frame({
   children,
   labels,
   yTicks,
   xTicks,
-  ariaLabel,
+  summary,
 }: {
   readonly children: ReactNode;
   readonly labels: ReactNode;
   readonly yTicks: readonly { at: number; text: string }[];
-  readonly xTicks: readonly { at: number; text: string }[];
-  readonly ariaLabel: string;
+  readonly xTicks: readonly { at: number; text: string; phone?: boolean }[];
+  readonly summary: string;
 }) {
   return (
-    <div className="flex flex-col gap-1">
-      <div className="relative ml-16 h-56 md:h-72">
+    <figure className="m-0 flex flex-col gap-1">
+      <figcaption className="sr-only">{summary}</figcaption>
+      <div className="relative ml-16 aspect-[2/1] md:aspect-[3/1]">
         {yTicks.map((t) => (
           <span
             key={`${t.at}-${t.text}`}
@@ -258,8 +291,7 @@ function Frame({
           viewBox={`0 0 ${W} ${H}`}
           preserveAspectRatio="none"
           className="block h-full w-full overflow-visible"
-          role="img"
-          aria-label={ariaLabel}
+          aria-hidden="true"
         >
           {yTicks.map((t) => (
             <line
@@ -278,41 +310,49 @@ function Frame({
       </div>
       <div
         aria-hidden="true"
-        className="relative ml-16 h-5 text-caption text-muted"
+        className="relative ml-16 h-6 text-caption text-muted"
       >
         {xTicks.map((t) => (
           <span
             key={`${t.at}-${t.text}`}
-            className="absolute -translate-x-1/2 whitespace-nowrap"
+            className={`absolute -translate-x-1/2 whitespace-nowrap ${t.phone === false ? "hidden md:inline" : ""}`}
             style={{ left: `${t.at}%` }}
           >
             {t.text}
           </span>
         ))}
       </div>
-    </div>
+    </figure>
   );
 }
 
-const MONTH_STARTS = [1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335];
+/** Day of year on which each month starts, in a leap year (the x axis holds 366 days). */
+const MONTH_STARTS = [1, 32, 61, 92, 122, 153, 183, 214, 245, 275, 306, 336];
 
-/** Three years' running totals against the day of the year. */
+/** Up to three years' running totals against the day of the year. */
 export function YearVsYear({
   paths,
   measure,
+  latestYear,
 }: {
   readonly paths: readonly YearPath[];
   readonly measure: Measure;
+  /** The year the latest reading falls in; it may have too few readings for a path yet. */
+  readonly latestYear: number;
 }) {
   const yMax = Math.max(
     ...paths.flatMap((p) => p.points.map((q) => q.value)),
     1,
   );
   const s = scale(1, 366, 0, yMax);
-  const styles = ["stroke-accent", "stroke-primary", "stroke-muted"] as const;
-  const dashes = [undefined, undefined, "6 5"] as const;
   const ordered = [...paths].sort((a, b) => b.year - a.year);
-  // One hover column per day of year, reading every year's value that day.
+  // The current year in the accent and solid; earlier years in ink, each with its own dash.
+  const styleOf = (p: YearPath, i: number) =>
+    p.year === latestYear
+      ? { stroke: "stroke-accent", dash: undefined, width: 2 }
+      : i === 0 || (i === 1 && ordered[0]?.year === latestYear)
+        ? { stroke: "stroke-primary", dash: "6 5", width: 1.5 }
+        : { stroke: "stroke-muted", dash: "2 4", width: 1.5 };
   const byDoy = new Map<number, string[]>();
   for (const p of ordered) {
     for (const q of p.points) {
@@ -325,74 +365,87 @@ export function YearVsYear({
     at: 100 - f * 100,
     text: formatCompact(f * yMax, measure),
   }));
+  const ends = ordered.map((p) => {
+    const last = p.points.at(-1);
+    return last === undefined
+      ? `${p.year}: no readings`
+      : `${p.year}: ${formatValue(last.value, measure)} by day ${last.doy}`;
+  });
   return (
     <div className="flex flex-col gap-3">
       <ul className="m-0 flex list-none flex-wrap gap-x-6 gap-y-1 p-0 text-caption text-secondary">
-        {ordered.map((p, i) => (
-          <li key={p.year} className="flex items-center gap-2">
-            <svg width={24} height={8} aria-hidden="true">
-              <line
-                x1={0}
-                x2={24}
-                y1={4}
-                y2={4}
-                className={styles[i] ?? "stroke-muted"}
-                strokeWidth={2}
-                strokeDasharray={dashes[i]}
-              />
-            </svg>
-            <span className="font-mono text-primary">{p.year}</span>
-            {i === 0 ? <span>this year</span> : null}
-          </li>
-        ))}
+        {ordered.map((p, i) => {
+          const st = styleOf(p, i);
+          return (
+            <li key={p.year} className="flex items-center gap-2">
+              <svg width={24} height={8} aria-hidden="true">
+                <line
+                  x1={0}
+                  x2={24}
+                  y1={4}
+                  y2={4}
+                  className={st.stroke}
+                  strokeWidth={2}
+                  strokeDasharray={st.dash}
+                />
+              </svg>
+              <span className="font-mono text-primary">{p.year}</span>
+              {p.year === latestYear ? <span>this year</span> : null}
+            </li>
+          );
+        })}
       </ul>
       <Frame
-        ariaLabel={`Running total added within each year, ${ordered.map((p) => p.year).join(", ")}`}
+        summary={`Running total added within each year by day of the year. ${ends.join("; ")}.`}
         yTicks={ticks}
         xTicks={MONTH_STARTS.map((d, i) => ({
-          at: ((d - 1) / 365) * 100,
+          at: pct(d - 1, 365),
           text: MONTHS[i] ?? "",
+          phone: i % 3 === 0,
         }))}
         labels={ordered.map((p, i) => {
           const last = p.points.at(-1);
           if (last === undefined) return null;
+          const nearEnd = last.doy > 240;
           return (
-            // Near the right edge the label sits above the line's end, anchored right, so it never
-            // runs past the frame on a phone.
+            // Near the right edge the label sits above the line's end, anchored right, so it
+            // never runs past the frame on a phone.
             <span
               key={p.year}
               aria-hidden="true"
-              className={`absolute font-mono text-caption ${i === 0 ? "text-primary" : "text-secondary"} ${
-                last.doy > 240
-                  ? "-translate-y-full pb-1"
-                  : "-translate-y-1/2 pl-2"
+              className={`absolute font-mono text-caption ${p.year === latestYear ? "text-primary" : "text-secondary"} ${
+                nearEnd ? "-translate-y-full pb-1" : "-translate-y-1/2 pl-2"
               }`}
               style={{
-                ...(last.doy > 240
-                  ? { right: `${100 - (s.x(last.doy) / W) * 100}%` }
-                  : { left: `${(s.x(last.doy) / W) * 100}%` }),
-                top: `${(s.y(last.value) / H) * 100}%`,
+                ...(nearEnd
+                  ? { right: `${100 - pct(s.x(last.doy), W)}%` }
+                  : { left: `${pct(s.x(last.doy), W)}%` }),
+                top: `${pct(s.y(last.value), H)}%`,
               }}
             >
               {formatCompact(last.value, measure)}
+              {i === 0 ? "" : ` ${p.year}`}
             </span>
           );
         })}
       >
-        {ordered.map((p, i) => (
-          <path
-            key={p.year}
-            d={pathOf(
-              p.points.map((q) => ({ x: s.x(q.doy), y: s.y(q.value) })),
-            )}
-            fill="none"
-            className={styles[i] ?? "stroke-muted"}
-            strokeWidth={i === 0 ? 2 : 1.5}
-            strokeDasharray={dashes[i]}
-            strokeLinejoin="round"
-            vectorEffect="non-scaling-stroke"
-          />
-        ))}
+        {ordered.map((p, i) => {
+          const st = styleOf(p, i);
+          return (
+            <path
+              key={p.year}
+              d={pathOf(
+                p.points.map((q) => ({ x: s.x(q.doy), y: s.y(q.value) })),
+              )}
+              fill="none"
+              className={st.stroke}
+              strokeWidth={st.width}
+              strokeDasharray={st.dash}
+              strokeLinejoin="round"
+              vectorEffect="non-scaling-stroke"
+            />
+          );
+        })}
         {[...byDoy].map(([doy, lines]) => (
           <rect
             key={doy}
@@ -410,7 +463,23 @@ export function YearVsYear({
   );
 }
 
-/** The trailing year against the year before it, day by day. */
+/** Year ticks for a time axis that runs from `from` to `to` (day numbers). */
+function yearTicks(from: number, to: number, every = 1) {
+  const out: { at: number; text: string; phone?: boolean }[] = [];
+  const firstYear = new Date(from * 86_400_000).getUTCFullYear() + 1;
+  const lastYear = new Date(to * 86_400_000).getUTCFullYear();
+  for (let y = firstYear; y <= lastYear; y += 1) {
+    const n = dayNumber(`${y}-01-01`);
+    out.push({
+      at: pct(n - from, to - from),
+      text: String(y),
+      phone: (y - firstYear) % every === 0,
+    });
+  }
+  return out;
+}
+
+/** The trailing year against the year before it, day by day, on a time axis. */
 export function TrendLine({
   points,
 }: {
@@ -421,29 +490,26 @@ export function TrendLine({
   const lo = Math.min(0, ...values);
   const hi = Math.max(0, ...values);
   const pad = (hi - lo) * 0.1 || 0.05;
-  const s = scale(0, points.length - 1, lo - pad, hi + pad);
+  const from = dayNumber(points[0]?.day ?? "");
+  const to = dayNumber(points.at(-1)?.day ?? "");
+  const s = scale(from, to, lo - pad, hi + pad);
   const last = points.at(-1);
-  const years = [...new Set(points.map((p) => p.day.slice(0, 4)))];
+  const peak = points.reduce((m, p) => (p.change > m.change ? p : m));
   const ticks = [...new Set([lo, 0, hi / 2, hi])].map((v) => ({
-    at: (s.y(v) / H) * 100,
+    at: pct(s.y(v), H),
     text: formatChange(v),
   }));
   return (
     <Frame
-      ariaLabel="Change of the trailing 365-day total against the 365 days before, day by day"
+      summary={`The trailing 365-day total against the 365 days before, from ${formatDay(points[0]?.day ?? "")} to ${formatDay(last?.day ?? "")}: now ${formatChange(last?.change ?? 0)}, highest ${formatChange(peak.change)} on ${formatDay(peak.day)}.`}
       yTicks={ticks}
-      xTicks={years.map((y) => ({
-        at:
-          (points.findIndex((p) => p.day.startsWith(y)) / (points.length - 1)) *
-          100,
-        text: y,
-      }))}
+      xTicks={yearTicks(from, to)}
       labels={
         last === undefined ? null : (
           <span
             aria-hidden="true"
             className="absolute right-0 -translate-y-full pb-1 font-mono text-caption text-primary"
-            style={{ top: `${(s.y(last.change) / H) * 100}%` }}
+            style={{ top: `${pct(s.y(last.change), H)}%` }}
           >
             {formatChange(last.change)}
           </span>
@@ -459,30 +525,36 @@ export function TrendLine({
         vectorEffect="non-scaling-stroke"
       />
       <path
-        d={pathOf(points.map((p, i) => ({ x: s.x(i), y: s.y(p.change) })))}
+        d={pathOf(
+          points.map((p) => ({ x: s.x(dayNumber(p.day)), y: s.y(p.change) })),
+        )}
         fill="none"
         className="stroke-accent"
         strokeWidth={2}
         strokeLinejoin="round"
         vectorEffect="non-scaling-stroke"
       />
-      {points.map((p, i) => (
-        <rect
-          key={p.day}
-          x={s.x(i) - W / points.length / 2}
-          y={0}
-          width={W / points.length}
-          height={H}
-          fill="transparent"
-        >
-          <title>{`${formatDay(p.day)}: ${formatChange(p.change)} on the year before`}</title>
-        </rect>
-      ))}
+      {points.map((p, i) => {
+        const x0 = s.x(dayNumber(points[i - 1]?.day ?? p.day));
+        const x1 = s.x(dayNumber(points[i + 1]?.day ?? p.day));
+        return (
+          <rect
+            key={p.day}
+            x={(x0 + s.x(dayNumber(p.day))) / 2}
+            y={0}
+            width={Math.max((x1 - x0) / 2, 0.5)}
+            height={H}
+            fill="transparent"
+          >
+            <title>{`${formatDay(p.day)}: ${formatChange(p.change)} on the year before`}</title>
+          </rect>
+        );
+      })}
     </Frame>
   );
 }
 
-/** Every day since 2012: the amount added per day, as a thin line. */
+/** Every day since 2012: the amount added per day, as a thin line on a time axis. */
 export function DailyHistory({
   points,
   measure,
@@ -494,33 +566,30 @@ export function DailyHistory({
   const values = points.map((p) => p.perDay);
   const lo = Math.min(0, ...values);
   const hi = Math.max(...values, 1);
-  const s = scale(0, points.length - 1, lo, hi);
-  const years = [...new Set(points.map((p) => p.day.slice(0, 4)))].filter(
-    (y) => Number(y) % 2 === 1,
-  );
+  const from = dayNumber(points[0]?.day ?? "");
+  const to = dayNumber(points.at(-1)?.day ?? "");
+  const s = scale(from, to, lo, hi);
+  const peak = points.reduce((m, p) => (p.perDay > m.perDay ? p : m));
   const ticks = [0, 0.5, 1].map((f) => ({
-    at: (s.y(f * hi) / H) * 100,
+    at: pct(s.y(f * hi), H),
     text: formatCompact(f * hi, measure),
   }));
-  // A column per week keeps the hover layer to a few hundred targets.
-  const week = 7;
+  // A hover column per week keeps the targets to a few hundred.
   const columns: { from: number; to: number }[] = [];
-  for (let i = 0; i < points.length; i += week)
-    columns.push({ from: i, to: Math.min(i + week, points.length) });
+  for (let i = 0; i < points.length; i += 7) {
+    columns.push({ from: i, to: Math.min(i + 7, points.length) });
+  }
   return (
     <Frame
-      ariaLabel="Amount added per day since the campaign began"
+      summary={`Amount added per day from ${formatDay(points[0]?.day ?? "")} to ${formatDay(points.at(-1)?.day ?? "")}; the best day was ${formatDay(peak.day)}, ${formatValue(Math.round(peak.perDay), measure)}.`}
       yTicks={ticks}
-      xTicks={years.map((y) => ({
-        at:
-          (points.findIndex((p) => p.day.startsWith(y)) / (points.length - 1)) *
-          100,
-        text: y,
-      }))}
+      xTicks={yearTicks(from, to, 2).filter((t) => Number(t.text) % 2 === 1)}
       labels={null}
     >
       <path
-        d={pathOf(points.map((p, i) => ({ x: s.x(i), y: s.y(p.perDay) })))}
+        d={pathOf(
+          points.map((p) => ({ x: s.x(dayNumber(p.day)), y: s.y(p.perDay) })),
+        )}
         fill="none"
         className="stroke-accent"
         strokeWidth={1}
@@ -530,21 +599,20 @@ export function DailyHistory({
       {columns.map((c) => {
         const slice = points.slice(c.from, c.to);
         const first = slice[0];
-        const peak = slice.reduce(
-          (m, p) => (p.perDay > m.perDay ? p : m),
-          slice[0] ?? { day: "", perDay: 0 },
-        );
-        if (first === undefined) return null;
+        const end = slice.at(-1);
+        if (first === undefined || end === undefined) return null;
+        const best = slice.reduce((m, p) => (p.perDay > m.perDay ? p : m));
+        const x = s.x(dayNumber(points[c.from - 1]?.day ?? first.day));
         return (
           <rect
             key={first.day}
-            x={s.x(c.from)}
+            x={x}
             y={0}
-            width={s.x(c.to - 1) - s.x(c.from) || 1}
+            width={Math.max(s.x(dayNumber(end.day)) - x, 0.5)}
             height={H}
             fill="transparent"
           >
-            <title>{`Week of ${formatDay(first.day)}: ${formatValue(Math.round(sum(slice.map((p) => p.perDay))), measure)} added; best day ${formatDay(peak.day)}, ${formatValue(Math.round(peak.perDay), measure)}`}</title>
+            <title>{`${formatDay(first.day)} to ${formatDay(end.day)}: ${formatValue(Math.round(sum(slice.map((p) => p.perDay))), measure)} added; best day ${formatDay(best.day)}, ${formatValue(Math.round(best.perDay), measure)}`}</title>
           </rect>
         );
       })}

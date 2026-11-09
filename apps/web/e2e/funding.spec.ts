@@ -79,6 +79,11 @@ test("fits a phone without sideways scroll", async ({ browser }) => {
       document.documentElement.clientWidth,
   );
   expect(overflow).toBe(false);
+  // The plots keep a real height on a phone (2:1 of their width), not the SVG's default.
+  for (const box of await page.locator("main figure svg").all()) {
+    const rect = await box.boundingBox();
+    expect(rect?.height ?? 0).toBeGreaterThan(120);
+  }
   // The wide table is hidden on phones; the per-year blocks stand in.
   await expect(page.locator("#months table").first()).toBeHidden();
   await context.close();

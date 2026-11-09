@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { bandArt } from "../../lib/bands";
+import { Masthead } from "../masthead";
 import NextLink from "next/link";
 import { ContentSource } from "schema";
 import { EmptyState, FeedItem } from "ui";
@@ -39,9 +41,23 @@ export default async function NewsPage({ searchParams }: Props) {
   );
   const at = now();
   return (
-    <Site current="news">
+    <Site
+      current="news"
+      stage={
+        <Masthead
+          eyebrow={[
+            items.length === 0
+              ? "Feed not yet connected"
+              : `${items.length} items`,
+            "Comm-Links, patch notes, roadmap, video, Spectrum",
+          ]}
+          title="News"
+          lede="What CIG publishes and what its developers say, in one feed, each item linked to its source and to the ships and parts it mentions."
+          art={bandArt("news")}
+        />
+      }
+    >
       <div className="flex flex-col gap-8 pt-8">
-        <h1 className="text-title text-primary">News</h1>
         <NewsTabs current="/news" />
         {present.length > 1 ? (
           <nav

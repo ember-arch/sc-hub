@@ -17,6 +17,7 @@ import { conceptShips, showcaseFor } from "../lib/showcase";
 import { Site, now } from "../lib/site";
 import { crewRange } from "../lib/views";
 import { FeaturedFile } from "./home-index";
+import { FundingStrip } from "./funding-strip";
 import { Register, type RegisterRow } from "./home-register";
 import { PriceCredit } from "./price-credit";
 import { FileStrip } from "./ships/[slug]/showcase/dossier";
@@ -133,6 +134,7 @@ export default function HomePage() {
             <SearchField />
           </div>
         </div>
+        <FundingStrip />
 
         {concept === undefined && live === undefined ? null : (
           <section aria-labelledby="featured" className="flex flex-col gap-4">

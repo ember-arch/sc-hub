@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { bandArt } from "../../lib/bands";
+import { Masthead } from "../masthead";
 import type { ReactNode } from "react";
-import { EmptyState, SegmentedLinks, TextLink } from "ui";
+import { EmptyState, SegmentedLinks, TextLink, formatNumber } from "ui";
 import { FUNDING_INSPIRATION, WIKI_CREDIT } from "ui/legal";
 import {
   MONTHS,
@@ -48,15 +50,23 @@ function Tile({
   label,
   value,
   note,
+  lead = false,
 }: {
   readonly label: string;
   readonly value: string;
   readonly note?: ReactNode;
+  readonly lead?: boolean;
 }) {
   return (
-    <div className="flex flex-col gap-1 rounded-card border border-hairline bg-surface p-4">
+    <div
+      className={`flex flex-col gap-1 rounded-card border border-hairline bg-surface p-4 ${lead ? "col-span-2" : ""}`}
+    >
       <span className="text-caption text-secondary">{label}</span>
-      <span className="font-mono text-heading text-primary">{value}</span>
+      <span
+        className={`font-mono ${lead ? "text-display" : "text-heading"} text-primary`}
+      >
+        {value}
+      </span>
       {note === undefined ? null : (
         <span className="text-caption text-secondary">{note}</span>
       )}
@@ -187,18 +197,23 @@ export default async function FundingPage({
   const longGapTotal = longGap === undefined ? null : gapTotal(list, longGap);
 
   return (
-    <Site current="funding">
-      <div className="flex flex-col gap-12 pt-8">
-        <header className="flex flex-col gap-4">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div className="flex flex-col gap-2">
-              <h1 className="text-title text-primary">Funding</h1>
-              <p className="m-0 max-w-prose text-body text-secondary">
-                Star Citizen has been crowdfunded since 2012. RSI publishes two
-                running counters, money pledged and citizens registered; this
-                page reads them day by day since November 2012.
-              </p>
-            </div>
+    <Site
+      current="funding"
+      stage={
+        <Masthead
+          eyebrow={[
+            head === null
+              ? "RSI's counters"
+              : `${formatValue(head.latest.value, measure)} ${measure === "pledges" ? "pledged" : "citizens"}`,
+            `${formatNumber(series.snapshots.length)} daily snapshots since ${formatDay(series.snapshots[0]?.day ?? "")}`,
+            head === null || head.trailingChange === null
+              ? "Star Citizen Wiki API"
+              : `${formatChange(head.trailingChange)} year on year`,
+          ]}
+          title="Funding"
+          lede="Star Citizen has been crowdfunded since 2012. RSI publishes two running counters, money pledged and citizens registered; this page reads them day by day."
+          art={bandArt("funding")}
+          aside={
             <SegmentedLinks
               label="Measure"
               current={fundingHref(measure)}
@@ -207,10 +222,16 @@ export default async function FundingPage({
                 { href: fundingHref("citizens"), label: "Citizens" },
               ]}
             />
-          </div>
+          }
+        />
+      }
+    >
+      <div className="flex flex-col gap-12 pt-8">
+        <header className="flex flex-col gap-4">
           {head === null ? null : (
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
               <Tile
+                lead
                 label={measure === "pledges" ? "Total pledged" : "Citizens"}
                 value={formatValue(head.latest.value, measure)}
                 note={`as of ${formatDay(head.latest.day)}`}

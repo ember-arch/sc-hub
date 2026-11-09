@@ -7,7 +7,6 @@ import {
   type ResponsiveImage,
   TextLink,
   sentence,
-  vehicleStatusBadge,
 } from "ui";
 import { SITE_NAME, SITE_TAGLINE } from "ui/brand";
 import { RSI_IMAGE_CREDIT } from "ui/legal";
@@ -21,6 +20,7 @@ import {
   formatValue,
   funding,
   headline,
+  type Reading,
   readings,
 } from "../lib/funding";
 import { shipCardImage } from "../lib/media";
@@ -59,6 +59,13 @@ function conceptImage(
       };
 }
 
+/** How many entry cards the front shows; two rows of five on a wide screen. */
+const FRONT_ENTRIES = 10;
+
+/** The year of the first reading, for the counter's label. */
+const firstYear = (list: readonly Reading[] | null): string =>
+  list?.[0]?.day.slice(0, 4) ?? "the start";
+
 /** The owner's showcase pair (ADR-010): the concept hero and the live example. */
 const CONCEPT_HERO = "odin";
 const LIVE_EXAMPLE = "perseus";
@@ -77,11 +84,12 @@ export default function HomePage() {
 
   // Counters. The funding ones need the fixture; the record counts are always there.
   const series = funding();
-  const money = series === null ? null : headline(readings(series, "pledges"));
+  const pledges = series === null ? null : readings(series, "pledges");
+  const money = pledges === null ? null : headline(pledges);
   const people =
     series === null ? null : headline(readings(series, "citizens"));
   const flightReady = r.ships.filter(
-    (s) => vehicleStatusBadge(s.vehicle.status).label === "Flight ready",
+    (s) => s.vehicle.status === "flight_ready",
   ).length;
   const partTypes = new Set(r.components.map((c) => c.item.type)).size;
   const counters: Counter[] = [
@@ -89,7 +97,7 @@ export default function HomePage() {
       ? []
       : [
           {
-            label: "Pledged since 2012",
+            label: `Pledged since ${firstYear(pledges)}`,
             value: formatValue(money.latest.value, "pledges"),
             note: `as of ${formatDay(money.latest.day)}`,
             href: "/funding",
@@ -115,16 +123,9 @@ export default function HomePage() {
             label: "This year",
             value: formatCompact(money.yearToDate, "pledges"),
             note:
-              money.yearToDateChange === null ? (
-                "so far"
-              ) : (
-                <>
-                  <span className="text-accent">
-                    {formatChange(money.yearToDateChange)}
-                  </span>{" "}
-                  on the same days of {Number(money.latest.day.slice(0, 4)) - 1}
-                </>
-              ),
+              money.yearToDateChange === null
+                ? "so far"
+                : `${formatChange(money.yearToDateChange)} on the same days of ${Number(money.latest.day.slice(0, 4)) - 1}`,
             href: "/funding",
           },
         ]),
@@ -137,10 +138,8 @@ export default function HomePage() {
     {
       label: "Parts on record",
       value: String(r.components.length),
-      note:
-        r.liveVersion === null
-          ? `${partTypes} types`
-          : `${partTypes} types · ${r.liveVersion}`,
+      // The build stays in the footer's patch strip (ADR-007: one strip per page).
+      note: `${partTypes} types`,
       href: "/components",
     },
   ];
@@ -215,7 +214,10 @@ export default function HomePage() {
     })),
     ...r.ships.map((ship) => shipCard(ship, shipCardImage(ship))),
   ].sort((a, b) => a.name.localeCompare(b.name, "en"));
-  const showsPrices = entries.some((e) =>
+  // The front shows the first entries A to Z; the register has them all (ADR-020). With a full
+  // pack the home stays a front page, not a catalogue.
+  const shown = entries.slice(0, FRONT_ENTRIES);
+  const showsPrices = shown.some((e) =>
     e.stats.some((s) => s.label === "Pledge" && s.value !== null),
   );
 
@@ -225,13 +227,8 @@ export default function HomePage() {
     <Site>
       <div className="flex flex-col gap-8 pt-8">
         <div className="flex flex-col gap-6">
-          <p className="lab m-0 flex flex-wrap gap-x-3 text-secondary">
-            <span>{formatFrontDate(at)}</span>
-            <span aria-hidden="true">·</span>
-            <span>LIVE {r.liveVersion ?? "no build"}</span>
-            <span aria-hidden="true">·</span>
-            <span>PTU {r.ptuVersion ?? "no build"}</span>
-          </p>
+          {/* The date alone: the builds stay in the footer's patch strip (ADR-007, one strip per page). */}
+          <p className="lab m-0 text-secondary">{formatFrontDate(at)}</p>
           <div className="grid items-end gap-8 md:grid-cols-[3fr_2fr] md:gap-12">
             <h1 className="m-0 text-display text-primary lg:text-hero">
               An almanac of <em className="font-regular">every ship,</em> part
@@ -251,12 +248,14 @@ export default function HomePage() {
             title="Entries, A to Z"
             aside={
               <TextLink href="/ships" className="text-secondary">
-                The register
+                {entries.length > shown.length
+                  ? `All ${entries.length} in the register`
+                  : "The register"}
               </TextLink>
             }
           />
           <ul className="m-0 grid list-none grid-cols-2 gap-3 p-0 md:grid-cols-3 lg:grid-cols-5">
-            {entries.map((entry) => (
+            {shown.map((entry) => (
               <li key={entry.href}>
                 <Card {...entry} />
               </li>

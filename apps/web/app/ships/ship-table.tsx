@@ -69,18 +69,18 @@ export function ShipTable({
                 <img
                   src={row.plate.src}
                   srcSet={row.plate.srcSet}
-                  sizes="114px"
+                  sizes="(min-width: 1280px) 114px, 171px"
                   alt=""
                   loading="lazy"
                   decoding="async"
-                  width={114}
-                  height={64}
-                  className="hidden aspect-video h-16 w-auto shrink-0 border border-hairline-strong object-cover xl:block"
+                  width={171}
+                  height={96}
+                  className="hidden aspect-video h-24 w-auto shrink-0 border border-hairline-strong object-cover lg:block xl:h-16"
                 />
               )}
               <NextLink
                 href={row.href}
-                className="whitespace-nowrap rounded-control text-heading text-primary no-underline hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+                className="rounded-control text-heading xl:whitespace-nowrap text-primary no-underline hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
               >
                 {row.name}
               </NextLink>

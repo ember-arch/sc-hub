@@ -92,10 +92,13 @@ export function CommandPalette({
     "idle",
   );
   const entries = useMemo(() => given ?? fetched ?? [], [given, fetched]);
-  // The index is fetched once, when the reader first reaches for the palette.
+  // The index is fetched once, when the reader first reaches for the palette; the ref keeps a
+  // hover, a focus and a tap in the same instant from starting it twice.
+  const fetching = useRef(false);
   const loadIndex = useCallback(() => {
     if (given !== undefined || indexUrl === undefined) return;
-    if (fetched !== null || indexState === "loading") return;
+    if (fetched !== null || fetching.current) return;
+    fetching.current = true;
     setIndexState("loading");
     fetch(indexUrl)
       .then((response) => (response.ok ? response.json() : null))
@@ -107,8 +110,11 @@ export function CommandPalette({
           setIndexState("failed");
         }
       })
-      .catch(() => setIndexState("failed"));
-  }, [given, indexUrl, fetched, indexState]);
+      .catch(() => setIndexState("failed"))
+      .finally(() => {
+        fetching.current = false;
+      });
+  }, [given, indexUrl, fetched]);
   const [query, setQuery] = useState(initialQuery ?? "");
   const [active, setActive] = useState(0);
   const [recent, setRecent] = useState<string[]>([]);
@@ -256,9 +262,13 @@ export function CommandPalette({
             >
               {results.length === 0 ? (
                 <li className="px-3 py-6 text-center text-ui text-secondary">
-                  {query.trim() === ""
-                    ? "Type to search. Recent entities appear here."
-                    : `No results for "${query.trim()}". Try a ship, component or manufacturer name.`}
+                  {indexState === "loading" && fetched === null
+                    ? "Loading the index"
+                    : indexState === "failed" && fetched === null
+                      ? "The index could not be loaded. Close and open the search to try again."
+                      : query.trim() === ""
+                        ? "Type to search. Recent entities appear here."
+                        : `No results for "${query.trim()}". Try a ship, component or manufacturer name.`}
                 </li>
               ) : (
                 GROUPS.map((group) => {

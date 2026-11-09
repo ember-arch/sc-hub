@@ -293,21 +293,24 @@ export function editorModel(
       if (group !== undefined) {
         const n = (counters.get(group) ?? 0) + 1;
         counters.set(group, n);
-        // The port's declared range, unless the game mounts a part outside it: a gimbal's gun
-        // port is declared at the gimbal's size and carries a gun one size down. The mounted
-        // part is the evidence of what fits, so the slot takes its size (ADR-022).
+        // The port's declared range, widened to the mounted part where the game mounts one
+        // outside it (one port in the build: a size 3 cannon on a port declared 4 to 4), so the
+        // stock part is always an option; nothing narrower is assumed (ADR-022).
         const stockSize = node.item?.size ?? null;
-        const outside =
-          stockSize !== null &&
-          (stockSize < node.port.size_min || stockSize > node.port.size_max);
         slots.push({
           key: node.port.port_path,
           group,
           location: place ?? `No. ${n}`,
           mount: parent?.item?.name ?? null,
           mountKey: parent?.port.port_path ?? null,
-          sizeMin: outside ? stockSize : node.port.size_min,
-          sizeMax: outside ? stockSize : node.port.size_max,
+          sizeMin:
+            stockSize === null
+              ? node.port.size_min
+              : Math.min(node.port.size_min, stockSize),
+          sizeMax:
+            stockSize === null
+              ? node.port.size_max
+              : Math.max(node.port.size_max, stockSize),
           stock: node.item?.class_name ?? null,
         });
       }

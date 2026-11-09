@@ -117,38 +117,39 @@ function relatedTo(
 }
 
 /**
- * Editions (ADR-022): on a base ship's file, the showroom and sale editions that carry its name,
- * each told apart by its game class name; on an edition's file, the base it is an edition of.
+ * Editions (ADR-022): on an entry's file, the showroom and sale editions that carry its name,
+ * each told apart by its game class name; on an edition's file, the entry it is an edition of
+ * and the other editions beside it.
  */
 function editionGroups(className: string) {
   const r = repo();
   const ship = r.ships.find((s) => s.vehicle.class_name === className);
   if (ship === undefined) return [];
+  const entry = ship.editionOf ?? ship.vehicle;
+  const link = (o: ShipView) => ({
+    name: o.label,
+    href: `/ships/${o.vehicle.slug}`,
+  });
+  const others = r
+    .editionsOf(entry.class_name)
+    .filter((e) => e.vehicle.class_name !== className)
+    .map(link);
+  const groups = [];
   if (ship.editionOf !== null) {
-    return [
-      {
-        title: "An edition of",
-        ships: [
-          {
-            name: `${ship.editionOf.name} (${ship.editionOf.class_name})`,
-            href: `/ships/${ship.editionOf.slug}`,
-          },
-        ],
-      },
-    ];
+    groups.push({
+      title: "An edition of",
+      ships: [
+        { name: ship.editionOf.name, href: `/ships/${ship.editionOf.slug}` },
+      ],
+    });
   }
-  const editions = r.editionsOf(className);
-  return editions.length === 0
-    ? []
-    : [
-        {
-          title: "Editions",
-          ships: editions.map((e) => ({
-            name: `${e.vehicle.name} (${e.vehicle.class_name})`,
-            href: `/ships/${e.vehicle.slug}`,
-          })),
-        },
-      ];
+  if (others.length > 0) {
+    groups.push({
+      title: ship.editionOf === null ? "Editions" : "Other editions",
+      ships: others,
+    });
+  }
+  return groups;
 }
 
 /** The holoviewer's model and the person beside it (ADR-015), with the model's credit. */
@@ -1071,7 +1072,7 @@ export function conceptShipFile(concept: ConceptShip): ShipFileProps {
     r.manufacturers.find((m) => m.code === concept.manufacturer_code) ?? null;
   const show = showcaseFor(concept.slug, concept.name);
   const claims = claimsFor(concept.slug);
-  const others = r.ships.filter((o) => o.stats !== null);
+  const others = r.entries.filter((o) => o.stats !== null);
   const acq = acquisitionFor(concept.slug, null);
   const loaner = loanerFor(concept.name);
   const pledge = pledgeValue(acq.offers);

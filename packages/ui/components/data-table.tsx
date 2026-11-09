@@ -201,7 +201,7 @@ export function DataTable<T>({
                 {columns.map((column, index) => (
                   <td
                     key={column.key}
-                    className={`[overflow-wrap:anywhere] px-2 py-3 align-middle ${cellAlign(column)} ${isPrimary(column, index) ? "" : bp.cell} ${column.align === "right" ? "font-mono" : ""}`}
+                    className={`${column.align === "right" ? "" : "[overflow-wrap:anywhere]"} px-2 py-3 align-middle ${cellAlign(column)} ${isPrimary(column, index) ? "" : bp.cell} ${column.align === "right" ? "font-mono" : ""}`}
                   >
                     {column.render(row)}
                   </td>

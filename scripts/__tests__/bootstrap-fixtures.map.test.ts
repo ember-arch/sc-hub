@@ -93,6 +93,8 @@ describe("vocabulary tables", () => {
     expect(mapSizeClass({ ...base, size: { en_EN: "Capital" } })).toBe(
       "capital",
     );
+    // The wiki writes the literal "undefined" where the game files class no size (ADR-022).
+    expect(mapSizeClass({ ...base, size: { en_EN: "undefined" } })).toBeNull();
     expect(() => mapSizeClass({ ...base, size: 2 })).toThrow(MapError);
     expect(() => mapSizeClass({ ...base, size: "Enormous" })).toThrow(MapError);
     expect(mapKind({ ...base, is_spaceship: true })).toBe("ship");
@@ -229,6 +231,42 @@ describe("mapping the vehicle sample", () => {
         true,
       );
     }
+  });
+
+  it("leaves out an unnamed dummy port, and halts if one carries a part (ADR-022)", () => {
+    const [first] = vehicleSample.ports ?? [];
+    if (first === undefined) throw new Error("sample has no ports");
+    const empty = mapPorts(
+      {
+        ...vehicleSample,
+        ports: [{ ...first, name: "", equipped_item: null }],
+      },
+      channel,
+      version,
+    );
+    expect(empty.ports).toEqual([]);
+    expect(empty.excluded.get("unnamed")).toBe(1);
+    expect(() =>
+      mapPorts(
+        {
+          ...vehicleSample,
+          ports: [
+            {
+              ...first,
+              name: "",
+              equipped_item: first.equipped_item ?? {
+                class_name: "TEST_Part",
+                name: "Test part",
+                type: "WeaponGun",
+                uuid: "00000000-0000-0000-0000-000000000000",
+              },
+            },
+          ],
+        },
+        channel,
+        version,
+      ),
+    ).toThrow(MapError);
   });
 
   it("accepts a missing port version and halts on a different one", () => {

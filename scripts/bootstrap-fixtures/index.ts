@@ -154,7 +154,13 @@ async function main(): Promise<void> {
           targets.push({ className: entry.class_name, uuid: entry.uuid });
         }
       }
-      if (list.meta === undefined || page >= list.meta.last_page) break;
+      if (list.meta === undefined) {
+        throw new MapError(
+          "the vehicle list carries no meta.last_page; the run cannot know whether it has every vehicle",
+          { page },
+        );
+      }
+      if (page >= list.meta.last_page) break;
     }
     targets.sort((a, b) => a.className.localeCompare(b.className));
     log({

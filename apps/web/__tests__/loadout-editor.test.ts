@@ -179,7 +179,9 @@ describe("the catalogue's figures are all there", () => {
   // A part the game mounts stock on some ship is offered even without a record (a beam weapon
   // without a fire rate, a bomb without a missile's damage); the page then shows no figure.
   const stock = new Set(
-    models.flatMap((m) => m.slots.map((s) => s.stock)).filter((s) => s !== null),
+    models
+      .flatMap((m) => m.slots.map((s) => s.stock))
+      .filter((s) => s !== null),
   );
   it("every swappable gun has damage per second and per shot", () => {
     const guns = all.filter((o) => o.group === "guns");

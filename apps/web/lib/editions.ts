@@ -12,18 +12,33 @@ export interface EditionCandidate {
   readonly base_variant_of: string | null;
 }
 
-/** The base an edition stands under, or null for an entry of its own. */
+/**
+ * The entry an edition stands under, or null for an entry of its own. A chain of editions
+ * (a showroom copy of a sale edition) resolves to its root, the one vehicle of that name and
+ * maker that points at no other; a cycle or a dangling base ends the walk.
+ */
 export function editionBase<T extends EditionCandidate>(
   vehicle: T,
   byClass: ReadonlyMap<string, T>,
 ): T | null {
-  if (vehicle.base_variant_of === null) return null;
-  const base = byClass.get(vehicle.base_variant_of);
-  if (base === undefined || base.class_name === vehicle.class_name) return null;
-  return base.name === vehicle.name &&
-    base.manufacturer_code === vehicle.manufacturer_code
-    ? base
-    : null;
+  const seen = new Set([vehicle.class_name]);
+  let current = vehicle;
+  let base: T | null = null;
+  for (;;) {
+    if (current.base_variant_of === null) break;
+    const next = byClass.get(current.base_variant_of);
+    if (
+      next === undefined ||
+      seen.has(next.class_name) ||
+      next.name !== vehicle.name ||
+      next.manufacturer_code !== vehicle.manufacturer_code
+    )
+      break;
+    base = next;
+    seen.add(next.class_name);
+    current = next;
+  }
+  return base;
 }
 
 /**

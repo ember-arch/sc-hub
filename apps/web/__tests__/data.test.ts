@@ -181,13 +181,37 @@ describe("buildRepository with PTU, variant and paint rows", () => {
     );
     const view = folded.shipBySlug(edition.slug);
     expect(view?.editionOf?.class_name).toBe(base.class_name);
+    expect(view?.label).toBe(`${base.name} (${edition.class_name})`);
     expect(folded.entries.map((s) => s.vehicle.slug)).not.toContain(
       edition.slug,
     );
     expect(
       folded.editionsOf(base.class_name).map((s) => s.vehicle.class_name),
     ).toEqual([edition.class_name]);
-    // The base and the edition count once among a component's ships.
+    // A chain (a showroom copy of the edition) resolves to the root entry.
+    const copy = Vehicle.parse({
+      ...edition,
+      class_name: `${edition.class_name}_Copy`,
+      slug: `${edition.slug}-copy`,
+      base_variant_of: edition.class_name,
+    });
+    const chained = buildRepository(
+      {
+        manifest: extended.manifest,
+        rows: {
+          ...extended.rows,
+          Vehicle: [...extended.rows.Vehicle, edition, copy],
+        },
+      },
+      [],
+    );
+    expect(chained.shipBySlug(copy.slug)?.editionOf?.class_name).toBe(
+      base.class_name,
+    );
+    expect(
+      chained.editionsOf(base.class_name).map((s) => s.vehicle.class_name),
+    ).toEqual([edition.class_name, copy.class_name]);
+    // A part is credited to the ship whose ports carry it; the copied row has no ports.
     const stock = folded
       .shipPorts(base.class_name)
       .find((p) => p.item !== null);

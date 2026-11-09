@@ -50,7 +50,7 @@ export default async function NewsPage({ searchParams }: Props) {
               : `${items.length} items`,
             "Comm-Links, patch notes, roadmap, video, Spectrum",
           ]}
-          title="News"
+          title="Dispatches"
           lede="What CIG publishes and what its developers say, in one feed, each item linked to its source and to the ships and parts it mentions."
         />
       }
@@ -113,7 +113,7 @@ function Chip({
     <NextLink
       href={href}
       aria-current={active ? "true" : undefined}
-      className={`rounded-control border px-2 py-1 no-underline ${active ? "border-hairline-strong bg-accent-bg text-primary" : "border-hairline bg-inset text-secondary hover:text-primary"}`}
+      className={`lab rounded-control border px-2 py-1 no-underline ${active ? "border-accent bg-accent-bg text-primary" : "border-hairline-strong bg-surface text-secondary hover:text-primary"}`}
     >
       {label}
     </NextLink>

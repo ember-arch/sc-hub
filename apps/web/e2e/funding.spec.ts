@@ -9,7 +9,9 @@ test("shows the counters, every section and the credits, with Funding current in
 }) => {
   const response = await page.goto("/funding");
   expect(response?.status()).toBe(200);
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Funding");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "The ledger of pledges",
+  );
   await expect(
     page
       .getByRole("navigation", { name: "Primary" })

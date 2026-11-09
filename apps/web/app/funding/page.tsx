@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Masthead } from "../masthead";
+import { FigureStrip } from "../strip";
 import type { ReactNode } from "react";
 import { EmptyState, SegmentedLinks, TextLink, formatNumber } from "ui";
 import { FUNDING_INSPIRATION, WIKI_CREDIT } from "ui/legal";
@@ -32,6 +33,7 @@ import {
   YearBars,
   YearVsYear,
 } from "./charts";
+import { RunningTotal } from "./running-total";
 
 export const metadata: Metadata = {
   title: "Funding",
@@ -40,48 +42,15 @@ export const metadata: Metadata = {
     "How Star Citizen's crowdfunding has grown: pledges and citizens by year and month, this year against the last two, and the trailing-year trend, from RSI's public counters.",
 };
 
+/** A gap this long is drawn dashed on the running total and named under the month grid. */
+const LONG_GAP_DAYS = 60;
+/** The round figure the running total marks: a presentation choice, located in the data. */
+const MILESTONE_USD = 1_000_000_000;
+
 const LABEL: Record<Measure, { noun: string; verb: string }> = {
   pledges: { noun: "pledged", verb: "raised" },
   citizens: { noun: "citizens", verb: "joined" },
 };
-
-function Tile({
-  label,
-  value,
-  note,
-  lead = false,
-  short,
-}: {
-  readonly label: string;
-  readonly value: string;
-  readonly note?: ReactNode;
-  readonly lead?: boolean;
-  /** A shorter form of the value for phones, where the full one would not fit. */
-  readonly short?: string;
-}) {
-  return (
-    <div
-      className={`flex flex-col gap-1 rounded-card border border-hairline bg-surface p-4 ${lead ? "col-span-2" : ""}`}
-    >
-      <span className="text-caption text-secondary">{label}</span>
-      <span
-        className={`font-mono ${lead ? "text-display" : "text-heading"} text-primary`}
-      >
-        {short === undefined ? (
-          value
-        ) : (
-          <>
-            <span className="md:hidden">{short}</span>
-            <span className="hidden md:inline">{value}</span>
-          </>
-        )}
-      </span>
-      {note === undefined ? null : (
-        <span className="text-caption text-secondary">{note}</span>
-      )}
-    </div>
-  );
-}
 
 function Section({
   id,
@@ -98,10 +67,10 @@ function Section({
     <section
       id={id}
       aria-labelledby={`${id}-heading`}
-      className="flex scroll-mt-8 flex-col gap-4"
+      className="flex scroll-mt-8 flex-col gap-4 border-t border-hairline-strong pt-4"
     >
       <div className="flex flex-col gap-1">
-        <h2 id={`${id}-heading`} className="text-heading text-primary">
+        <h2 id={`${id}-heading`} className="m-0 text-heading text-primary">
           {title}
         </h2>
         {intro === undefined ? null : (
@@ -128,7 +97,7 @@ function TableView({
       </summary>
       <table className="mt-3 w-full text-caption">
         <thead>
-          <tr className="text-left text-secondary">
+          <tr className="lab border-b-2 border-primary text-left text-secondary">
             <th scope="col" className="py-1 font-regular">
               Year
             </th>
@@ -168,7 +137,7 @@ function TableView({
 }
 
 /**
- * Funding (ADR-018): RSI's pledge and citizen counters since 2012, by year and month, this year
+ * The ledger (ADR-018, ADR-020): RSI's pledge and citizen counters since 2012, the running total, by year and month, this year
  * against the last two, the trailing-year trend and every day's rate. The measure is URL state.
  */
 export default async function FundingPage({
@@ -202,7 +171,9 @@ export default async function FundingPage({
   const daily = dailyRate(list);
   const fell = declines(list);
   const words = LABEL[measure];
-  const longGap = series.source.gaps.find((g) => g.days >= 60);
+  const longGap = series.source.gaps.find((g) => g.days >= LONG_GAP_DAYS);
+  const crossed =
+    measure === "pledges" && list.some((r) => r.value >= MILESTONE_USD);
   const longGapTotal = longGap === undefined ? null : gapTotal(list, longGap);
 
   return (
@@ -219,8 +190,12 @@ export default async function FundingPage({
               ? "Star Citizen Wiki API"
               : `${formatChange(head.trailingChange)} year on year`,
           ]}
-          title="Funding"
-          lede="Star Citizen has been crowdfunded since 2012. RSI publishes two running counters, money pledged and citizens registered; this page reads them day by day."
+          title={
+            measure === "pledges"
+              ? "The ledger of pledges"
+              : "The ledger of citizens"
+          }
+          lede="Star Citizen has been crowdfunded since 2012. RSI publishes two running counters, money pledged and citizens registered; the ledger reads them day by day: a line for the running total, a row for each year, a cell for each month."
           aside={
             <SegmentedLinks
               label="Measure"
@@ -235,54 +210,62 @@ export default async function FundingPage({
       }
     >
       <div className="flex flex-col gap-12 pt-8">
-        <header className="flex flex-col gap-4">
-          {head === null ? null : (
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
-              <Tile
-                lead
-                label={measure === "pledges" ? "Total pledged" : "Citizens"}
-                value={formatValue(head.latest.value, measure)}
-                short={formatCompact(head.latest.value, measure)}
-                note={`as of ${formatDay(head.latest.day)}`}
-              />
-              <Tile
-                label={`${words.verb[0]?.toUpperCase()}${words.verb.slice(1)} this year`}
-                value={
+        {head === null ? null : (
+          <FigureStrip
+            columns={4}
+            figures={[
+              {
+                label: measure === "pledges" ? "Total pledged" : "Citizens",
+                value: formatValue(head.latest.value, measure),
+                short: formatCompact(head.latest.value, measure),
+                note: `as of ${formatDay(head.latest.day)}`,
+              },
+              {
+                label: `${words.verb[0]?.toUpperCase()}${words.verb.slice(1)} this year`,
+                value:
                   head.yearToDate === null
                     ? "unknown"
-                    : formatCompact(head.yearToDate, measure)
-                }
-                note={
+                    : formatCompact(head.yearToDate, measure),
+                note:
                   head.yearToDateChange === null
                     ? "no comparison"
-                    : `${formatChange(head.yearToDateChange)} on the same days of ${latestYear - 1}`
-                }
-              />
-              <Tile
-                label="Last 365 days"
-                value={
+                    : `${formatChange(head.yearToDateChange)} on the same days of ${latestYear - 1}`,
+              },
+              {
+                label: "Last 365 days",
+                value:
                   head.trailing === null
                     ? "unknown"
-                    : formatCompact(head.trailing, measure)
-                }
-                note={
+                    : formatCompact(head.trailing, measure),
+                note:
                   head.trailingChange === null
                     ? "no comparison"
-                    : `${formatChange(head.trailingChange)} on the 365 before`
-                }
-              />
-              <Tile
-                label="Last 30 days"
-                value={
+                    : `${formatChange(head.trailingChange)} on the 365 before`,
+              },
+              {
+                label: "Last 30 days",
+                value:
                   head.last30 === null
                     ? "unknown"
-                    : formatCompact(head.last30, measure)
-                }
-                note={measure === "pledges" ? "pledged" : "joined"}
-              />
-            </div>
-          )}
-        </header>
+                    : formatCompact(head.last30, measure),
+                note: measure === "pledges" ? "pledged" : "joined",
+              },
+            ]}
+          />
+        )}
+
+        <Section
+          id="total"
+          title="The running total"
+          intro={`RSI's counter since the first snapshot. Solid where the API has readings; dashed where it has none for two months or more, joined across the gap, never estimated.${crossed ? " The point marks the first billion dollars." : ""}`}
+        >
+          <RunningTotal
+            list={list}
+            measure={measure}
+            gapDays={LONG_GAP_DAYS}
+            milestone={measure === "pledges" ? MILESTONE_USD : null}
+          />
+        </Section>
 
         <Section
           id="years"

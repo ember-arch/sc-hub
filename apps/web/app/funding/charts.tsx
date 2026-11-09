@@ -14,17 +14,18 @@ import {
 } from "../../lib/funding";
 
 /**
- * The funding page's charts (ADR-018), server-rendered. One accent (system.md): the current year
- * and single series in the accent, earlier years in the ink tokens with a dash as the second cue,
- * magnitude as the accent's tint. Lines live in a viewBox-scaled SVG with non-scaling strokes;
+ * The ledger's charts (ADR-018, drawn the almanac's way per ADR-020), server-rendered. Ink for the
+ * record and one accent for the present: the running total and the years in ink, the current year
+ * and the single-series lines in the accent, earlier years in ink with a dash as the second cue,
+ * magnitude as the ink's tint. Plots sit on graph paper, hairlines at every tick, in a frame. Lines live in a viewBox-scaled SVG with non-scaling strokes;
  * every label is HTML in text tokens, so nothing scales down on a phone. Every mark carries a
  * title for pointer readers; each chart also carries a sentence for screen readers, and a table
  * of every month sits under the grid. Sizes come from the spacing tokens, the plot's shape from
  * an aspect ratio (ADR-018).
  */
 
-const W = 1000;
-const H = 300;
+export const W = 1000;
+export const H = 300;
 
 const sum = (xs: readonly number[]): number => xs.reduce((a, b) => a + b, 0);
 
@@ -61,7 +62,7 @@ export function YearBars({
             >
               {r.total === null ? null : (
                 <span
-                  className={`absolute inset-y-0 left-0 rounded-control ${r.partial ? "bg-accent/50" : "bg-accent"}`}
+                  className={`absolute inset-y-0 left-0 ${r.partial ? "bg-accent" : "bg-primary"}`}
                   style={{ width: `${Math.max((r.total / max) * 100, 0.5)}%` }}
                 />
               )}
@@ -93,15 +94,19 @@ export function YearBars({
   );
 }
 
-/** The accent's tint for a month, by its share of the largest month on the grid (ADR-018). */
+/**
+ * The ink's tint for a month, by its share of the largest month on the grid (ADR-018, ADR-020),
+ * with the one text colour that reads on it: each band clears 4.5:1 in both modes (the lowest is
+ * ink on the 35% tint, dark, 4.6:1), so the figures stay legible as the tint deepens.
+ */
 function tint(value: number, max: number): string {
   const share = max <= 0 ? 0 : value / max;
-  if (share <= 0) return "";
-  if (share < 0.15) return "bg-accent/10";
-  if (share < 0.3) return "bg-accent/20";
-  if (share < 0.5) return "bg-accent/35";
-  if (share < 0.75) return "bg-accent/50";
-  return "bg-accent/70";
+  if (share <= 0) return "text-primary";
+  if (share < 0.15) return "bg-primary/10 text-primary";
+  if (share < 0.3) return "bg-primary/20 text-primary";
+  if (share < 0.5) return "bg-primary/35 text-primary";
+  if (share < 0.75) return "bg-primary/70 text-page";
+  return "bg-primary/80 text-page";
 }
 
 /**
@@ -176,10 +181,8 @@ export function MonthGrid({
                 <td
                   key={i}
                   title={cellTitle(r, i)}
-                  className={`rounded-control px-1 py-2 text-right font-mono ${
-                    v === null
-                      ? "bg-inset text-muted"
-                      : `${tint(v, max)} text-primary`
+                  className={`px-1 py-2 text-right font-mono ${
+                    v === null ? "bg-inset text-muted" : tint(v, max)
                   }`}
                 >
                   {cellText(r, i)}
@@ -219,7 +222,7 @@ export function MonthGrid({
                   >
                     <span className="text-secondary">{MONTHS[i]}</span>
                     <span
-                      className={`font-mono ${v === null ? "text-muted" : "text-primary"}`}
+                      className={`font-mono ${v === null ? "text-muted" : ""}`}
                     >
                       {cellText(r, i)}
                     </span>
@@ -239,7 +242,12 @@ interface Scale {
   readonly y: (v: number) => number;
 }
 
-function scale(xMin: number, xMax: number, yMin: number, yMax: number): Scale {
+export function scale(
+  xMin: number,
+  xMax: number,
+  yMin: number,
+  yMax: number,
+): Scale {
   const dx = xMax - xMin || 1;
   const dy = yMax - yMin || 1;
   return {
@@ -248,19 +256,19 @@ function scale(xMin: number, xMax: number, yMin: number, yMax: number): Scale {
   };
 }
 
-const pathOf = (pts: readonly { x: number; y: number }[]): string =>
+export const pathOf = (pts: readonly { x: number; y: number }[]): string =>
   pts
     .map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)} ${p.y.toFixed(1)}`)
     .join(" ");
 
-const pct = (v: number, of: number): number => (v / of) * 100;
+export const pct = (v: number, of: number): number => (v / of) * 100;
 
 /**
  * The chart frame: the SVG plot with HTML labels laid over it by percentage. The plot's shape is
  * an aspect ratio (2:1 on phones, 3:1 from md), so it has a height without a size outside the
  * tokens (ADR-018). `summary` is read instead of the drawing by assistive tech.
  */
-function Frame({
+export function Frame({
   children,
   labels,
   yTicks,
@@ -274,7 +282,7 @@ function Frame({
   readonly summary: string;
 }) {
   return (
-    <figure className="m-0 flex flex-col gap-1">
+    <figure className="m-0 flex flex-col gap-1 border border-hairline-strong bg-surface p-4">
       <figcaption className="sr-only">{summary}</figcaption>
       <div className="relative ml-16 aspect-[2/1] md:aspect-[3/1]">
         {yTicks.map((t) => (
@@ -293,6 +301,7 @@ function Frame({
           className="block h-full w-full overflow-visible"
           aria-hidden="true"
         >
+          {/* Graph paper: a hairline at every tick, both ways. */}
           {yTicks.map((t) => (
             <line
               key={`${t.at}-${t.text}`}
@@ -300,6 +309,17 @@ function Frame({
               x2={W}
               y1={(t.at / 100) * H}
               y2={(t.at / 100) * H}
+              className="stroke-hairline"
+              vectorEffect="non-scaling-stroke"
+            />
+          ))}
+          {xTicks.map((t) => (
+            <line
+              key={`x-${t.at}-${t.text}`}
+              x1={(t.at / 100) * W}
+              x2={(t.at / 100) * W}
+              y1={0}
+              y2={H}
               className="stroke-hairline"
               vectorEffect="non-scaling-stroke"
             />
@@ -464,7 +484,7 @@ export function YearVsYear({
 }
 
 /** Year ticks for a time axis that runs from `from` to `to` (day numbers). */
-function yearTicks(from: number, to: number, every = 1) {
+export function yearTicks(from: number, to: number, every = 1) {
   const out: { at: number; text: string; phone?: boolean }[] = [];
   const firstYear = new Date(from * 86_400_000).getUTCFullYear() + 1;
   const lastYear = new Date(to * 86_400_000).getUTCFullYear();

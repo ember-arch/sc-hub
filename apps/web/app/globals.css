@@ -106,12 +106,3 @@
   right: -10%;
   top: 9%;
 }
-
-/* The almanac's small labels (ADR-020): mono, letter-spaced capitals, for running heads and column heads. */
-.lab {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  line-height: 16px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}

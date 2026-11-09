@@ -6,9 +6,9 @@ Numbered rules are the ones the design-review prompt checks by number.
 
 ## 1. Principles
 
-1. Imagery does the mood, chrome stays quiet. Near-black and off-white surfaces, one accent, no decoration.
-2. Typography-led. One grotesk for interface text, one mono for numbers. At most three sizes per page besides interface text and captions, and two weights.
-3. Light and dark are both first-class and follow the system. Ship pages default to dark.
+1. Imagery does the mood, chrome stays quiet. Paper and ink surfaces (warm paper by day, ink on slate by night, ADR-020), one accent, no decoration.
+2. Typography-led. A serif text face, a serif display face and one mono for numbers (ADR-020). At most three sizes per page besides interface text, captions and labels, and two weights.
+3. Light and dark are both first-class and follow the system; the dark mode is designed as ink on slate, not inverted. Ship pages default to dark.
 4. Search is the navigation. The command palette is reachable from every page.
 5. Every entity page uses one template: hero, key facts, body sections, related entities.
 6. Tables earn their density: fixed columns, sticky header, units in the header, sort on tap; rows expand on phone instead of the table scrolling sideways.
@@ -49,8 +49,9 @@ Rules: one accent. Manufacturer brand colors may appear only as a 3 px rule on t
 | `body` | 16 / 26 | 400 | Prose |
 | `ui` | 14 / 20 | 400 / 500 | Controls, table cells, nav |
 | `caption` | 12.5 / 18 | 400 | Units, metadata, timestamps |
+| `label` | 11 / 16 | 400 / 500 | The almanac's labels (`.lab`): running heads, column heads, eyebrows; the mono as letter-spaced capitals (ADR-020) |
 
-Faces: Newsreader (ADR-020, replacing the Phase 0 pair) for text and interface, Fraunces for display (`hero`, `display`, `title` and `heading` sizes, every `h1` and `h2`, set at -0.02 em), IBM Plex Mono for numbers. Every number uses tabular figures (`font-variant-numeric: tabular-nums`). Sentence case everywhere, with one exception: the almanac's small labels (`.lab`: running heads, column heads, eyebrows) are set in the mono at 11 px as letter-spaced capitals. Unit abbreviations and the game's own acronyms (SCM, NAV, EM, IR, LIVE, PTU, EPTU) keep their case.
+Faces: Newsreader (ADR-020, replacing the Phase 0 pair) for text and interface, Fraunces for display (the `hero`, `display`, `title` and `heading` sizes and `.font-display`, set at -0.02 em; a heading set at a smaller size stays in the text face), IBM Plex Mono for numbers. Every number uses tabular figures (`font-variant-numeric: tabular-nums`). Sentence case everywhere, with one exception: the almanac's labels (`.lab`, the `label` size: running heads, column heads, eyebrows) are set in the mono as letter-spaced capitals. Unit abbreviations and the game's own acronyms (SCM, NAV, EM, IR, LIVE, PTU, EPTU) keep their case.
 
 ### Space, radius, elevation
 
@@ -89,7 +90,7 @@ Added by spec 02 (ADR-006):
 
 Added with the design lift (ADR-019):
 
-- `Masthead` (in `apps/web`) — every index page's opening in the shell's `stage` slot: a mono eyebrow of facts, the title in `display` over a 4 px accent rule, a one-line lede, the page's control on the right, and CIG key art full-bleed behind it under a legibility scrim when media is built. The current nav section carries a 2 px accent underline.
+- `Masthead` (in `apps/web`) — every index page's opening in the shell's `stage` slot: a label line of facts, the title in the display face, a one-line deck and the page's control on the right, over a rule (ADR-020; the art band of ADR-019 is gone: pictures are plates). The current nav section is set in the accent and underlined.
 - `FundingStrip` (in `apps/web`) — the home page's live counters from the funding snapshots, one link to the funding page.
 
 Added with the ship file (ADR-008, ADR-012 to ADR-016):
@@ -108,7 +109,7 @@ Added with the ship file (ADR-008, ADR-012 to ADR-016):
 | Page | Layout |
 | --- | --- |
 | Home | The file strip and search, the featured files of the concept hero and the live example (each with its key art when built), the register of every ship as a `DataTable`, then today's feed (news and dev posts merged, 10 items); the patch strip is in the footer. Follows the reader's light or dark setting. No hero banner. |
-| Ships index | `Masthead` with the Perseus key art (ADR-019), the compare link on its right. Filter bar (manufacturer, role, size, status, kind) + card/table toggle. Cards in a 2/3/4 column grid by breakpoint, art to the card's edges and the name in `heading`, each with a Compare toggle. Table mode uses `DataTable` with a Compare column. Components, Titles, Funding and News open on a `Masthead` the same way. |
+| Ships index | `Masthead` (ADR-020), the compare link on its right. Filter bar (manufacturer, role, size, status, kind) + card/table toggle. Cards in a 2/3/4 column grid by breakpoint, art to the card's edges and the name in `heading`, each with a Compare toggle. Table mode uses `DataTable` with a Compare column. Components, Titles, Funding and News open on a `Masthead` the same way. The register and plates of the almanac follow in their own PR (ADR-020). |
 | Ship page | The ship file (ADR-012, ADR-014, ADR-015), dark by default. A full-bleed opening band of the ship's key art (with CIG's cut-out where it publishes one) under a scrim that keeps the name, a factual sentence and four headline figures legible; credited. Two columns below: on the left, sticky on wide screens, the holoviewer, the particulars and the contents; on the right the same nine numbered sections for every ship (Brief, Acquisition and status, Weapons and combat, Crew and operations, Mobility, Scale, Specifications, Hardpoints and loadout, Sources), each with its images and render loops, every game figure with its build, and related ships with the sources. |
 | Component page | `EntityPage`. Key facts: type, size, grade, class, manufacturer. Sections: stats by channel, stock on (ships that carry it by default), in the news. |
 | Manufacturer page | `EntityPage` with a 3 px brand rule (the `border.strong` token until the fankit supplies brand colors). Sections: lineup (cards), in the news. |

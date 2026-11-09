@@ -101,6 +101,9 @@
   --text-caption: 12.5px;
   --text-caption--line-height: 18px;
   --text-caption--font-weight: 400;
+  --text-label: 11px;
+  --text-label--line-height: 16px;
+  --text-label--font-weight: 400;
 
   --font-weight-*: initial;
   --font-weight-regular: 400;
@@ -167,11 +170,20 @@
     font-variant-numeric: tabular-nums;
     -webkit-font-smoothing: antialiased;
   }
-  h1,
-  h2,
+  .text-hero,
+  .text-display,
+  .text-title,
+  .text-heading,
   .font-display {
     font-family: var(--font-display);
     letter-spacing: -0.02em;
+  }
+  .lab {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 16px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
   }
   @media (prefers-reduced-motion: reduce) {
     *,

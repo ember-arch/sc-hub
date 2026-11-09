@@ -1,9 +1,8 @@
 "use client";
 
-import { GeistMono } from "geist/font/mono";
-import { GeistSans } from "geist/font/sans";
 import { Footer } from "ui";
 import { SITE_NAME } from "ui/brand";
+import { fontClasses } from "./fonts";
 import "./globals.css";
 
 /**
@@ -17,7 +16,7 @@ export default function GlobalError({
   readonly reset: () => void;
 }) {
   return (
-    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`}>
+    <html lang="en" className={fontClasses}>
       <body className="min-h-dvh">
         <div className="flex min-h-dvh flex-col bg-page text-primary">
           <main className="mx-auto w-full max-w-content flex-1 px-4 pb-8">

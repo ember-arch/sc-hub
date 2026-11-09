@@ -37,7 +37,7 @@ export function Card({
   return (
     <NextLink
       href={href}
-      className="group flex h-full flex-col overflow-hidden rounded-card border border-hairline bg-surface no-underline transition-colors duration-hover hover:border-hairline-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+      className="group flex h-full flex-col overflow-hidden rounded-card border border-hairline-strong bg-inset no-underline transition-colors duration-hover hover:border-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
     >
       {/* No image, no well: an empty box is chrome the reader could lose (design review, ADR-006). */}
       {image === undefined || image === null ? null : (
@@ -61,7 +61,7 @@ export function Card({
       {/* The art runs to the card's edges (ADR-019); the words sit in their own padded block. */}
       <div className="flex flex-1 flex-col gap-3 p-4">
         <div className="flex flex-col gap-1">
-          <p className="text-heading text-primary group-hover:text-accent">
+          <p className="font-display text-heading text-primary group-hover:text-accent">
             {name}
           </p>
           <p className="text-caption text-secondary">
@@ -69,7 +69,7 @@ export function Card({
             {role !== null ? ` · ${role}` : ""}
           </p>
         </div>
-        <dl className="m-0 mt-auto grid grid-cols-2 gap-2 border-t border-hairline pt-3">
+        <dl className="m-0 mt-auto grid grid-cols-2 gap-2 border-t border-hairline-strong pt-3">
           {stats.slice(0, 2).map((stat) => (
             <div key={stat.label} className="flex flex-col">
               <dt className="text-caption text-secondary">{stat.label}</dt>

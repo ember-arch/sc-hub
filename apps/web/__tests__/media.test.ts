@@ -1,8 +1,6 @@
 import { MediaManifest } from "schema";
 import { describe, expect, it } from "vitest";
-import { type ShowcaseLookup, bandArt } from "../lib/bands";
 import { createMedia, parseMediaManifest } from "../lib/media";
-import type { Picture, ShowcaseView } from "../lib/showcase";
 
 // ADR-009: the site only shows images the manifest lists, credited to their source.
 
@@ -94,51 +92,6 @@ describe("createMedia", () => {
     const none = createMedia(null);
     expect(none.ship("AEGS_Gladius", "Gladius")).toBeNull();
     expect(none.maker("MRAI", "Mirai")).toBeNull();
-  });
-});
-
-describe("bandArt", () => {
-  const picture = (key: string): Picture => ({
-    src: `/media/showcase/odin/${key}-3840.webp`,
-    srcSet: "",
-    width: 3840,
-    height: 2160,
-    alt: "",
-  });
-  const show = (over: Partial<ShowcaseView>): ShowcaseLookup => {
-    const base = {
-      slug: "odin",
-      article: null,
-      background: picture("sc-odin-key-background-2"),
-      cutout: null,
-      poster: picture("sc-anvil-odin-exterior-5"),
-      topdown: null,
-      intro: null,
-      chapters: [],
-      gallery: [picture("render-9"), picture("sc-anvil-odin-exterior-3")],
-      schematics: [],
-      figures: {},
-    } as unknown as ShowcaseView;
-    return () => ({ ...base, ...over });
-  };
-
-  it("is null without media, so the masthead stands on the page colour", () => {
-    expect(bandArt("ships", () => null)).toBeNull();
-  });
-
-  it("picks each page's piece by role or image key, not by gallery order", () => {
-    expect(bandArt("funding", show({}))?.src).toContain("key-background-2");
-    expect(bandArt("titles", show({}))?.src).toContain("exterior-5");
-    expect(bandArt("components", show({}))?.src).toContain("exterior-3");
-  });
-
-  it("falls back to the background when a poster or a gallery key is missing", () => {
-    expect(bandArt("titles", show({ poster: null }))?.src).toContain(
-      "key-background-2",
-    );
-    expect(bandArt("components", show({ gallery: [] }))?.src).toContain(
-      "key-background-2",
-    );
   });
 });
 

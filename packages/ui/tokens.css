@@ -2,58 +2,58 @@
 
 :root,
 [data-theme="light"] {
-  --bg-page: #F7F7F5;
-  --bg-surface: #FFFFFF;
-  --bg-raised: #FFFFFF;
-  --bg-inset: #EFEFEC;
-  --text-primary: #131416;
-  --text-secondary: #5C5F66;
-  --text-muted: #696D74;
-  --border-default: rgba(0,0,0,0.10);
-  --border-strong: rgba(0,0,0,0.20);
-  --accent: #2560E8;
-  --accent-bg: #E8EFFF;
-  --success: #1A7A43;
-  --warning: #9A5B00;
-  --danger: #C7352B;
+  --bg-page: #F4EFE5;
+  --bg-surface: #FBF8F1;
+  --bg-raised: #FFFDF8;
+  --bg-inset: #EBE4D6;
+  --text-primary: #1C1A16;
+  --text-secondary: #57534A;
+  --text-muted: #6B665B;
+  --border-default: rgba(28,26,22,0.16);
+  --border-strong: rgba(28,26,22,0.42);
+  --accent: #A8321F;
+  --accent-bg: #F2DED7;
+  --success: #2F6B3A;
+  --warning: #8A5A00;
+  --danger: #B3261E;
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg-page: #0C0D0F;
-    --bg-surface: #141619;
-    --bg-raised: #1B1E22;
-    --bg-inset: #0F1012;
-    --text-primary: #F2F2F0;
-    --text-secondary: #A2A6AD;
-    --text-muted: #82868E;
-    --border-default: rgba(255,255,255,0.10);
-    --border-strong: rgba(255,255,255,0.18);
-    --accent: #5B8CFF;
-    --accent-bg: #17223D;
-    --success: #3DBA6E;
-    --warning: #E0962B;
-    --danger: #E5574D;
+    --bg-page: #1D1B17;
+    --bg-surface: #24221D;
+    --bg-raised: #2B2924;
+    --bg-inset: #17150F;
+    --text-primary: #EFE9DC;
+    --text-secondary: #B8B0A0;
+    --text-muted: #9A927F;
+    --border-default: rgba(239,233,220,0.16);
+    --border-strong: rgba(239,233,220,0.40);
+    --accent: #E6735F;
+    --accent-bg: #4A2A22;
+    --success: #6FBF7F;
+    --warning: #E0A94A;
+    --danger: #EF7A6E;
     color-scheme: dark;
   }
 }
 
 [data-theme="dark"] {
-  --bg-page: #0C0D0F;
-  --bg-surface: #141619;
-  --bg-raised: #1B1E22;
-  --bg-inset: #0F1012;
-  --text-primary: #F2F2F0;
-  --text-secondary: #A2A6AD;
-  --text-muted: #82868E;
-  --border-default: rgba(255,255,255,0.10);
-  --border-strong: rgba(255,255,255,0.18);
-  --accent: #5B8CFF;
-  --accent-bg: #17223D;
-  --success: #3DBA6E;
-  --warning: #E0962B;
-  --danger: #E5574D;
+  --bg-page: #1D1B17;
+  --bg-surface: #24221D;
+  --bg-raised: #2B2924;
+  --bg-inset: #17150F;
+  --text-primary: #EFE9DC;
+  --text-secondary: #B8B0A0;
+  --text-muted: #9A927F;
+  --border-default: rgba(239,233,220,0.16);
+  --border-strong: rgba(239,233,220,0.40);
+  --accent: #E6735F;
+  --accent-bg: #4A2A22;
+  --success: #6FBF7F;
+  --warning: #E0A94A;
+  --danger: #EF7A6E;
   color-scheme: dark;
 }
 
@@ -75,8 +75,9 @@
   --color-danger: var(--danger);
 
   --font-*: initial;
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-sans: var(--font-newsreader), Georgia, 'Times New Roman', serif;
+  --font-display: var(--font-fraunces), Georgia, 'Times New Roman', serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
 
   --text-*: initial;
   --text-hero: 80px;
@@ -100,6 +101,9 @@
   --text-caption: 12.5px;
   --text-caption--line-height: 18px;
   --text-caption--font-weight: 400;
+  --text-label: 11px;
+  --text-label--line-height: 16px;
+  --text-label--font-weight: 400;
 
   --font-weight-*: initial;
   --font-weight-regular: 400;
@@ -119,18 +123,18 @@
   --spacing-24: 96px;
 
   --radius-*: initial;
-  --radius-control: 6px;
-  --radius-card: 10px;
-  --radius-palette: 14px;
+  --radius-control: 2px;
+  --radius-card: 2px;
+  --radius-palette: 2px;
 
   --shadow-*: initial;
   --inset-shadow-*: initial;
   --drop-shadow-*: initial;
   --text-shadow-*: initial;
-  --shadow-popover: 0 8px 24px rgba(0,0,0,0.12);
+  --shadow-popover: 0 8px 24px rgba(28,26,22,0.14);
 
   --container-*: initial;
-  --container-content: 1200px;
+  --container-content: 1400px;
   --container-prose: 68ch;
 
   --ease-*: initial;
@@ -165,6 +169,21 @@
     font-family: var(--font-sans);
     font-variant-numeric: tabular-nums;
     -webkit-font-smoothing: antialiased;
+  }
+  .text-hero,
+  .text-display,
+  .text-title,
+  .text-heading,
+  .font-display {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+  .lab {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 16px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
   }
   @media (prefers-reduced-motion: reduce) {
     *,

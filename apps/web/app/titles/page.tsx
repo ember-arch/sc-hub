@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { bandArt } from "../../lib/bands";
 import { Masthead } from "../masthead";
 import type { ReactNode } from "react";
 import type { Title, TitleCatalog } from "schema";
@@ -238,7 +237,6 @@ export default async function TitlesPage({
           ]}
           title="Titles"
           lede={wikiText(catalog.lead[0] ?? [])}
-          art={bandArt("titles")}
         />
       }
     >

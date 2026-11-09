@@ -40,7 +40,7 @@ test("opens from the search button and groups results by entity type", async ({
   page,
 }) => {
   await page.goto("/ships");
-  await page.getByRole("button", { name: "Search ⌘K" }).click();
+  await page.getByRole("button", { name: /Look up a ship/ }).click();
   const dialog = page.getByRole("dialog", { name: "Search" });
   await dialog.getByRole("combobox").fill("aegis");
   await expect(dialog.getByRole("group", { name: "Ships" })).toBeVisible();

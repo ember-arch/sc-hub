@@ -13,7 +13,8 @@ describe("loadPack", () => {
     for (const file of pack.manifest.files) {
       expect(pack.rows[file.entity]).toHaveLength(file.count);
     }
-    expect(pack.rows.Vehicle).toHaveLength(6);
+    // The full catalog since ADR-022; the six bootstrap ships are always among them.
+    expect(pack.rows.Vehicle.length).toBeGreaterThanOrEqual(6);
     expect(pack.rows.GameVersion).toHaveLength(1);
   });
 

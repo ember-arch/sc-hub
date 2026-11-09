@@ -8,7 +8,7 @@ Run it from the repo root after building the schema package:
 pnpm --filter schema build && pnpm exec tsx scripts/bootstrap-fixtures/index.ts
 ```
 
-It makes about 150 GET requests at one request per 2.5 seconds and takes about six minutes. Progress and problems are JSON lines on stderr; the summary line goes to stdout. For development reruns, `BOOTSTRAP_CACHE_DIR=<folder outside the repository>` replays cached responses instead of fetching; never point it inside the repository.
+With the six-ship list it makes about 150 GET requests at one request per 2.5 seconds and takes about six minutes; with `"all": true` (ADR-022) it fetches some 250 vehicles and every distinct stock component, several thousand requests, and takes a few hours. Progress and problems are JSON lines on stderr; the summary line goes to stdout. For development reruns, `BOOTSTRAP_CACHE_DIR=<folder outside the repository>` replays cached responses instead of fetching; never point it inside the repository.
 
 ## What it never does
 

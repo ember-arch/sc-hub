@@ -57,7 +57,7 @@ describe("editorModel on the fixture pack", () => {
       }
     });
 
-    it(`${ship.vehicle.name}: the stock build's guns and missiles agree with the armament counts`, () => {
+    it(`${ship.vehicle.name}: the stock build's missiles agree with the armament count`, () => {
       const t = totals(model.slots, {}, model.options);
       const arms = armament(
         loadoutGroups(r.shipPorts(ship.vehicle.class_name), stats),
@@ -166,5 +166,29 @@ describe("armamentPlan", () => {
     const groups = loadoutGroups(r.shipPorts("AEGS_Gladius"), stats);
     const plan = armamentPlan(groups, () => ({ damage: null, detail: null }));
     expect(plan.map((m) => m.title)).toEqual(["Pilot guns", "Missile racks"]);
+  });
+});
+
+// ADR-016: the editor reads its figures from the wiki's raw records; when that shape changes the
+// figures must not quietly become empty. Every catalogue part of these kinds has its headline.
+describe("the catalogue's figures are all there", () => {
+  const all = r.ships.flatMap((s) =>
+    Object.values(
+      editorModel(r.shipPorts(s.vehicle.class_name), r.components).options,
+    ),
+  );
+  it("every gun has damage per second and per shot", () => {
+    const guns = all.filter((o) => o.group === "guns");
+    expect(guns.length).toBeGreaterThan(50);
+    for (const o of guns) {
+      expect(o.stats.dps, o.id).not.toBeNull();
+      expect(o.stats.alpha, o.id).not.toBeNull();
+    }
+  });
+  it("every missile and torpedo has its damage, every shield its health", () => {
+    for (const o of all.filter((x) => x.group === "missiles"))
+      expect(o.stats.damage, o.id).not.toBeNull();
+    for (const o of all.filter((x) => x.group === "shields"))
+      expect(o.stats.shieldHp, o.id).not.toBeNull();
   });
 });

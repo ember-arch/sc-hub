@@ -131,11 +131,14 @@ export function HoloViewer({
         className={`flex flex-col gap-2 ${full ? "bg-page p-4" : ""}`}
       >
         <div
-          ref={box}
           className={`relative w-full overflow-hidden rounded-card border border-hairline bg-inset ${full ? "min-h-0 flex-1" : "aspect-[4/3]"}`}
-          role="img"
-          aria-label={`3D model of the ${name}, from RSI's holoviewer, with a person beside it for scale. Drag to turn, scroll or pinch to zoom.`}
         >
+          <div
+            ref={box}
+            role="img"
+            aria-label={`3D model of the ${name}, from RSI's holoviewer, with a person beside it for scale. Drag to turn, scroll or pinch to zoom.`}
+            className="absolute inset-0"
+          />
           {state === "ready" || poster === null ? null : (
             <img
               src={poster}
@@ -143,7 +146,7 @@ export function HoloViewer({
               // The frame is 4:3 and the image fills it; the size only reserves its box.
               width={1280}
               height={960}
-              className="absolute inset-0 h-full w-full object-cover opacity-40"
+              className="absolute inset-0 h-full w-full object-contain"
             />
           )}
           {state === "ready" ? null : (

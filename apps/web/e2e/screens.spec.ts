@@ -35,6 +35,8 @@ const SCREENS = [
   { name: "home", path: "/", status: 200 },
   { name: "ship", path: `/ships/${smallShip}`, status: 200 },
   { name: "ship-capital", path: `/ships/${capitalShip}`, status: 200 },
+  // The concept hero (ADR-010): a ship file with no game data.
+  { name: "ship-concept", path: "/ships/odin", status: 200 },
   { name: "news", path: "/news", status: 200 },
   { name: "ships", path: "/ships", status: 200 },
   { name: "ships-table", path: "/ships?view=table", status: 200 },

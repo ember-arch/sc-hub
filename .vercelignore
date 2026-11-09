@@ -1,0 +1,7 @@
+# CIG art and models are for local development only (ADR-009, ADR-015): never uploaded by a
+# `vercel` deploy from a machine that has built them.
+apps/web/public/media/
+fixtures/rsi-media/*
+fixtures/showcase/
+fixtures/holo/*
+fixtures/fankit/

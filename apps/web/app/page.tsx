@@ -16,7 +16,8 @@ import { shipCardImage } from "../lib/media";
 import { conceptShips, showcaseFor } from "../lib/showcase";
 import { Site, now } from "../lib/site";
 import { crewRange } from "../lib/views";
-import { FeaturedFile, Register, type RegisterRow } from "./home-index";
+import { FeaturedFile } from "./home-index";
+import { Register, type RegisterRow } from "./home-register";
 import { PriceCredit } from "./price-credit";
 import { FileStrip } from "./ships/[slug]/showcase/dossier";
 
@@ -34,7 +35,7 @@ function pledgeCell(
   const pledge = pricesFor(slug, className).pledge;
   return pledge === null
     ? null
-    : { price: formatNumber(pledge.price_usd), onSale: pledge.available };
+    : { price: pledge.price_usd, onSale: pledge.available };
 }
 
 /** The owner's showcase pair (2026-11-08): the concept hero and the live example. */
@@ -75,11 +76,13 @@ export default function HomePage() {
         maker: makerName(c.manufacturer_code),
         role: c.focus,
         status: vehicleStatusBadge("concept"),
-        length: c.length_m === null ? null : formatNumber(c.length_m),
+        length: c.length_m,
+        lengthDigits: 0 as const,
         crew:
           c.crew_min === null || c.crew_max === null
             ? null
             : crewRange(c.crew_min, c.crew_max),
+        crewMax: c.crew_max,
         pledge: pledgeCell(c.slug, null),
         thumb: poster,
       };
@@ -93,12 +96,13 @@ export default function HomePage() {
         maker: ship.manufacturer?.name ?? ship.vehicle.manufacturer_code,
         role: ship.vehicle.role,
         status: vehicleStatusBadge(ship.vehicle.status),
-        length:
-          ship.stats === null ? null : formatNumber(ship.stats.length_m, 2),
+        length: ship.stats?.length_m ?? null,
+        lengthDigits: 2 as const,
         crew:
           ship.stats === null
             ? null
             : crewRange(ship.stats.crew_min, ship.stats.crew_max),
+        crewMax: ship.stats?.crew_max ?? null,
         pledge: pledgeCell(ship.vehicle.slug, ship.vehicle.class_name),
         thumb: image === null ? null : { src: image.src, srcSet: image.srcSet },
       };
@@ -106,7 +110,7 @@ export default function HomePage() {
   ];
 
   return (
-    <Site theme="dark">
+    <Site>
       <div className="flex flex-col gap-12 pt-8">
         <FileStrip
           document="Dossier index"

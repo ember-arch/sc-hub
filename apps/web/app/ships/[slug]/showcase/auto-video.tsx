@@ -21,7 +21,8 @@ function useReducedMotion(): boolean {
  * CIG's render loops (ADR-010): muted, looping, playing only while most of it is on screen and
  * paused otherwise, fetched only as it approaches. With reduced motion asked for it never plays on
  * its own; the poster shows with the browser's controls. A loop with a known size shows whole at
- * its own proportions (ADR-015): CIG's wide loops are never cropped to 16:9.
+ * its own proportions (ADR-015): CIG's wide loops are never cropped to 16:9. A Pause button stops
+ * a loop for good (WCAG 2.2.2: moving content can be paused); Play starts it again.
  */
 export function AutoVideo({
   src,
@@ -38,6 +39,7 @@ export function AutoVideo({
 }) {
   const ref = useRef<HTMLVideoElement>(null);
   const [near, setNear] = useState(false);
+  const [stopped, setStopped] = useState(false);
   const reduced = useReducedMotion();
 
   useEffect(() => {
@@ -58,7 +60,7 @@ export function AutoVideo({
 
   useEffect(() => {
     const video = ref.current;
-    if (video === null || !near || reduced) return;
+    if (video === null || !near || reduced || stopped) return;
     const visible = new IntersectionObserver(
       ([entry]) => {
         if (entry === undefined) return;
@@ -70,26 +72,49 @@ export function AutoVideo({
     );
     visible.observe(video);
     return () => visible.disconnect();
-  }, [near, reduced]);
+  }, [near, reduced, stopped]);
 
   return (
-    <video
-      ref={ref}
-      src={near ? src : undefined}
-      poster={poster ?? undefined}
-      muted
-      loop
-      playsInline
-      preload="none"
-      controls={reduced}
-      aria-label={label}
-      width={width ?? undefined}
-      height={height ?? undefined}
-      className={
-        width === null || height === null
-          ? "block aspect-video h-auto max-h-[90svh] w-full bg-page object-cover"
-          : "block h-auto max-h-[90svh] w-full bg-page object-contain"
-      }
-    />
+    <div className="relative">
+      <video
+        ref={ref}
+        src={near ? src : undefined}
+        poster={poster ?? undefined}
+        muted
+        loop
+        playsInline
+        preload="none"
+        controls={reduced}
+        aria-label={label}
+        width={width ?? undefined}
+        height={height ?? undefined}
+        className={
+          width === null || height === null
+            ? "block aspect-video h-auto max-h-[90svh] w-full bg-page object-cover"
+            : "block h-auto max-h-[90svh] w-full bg-page object-contain"
+        }
+      />
+      {reduced ? null : (
+        <button
+          type="button"
+          aria-pressed={stopped}
+          onClick={() => {
+            const video = ref.current;
+            if (video === null) return;
+            if (stopped) {
+              setStopped(false);
+              void video.play().catch(() => undefined);
+            } else {
+              setStopped(true);
+              video.pause();
+            }
+          }}
+          className="absolute bottom-2 right-2 rounded-control border border-hairline-strong bg-page px-2 py-1 text-caption text-primary hover:border-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+        >
+          {stopped ? "Play" : "Pause"}
+          <span className="sr-only"> {label}</span>
+        </button>
+      )}
+    </div>
   );
 }

@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { LoanerMatrix, type LoanerRow, PledgeOffer, ShopPrice } from "schema";
-import { REPO_ROOT } from "./data";
+import { REPO_ROOT, repo } from "./data";
 
 /**
  * Shops and prices for the ship file (ADR-013): RSI pledge-store offers and UEX Corp's
@@ -36,9 +36,14 @@ export interface Acquisition {
 let all: Acquisition | undefined;
 
 function load(): Acquisition {
+  // Shop prices are reported per build: only the current LIVE build's are shown under its label
+  // (CLAUDE.md section 5), so a stale or PTU report never passes for today's price.
+  const live = repo().liveVersion;
   all ??= {
     offers: PledgeOffer.array().parse(read(OFFERS_FILE)),
-    shops: ShopPrice.array().parse(read(SHOPS_FILE)),
+    shops: ShopPrice.array()
+      .parse(read(SHOPS_FILE))
+      .filter((s) => s.channel === "LIVE" && s.game_version === live),
   };
   return all;
 }

@@ -458,7 +458,14 @@ export function Facts({ facts }: { readonly facts: readonly Fact[] }) {
           <dd
             className={`m-0 text-right text-ui text-primary ${f.numeric === true ? "font-mono" : ""}`}
           >
-            {f.value}
+            {f.links === undefined || f.links.length === 0
+              ? f.value
+              : f.links.map((l, i) => (
+                  <span key={l.href}>
+                    {i > 0 ? ", " : null}
+                    <TextLink href={l.href}>{l.label}</TextLink>
+                  </span>
+                ))}
             {f.unit === undefined ? null : (
               <span className="font-sans text-caption text-secondary">
                 {" "}
@@ -503,6 +510,45 @@ export function Claims({
         ))}
       </dl>
     </div>
+  );
+}
+
+/**
+ * Related ships (spec 02, "Ship page"): the maker's other ships and the ships with the same role,
+ * linked, at the foot of the file beside its sources.
+ */
+export function Related({
+  groups,
+}: {
+  readonly groups: readonly {
+    readonly title: string;
+    readonly ships: readonly { readonly name: string; readonly href: string }[];
+  }[];
+}) {
+  const shown = groups.filter((g) => g.ships.length > 0);
+  if (shown.length === 0) return null;
+  return (
+    <nav aria-label="Related ships" className="flex flex-col gap-2">
+      <h3 className="m-0 text-ui font-medium text-primary">Related ships</h3>
+      <dl className="m-0 flex flex-col border-t border-hairline">
+        {shown.map((g) => (
+          <div
+            key={g.title}
+            className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-hairline py-2"
+          >
+            <dt className="text-ui text-secondary">{g.title}</dt>
+            <dd className="m-0 text-ui">
+              {g.ships.map((s, i) => (
+                <span key={s.href}>
+                  {i > 0 ? ", " : null}
+                  <TextLink href={s.href}>{s.name}</TextLink>
+                </span>
+              ))}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </nav>
   );
 }
 

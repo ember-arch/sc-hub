@@ -118,11 +118,14 @@ export function HoloLineup({
         className={`flex flex-col gap-2 ${full ? "bg-page p-4" : ""}`}
       >
         <div
-          ref={box}
           className={`relative w-full overflow-hidden rounded-card border border-hairline bg-inset ${full ? "min-h-0 flex-1" : "aspect-video lg:aspect-[2/1]"}`}
-          role="img"
-          aria-label={`To scale, from RSI's holoviewer models: ${order.map((s) => `${s.name} ${n0(s.length)} m`).join(", ")}${figure === null ? "" : `, and a person ${figure.height.toFixed(1)} m tall`}.`}
         >
+          <div
+            ref={box}
+            role="img"
+            aria-label={`To scale, from RSI's holoviewer models: ${order.map((s) => `${s.name} ${n0(s.length)} m`).join(", ")}${figure === null ? "" : `, and a person ${figure.height.toFixed(1)} m tall`}.`}
+            className="absolute inset-0"
+          />
           <div
             ref={labels}
             aria-hidden="true"

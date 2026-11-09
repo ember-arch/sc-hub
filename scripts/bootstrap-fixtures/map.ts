@@ -70,6 +70,15 @@ export const TYPE_MAP: Readonly<Record<string, PortType>> = {
   Paints: "paint",
   Cargo: "cargo_grid",
   CargoGrid: "cargo_grid",
+  // Seen first on the full catalog (ADR-022).
+  BombLauncher: "missile_rack",
+  GroundVehicleMissileLauncher: "missile_rack",
+  ExternalFuelTank: "fuel_tank",
+  UtilityTurret: "turret",
+  WeaponMining: "mining_laser",
+  EMP: "utility",
+  QuantumInterdictionGenerator: "utility",
+  SalvageHead: "utility",
 };
 
 /**
@@ -81,6 +90,16 @@ export const TYPE_OTHER: ReadonlySet<string> = new Set([
   "LifeSupportGenerator",
   "Misc",
   "",
+  // Seen first on the full catalog (ADR-022): real ports with no component kind in the model.
+  "Container",
+  "Module",
+  "SalvageFieldEmitter",
+  "SalvageFieldSupporter",
+  "SalvageFillerStation",
+  "SalvageInternalStorage",
+  "ToolArm",
+  "WeaponMount",
+  "UNDEFINED",
 ]);
 
 /** Structure, interior fittings and controllers: not hardpoints. No row, no item fetch, counted in the report. */
@@ -96,6 +115,12 @@ export const TYPE_EXCLUDE: ReadonlySet<string> = new Set([
   "LandingSystem",
   "Relay",
   "SelfDestruct",
+  // Seen first on the full catalog (ADR-022): fittings and cosmetics.
+  "ControlPanel",
+  "Decal",
+  "Flair_Floor",
+  "Light",
+  "TargetSelector",
 ]);
 
 export function classifyType(type: string): TypeOutcome {

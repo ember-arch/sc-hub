@@ -11,7 +11,8 @@
         "http://localhost:3000/ships/polaris",
         "http://localhost:3000/compare?ships=gladius,polaris",
         "http://localhost:3000/news",
-        "http://localhost:3000/titles"
+        "http://localhost:3000/titles",
+        "http://localhost:3000/funding"
       ]
     },
     "assert": {

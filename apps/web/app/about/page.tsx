@@ -7,6 +7,7 @@ import {
   DISCLAIMER,
   DISCLAIMER_SOURCE,
   FANKIT_CREDIT,
+  FUNDING_INSPIRATION,
   LOANER_MATRIX_CREDIT,
   PLEDGE_STORE_CREDIT,
   RSI_HOLO_CREDIT,
@@ -74,6 +75,14 @@ export default function AboutPage() {
                 {TITLES_TEXT_CREDIT.licence}
               </TextLink>{" "}
               licence on the <TextLink href="/titles">titles page</TextLink>.
+            </li>
+            <li data-testid="funding-credit">
+              {FUNDING_INSPIRATION.text}{" "}
+              <TextLink href={FUNDING_INSPIRATION.url} external>
+                {FUNDING_INSPIRATION.linkText}
+              </TextLink>
+              . The <TextLink href="/funding">funding page</TextLink> reads
+              RSI&apos;s counters through the Star Citizen Wiki API.
             </li>
             <li>
               <TextLink href={UEX_CREDIT.url} external>

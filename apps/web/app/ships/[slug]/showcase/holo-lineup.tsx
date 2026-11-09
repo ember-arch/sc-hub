@@ -11,6 +11,7 @@ import {
   inkPalette,
   loadHoloGeometry,
 } from "./holo-kit";
+import { layoutRow } from "./lineup-layout";
 
 /**
  * The Scale section's lineup (ADR-015, drawn in ink per ADR-020): every ship on record that has an
@@ -43,8 +44,10 @@ interface Api {
 }
 
 interface Progress {
+  /** Models landed or given up on. */
   readonly done: number;
-  readonly total: number;
+  /** The slugs of the ships whose model could not be loaded. */
+  readonly failed: readonly string[];
 }
 
 const n0 = (v: number): string =>
@@ -70,7 +73,7 @@ export function HoloLineup({
   );
   const [progress, setProgress] = useState<Progress>({
     done: 0,
-    total: ships.length,
+    failed: [],
   });
   const [full, setFull] = useState(false);
   const order = [...ships].sort((a, b) => b.length - a.length);
@@ -126,6 +129,10 @@ export function HoloLineup({
     `${option} ${on ? "border-accent bg-accent-bg text-primary" : "border-hairline-strong text-secondary hover:text-primary"}`;
   const loading =
     state === "loading" || (state === "ready" && progress.done < ships.length);
+  const failed = new Set(progress.failed);
+  // Every model failed: the row is paper and a ground line, so say so, as a failed start would.
+  const broken =
+    state === "error" || (!loading && failed.size === ships.length);
 
   return (
     <figure className="m-0 flex flex-col gap-2">
@@ -147,7 +154,7 @@ export function HoloLineup({
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 z-10"
           />
-          {state === "error" ? (
+          {broken ? (
             <p className="absolute bottom-3 left-3 m-0 text-caption text-secondary">
               The models could not be loaded.
             </p>
@@ -157,6 +164,10 @@ export function HoloLineup({
               className="absolute bottom-3 left-3 m-0 text-caption text-secondary"
             >
               Loading models, {progress.done} of {ships.length}
+            </p>
+          ) : failed.size > 0 ? (
+            <p className="absolute bottom-3 left-3 m-0 text-caption text-secondary">
+              {failed.size} of {ships.length} models could not be loaded
             </p>
           ) : null}
           <button
@@ -200,7 +211,9 @@ export function HoloLineup({
               key={s.slug}
               type="button"
               aria-pressed={focus === s.slug}
-              className={choice(focus === s.slug)}
+              // A ship whose model failed has nothing to fly to.
+              disabled={failed.has(s.slug)}
+              className={`${choice(focus === s.slug)} disabled:opacity-50`}
               onClick={() => setFocus(s.slug)}
             >
               <span className={s.current ? "text-accent" : undefined}>
@@ -228,9 +241,6 @@ export function HoloLineup({
 
 const ease = (t: number): number =>
   t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
-
-/** A person's footprint along the row, before the figure's model says. */
-const PERSON_WIDTH = 0.8;
 
 /** Runs `job` when the browser has a moment, within half a second at most. */
 function whenIdle(job: () => void): () => void {
@@ -261,44 +271,27 @@ async function start(
   const palette = inkPalette(THREE, el);
   let disposed = false;
 
-  // The row from the recorded lengths alone: a model scaled to its length is exactly that long
-  // along the row, so every ship has its place before any model arrives. Largest first, with gaps
-  // that keep the small ships near each other; the ship's height is a guess until its model says.
-  const order = [...ships].sort((a, b) => b.length - a.length);
+  // The row from the recorded lengths alone (lineup-layout.ts), centred on the origin; a ship's
+  // height is a guess until its model says.
+  const row = layoutRow(ships, figureSrc !== null);
+  const { rowLength, shift } = row;
   interface Slot {
     readonly ship: LineupShip;
-    /** Where the bow starts along the row, before the row is centred. */
+    /** Where the bow starts along the row. */
     readonly from: number;
     x: number;
     top: number;
     readonly length: number;
     ready: boolean;
   }
-  const slots: Slot[] = [];
-  let cursor = 0;
-  order.forEach((ship, i) => {
-    slots.push({
-      ship,
-      from: cursor,
-      x: cursor + ship.length / 2,
-      top: ship.length * 0.28,
-      length: ship.length,
-      ready: false,
-    });
-    const next = order[i + 1];
-    cursor +=
-      ship.length +
-      Math.max(2, 0.22 * Math.min(ship.length, next?.length ?? ship.length));
-  });
-  const personAt = cursor;
-  const last = slots[slots.length - 1];
-  const rowLength =
-    figureSrc === null && last !== undefined
-      ? last.from + last.length
-      : personAt + PERSON_WIDTH;
-  // Centre the row on the origin.
-  const shift = -rowLength / 2;
-  for (const s of slots) s.x += shift;
+  const slots: Slot[] = row.slots.map((s) => ({
+    ship: s.ship,
+    from: s.from,
+    x: s.x,
+    top: s.length * 0.28,
+    length: s.length,
+    ready: false,
+  }));
   let tallest = Math.max(1, ...slots.map((s) => s.top));
 
   const meshes: InstanceType<typeof THREE.Mesh>[] = [];
@@ -480,9 +473,10 @@ async function start(
 
   // Every download starts now; each ship is drawn where it stands as its own model lands.
   let done = 0;
+  const failed: string[] = [];
   const landed = (): void => {
     done += 1;
-    onProgress({ done, total: order.length });
+    onProgress({ done, failed: [...failed] });
   };
   const placeShip = (g: BufferGeometry, slot: Slot): void => {
     // Scaled to its recorded length, turned so its nose points along +X, keel on the floor.
@@ -496,7 +490,7 @@ async function start(
     g.rotateY(-Math.PI / 2);
     g.computeBoundingBox();
     const placedBox = g.boundingBox!;
-    g.translate(slot.from + shift - placedBox.min.x, -placedBox.min.y, 0);
+    g.translate(slot.from - placedBox.min.x, -placedBox.min.y, 0);
     g.computeBoundingBox();
     const box = g.boundingBox!;
     slot.x = (box.min.x + box.max.x) / 2;
@@ -522,11 +516,14 @@ async function start(
         }
         placeShip(g, slot);
       })
-      .catch(() => undefined)
+      .catch(() => {
+        failed.push(slot.ship.slug);
+      })
       .finally(landed);
   }
-  if (figureSrc !== null) {
-    loadHoloGeometry(THREE, loader, figureSrc)
+  if (row.personAt !== null) {
+    const personAt = row.personAt;
+    loadHoloGeometry(THREE, loader, figureSrc!)
       .then((person) => {
         if (disposed) {
           person.dispose();
@@ -535,7 +532,7 @@ async function start(
         person.computeBoundingBox();
         const pb = person.boundingBox!;
         person.translate(
-          personAt + shift - pb.min.x,
+          personAt - pb.min.x,
           -pb.min.y,
           -(pb.min.z + pb.max.z) / 2,
         );

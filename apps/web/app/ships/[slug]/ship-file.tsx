@@ -158,19 +158,19 @@ export function ShipFileOpening({
           />
           {art.cutout === null ? null : (
             // CIG's cut-out of the ship over its key background, the whole ship in frame: it sits
-            // in the band above the name, scaled to fit, as RSI composes its own page.
+            // in the band above the name (the title block is under 96 px tall), scaled to fit, to
+            // the right on wide screens as RSI composes its own page. Spacing from the scale only.
             <div
               aria-hidden="true"
-              className="absolute inset-0 flex items-center justify-center px-6 pb-32 pt-12 md:px-16 md:pb-32 md:pt-16"
+              className="absolute inset-0 flex items-center justify-center px-6 pb-24 pt-12 md:justify-end md:px-12 md:pb-24 md:pt-8"
             >
               <img
                 src={art.cutout.src}
                 srcSet={art.cutout.srcSet}
-                sizes="100vw"
+                sizes="(min-width: 768px) 75vw, 90vw"
                 width={art.cutout.width}
                 height={art.cutout.height}
                 alt=""
-                fetchPriority="high"
                 decoding="async"
                 className="max-h-full max-w-full object-contain"
               />

@@ -369,7 +369,8 @@ function scaleView(slug: string, drawn: ReactNode): ReactNode {
   const ships: LineupShip[] = [
     ...r.ships.flatMap((o) => {
       const holo = media().holo(o.vehicle.slug);
-      return holo === null || o.stats === null
+      // A ship with no length on record, or none above zero, cannot be scaled.
+      return holo === null || o.stats === null || !(o.stats.length_m > 0)
         ? []
         : [
             {
@@ -384,7 +385,7 @@ function scaleView(slug: string, drawn: ReactNode): ReactNode {
     }),
     ...conceptShips().flatMap((c) => {
       const holo = media().holo(c.slug);
-      return holo === null || c.length_m === null
+      return holo === null || c.length_m === null || !(c.length_m > 0)
         ? []
         : [
             {

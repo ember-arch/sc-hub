@@ -36,9 +36,10 @@ for (const route of [
     test.setTimeout(90_000);
     await page.goto(route);
     await page.waitForLoadState("load");
-    // Scroll through like a reader so lazy images below the fold load too.
-    const height = await page.evaluate(() => document.body.scrollHeight);
-    for (let y = 0; y < height; y += 700) {
+    // Scroll through like a reader so lazy images below the fold load too. The page grows as
+    // figures and viewers load, so its height is measured again at every step.
+    const height = () => page.evaluate(() => document.body.scrollHeight);
+    for (let y = 0; y < (await height()); y += 700) {
       await page.evaluate((top) => window.scrollTo(0, top), y);
       await page.waitForTimeout(60);
     }

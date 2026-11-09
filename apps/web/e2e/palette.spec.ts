@@ -58,15 +58,19 @@ test("the home search field opens the palette", async ({ page }) => {
 });
 
 test("remembers recently opened entities", async ({ page }) => {
-  await page.goto("/");
-  await page.keyboard.press("ControlOrMeta+k");
   const dialog = page.getByRole("dialog", { name: "Search" });
+  // A keypress can land before hydration attaches the listener; retry until the dialog opens.
+  const open = () =>
+    expect(async () => {
+      await page.keyboard.press("ControlOrMeta+k");
+      await expect(dialog).toBeVisible({ timeout: 500 });
+    }).toPass();
+  await page.goto("/");
+  await open();
   await dialog.getByRole("combobox").fill("polaris");
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/\/ships\/polaris$/);
-  await page.keyboard.press("ControlOrMeta+k");
-  await expect(page.getByRole("dialog", { name: "Search" })).toContainText(
-    "Recent ships",
-  );
+  await open();
+  await expect(dialog).toContainText("Recent ships");
   await expect(page.getByRole("option", { name: /Polaris/ })).toBeVisible();
 });

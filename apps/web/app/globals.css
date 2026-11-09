@@ -65,7 +65,6 @@
   max-width: none;
   right: -2vw;
   top: 14%;
-  animation: file-hero-arrive 1400ms cubic-bezier(0.2, 0.7, 0.1, 1) both;
 }
 @media (min-width: 768px) {
   .file-hero-cutout {
@@ -98,21 +97,6 @@
     color-mix(in srgb, var(--bg-page) 70%, transparent) 30%,
     transparent 58%
   );
-}
-@keyframes file-hero-arrive {
-  from {
-    opacity: 0;
-    transform: translate3d(4%, 1%, 0);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .file-hero-cutout {
-    animation: none;
-  }
 }
 
 /* Dossier key-art figure (ADR-011): the cut-out layered over the art inside the frame. */

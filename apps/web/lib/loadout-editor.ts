@@ -323,6 +323,9 @@ export function editorModel(
     );
     const stock = slots.some((s) => s.stock === c.item.class_name);
     if (!fits && !stock) continue;
+    const stats = optionStats(c.stats);
+    // A part the game files as a gun but that deals no damage (a tractor beam) is not offered.
+    if (group === "guns" && stats.dps === null && !stock) continue;
     options[c.item.class_name] = {
       id: c.item.class_name,
       slug: c.item.slug,
@@ -332,7 +335,7 @@ export function editorModel(
       size: c.item.size,
       grade: c.item.grade,
       kind: partKind(c.item, c.stats),
-      stats: optionStats(c.stats),
+      stats,
     };
   }
   // A slot whose part the pack does not hold, and with nothing that fits, is not editable.

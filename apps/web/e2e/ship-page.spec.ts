@@ -87,7 +87,10 @@ test("the ship page has every section in order, each stat with its unit and vers
   await expect(mass).toContainText(shipStats.mass_kg.toLocaleString("en-US"));
   const length = specs.locator("dt", { hasText: "Length" }).locator("..");
   await expect(length).toContainText("m");
-  await expect(page.locator("#hardpoints")).toContainText("ports");
+  // Every section with game data names the build it comes from (spec 02, "Ship page").
+  for (const id of ["combat", "operations", "mobility", "hardpoints"]) {
+    await expect(page.locator(`#${id}`)).toContainText(`LIVE ${live.version}`);
+  }
 });
 
 test("the PTU toggle shows only when a PTU build differs; otherwise the page says why", async ({
@@ -324,4 +327,17 @@ test("the armament is drawn by who fires it, every part linked", async ({
     .getByRole("link")
     .first();
   await expect(link).toHaveAttribute("href", /^\/components\//);
+});
+
+test("a ship file links its related ships: the maker's others and the same role", async ({
+  page,
+}) => {
+  // The Perseus and the Polaris share a maker (RSI) in the pack.
+  await page.goto("/ships/perseus");
+  const related = page.getByRole("navigation", { name: "Related ships" });
+  await expect(related).toBeVisible();
+  await expect(related.getByRole("link", { name: "Polaris" })).toHaveAttribute(
+    "href",
+    "/ships/polaris",
+  );
 });

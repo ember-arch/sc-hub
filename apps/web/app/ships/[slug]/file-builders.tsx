@@ -57,7 +57,7 @@ import { LoadoutPanels } from "./loadout-panels";
 import { PortTable } from "./port-table";
 import { type SourceEntry, Sources } from "./showcase/dossier";
 import { HoloLineup, type LineupShip } from "./showcase/holo-lineup";
-import { Claims, Facts, Gap, type ShipFileProps } from "./ship-file";
+import { Claims, Facts, Gap, Related, type ShipFileProps } from "./ship-file";
 
 /**
  * Builds a ship file (ADR-012) for a ship in the pack or a concept ship. Both produce the same ten
@@ -78,6 +78,42 @@ function artCredit(show: ShowcaseView): { text: string; href: string } {
         href: "https://robertsspaceindustries.com/",
       }
     : { text: "Art: Roberts Space Industries", href: show.article.url };
+}
+
+/** The maker's other ships and the ships with the same role (spec 02, "Ship page": related). */
+function relatedTo(
+  makerCode: string,
+  className: string | null,
+  role: string | null,
+) {
+  const r = repo();
+  const link = (o: ShipView) => ({
+    name: o.vehicle.name,
+    href: `/ships/${o.vehicle.slug}`,
+  });
+  const maker =
+    r.manufacturers.find((m) => m.code === makerCode)?.name ?? makerCode;
+  return [
+    {
+      title: `More from ${maker}`,
+      ships: r
+        .lineup(makerCode)
+        .filter((o) => o.vehicle.class_name !== className)
+        .map(link),
+    },
+    {
+      title: role === null ? "Same role" : `Other ${role.toLowerCase()} ships`,
+      ships:
+        role === null
+          ? []
+          : r.ships
+              .filter(
+                (o) =>
+                  o.vehicle.class_name !== className && o.vehicle.role === role,
+              )
+              .map(link),
+    },
+  ];
 }
 
 /** The holoviewer's model and the person beside it (ADR-015), with the model's credit. */
@@ -548,6 +584,10 @@ export function packShipFile(ship: ShipView): ShipFileProps {
         variants.length === 0
           ? "None on record"
           : variants.map((x) => x.vehicle.name).join(", "),
+      links: variants.map((x) => ({
+        label: x.vehicle.name,
+        href: `/ships/${x.vehicle.slug}`,
+      })),
     },
     {
       label: "Paints",
@@ -753,7 +793,18 @@ export function packShipFile(ship: ShipView): ShipFileProps {
             numeric: label !== "Size",
           },
     ),
-    particularsSource: `Game data, LIVE ${version ?? ""}, via the Star Citizen Wiki API [${sources.findIndex((x) => x.href === WIKI_CREDIT.url) + 1}]`,
+    // Each row's own source: the pledge comes from RSI's store and the shop price from UEX Corp.
+    particularsSource: [
+      `Game data, LIVE ${version ?? ""}, via the Star Citizen Wiki API [${cite(WIKI_CREDIT.url)}]`,
+      ...(pledge === null
+        ? []
+        : [
+            `pledge from the RSI pledge store [${cite(PLEDGE_STORE_CREDIT.url)}]`,
+          ]),
+      ...(buy === null
+        ? []
+        : [`in-game price from UEX Corp [${cite(UEX_CREDIT.url)}]`]),
+    ].join("; "),
     sections: {
       brief: {
         body: (
@@ -806,6 +857,7 @@ export function packShipFile(ship: ShipView): ShipFileProps {
         ),
       },
       operations: {
+        aside: version === null ? undefined : `LIVE ${version}`,
         body: (
           <div className="flex flex-col gap-4">
             <Facts facts={operations} />
@@ -818,7 +870,8 @@ export function packShipFile(ship: ShipView): ShipFileProps {
         ),
       },
       combat: {
-        aside: "Stock loadout",
+        aside:
+          version === null ? "Stock loadout" : `Stock loadout, LIVE ${version}`,
         body: (
           <div className="flex flex-col gap-6">
             <Facts facts={combat} />
@@ -846,6 +899,7 @@ export function packShipFile(ship: ShipView): ShipFileProps {
         ),
       },
       mobility: {
+        aside: version === null ? undefined : `LIVE ${version}`,
         body: (
           <div className="flex flex-col gap-6">
             <Facts facts={mobility} />
@@ -906,7 +960,7 @@ export function packShipFile(ship: ShipView): ShipFileProps {
           ),
       },
       hardpoints: {
-        aside: `${ports.length} of ${allPorts.length} ports`,
+        aside: `${version === null ? "" : `LIVE ${version} · `}${ports.length} of ${allPorts.length} ports`,
         body:
           ports.length === 0 ? (
             <Gap>No hardpoints are on record for this ship yet.</Gap>
@@ -956,7 +1010,16 @@ export function packShipFile(ship: ShipView): ShipFileProps {
             </div>
           ),
       },
-      sources: { body: <Sources sources={sources} /> },
+      sources: {
+        body: (
+          <div className="flex flex-col gap-8">
+            <Related
+              groups={relatedTo(v.manufacturer_code, v.class_name, v.role)}
+            />
+            <Sources sources={sources} />
+          </div>
+        ),
+      },
     },
   };
 }
@@ -1259,7 +1322,16 @@ export function conceptShipFile(concept: ConceptShip): ShipFileProps {
           </Gap>
         ),
       },
-      sources: { body: <Sources sources={sources} /> },
+      sources: {
+        body: (
+          <div className="flex flex-col gap-8">
+            <Related
+              groups={relatedTo(concept.manufacturer_code, null, null)}
+            />
+            <Sources sources={sources} />
+          </div>
+        ),
+      },
     },
   };
 }

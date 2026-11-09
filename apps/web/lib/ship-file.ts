@@ -35,6 +35,8 @@ export interface Fact {
   readonly value: string;
   readonly unit?: string | undefined;
   readonly numeric?: boolean | undefined;
+  /** When the value names pages on the site, the names as links (variants). */
+  readonly links?: readonly { readonly label: string; readonly href: string }[];
 }
 
 export interface Equipment {

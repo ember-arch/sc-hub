@@ -64,6 +64,7 @@ Faces: Geist Sans and Geist Mono, or Inter Tight and JetBrains Mono. Pick one pa
 - Durations: 120 ms (hover, toggle), 200 ms (panel, palette), 320 ms (viewer camera preset).
 - Easing: `cubic-bezier(0.2, 0, 0, 1)`.
 - No ambient animation, no parallax, no auto-playing turntables above the fold.
+- Exceptions (ADR-012, ADR-015): inside the holoviewer canvases the model materialises and scan planes sweep it once on load, and the holoviewer orbits slowly; CIG's render loops play while on screen and each carries a Pause control. All stop with reduced motion.
 
 ## 3. Components (Phase 0 set)
 
@@ -86,18 +87,24 @@ Added by spec 02 (ADR-006):
 - `FilterBar` — a GET form of labelled native selects; filters are URL state, so each change navigates to a shareable address.
 - `SegmentedLinks` — a row of links that reads as one control (the card/table toggle).
 
-Proposed with the cinematic ship page concept (ADR-008):
+Added with the ship file (ADR-008, ADR-012 to ADR-016):
 
-- `ScaleLineup` — ships on record and a person drawn to scale from length and height, the page's ship in the accent.
+- `ScaleLineup` — ships on record and a person drawn to scale from length and height, the page's ship in the accent; the Scale section's fallback when no models are built.
 - `RankBar` — where one ship sits among the ships on record for one stat, linear or log scale, with its rank in words.
+- `HoloViewer` — RSI's holoviewer model of the ship in a 3D canvas: render (Default, X-ray, Wireframe), seven view angles, full screen, a person for scale.
+- `HoloLineup` — the Scale section: every ship's model to scale in one canvas, the page's ship lit, a camera button per ship.
+- `AutoVideo` — a render loop at its own proportions, playing while on screen, with a Pause control.
+- `ArmamentPlan` — the armament by who fires it, each gun, missile or torpedo drawn in profile at its size class.
+- `LoadoutEditor` — swap each swappable part for one that fits, with the build summed and ranked against stock (ADR-016).
+- `Related` — the maker's other ships and the ships with the same role, linked.
 
 ## 4. Page templates
 
 | Page | Layout |
 | --- | --- |
-| Home | Search field as the first element. Then: today's feed (news and dev posts merged, 10 items), one featured ship card; the patch strip is in the footer. No hero banner. |
+| Home | The file strip and search, the featured files of the concept hero and the live example (each with its key art when built), the register of every ship as a `DataTable`, then today's feed (news and dev posts merged, 10 items); the patch strip is in the footer. Follows the reader's light or dark setting. No hero banner. |
 | Ships index | Filter bar (manufacturer, role, size, status, kind) + card/table toggle. Cards in a 2/3/4 column grid by breakpoint, each with a Compare toggle. Table mode uses `DataTable` with a Compare column. |
-| Ship page | `EntityPage`. Hero holds the viewer (hero ships) or the best fankit render (others); until then the stage leads with RSI's official image of the ship, credited, never overlaid or tinted (ADR-008, ADR-009). Key facts: role, size, crew, cargo, length, mass (manufacturer and status are in the hero). Sections: specs by channel (with PTU diff toggle), hardpoints and stock loadout, variants and paints, changed in this version, in the news, dev posts; variants and paints, and changed in this version, are left out until there is something in them (ADR-007). Related: same manufacturer, same role. |
+| Ship page | The ship file (ADR-012, ADR-014, ADR-015), dark by default. A full-bleed opening band of the ship's key art (with CIG's cut-out where it publishes one) under a scrim that keeps the name, a factual sentence and four headline figures legible; credited. Two columns below: on the left, sticky on wide screens, the holoviewer, the particulars and the contents; on the right the same nine numbered sections for every ship (Brief, Acquisition and status, Weapons and combat, Crew and operations, Mobility, Scale, Specifications, Hardpoints and loadout, Sources), each with its images and render loops, every game figure with its build, and related ships with the sources. |
 | Component page | `EntityPage`. Key facts: type, size, grade, class, manufacturer. Sections: stats by channel, stock on (ships that carry it by default), in the news. |
 | Manufacturer page | `EntityPage` with a 3 px brand rule (the `border.strong` token until the fankit supplies brand colors). Sections: lineup (cards), in the news. |
 | News feed | Source filter chips, then `FeedItem` list, infinite scroll in pages of 20, RSS and JSON links in the header. Dev tracker is a tab: author filter, `DevPost` list, thread grouping. |

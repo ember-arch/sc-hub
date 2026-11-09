@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import type { BufferGeometry } from "three";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { THEME_CHANGE_EVENT, TextLink } from "ui";
 import {
   inkBody,
@@ -14,28 +14,34 @@ import {
 import { layoutRow } from "./lineup-layout";
 
 /**
- * The Scale section's lineup (ADR-015, drawn in ink per ADR-020): every ship on record that has an
- * RSI holoviewer model, each scaled to its recorded length and standing in profile on one ground
- * line, largest first, with a person beside the smallest. The page's ship is drawn in full ink;
- * the others dimmer. Labels name each ship and its length; the buttons below fly the camera to
- * any one ship or back to the whole line. Drag to turn, scroll or pinch to zoom.
+ * The Scale section's lineup (ADR-015, drawn in ink per ADR-020): every ship on record, each
+ * scaled to its recorded length and standing in profile on one ground line, largest first, with
+ * a person beside the smallest. A ship with an RSI holoviewer model is drawn as that model; one
+ * without is drawn as its envelope, a box of its recorded length, beam and height, so the row is
+ * complete whatever has been built (ADR-022). The page's ship is drawn in full ink; the others
+ * dimmer. Labels name each ship and its length; the controls below fly the camera to the ship's
+ * neighbours, to the whole row or to any one ship. Drag to turn, scroll or pinch to zoom.
  *
- * The row is laid out from the recorded lengths before any model arrives, so the paper, the ground
- * line and the camera are up at once and each ship is drawn where it stands the moment its own
- * model lands; its inked edges follow in an idle moment. Nothing waits for the whole set.
+ * The row is laid out from the recorded lengths before anything loads, so the paper, the ground
+ * line, every envelope and the camera are up at once. Models load a few at a time for the ships
+ * the camera is looking at and large enough to show detail, and replace their envelope as they
+ * land; their inked edges follow in an idle moment.
  */
 
 export interface LineupShip {
   readonly slug: string;
   readonly name: string;
-  /** Length on record, in metres; the model is scaled to it. */
+  /** Dimensions on record, in metres; the envelope, and the model's scale. */
   readonly length: number;
-  readonly src: string;
+  readonly beam: number;
+  readonly height: number;
+  /** The holoviewer model, when one is built; null draws the envelope. */
+  readonly src: string | null;
   readonly bytes: number;
   readonly current: boolean;
 }
 
-/** "around": the page's ship with the next larger one and every smaller one; "all": the row. */
+/** "around": the page's ship among the ships near it in size; "all": the row. */
 type Focus = "around" | "all" | string;
 
 interface Api {
@@ -44,10 +50,10 @@ interface Api {
 }
 
 interface Progress {
-  /** Models landed or given up on. */
+  /** Models wanted so far, and how many of those have landed or given up. */
+  readonly wanted: number;
   readonly done: number;
-  /** The slugs of the ships whose model could not be loaded. */
-  readonly failed: readonly string[];
+  readonly failed: number;
 }
 
 const n0 = (v: number): string =>
@@ -72,12 +78,17 @@ export function HoloLineup({
     "idle",
   );
   const [progress, setProgress] = useState<Progress>({
+    wanted: 0,
     done: 0,
-    failed: [],
+    failed: 0,
   });
   const [full, setFull] = useState(false);
-  const order = [...ships].sort((a, b) => b.length - a.length);
+  const order = useMemo(
+    () => [...ships].sort((a, b) => b.length - a.length),
+    [ships],
+  );
   const current = ships.find((s) => s.current);
+  const modelled = ships.filter((s) => s.src !== null).length;
   // The largest ship's neighbourhood is the whole row.
   const largest = current !== undefined && order[0]?.slug === current.slug;
   const [focus, setFocus] = useState<Focus>(largest ? "all" : "around");
@@ -127,12 +138,8 @@ export function HoloLineup({
     "rounded-pill border px-3 py-1 text-caption transition-colors duration-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent";
   const choice = (on: boolean) =>
     `${option} ${on ? "border-accent bg-accent-bg text-primary" : "border-hairline-strong text-secondary hover:text-primary"}`;
-  const loading =
-    state === "loading" || (state === "ready" && progress.done < ships.length);
-  const failed = new Set(progress.failed);
-  // Every model failed: the row is paper and a ground line, so say so, as a failed start would.
-  const broken =
-    state === "error" || (!loading && failed.size === ships.length);
+  const loadingModels = progress.done < progress.wanted;
+  const picked = focus === "around" || focus === "all" ? "" : focus;
 
   return (
     <figure className="m-0 flex flex-col gap-2">
@@ -146,7 +153,7 @@ export function HoloLineup({
           <div
             ref={box}
             role="img"
-            aria-label={`To scale, from RSI's holoviewer models: ${order.map((s) => `${s.name} ${n0(s.length)} m`).join(", ")}${figure === null ? "" : `, and a person ${figure.height.toFixed(1)} m tall`}.`}
+            aria-label={`To scale: ${order.map((s) => `${s.name} ${n0(s.length)} m`).join(", ")}${figure === null ? "" : `, and a person ${figure.height.toFixed(1)} m tall`}. ${modelled} drawn from RSI's holoviewer models, the rest as their envelopes.`}
             className="absolute inset-0"
           />
           <div
@@ -154,20 +161,28 @@ export function HoloLineup({
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 z-10"
           />
-          {broken ? (
+          {state === "error" ? (
             <p className="absolute bottom-3 left-3 m-0 text-caption text-secondary">
-              The models could not be loaded.
+              The lineup could not be drawn.
             </p>
-          ) : loading ? (
+          ) : state === "loading" ? (
             <p
               role="status"
               className="absolute bottom-3 left-3 m-0 text-caption text-secondary"
             >
-              Loading models, {progress.done} of {ships.length}
+              Drawing the lineup
             </p>
-          ) : failed.size > 0 ? (
+          ) : loadingModels ? (
+            <p
+              role="status"
+              className="absolute bottom-3 left-3 m-0 text-caption text-secondary"
+            >
+              Loading models, {progress.done} of {progress.wanted}
+            </p>
+          ) : progress.failed > 0 ? (
             <p className="absolute bottom-3 left-3 m-0 text-caption text-secondary">
-              {failed.size} of {ships.length} models could not be loaded
+              {progress.failed} of {progress.wanted} models could not be loaded;
+              those ships keep their envelope
             </p>
           ) : null}
           <button
@@ -184,10 +199,8 @@ export function HoloLineup({
             {full ? "Exit full screen" : "Full screen"}
           </button>
         </div>
-        <fieldset className="m-0 flex flex-wrap items-center gap-1 border-0 p-0">
-          <legend className="float-left mr-2 p-0 text-caption text-secondary">
-            Look at
-          </legend>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-caption text-secondary">Look at</span>
           {current === undefined || largest ? null : (
             <button
               type="button"
@@ -206,30 +219,34 @@ export function HoloLineup({
           >
             All ships
           </button>
-          {order.map((s) => (
-            <button
-              key={s.slug}
-              type="button"
-              aria-pressed={focus === s.slug}
-              // A ship whose model failed has nothing to fly to.
-              disabled={failed.has(s.slug)}
-              className={`${choice(focus === s.slug)} disabled:opacity-50`}
-              onClick={() => setFocus(s.slug)}
+          <label className="flex items-center gap-2 text-caption text-secondary">
+            <span>One ship</span>
+            <select
+              aria-label="One ship"
+              value={picked}
+              onChange={(event) => {
+                const slug = event.target.value;
+                setFocus(slug === "" ? (largest ? "all" : "around") : slug);
+              }}
+              className="rounded-pill border border-hairline-strong bg-surface px-3 py-1 text-caption text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
             >
-              <span className={s.current ? "text-accent" : undefined}>
-                {s.name}
-              </span>{" "}
-              <span className="font-mono">{n0(s.length)} m</span>
-            </button>
-          ))}
-        </fieldset>
+              <option value="">Choose a ship</option>
+              {order.map((s) => (
+                <option key={s.slug} value={s.slug}>
+                  {s.name}, {n0(s.length)} m
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
       </div>
       <figcaption className="flex flex-wrap justify-between gap-x-3 gap-y-1 text-caption text-secondary">
         <span>
           <span className="font-mono text-primary">{label}</span> To scale: the{" "}
-          {current?.name ?? "ship"} beside the other ships on record
-          {figure === null ? "" : " and a person"}, each RSI holoviewer model
-          sized to its recorded length
+          {current?.name ?? "ship"} beside every ship on record
+          {figure === null ? "" : " and a person"}, each sized to its recorded
+          length; a ship with a holoviewer model is drawn as that model, the
+          rest as their envelope of length, beam and height
         </span>
         <TextLink href={credit.href} external className="text-secondary">
           {credit.text}
@@ -252,6 +269,10 @@ function whenIdle(job: () => void): () => void {
   return () => window.clearTimeout(id);
 }
 
+/** Models download a few at a time; a ship is worth its model once it is this wide on screen. */
+const MODELS_IN_FLIGHT = 3;
+const DETAIL_PX = 40;
+
 async function start(
   el: HTMLDivElement,
   tags: HTMLDivElement,
@@ -271,31 +292,32 @@ async function start(
   const palette = inkPalette(THREE, el);
   let disposed = false;
 
-  // The row from the recorded lengths alone (lineup-layout.ts), centred on the origin; a ship's
-  // height is a guess until its model says.
+  // The row from the recorded lengths alone (lineup-layout.ts), centred on the origin.
   const row = layoutRow(ships, figureSrc !== null);
-  const { rowLength, shift } = row;
+  const { rowLength } = row;
   interface Slot {
     readonly ship: LineupShip;
-    /** Where the bow starts along the row. */
     readonly from: number;
     x: number;
     top: number;
     readonly length: number;
-    ready: boolean;
+    /** What stands on the ground now: the envelope until the model lands. */
+    mesh: InstanceType<typeof THREE.Mesh> | null;
+    lines: InstanceType<typeof THREE.LineSegments> | null;
+    model: "none" | "wanted" | "loading" | "drawn" | "failed";
   }
   const slots: Slot[] = row.slots.map((s) => ({
     ship: s.ship,
     from: s.from,
     x: s.x,
-    top: s.length * 0.28,
+    top: s.ship.height,
     length: s.length,
-    ready: false,
+    mesh: null,
+    lines: null,
+    model: s.ship.src === null ? "none" : "wanted",
   }));
-  let tallest = Math.max(1, ...slots.map((s) => s.top));
+  const tallest = Math.max(1, ...slots.map((s) => s.top));
 
-  const meshes: InstanceType<typeof THREE.Mesh>[] = [];
-  const lines: InstanceType<typeof THREE.LineSegments>[] = [];
   const materials: InstanceType<typeof THREE.Material>[] = [];
   const fullBody = inkBody(THREE, palette.body);
   const dimBody = inkBody(THREE, palette.bodyDim);
@@ -338,6 +360,59 @@ async function start(
   );
   scene.add(ground);
 
+  // The ink is drawn in idle moments, one body at a time, so frames run between.
+  const inking: (() => void)[] = [];
+  let cancelIdle: (() => void) | null = null;
+  const drainInk = (): void => {
+    cancelIdle = null;
+    const job = inking.shift();
+    if (job === undefined || disposed) return;
+    job();
+    if (inking.length > 0) cancelIdle = whenIdle(drainInk);
+  };
+  const ink = (job: () => void): void => {
+    inking.push(job);
+    if (cancelIdle === null) cancelIdle = whenIdle(drainInk);
+  };
+
+  /** Stands a body on the ground at the slot, replacing what stood there. */
+  const stand = (slot: Slot, g: BufferGeometry, angle?: number): void => {
+    if (slot.mesh !== null) {
+      scene.remove(slot.mesh);
+      slot.mesh.geometry.dispose();
+    }
+    if (slot.lines !== null) {
+      scene.remove(slot.lines);
+      slot.lines.geometry.dispose();
+      slot.lines = null;
+    }
+    const mesh = new THREE.Mesh(g, slot.ship.current ? fullBody : dimBody);
+    slot.mesh = mesh;
+    scene.add(mesh);
+    ink(() => {
+      if (slot.mesh !== mesh) return;
+      const line = inkEdges(
+        THREE,
+        g,
+        slot.ship.current ? fullInk : dimInk,
+        angle,
+      );
+      slot.lines = line;
+      scene.add(line);
+    });
+  };
+
+  // Every ship stands as its envelope at once: a box of its length, height and beam.
+  for (const slot of slots) {
+    const g = new THREE.BoxGeometry(
+      slot.length,
+      slot.ship.height,
+      slot.ship.beam,
+    );
+    g.translate(slot.x, slot.ship.height / 2, 0);
+    stand(slot, g);
+  }
+
   const fov = 28;
   const camera = new THREE.PerspectiveCamera(
     fov,
@@ -360,18 +435,23 @@ async function start(
     const position = target
       .clone()
       .add(new THREE.Vector3(0, 0.3, 1).normalize().multiplyScalar(d));
-    return { position, target };
+    return { position, target, width: Math.max(w, h * aspect) };
   };
   const whole = () => view(0, rowLength, tallest * 1.25);
-  // The page's ship among its neighbours: the next larger ship, then everything smaller.
+  // The page's ship among its neighbours in size: the four ships above it and the four below,
+  // so a fighter is shown beside fighters, not beside every capital ship on record.
   const around = () => {
     const at = slots.findIndex((s) => s.ship.current);
     if (at < 0) return whole();
-    const near = slots.slice(Math.max(0, at - 1));
+    const near = slots.slice(
+      Math.max(0, at - 4),
+      Math.min(slots.length, at + 5),
+    );
     const from = near[0]!.x - near[0]!.length / 2;
-    const to = shift + rowLength;
+    const end = near[near.length - 1]!;
+    const to = end.x + end.length / 2;
     const top = Math.max(...near.map((s) => s.top));
-    return view((from + to) / 2, (to - from) * 1.04, top * 1.35);
+    return view((from + to) / 2, (to - from) * 1.08, top * 1.35);
   };
   const viewOf = (focus: Focus) => {
     const s = slots.find((x) => x.ship.slug === focus);
@@ -381,10 +461,111 @@ async function start(
         ? whole()
         : view(s.x, s.length * 1.15, s.top * 1.4);
   };
-  let looking: Focus = "around";
   const start0 = around();
   camera.position.copy(start0.position);
   controls.target.copy(start0.target);
+
+  // Models: wanted for the ships the camera looks at that are wide enough to show detail, a few
+  // at a time, replacing their envelope as they land. The page's ship always gets its model.
+  const queue: Slot[] = [];
+  let inFlight = 0;
+  let wanted = 0;
+  let done = 0;
+  let failed = 0;
+  const report = (): void => onProgress({ wanted, done, failed });
+  const placeModel = (g: BufferGeometry, slot: Slot): void => {
+    // Scaled to its recorded length, turned so its nose points along +X, keel on the floor.
+    g.computeBoundingBox();
+    const b = g.boundingBox!;
+    const c = b.getCenter(new THREE.Vector3());
+    g.translate(-c.x, -c.y, -c.z);
+    const modelLength = b.max.z - b.min.z;
+    const k = modelLength > 0 ? slot.ship.length / modelLength : 1;
+    g.scale(k, k, k);
+    g.rotateY(-Math.PI / 2);
+    g.computeBoundingBox();
+    const placedBox = g.boundingBox!;
+    g.translate(slot.from - placedBox.min.x, -placedBox.min.y, 0);
+    g.computeBoundingBox();
+    const box = g.boundingBox!;
+    slot.x = (box.min.x + box.max.x) / 2;
+    slot.top = box.max.y;
+    stand(slot, g);
+  };
+  const pump = (): void => {
+    while (inFlight < MODELS_IN_FLIGHT && queue.length > 0) {
+      const slot = queue.shift()!;
+      if (slot.model !== "wanted" || slot.ship.src === null) continue;
+      slot.model = "loading";
+      inFlight += 1;
+      wanted += 1;
+      report();
+      loadHoloGeometry(THREE, loader, slot.ship.src)
+        .then((g) => {
+          if (disposed) {
+            g.dispose();
+            return;
+          }
+          placeModel(g, slot);
+          slot.model = "drawn";
+        })
+        .catch(() => {
+          slot.model = "failed";
+          failed += 1;
+        })
+        .finally(() => {
+          inFlight -= 1;
+          done += 1;
+          report();
+          pump();
+        });
+    }
+  };
+  /** Asks for the models of the ships a view shows wide enough to tell a model from a box. */
+  const wantModels = (span: { width: number }, centre: number): void => {
+    const px = el.clientWidth / Math.max(span.width, 1);
+    const left = centre - span.width / 2;
+    const right = centre + span.width / 2;
+    for (const slot of slots) {
+      if (slot.model !== "wanted") continue;
+      const inView =
+        slot.x + slot.length / 2 >= left && slot.x - slot.length / 2 <= right;
+      if (slot.ship.current || (inView && slot.length * px >= DETAIL_PX)) {
+        queue.push(slot);
+      }
+    }
+    pump();
+  };
+
+  const extras: (
+    InstanceType<typeof THREE.Mesh> | InstanceType<typeof THREE.LineSegments>
+  )[] = [];
+  if (figureSrc !== null && row.personAt !== null) {
+    const personAt = row.personAt;
+    loadHoloGeometry(THREE, loader, figureSrc)
+      .then((person) => {
+        if (disposed) {
+          person.dispose();
+          return;
+        }
+        person.computeBoundingBox();
+        const pb = person.boundingBox!;
+        person.translate(
+          personAt - pb.min.x,
+          -pb.min.y,
+          -(pb.min.z + pb.max.z) / 2,
+        );
+        const mesh = new THREE.Mesh(person, dimBody);
+        extras.push(mesh);
+        scene.add(mesh);
+        ink(() => {
+          const line = inkEdges(THREE, person, dimInk, 40);
+          extras.push(line);
+          scene.add(line);
+        });
+      })
+      .catch(() => undefined);
+  }
 
   let tween: {
     from: InstanceType<typeof THREE.Vector3>;
@@ -393,24 +574,9 @@ async function start(
     toTarget: InstanceType<typeof THREE.Vector3>;
     began: number;
   } | null = null;
-  // Once the reader has turned or zoomed the row, the arriving models no longer move the camera.
-  let touched = false;
   controls.addEventListener("start", () => {
     tween = null;
-    touched = true;
   });
-  /** A model has arrived and the heights are truer: keep the camera on what it was looking at. */
-  const refocus = (): void => {
-    if (touched) return;
-    const to = viewOf(looking);
-    if (tween !== null) {
-      tween.to = to.position;
-      tween.toTarget = to.target;
-      return;
-    }
-    camera.position.copy(to.position);
-    controls.target.copy(to.target);
-  };
 
   // Labels: one per ship, over its highest point, stepped up where they would collide.
   const tagEls = slots.map((s) => {
@@ -429,7 +595,7 @@ async function start(
     const h = el.clientHeight;
     const shown = slots
       .map((s, i) => {
-        // A ship drawn shorter than a label is too small to name; the buttons still list it.
+        // A ship drawn shorter than a label is too small to name; the picker still lists it.
         stern.set(s.x - s.length / 2, 0, 0).project(camera);
         anchor.set(s.x + s.length / 2, 0, 0).project(camera);
         const drawn = Math.abs(anchor.x - stern.x) * 0.5 * w;
@@ -439,7 +605,7 @@ async function start(
           i,
           x: (anchor.x * 0.5 + 0.5) * w,
           y: (-anchor.y * 0.5 + 0.5) * h,
-          visible: s.ready && anchor.z < 1 && (drawn >= 28 || s.ship.current),
+          visible: anchor.z < 1 && (drawn >= 28 || s.ship.current),
         };
       })
       .sort((a, b) => a.x - b.x);
@@ -447,7 +613,8 @@ async function start(
     let level = 0;
     for (const s of shown) {
       const tag = tagEls[s.i]!;
-      level = s.x - lastX < 110 ? level + 1 : 0;
+      // Neighbours step up to three rows, then start again, so a crowd never climbs off the top.
+      level = s.x - lastX < 110 ? (level + 1) % 3 : 0;
       lastX = s.x;
       const inside = s.visible && s.x > -40 && s.x < w + 40 && s.y > 0;
       tag.style.display = inside ? "block" : "none";
@@ -455,98 +622,6 @@ async function start(
       tag.style.top = `${s.y - level * 20}px`;
     }
   };
-
-  // The ink is drawn in idle moments, one body at a time, so frames run between.
-  const inking: (() => void)[] = [];
-  let cancelIdle: (() => void) | null = null;
-  const drainInk = (): void => {
-    cancelIdle = null;
-    const job = inking.shift();
-    if (job === undefined || disposed) return;
-    job();
-    if (inking.length > 0) cancelIdle = whenIdle(drainInk);
-  };
-  const ink = (job: () => void): void => {
-    inking.push(job);
-    if (cancelIdle === null) cancelIdle = whenIdle(drainInk);
-  };
-
-  // Every download starts now; each ship is drawn where it stands as its own model lands.
-  let done = 0;
-  const failed: string[] = [];
-  const landed = (): void => {
-    done += 1;
-    onProgress({ done, failed: [...failed] });
-  };
-  const placeShip = (g: BufferGeometry, slot: Slot): void => {
-    // Scaled to its recorded length, turned so its nose points along +X, keel on the floor.
-    g.computeBoundingBox();
-    const b = g.boundingBox!;
-    const c = b.getCenter(new THREE.Vector3());
-    g.translate(-c.x, -c.y, -c.z);
-    const modelLength = b.max.z - b.min.z;
-    const k = modelLength > 0 ? slot.ship.length / modelLength : 1;
-    g.scale(k, k, k);
-    g.rotateY(-Math.PI / 2);
-    g.computeBoundingBox();
-    const placedBox = g.boundingBox!;
-    g.translate(slot.from - placedBox.min.x, -placedBox.min.y, 0);
-    g.computeBoundingBox();
-    const box = g.boundingBox!;
-    slot.x = (box.min.x + box.max.x) / 2;
-    slot.top = box.max.y;
-    slot.ready = true;
-    tallest = Math.max(tallest, box.max.y);
-    const mesh = new THREE.Mesh(g, slot.ship.current ? fullBody : dimBody);
-    meshes.push(mesh);
-    scene.add(mesh);
-    ink(() => {
-      const line = inkEdges(THREE, g, slot.ship.current ? fullInk : dimInk);
-      lines.push(line);
-      scene.add(line);
-    });
-    refocus();
-  };
-  for (const slot of slots) {
-    loadHoloGeometry(THREE, loader, slot.ship.src)
-      .then((g) => {
-        if (disposed) {
-          g.dispose();
-          return;
-        }
-        placeShip(g, slot);
-      })
-      .catch(() => {
-        failed.push(slot.ship.slug);
-      })
-      .finally(landed);
-  }
-  if (row.personAt !== null) {
-    const personAt = row.personAt;
-    loadHoloGeometry(THREE, loader, figureSrc!)
-      .then((person) => {
-        if (disposed) {
-          person.dispose();
-          return;
-        }
-        person.computeBoundingBox();
-        const pb = person.boundingBox!;
-        person.translate(
-          personAt - pb.min.x,
-          -pb.min.y,
-          -(pb.min.z + pb.max.z) / 2,
-        );
-        const mesh = new THREE.Mesh(person, dimBody);
-        meshes.push(mesh);
-        scene.add(mesh);
-        ink(() => {
-          const line = inkEdges(THREE, person, dimInk, 40);
-          lines.push(line);
-          scene.add(line);
-        });
-      })
-      .catch(() => undefined);
-  }
 
   let visible = true;
   const onScreen = new IntersectionObserver(([entry]) => {
@@ -578,11 +653,12 @@ async function start(
     placeTags();
   };
   tick();
+  wantModels(start0, start0.target.x);
 
   return {
     focus(slug: Focus) {
-      looking = slug;
       const to = viewOf(slug);
+      wantModels(to, to.target.x);
       if (reduced) {
         camera.position.copy(to.position);
         controls.target.copy(to.target);
@@ -600,14 +676,18 @@ async function start(
       disposed = true;
       cancelIdle?.();
       inking.length = 0;
+      queue.length = 0;
       window.removeEventListener(THEME_CHANGE_EVENT, repaint);
       cancelAnimationFrame(frame);
       onScreen.disconnect();
       resize.disconnect();
       controls.dispose();
       removeLights();
-      for (const mesh of meshes) mesh.geometry.dispose();
-      for (const line of lines) line.geometry.dispose();
+      for (const slot of slots) {
+        slot.mesh?.geometry.dispose();
+        slot.lines?.geometry.dispose();
+      }
+      for (const extra of extras) extra.geometry.dispose();
       for (const m of materials) m.dispose();
       ground.geometry.dispose();
       for (const tag of tagEls) tag.remove();

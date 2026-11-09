@@ -396,43 +396,57 @@ const scaleLineup = (
 );
 
 /**
- * The Scale section (ADR-015): every ship with an RSI holoviewer model, lined up to scale in one
- * holoviewer canvas, the page's ship lit full. Without the models built (a clone, CI, a deploy),
- * or with no other ship to stand beside, the drawn lineup stays.
+ * The Scale section (ADR-015, ADR-022): every entry on record with its dimensions, lined up to
+ * scale in one canvas, the page's ship lit full; a ship with an RSI holoviewer model is drawn as
+ * that model, the rest as their envelope. With no other ship to stand beside, or without the
+ * page's ship's dimensions, the drawn lineup stays.
  */
 function scaleView(slug: string, drawn: ReactNode): ReactNode {
   const r = repo();
+  const dims = (
+    length: number | null,
+    beam: number | null,
+    height: number | null,
+  ) =>
+    length !== null &&
+    beam !== null &&
+    height !== null &&
+    length > 0 &&
+    beam > 0 &&
+    height > 0;
   const ships: LineupShip[] = [
-    ...r.ships.flatMap((o) => {
+    ...r.entries.flatMap((o) => {
+      const s = o.stats;
+      if (s === null || !dims(s.length_m, s.beam_m, s.height_m)) return [];
       const holo = media().holo(o.vehicle.slug);
-      // A ship with no length on record, or none above zero, cannot be scaled.
-      return holo === null || o.stats === null || !(o.stats.length_m > 0)
-        ? []
-        : [
-            {
-              slug: o.vehicle.slug,
-              name: o.vehicle.name,
-              length: o.stats.length_m,
-              src: holo.src,
-              bytes: holo.bytes,
-              current: o.vehicle.slug === slug,
-            },
-          ];
+      return [
+        {
+          slug: o.vehicle.slug,
+          name: o.vehicle.name,
+          length: s.length_m,
+          beam: s.beam_m,
+          height: s.height_m,
+          src: holo?.src ?? null,
+          bytes: holo?.bytes ?? 0,
+          current: o.vehicle.slug === slug,
+        },
+      ];
     }),
     ...conceptShips().flatMap((c) => {
+      if (!dims(c.length_m, c.beam_m, c.height_m)) return [];
       const holo = media().holo(c.slug);
-      return holo === null || c.length_m === null || !(c.length_m > 0)
-        ? []
-        : [
-            {
-              slug: c.slug,
-              name: c.name,
-              length: c.length_m,
-              src: holo.src,
-              bytes: holo.bytes,
-              current: c.slug === slug,
-            },
-          ];
+      return [
+        {
+          slug: c.slug,
+          name: c.name,
+          length: c.length_m!,
+          beam: c.beam_m!,
+          height: c.height_m!,
+          src: holo?.src ?? null,
+          bytes: holo?.bytes ?? 0,
+          current: c.slug === slug,
+        },
+      ];
     }),
   ];
   if (ships.length < 2 || !ships.some((s) => s.current)) return drawn;

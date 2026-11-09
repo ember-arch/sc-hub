@@ -103,17 +103,16 @@ test("a maker logo shows one version for the page's theme", async ({
   await expect(logos).toHaveAttribute("src", /aegs-on-light/);
 });
 
-// ADR-015: with the models built, Scale lines every ship up in one holoviewer canvas.
-test("Scale lines the ships up in the holoviewer, opening on the page's ship and its neighbours", async ({
+// ADR-015, ADR-022: Scale lines every ship up in one canvas, models where built, envelopes
+// elsewhere, opening on the page's ship and its neighbours; a picker reaches any one ship.
+test("Scale lines every ship up to scale, opening on the page's ship and its neighbours", async ({
   page,
 }) => {
   await page.goto("/ships/gladius");
   const scale = page.locator("#scale");
-  const lineup = scale.getByRole("img", {
-    name: /^To scale, from RSI's holoviewer models/,
-  });
-  if ((await lineup.count()) === 0) test.skip(true, "no models built locally");
+  const lineup = scale.getByRole("img", { name: /^To scale: / });
   await expect(lineup).toHaveAttribute("aria-label", /Gladius 21 m/);
+  await expect(lineup).toHaveAttribute("aria-label", /Polaris 181 m/);
   await expect(
     scale.getByRole("button", { name: "Around the Gladius" }),
   ).toHaveAttribute("aria-pressed", "true");
@@ -121,5 +120,12 @@ test("Scale lines the ships up in the holoviewer, opening on the page's ship and
   await expect(
     scale.getByRole("button", { name: "All ships" }),
   ).toHaveAttribute("aria-pressed", "true");
-  await expect(scale.getByRole("button", { name: /^Odin/ })).toBeVisible();
+  const picker = scale.getByRole("combobox", { name: "One ship" });
+  await expect(picker.getByRole("option", { name: /^Polaris, / })).toHaveCount(
+    1,
+  );
+  await picker.selectOption({ label: "Polaris, 181 m" });
+  await expect(
+    scale.getByRole("button", { name: "All ships" }),
+  ).toHaveAttribute("aria-pressed", "false");
 });

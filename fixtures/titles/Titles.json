@@ -1,0 +1,4942 @@
+{
+  "source": {
+    "article_url": "https://starcitizen.tools/Titles",
+    "revision_id": 392946,
+    "revision_url": "https://starcitizen.tools/index.php?title=Titles&oldid=392946",
+    "edited_at": "2026-09-22T18:42:05Z",
+    "fetched_at": "2026-11-09T02:15:10.233Z",
+    "licence": {
+      "name": "CC BY-SA 4.0",
+      "url": "https://creativecommons.org/licenses/by-sa/4.0/"
+    }
+  },
+  "lead": [
+    [
+      {
+        "text": "Titles (also called badges) are configurable labels with associated icons, usually displayed next to a player's avatar and name. They appear on Spectrum, on the RSI Forums, and players' citizen dossiers.",
+        "href": null
+      }
+    ],
+    [
+      {
+        "text": "Players can obtain titles by backing Star Citizen, purchasing packages during limited sales, or participating to various events and mini-games, either in-game or on the Roberts Space Industries website.",
+        "href": null
+      }
+    ]
+  ],
+  "groups": [
+    {
+      "group": "backer",
+      "heading": "Backer titles",
+      "intro": [
+        [
+          {
+            "text": "The number listed beside each title corresponds to the pledge total as displayed on the ",
+            "href": null
+          },
+          {
+            "text": "billing page",
+            "href": "https://robertsspaceindustries.com/account/billing"
+          },
+          {
+            "text": " required to earn that title. Original packages included titles that did not directly relate to pledge total. All backer titles can still be earned.",
+            "href": null
+          }
+        ]
+      ]
+    },
+    {
+      "group": "recruitment",
+      "heading": "Recruitment titles",
+      "intro": [
+        [
+          {
+            "text": "Titles earned via the recruitment of new backers (gained by use of referral codes). More information about the referral program can be found on ",
+            "href": null
+          },
+          {
+            "text": "the Referral Program",
+            "href": "https://robertsspaceindustries.com/referral-program"
+          },
+          {
+            "text": " page. All recruitment titles except for \"bonus\" titles can still be earned. \"Bonus\" recruitment titles were earned by recruiting at least one person during a certain time frame.",
+            "href": null
+          }
+        ]
+      ]
+    },
+    {
+      "group": "guide",
+      "heading": "Guide titles",
+      "intro": [
+        [
+          {
+            "text": "Titles earned via acting as a guide in the Guide System. Only \"successful\" sessions count. To be successful, a session must be in-game, last over 30 minutes, and receive positive feedback from the guidee on the post-guiding survey. All guide titles except for the flames can still be earned.",
+            "href": null
+          }
+        ]
+      ]
+    },
+    {
+      "group": "minigame",
+      "heading": "Minigame titles",
+      "intro": [
+        [
+          {
+            "text": "Titles earned by playing minigames. Some of the minigames no longer work, so their titles can no longer be earned.",
+            "href": null
+          }
+        ]
+      ]
+    },
+    {
+      "group": "arena_commander",
+      "heading": "Arena Commander titles",
+      "intro": [
+        [
+          {
+            "text": "Titles earned by playing Arena Commander in online (multiplayer) mode. Offline mode does not grant any titles. Experimental mode title conditions and schedule is updated at ",
+            "href": null
+          },
+          {
+            "text": "https://robertsspaceindustries.com/comm-link/Comm-links/19735-Arena-Commander-Modes-Schedule",
+            "href": "https://robertsspaceindustries.com/comm-link/Comm-links/19735-Arena-Commander-Modes-Schedule"
+          },
+          {
+            "text": ".",
+            "href": null
+          }
+        ]
+      ]
+    },
+    {
+      "group": "persistent_universe",
+      "heading": "Persistent Universe Gameplay titles",
+      "intro": [
+        [
+          {
+            "text": "Titles earned by playing Star Citizen LIVE PU.",
+            "href": null
+          }
+        ]
+      ]
+    },
+    {
+      "group": "website_event",
+      "heading": "Website event titles",
+      "intro": [
+        [
+          {
+            "text": "Titles earned by interacting with certain events on the RSI website.",
+            "href": null
+          }
+        ]
+      ]
+    },
+    {
+      "group": "other",
+      "heading": "Other titles",
+      "intro": []
+    },
+    {
+      "group": "unique",
+      "heading": "Unique titles",
+      "intro": [
+        [
+          {
+            "text": "Titles unique to certain individuals.",
+            "href": null
+          }
+        ]
+      ]
+    },
+    {
+      "group": "official",
+      "heading": "Official titles",
+      "intro": []
+    }
+  ],
+  "titles": [
+    {
+      "slug": "backer-civilian",
+      "name": "Civilian",
+      "group": "backer",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "pledge_total",
+        "usd": 0
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": [
+        "Community Pledge"
+      ],
+      "sources": [],
+      "icon": {
+        "file": "Title_Civilian.png",
+        "url": "https://media.starcitizen.tools/a/aa/Title_Civilian.png",
+        "width": 1000,
+        "height": 993
+      }
+    },
+    {
+      "slug": "backer-scout",
+      "name": "Scout",
+      "group": "backer",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "pledge_total",
+        "usd": 30
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": [
+        "First Responder",
+        "Early Adopter",
+        "I Got Two of 'Em!",
+        "Quad Damage"
+      ],
+      "sources": [],
+      "icon": {
+        "file": "Title_Scout.png",
+        "url": "https://media.starcitizen.tools/c/ca/Title_Scout.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "backer-mercenary",
+      "name": "Mercenary",
+      "group": "backer",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "pledge_total",
+        "usd": 40
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": [
+        "Have Starship Will Travel"
+      ],
+      "sources": [],
+      "icon": {
+        "file": "Title_Mercenary.png",
+        "url": "https://media.starcitizen.tools/f/f4/Title_Mercenary.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "backer-bounty-hunter",
+      "name": "Bounty Hunter",
+      "group": "backer",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "pledge_total",
+        "usd": 60
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": [
+        "Make Mine a Double"
+      ],
+      "sources": [],
+      "icon": {
+        "file": "Title_Bountyhunter.png",
+        "url": "https://media.starcitizen.tools/8/86/Title_Bountyhunter.png",
+        "width": 900,
+        "height": 900
+      }
+    },
+    {
+      "slug": "backer-colonel",
+      "name": "Colonel",
+      "group": "backer",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "pledge_total",
+        "usd": 125
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": [
+        "Wingnut"
+      ],
+      "sources": [],
+      "icon": {
+        "file": "Title_Colonel.png",
+        "url": "https://media.starcitizen.tools/e/e6/Title_Colonel.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "backer-freelancer",
+      "name": "Freelancer",
+      "group": "backer",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "pledge_total",
+        "usd": 125
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": [
+        "Lancer"
+      ],
+      "sources": [],
+      "icon": {
+        "file": "Title_Freelancer.png",
+        "url": "https://media.starcitizen.tools/6/6d/Title_Freelancer.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "backer-rear-admiral",
+      "name": "Rear Admiral",
+      "group": "backer",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "pledge_total",
+        "usd": 250
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": [
+        "Come Fly With Me"
+      ],
+      "sources": [],
+      "icon": {
+        "file": "Title_Rearadmiral.png",
+        "url": "https://media.starcitizen.tools/d/dd/Title_Rearadmiral.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "backer-vice-admiral",
+      "name": "Vice Admiral",
+      "group": "backer",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "pledge_total",
+        "usd": 500
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": [
+        "The Man"
+      ],
+      "sources": [],
+      "icon": {
+        "file": "Title_Viceadmiral.png",
+        "url": "https://media.starcitizen.tools/d/d2/Title_Viceadmiral.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "backer-high-admiral",
+      "name": "High Admiral",
+      "group": "backer",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "pledge_total",
+        "usd": 1000
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": [
+        "The Stars my Destination",
+        "To the Stars!"
+      ],
+      "sources": [],
+      "icon": {
+        "file": "Title_Highadmiral.png",
+        "url": "https://media.starcitizen.tools/c/cc/Title_Highadmiral.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "backer-grand-admiral",
+      "name": "Grand Admiral",
+      "group": "backer",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "pledge_total",
+        "usd": 2500
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": [
+        "In the Distant Future..."
+      ],
+      "sources": [],
+      "icon": {
+        "file": "Title_Grandadmiral.png",
+        "url": "https://media.starcitizen.tools/5/5f/Title_Grandadmiral.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "backer-lt-commander",
+      "name": "Lt. Commander",
+      "group": "backer",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "pledge_total",
+        "usd": 5000
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": [
+        "Go Boldly"
+      ],
+      "sources": [],
+      "icon": {
+        "file": "Title_Ltcommander.png",
+        "url": "https://media.starcitizen.tools/d/de/Title_Ltcommander.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "backer-space-marshal",
+      "name": "Space Marshal",
+      "group": "backer",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "pledge_total",
+        "usd": 5000
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": [
+        "Go Boldly"
+      ],
+      "sources": [],
+      "icon": {
+        "file": "Title_Spacemarshal.png",
+        "url": "https://media.starcitizen.tools/9/9f/Title_Spacemarshal.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "backer-wing-commander",
+      "name": "Wing Commander",
+      "group": "backer",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "pledge_total",
+        "usd": 10000
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": [
+        "Give me the Galaxy"
+      ],
+      "sources": [],
+      "icon": {
+        "file": "Title_Commander.png",
+        "url": "https://media.starcitizen.tools/3/35/Title_Commander.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "backer-completionist",
+      "name": "Completionist",
+      "group": "backer",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "pledge_total",
+        "usd": 15000
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": [
+        "Completionist"
+      ],
+      "sources": [],
+      "icon": {
+        "file": "Title_Completionist.png",
+        "url": "https://media.starcitizen.tools/4/47/Title_Completionist.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "backer-praetorian",
+      "name": "Praetorian",
+      "group": "backer",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "pledge_total",
+        "usd": 15000
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": [],
+      "sources": [],
+      "icon": {
+        "file": "Title_Praetorian.png",
+        "url": "https://media.starcitizen.tools/5/5c/Title_Praetorian.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "backer-legatus",
+      "name": "Legatus",
+      "group": "backer",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "pledge_total",
+        "usd": 25000
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": [],
+      "sources": [],
+      "icon": {
+        "file": "Title_Legatus2.png",
+        "url": "https://media.starcitizen.tools/7/77/Title_Legatus2.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "recruitment-recruiter",
+      "name": "Recruiter",
+      "group": "recruitment",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "recruits",
+        "count": 1
+      },
+      "earned_by": null,
+      "reward": {
+        "name": "Badger and Badges",
+        "text": [
+          {
+            "text": "A series of UEE Squadron Badges for you and a K&W CF-227 Badger Repeater for your ship.",
+            "href": null
+          }
+        ]
+      },
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Recruiter.png",
+        "url": "https://media.starcitizen.tools/6/69/Title_Recruiter.png",
+        "width": 196,
+        "height": 191
+      }
+    },
+    {
+      "slug": "recruitment-private",
+      "name": "Private",
+      "group": "recruitment",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "recruits",
+        "count": 3
+      },
+      "earned_by": null,
+      "reward": {
+        "name": "Gimbals and Guns",
+        "text": [
+          {
+            "text": "Add fire power to your ship with two gimbal mounts and two K&W CF-117 Bulldog Repeaters.",
+            "href": null
+          }
+        ]
+      },
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Private.png",
+        "url": "https://media.starcitizen.tools/2/23/Title_Private.png",
+        "width": 196,
+        "height": 191
+      }
+    },
+    {
+      "slug": "recruitment-corporal",
+      "name": "Corporal",
+      "group": "recruitment",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "recruits",
+        "count": 5
+      },
+      "earned_by": null,
+      "reward": {
+        "name": "Surf and Turf",
+        "text": [
+          {
+            "text": "Upgrade your hangar with a Greycat buggy and a stylish tank filled with exotic fish.",
+            "href": null
+          }
+        ]
+      },
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Corporal.png",
+        "url": "https://media.starcitizen.tools/c/c3/Title_Corporal.png",
+        "width": 196,
+        "height": 191
+      }
+    },
+    {
+      "slug": "recruitment-sergeant",
+      "name": "Sergeant",
+      "group": "recruitment",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "recruits",
+        "count": 10
+      },
+      "earned_by": null,
+      "reward": {
+        "name": "Gladius and Gold",
+        "text": [
+          {
+            "text": "Land your new Aegis Gladius next to this set of gold ship models celebrating some of the 'verse's best: the Aurora, Constellation, Hornet, Avenger, & Freelancer.",
+            "href": null
+          }
+        ]
+      },
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Sergeant.png",
+        "url": "https://media.starcitizen.tools/1/15/Title_Sergeant.png",
+        "width": 196,
+        "height": 191
+      }
+    },
+    {
+      "slug": "recruitment-lieutenant",
+      "name": "Lieutenant",
+      "group": "recruitment",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "recruits",
+        "count": 25
+      },
+      "earned_by": null,
+      "reward": {
+        "name": "Arena Commander Racing Package",
+        "text": [
+          {
+            "text": "Feed your need for speed by permanently unlocking the 350R, M50, and Mustang Gamma in Crusader & Arena Commander. Also includes 15,000 UEC.",
+            "href": null
+          }
+        ]
+      },
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Lieutenant.png",
+        "url": "https://media.starcitizen.tools/b/bc/Title_Lieutenant.png",
+        "width": 196,
+        "height": 191
+      }
+    },
+    {
+      "slug": "recruitment-captain",
+      "name": "Captain",
+      "group": "recruitment",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "recruits",
+        "count": 42
+      },
+      "earned_by": null,
+      "reward": {
+        "name": "Arena Commander Combat Package",
+        "text": [
+          {
+            "text": "Find your favorite fighter with permanent access to the Cutlass Black, Hornet, Avenger, & Aurora LN in Crusader & Arena Commander. Also includes 30,000 UEC.",
+            "href": null
+          }
+        ]
+      },
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Captain.png",
+        "url": "https://media.starcitizen.tools/0/0a/Title_Captain.png",
+        "width": 196,
+        "height": 191
+      }
+    },
+    {
+      "slug": "recruitment-major",
+      "name": "Major",
+      "group": "recruitment",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "recruits",
+        "count": 75
+      },
+      "earned_by": null,
+      "reward": {
+        "name": "Speed Racer",
+        "text": [
+          {
+            "text": "Get your heart—and your ship—racing with the cutting edge power of the MISC Razor.",
+            "href": null
+          }
+        ]
+      },
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Major.png",
+        "url": "https://media.starcitizen.tools/b/bc/Title_Major.png",
+        "width": 197,
+        "height": 191
+      }
+    },
+    {
+      "slug": "recruitment-lt-colonel",
+      "name": "Lt. Colonel",
+      "group": "recruitment",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "recruits",
+        "count": 100
+      },
+      "earned_by": null,
+      "reward": {
+        "name": "Dog Fighter",
+        "text": [
+          {
+            "text": "Maneuver in and out of combat with the Vanduul armada's lightest fighter: the Blade.",
+            "href": null
+          }
+        ]
+      },
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Ltcolonel.png",
+        "url": "https://media.starcitizen.tools/f/f1/Title_Ltcolonel.png",
+        "width": 197,
+        "height": 191
+      }
+    },
+    {
+      "slug": "recruitment-colonel",
+      "name": "Colonel",
+      "group": "recruitment",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "recruits",
+        "count": 200
+      },
+      "earned_by": null,
+      "reward": {
+        "name": "Ready For Battle",
+        "text": [
+          {
+            "text": "Soar into battle with the ship reserved for the Vanduul elite: the Glaive. Warning: This ship is for experienced combat pilots.",
+            "href": null
+          }
+        ]
+      },
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Colonelreferral.png",
+        "url": "https://media.starcitizen.tools/7/7b/Title_Colonelreferral.png",
+        "width": 197,
+        "height": 191
+      }
+    },
+    {
+      "slug": "recruitment-brigadier-general",
+      "name": "Brigadier General",
+      "group": "recruitment",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "recruits",
+        "count": 500
+      },
+      "earned_by": null,
+      "reward": {
+        "name": "Anvil Ship Package",
+        "text": [
+          {
+            "text": "Pair the defensive strength of the Anvil Terrapin with the aggressive punch of the Hurricane in this two-ship reward.",
+            "href": null
+          }
+        ]
+      },
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Brigadiergeneral.png",
+        "url": "https://media.starcitizen.tools/3/36/Title_Brigadiergeneral.png",
+        "width": 197,
+        "height": 191
+      }
+    },
+    {
+      "slug": "recruitment-major-general",
+      "name": "Major General",
+      "group": "recruitment",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "recruits",
+        "count": 1042
+      },
+      "earned_by": null,
+      "reward": {
+        "name": "Million Mile High Club Access",
+        "text": [
+          {
+            "text": "Party at the trendiest club in the 'verse. The Million Mile High Club is an exclusive, in-game facility for the most dedicated Star Citizen fans.",
+            "href": null
+          }
+        ]
+      },
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Majorgeneral.png",
+        "url": "https://media.starcitizen.tools/a/a9/Title_Majorgeneral.png",
+        "width": 196,
+        "height": 191
+      }
+    },
+    {
+      "slug": "recruitment-lt-general",
+      "name": "Lt. General",
+      "group": "recruitment",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "recruits",
+        "count": 2017
+      },
+      "earned_by": null,
+      "reward": {
+        "name": "Star Crossing",
+        "text": [
+          {
+            "text": "Voyage across the 'verse in commanding fashion with the Aegis Javelin, one of the UEE Navy's premier warships.",
+            "href": null
+          }
+        ]
+      },
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Ltgeneral.png",
+        "url": "https://media.starcitizen.tools/1/1b/Title_Ltgeneral.png",
+        "width": 197,
+        "height": 191
+      }
+    },
+    {
+      "slug": "recruitment-3-9-bonus",
+      "name": "3.9 Bonus",
+      "group": "recruitment",
+      "earnable": "no",
+      "requirement": {
+        "kind": "recruitment_period",
+        "period": "April 29, 2020 – May 11, 2020"
+      },
+      "earned_by": null,
+      "reward": {
+        "name": null,
+        "text": [
+          {
+            "text": "PTV",
+            "href": null
+          }
+        ]
+      },
+      "packages": null,
+      "sources": [
+        {
+          "label": "Alpha 39 Referral Bonus Week",
+          "url": "https://robertsspaceindustries.com/comm-link/transmission/17563-Alpha-39-Referral-Bonus-Week"
+        }
+      ],
+      "icon": {
+        "file": "Title_3.9_Bonus.png",
+        "url": "https://media.starcitizen.tools/2/2b/Title_3.9_Bonus.png",
+        "width": 196,
+        "height": 191
+      }
+    },
+    {
+      "slug": "recruitment-bonus",
+      "name": "Bonus",
+      "group": "recruitment",
+      "earnable": "no",
+      "requirement": {
+        "kind": "recruitment_period",
+        "period": "Septemper 9, 2020 – September 24, 2020"
+      },
+      "earned_by": null,
+      "reward": {
+        "name": null,
+        "text": [
+          {
+            "text": "P-52 Merlin",
+            "href": null
+          }
+        ]
+      },
+      "packages": null,
+      "sources": [
+        {
+          "label": "Ship Showdown Referral Bonus",
+          "url": "https://robertsspaceindustries.com/comm-link/transmission/17770-Ship-Showdown-Referral-Bonus"
+        }
+      ],
+      "icon": {
+        "file": "Title_3.9_Bonus.png",
+        "url": "https://media.starcitizen.tools/2/2b/Title_3.9_Bonus.png",
+        "width": 196,
+        "height": 191
+      }
+    },
+    {
+      "slug": "recruitment-holiday-bonus",
+      "name": "Holiday Bonus",
+      "group": "recruitment",
+      "earnable": "no",
+      "requirement": {
+        "kind": "recruitment_period",
+        "period": "December 17, 2020 – January 11, 2021"
+      },
+      "earned_by": null,
+      "reward": {
+        "name": null,
+        "text": [
+          {
+            "text": "Dragonfly",
+            "href": null
+          }
+        ]
+      },
+      "packages": null,
+      "sources": [
+        {
+          "label": "Alpha 312 Referral Bonus",
+          "url": "https://robertsspaceindustries.com/comm-link/transmission/17926-Alpha-312-Referral-Bonus"
+        }
+      ],
+      "icon": {
+        "file": "Title_3.9_Bonus.png",
+        "url": "https://media.starcitizen.tools/2/2b/Title_3.9_Bonus.png",
+        "width": 196,
+        "height": 191
+      }
+    },
+    {
+      "slug": "recruitment-3-13-bonus",
+      "name": "3.13 Bonus",
+      "group": "recruitment",
+      "earnable": "no",
+      "requirement": {
+        "kind": "recruitment_period",
+        "period": "April 22, 2021 – May 17, 2021"
+      },
+      "earned_by": null,
+      "reward": {
+        "name": null,
+        "text": [
+          {
+            "text": "Aurora ES",
+            "href": null
+          }
+        ]
+      },
+      "packages": null,
+      "sources": [
+        {
+          "label": "Alpha 313 Referral Bonus",
+          "url": "https://robertsspaceindustries.com/comm-link/transmission/18039-Alpha-313-Referral-Bonus"
+        }
+      ],
+      "icon": {
+        "file": "Title_3.9_Bonus.png",
+        "url": "https://media.starcitizen.tools/2/2b/Title_3.9_Bonus.png",
+        "width": 196,
+        "height": 191
+      }
+    },
+    {
+      "slug": "recruitment-3-14-bonus",
+      "name": "3.14 Bonus",
+      "group": "recruitment",
+      "earnable": "no",
+      "requirement": {
+        "kind": "recruitment_period",
+        "period": "August 6, 2021 – August 31, 2021"
+      },
+      "earned_by": null,
+      "reward": {
+        "name": null,
+        "text": [
+          {
+            "text": "Dragonfly with Coalfire paint",
+            "href": null
+          }
+        ]
+      },
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_3.9_Bonus.png",
+        "url": "https://media.starcitizen.tools/2/2b/Title_3.9_Bonus.png",
+        "width": 196,
+        "height": 191
+      }
+    },
+    {
+      "slug": "recruitment-3-18-bonus",
+      "name": "3.18 Bonus",
+      "group": "recruitment",
+      "earnable": "no",
+      "requirement": {
+        "kind": "recruitment_period",
+        "period": "April 2023 – May 2, 2023"
+      },
+      "earned_by": null,
+      "reward": {
+        "name": null,
+        "text": [
+          {
+            "text": "P-52 Merlin",
+            "href": null
+          }
+        ]
+      },
+      "packages": null,
+      "sources": [
+        {
+          "label": "318 Free Fly Referral Bonus",
+          "url": "https://robertsspaceindustries.com/comm-link/transmission/19129-318-Free-Fly-Referral-Bonus"
+        }
+      ],
+      "icon": {
+        "file": "Title_3.9_Bonus.png",
+        "url": "https://media.starcitizen.tools/2/2b/Title_3.9_Bonus.png",
+        "width": 196,
+        "height": 191
+      }
+    },
+    {
+      "slug": "recruitment-referral-bonus",
+      "name": "Referral Bonus",
+      "group": "recruitment",
+      "earnable": "no",
+      "requirement": {
+        "kind": "recruitment_period",
+        "period": "November 1, 2021 – December 1, 2021"
+      },
+      "earned_by": null,
+      "reward": {
+        "name": null,
+        "text": [
+          {
+            "text": "MPUV-1C",
+            "href": null
+          }
+        ]
+      },
+      "packages": null,
+      "sources": [
+        {
+          "label": "Fall Referral Bonus",
+          "url": "https://robertsspaceindustries.com/comm-link/transmission/18367-Fall-Referral-Bonus"
+        }
+      ],
+      "icon": {
+        "file": "Title_3.9_Bonus.png",
+        "url": "https://media.starcitizen.tools/2/2b/Title_3.9_Bonus.png",
+        "width": 196,
+        "height": 191
+      }
+    },
+    {
+      "slug": "recruitment-showdown-2952",
+      "name": "Showdown 2952",
+      "group": "recruitment",
+      "earnable": "no",
+      "requirement": {
+        "kind": "recruitment_period",
+        "period": "September 8, 2022 – September 19, 2022"
+      },
+      "earned_by": null,
+      "reward": {
+        "name": null,
+        "text": [
+          {
+            "text": "HoverQuad",
+            "href": null
+          }
+        ]
+      },
+      "packages": null,
+      "sources": [
+        {
+          "label": "Ship Showdown Referral Bonus",
+          "url": "https://robertsspaceindustries.com/comm-link/transmission/18861-Ship-Showdown-Referral-Bonus"
+        }
+      ],
+      "icon": {
+        "file": "Title_Showdown_2952.png",
+        "url": "https://media.starcitizen.tools/2/24/Title_Showdown_2952.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "guide-beginner-basics-escort",
+      "name": "Escort",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Beginner Basics",
+        "rank": "Escort",
+        "sessions": 5
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Basics_Escort.png",
+        "url": "https://media.starcitizen.tools/6/6a/Title_Basics_Escort.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-beginner-basics-instructor",
+      "name": "Instructor",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Beginner Basics",
+        "rank": "Instructor",
+        "sessions": 10
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Basics_Instructor.png",
+        "url": "https://media.starcitizen.tools/8/88/Title_Basics_Instructor.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-beginner-basics-counselor",
+      "name": "Counselor",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Beginner Basics",
+        "rank": "Counselor",
+        "sessions": 25
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Basics_Counselor.png",
+        "url": "https://media.starcitizen.tools/6/64/Title_Basics_Counselor.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-beginner-basics-mentor",
+      "name": "Mentor",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Beginner Basics",
+        "rank": "Mentor",
+        "sessions": 50
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Basics_Mentor.png",
+        "url": "https://media.starcitizen.tools/2/2b/Title_Basics_Mentor.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-beginner-basics-guru",
+      "name": "Guru",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Beginner Basics",
+        "rank": "Guru",
+        "sessions": 100
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Basics_Guru.png",
+        "url": "https://media.starcitizen.tools/c/cb/Title_Basics_Guru.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-beginner-basics-master",
+      "name": "Master",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Beginner Basics",
+        "rank": "Master",
+        "sessions": 150
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Basics_Master.png",
+        "url": "https://media.starcitizen.tools/d/d4/Title_Basics_Master.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-fps-combat-escort",
+      "name": "Escort",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "FPS Combat",
+        "rank": "Escort",
+        "sessions": 5
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_FPS_Combat_Escort.png",
+        "url": "https://media.starcitizen.tools/b/be/Title_FPS_Combat_Escort.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-fps-combat-instructor",
+      "name": "Instructor",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "FPS Combat",
+        "rank": "Instructor",
+        "sessions": 10
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_FPS_Combat_Instructor.png",
+        "url": "https://media.starcitizen.tools/a/a6/Title_FPS_Combat_Instructor.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-fps-combat-counselor",
+      "name": "Counselor",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "FPS Combat",
+        "rank": "Counselor",
+        "sessions": 25
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_FPS_Combat_Counselor.png",
+        "url": "https://media.starcitizen.tools/9/9a/Title_FPS_Combat_Counselor.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-fps-combat-mentor",
+      "name": "Mentor",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "FPS Combat",
+        "rank": "Mentor",
+        "sessions": 50
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_FPS_Combat_Mentor.png",
+        "url": "https://media.starcitizen.tools/d/d7/Title_FPS_Combat_Mentor.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-fps-combat-guru",
+      "name": "Guru",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "FPS Combat",
+        "rank": "Guru",
+        "sessions": 100
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_FPS_Combat_Guru.png",
+        "url": "https://media.starcitizen.tools/0/0c/Title_FPS_Combat_Guru.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-fps-combat-master",
+      "name": "Master",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "FPS Combat",
+        "rank": "Master",
+        "sessions": 150
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_FPS_Combat_Master.png",
+        "url": "https://media.starcitizen.tools/1/18/Title_FPS_Combat_Master.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-medical-escort",
+      "name": "Escort",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Medical",
+        "rank": "Escort",
+        "sessions": 5
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Medical_Escort.png",
+        "url": "https://media.starcitizen.tools/b/b5/Title_Medical_Escort.png",
+        "width": 64,
+        "height": 64
+      }
+    },
+    {
+      "slug": "guide-medical-instructor",
+      "name": "Instructor",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Medical",
+        "rank": "Instructor",
+        "sessions": 10
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Medical_Instructor.png",
+        "url": "https://media.starcitizen.tools/3/30/Title_Medical_Instructor.png",
+        "width": 64,
+        "height": 64
+      }
+    },
+    {
+      "slug": "guide-mining-escort",
+      "name": "Escort",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Mining",
+        "rank": "Escort",
+        "sessions": 5
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Mining_Escort.png",
+        "url": "https://media.starcitizen.tools/2/2e/Title_Mining_Escort.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-mining-instructor",
+      "name": "Instructor",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Mining",
+        "rank": "Instructor",
+        "sessions": 10
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Mining_Instructor.png",
+        "url": "https://media.starcitizen.tools/9/93/Title_Mining_Instructor.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-mining-counselor",
+      "name": "Counselor",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Mining",
+        "rank": "Counselor",
+        "sessions": 25
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Mining_Counselor.png",
+        "url": "https://media.starcitizen.tools/e/e1/Title_Mining_Counselor.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-mining-mentor",
+      "name": "Mentor",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Mining",
+        "rank": "Mentor",
+        "sessions": 50
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Mining_Mentor.png",
+        "url": "https://media.starcitizen.tools/6/61/Title_Mining_Mentor.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-mining-guru",
+      "name": "Guru",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Mining",
+        "rank": "Guru",
+        "sessions": 100
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Mining_Guru.png",
+        "url": "https://media.starcitizen.tools/1/1e/Title_Mining_Guru.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-mining-master",
+      "name": "Master",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Mining",
+        "rank": "Master",
+        "sessions": 150
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Mining_Master.png",
+        "url": "https://media.starcitizen.tools/a/ad/Title_Mining_Master.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-missions-and-reputation-escort",
+      "name": "Escort",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Missions & Reputation",
+        "rank": "Escort",
+        "sessions": 5
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Mission_Escort.png",
+        "url": "https://media.starcitizen.tools/8/85/Title_Mission_Escort.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-missions-and-reputation-instructor",
+      "name": "Instructor",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Missions & Reputation",
+        "rank": "Instructor",
+        "sessions": 10
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Missions_Instructor.png",
+        "url": "https://media.starcitizen.tools/c/c9/Title_Missions_Instructor.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-missions-and-reputation-counselor",
+      "name": "Counselor",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Missions & Reputation",
+        "rank": "Counselor",
+        "sessions": 25
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Mission_Counselor.png",
+        "url": "https://media.starcitizen.tools/9/99/Title_Mission_Counselor.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-missions-and-reputation-mentor",
+      "name": "Mentor",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Missions & Reputation",
+        "rank": "Mentor",
+        "sessions": 50
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Missions_Mentor.png",
+        "url": "https://media.starcitizen.tools/2/20/Title_Missions_Mentor.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-missions-and-reputation-guru",
+      "name": "Guru",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Missions & Reputation",
+        "rank": "Guru",
+        "sessions": 100
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Missions_Guru.png",
+        "url": "https://media.starcitizen.tools/f/f1/Title_Missions_Guru.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-missions-and-reputation-master",
+      "name": "Master",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Missions & Reputation",
+        "rank": "Master",
+        "sessions": 150
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Missions_Master.png",
+        "url": "https://media.starcitizen.tools/4/45/Title_Missions_Master.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-racing-instructor",
+      "name": "Instructor",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Racing",
+        "rank": "Instructor",
+        "sessions": 10
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Racing_Instructor.png",
+        "url": "https://media.starcitizen.tools/d/dc/Title_Racing_Instructor.png",
+        "width": 64,
+        "height": 64
+      }
+    },
+    {
+      "slug": "guide-refresher-basics-escort",
+      "name": "Escort",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Refresher Basics",
+        "rank": "Escort",
+        "sessions": 5
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Refresher_Escort.png",
+        "url": "https://media.starcitizen.tools/4/42/Title_Refresher_Escort.png",
+        "width": 64,
+        "height": 64
+      }
+    },
+    {
+      "slug": "guide-refueling-escort",
+      "name": "Escort",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Refueling",
+        "rank": "Escort",
+        "sessions": 5
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Refueling_Escort.png",
+        "url": "https://media.starcitizen.tools/c/c4/Title_Refueling_Escort.png",
+        "width": 64,
+        "height": 64
+      }
+    },
+    {
+      "slug": "guide-refueling-instructor",
+      "name": "Instructor",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Refueling",
+        "rank": "Instructor",
+        "sessions": 10
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Refueling_Instructor.png",
+        "url": "https://media.starcitizen.tools/c/c4/Title_Refueling_Instructor.png",
+        "width": 64,
+        "height": 64
+      }
+    },
+    {
+      "slug": "guide-salvaging-escort",
+      "name": "Escort",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Salvaging",
+        "rank": "Escort",
+        "sessions": 5
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Salvaging_Escort.png",
+        "url": "https://media.starcitizen.tools/1/15/Title_Salvaging_Escort.png",
+        "width": 64,
+        "height": 64
+      }
+    },
+    {
+      "slug": "guide-salvaging-instructor",
+      "name": "Instructor",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Salvaging",
+        "rank": "Instructor",
+        "sessions": 10
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Salvaging_Instructor.png",
+        "url": "https://media.starcitizen.tools/a/aa/Title_Salvaging_Instructor.png",
+        "width": 64,
+        "height": 64
+      }
+    },
+    {
+      "slug": "guide-touring-escort",
+      "name": "Escort",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Touring",
+        "rank": "Escort",
+        "sessions": 5
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Touring_Escort.png",
+        "url": "https://media.starcitizen.tools/3/30/Title_Touring_Escort.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-touring-instructor",
+      "name": "Instructor",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Touring",
+        "rank": "Instructor",
+        "sessions": 10
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Touring_Instructor.png",
+        "url": "https://media.starcitizen.tools/3/3c/Title_Touring_Instructor.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-touring-counselor",
+      "name": "Counselor",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Touring",
+        "rank": "Counselor",
+        "sessions": 25
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Touring_Counselor.png",
+        "url": "https://media.starcitizen.tools/d/d4/Title_Touring_Counselor.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-touring-mentor",
+      "name": "Mentor",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Touring",
+        "rank": "Mentor",
+        "sessions": 50
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Touring_Mentor.png",
+        "url": "https://media.starcitizen.tools/6/64/Title_Touring_Mentor.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-touring-guru",
+      "name": "Guru",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Touring",
+        "rank": "Guru",
+        "sessions": 100
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Touring_Guru.png",
+        "url": "https://media.starcitizen.tools/9/93/Title_Touring_Guru.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-touring-master",
+      "name": "Master",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Touring",
+        "rank": "Master",
+        "sessions": 150
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Touring_Master.png",
+        "url": "https://media.starcitizen.tools/d/d9/Title_Touring_Master.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-trading-escort",
+      "name": "Escort",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Trading",
+        "rank": "Escort",
+        "sessions": 5
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Trading_Escort.png",
+        "url": "https://media.starcitizen.tools/0/07/Title_Trading_Escort.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-trading-instructor",
+      "name": "Instructor",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Trading",
+        "rank": "Instructor",
+        "sessions": 10
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Trading_Instructor.png",
+        "url": "https://media.starcitizen.tools/1/1d/Title_Trading_Instructor.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-trading-counselor",
+      "name": "Counselor",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Trading",
+        "rank": "Counselor",
+        "sessions": 25
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Trading_Counselor.png",
+        "url": "https://media.starcitizen.tools/2/2f/Title_Trading_Counselor.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-trading-mentor",
+      "name": "Mentor",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Trading",
+        "rank": "Mentor",
+        "sessions": 50
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Trading_Mentor.png",
+        "url": "https://media.starcitizen.tools/d/da/Title_Trading_Mentor.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-trading-guru",
+      "name": "Guru",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Trading",
+        "rank": "Guru",
+        "sessions": 100
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Trading_Guru.png",
+        "url": "https://media.starcitizen.tools/c/cc/Title_Trading_Guru.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-trading-master",
+      "name": "Master",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Trading",
+        "rank": "Master",
+        "sessions": 150
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Trading_Master.png",
+        "url": "https://media.starcitizen.tools/a/a4/Title_Trading_Master.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-vehicle-combat-escort",
+      "name": "Escort",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Vehicle Combat",
+        "rank": "Escort",
+        "sessions": 5
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Vehicle_Combat_Escort.png",
+        "url": "https://media.starcitizen.tools/7/79/Title_Vehicle_Combat_Escort.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-vehicle-combat-instructor",
+      "name": "Instructor",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Vehicle Combat",
+        "rank": "Instructor",
+        "sessions": 10
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Vehicle_Combat_Instructor.png",
+        "url": "https://media.starcitizen.tools/d/d4/Title_Vehicle_Combat_Instructor.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-vehicle-combat-counselor",
+      "name": "Counselor",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Vehicle Combat",
+        "rank": "Counselor",
+        "sessions": 25
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Vehicle_Combat_Counselor.png",
+        "url": "https://media.starcitizen.tools/2/21/Title_Vehicle_Combat_Counselor.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-vehicle-combat-mentor",
+      "name": "Mentor",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Vehicle Combat",
+        "rank": "Mentor",
+        "sessions": 50
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Vehicle_Combat_Mentor.png",
+        "url": "https://media.starcitizen.tools/7/70/Title_Vehicle_Combat_Mentor.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-vehicle-combat-guru",
+      "name": "Guru",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Vehicle Combat",
+        "rank": "Guru",
+        "sessions": 100
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Vehicle_Combat_Guru.png",
+        "url": "https://media.starcitizen.tools/2/2c/Title_Vehicle_Combat_Guru.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-vehicle-combat-master",
+      "name": "Master",
+      "group": "guide",
+      "earnable": "yes",
+      "requirement": {
+        "kind": "guide_sessions",
+        "track": "Vehicle Combat",
+        "rank": "Master",
+        "sessions": 150
+      },
+      "earned_by": null,
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Vehicle_Combat_Master.png",
+        "url": "https://media.starcitizen.tools/e/e1/Title_Vehicle_Combat_Master.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "guide-2950-yellow-flame",
+      "name": "2950 - Yellow Flame",
+      "group": "guide",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Completing 1 session during the ",
+          "href": null
+        },
+        {
+          "text": "2020 Foundation Festival",
+          "href": "https://robertsspaceindustries.com/comm-link/transmission/17662-Foundation-Festival-2950"
+        },
+        {
+          "text": ".",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_2950_Yellow_Flame.png",
+        "url": "https://media.starcitizen.tools/a/a8/Title_2950_Yellow_Flame.png",
+        "width": 20,
+        "height": 20
+      }
+    },
+    {
+      "slug": "guide-2950-orange-flame",
+      "name": "2950 - Orange Flame",
+      "group": "guide",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Completing 3 sessions during the 2020 Foundation Festival.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_2950_Orange_Flame.png",
+        "url": "https://media.starcitizen.tools/5/55/Title_2950_Orange_Flame.png",
+        "width": 20,
+        "height": 20
+      }
+    },
+    {
+      "slug": "guide-2950-red-flame",
+      "name": "2950 - Red Flame",
+      "group": "guide",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Completing 6 sessions during the 2020 Foundation Festival.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_2950_Red_Flame.png",
+        "url": "https://media.starcitizen.tools/8/8c/Title_2950_Red_Flame.png",
+        "width": 20,
+        "height": 20
+      }
+    },
+    {
+      "slug": "minigame-cartographer",
+      "name": "Cartographer",
+      "group": "minigame",
+      "earnable": "yes",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Completing the ",
+          "href": null
+        },
+        {
+          "text": "Exploration Adventure",
+          "href": "https://robertsspaceindustries.com/comm-link/transmission/14323-Into-The-Unknown-A-Carrack-Her-Crew"
+        },
+        {
+          "text": " minigame included in the Carrack concept sale.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Cartographer.png",
+        "url": "https://media.starcitizen.tools/d/df/Title_Cartographer.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "minigame-predator",
+      "name": "Predator",
+      "group": "minigame",
+      "earnable": "yes",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Completing the Normal difficulty of the ",
+          "href": null
+        },
+        {
+          "text": "Hyper Vanguard Force",
+          "href": "https://robertsspaceindustries.com/comm-link/transmission/14704-Hyper-Vanguard-Force"
+        },
+        {
+          "text": " minigame.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Predator.png",
+        "url": "https://media.starcitizen.tools/d/d5/Title_Predator.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "minigame-apex-predator",
+      "name": "Apex Predator",
+      "group": "minigame",
+      "earnable": "yes",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Completing the HyperPink difficulty of the Hyper Vanguard Force minigame.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Apexpredator.png",
+        "url": "https://media.starcitizen.tools/b/be/Title_Apexpredator.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "minigame-prospector",
+      "name": "Prospector",
+      "group": "minigame",
+      "earnable": "yes",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Reaching 0 UEC debt in the ",
+          "href": null
+        },
+        {
+          "text": "A Loan in the 'Verse",
+          "href": "https://robertsspaceindustries.com/comm-link/engineering/14535-Orion-Vault-A-Loan-In-The-Verse"
+        },
+        {
+          "text": " minigame released with the Orion concept sale.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Prospector.png",
+        "url": "https://media.starcitizen.tools/c/c3/Title_Prospector.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "minigame-class-g-license",
+      "name": "Class G License",
+      "group": "minigame",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Passing the DTN Class-G small land vehicle ",
+          "href": null
+        },
+        {
+          "text": "Commercial Operator's License test",
+          "href": "https://robertsspaceindustries.com/dtn"
+        },
+        {
+          "text": " released with the Cyclone concept sale.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Class_G_License.png",
+        "url": "https://media.starcitizen.tools/9/99/Title_Class_G_License.png",
+        "width": 375,
+        "height": 375
+      }
+    },
+    {
+      "slug": "minigame-guardian-angel",
+      "name": "Guardian Angel",
+      "group": "minigame",
+      "earnable": "yes",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Scoring at least 100,000 points in the ",
+          "href": null
+        },
+        {
+          "text": "Astromedics Back From the Brink",
+          "href": "https://robertsspaceindustries.com/comm-link/transmission/16672-Apollo-To-The-Rescue"
+        },
+        {
+          "text": " minigame included in the Apollo concept sale.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Guardian_Angel.png",
+        "url": "https://media.starcitizen.tools/4/48/Title_Guardian_Angel.png",
+        "width": 80,
+        "height": 90
+      }
+    },
+    {
+      "slug": "minigame-bronze-observer",
+      "name": "Bronze Observer",
+      "group": "minigame",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Scoring 5-7 out of 10 on the ",
+          "href": null
+        },
+        {
+          "text": "Observer Test",
+          "href": "https://robertsspaceindustries.com/comm-link/transmission/16269-Anniversary-Special-Week-2017"
+        },
+        {
+          "text": ". Mutually exclusive with other Observer titles.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Bronze_Observer.png",
+        "url": "https://media.starcitizen.tools/7/7a/Title_Bronze_Observer.png",
+        "width": 500,
+        "height": 500
+      }
+    },
+    {
+      "slug": "minigame-silver-observer",
+      "name": "Silver Observer",
+      "group": "minigame",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Scoring 8-9 out of 10 on the Observer Test. Mutually exclusive with other Observer titles.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Silver_Observer.png",
+        "url": "https://media.starcitizen.tools/b/b0/Title_Silver_Observer.png",
+        "width": 500,
+        "height": 500
+      }
+    },
+    {
+      "slug": "minigame-gold-observer",
+      "name": "Gold Observer",
+      "group": "minigame",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Scoring 10 out of 10 on the Observer Test. Mutually exclusive with other Observer titles.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Gold_Observer.png",
+        "url": "https://media.starcitizen.tools/2/20/Title_Gold_Observer.png",
+        "width": 500,
+        "height": 500
+      }
+    },
+    {
+      "slug": "minigame-bug-skipper",
+      "name": "Bug Skipper",
+      "group": "minigame",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Warning the crew of the Belligerent Duck during the ",
+          "href": null
+        },
+        {
+          "text": "manhunt",
+          "href": "https://robertsspaceindustries.com/comm-link/transmission/16725-Crusader-Mercury-Join-The-Manhunt"
+        },
+        {
+          "text": ".",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Bug_Skipper.png",
+        "url": "https://media.starcitizen.tools/6/63/Title_Bug_Skipper.png",
+        "width": 180,
+        "height": 180
+      }
+    },
+    {
+      "slug": "minigame-high-jacket",
+      "name": "High Jacket",
+      "group": "minigame",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Alerting the Advocacy to the position of the Belligerent Duck during the manhunt.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_High_Jacket.png",
+        "url": "https://media.starcitizen.tools/1/13/Title_High_Jacket.png",
+        "width": 180,
+        "height": 180
+      }
+    },
+    {
+      "slug": "minigame-maximum-throttle-ship-master",
+      "name": "Maximum Throttle Ship Master",
+      "group": "minigame",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Scoring 70% or higher on the ",
+          "href": null
+        },
+        {
+          "text": "2018 Anniversary Sale Ship Masters",
+          "href": "https://robertsspaceindustries.com/comm-link/transmission/16867-The-2948-Anniversary-Special"
+        },
+        {
+          "text": " test. ",
+          "href": null
+        },
+        {
+          "text": "Answer key",
+          "href": "https://robertsspaceindustries.com/spectrum/community/SC/forum/3/thread/2948-anniversary-quiz-answers-anvil-day"
+        },
+        {
+          "text": ".",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Maximum_Throttle_Ship_Master.png",
+        "url": "https://media.starcitizen.tools/b/bf/Title_Maximum_Throttle_Ship_Master.png",
+        "width": 500,
+        "height": 500
+      }
+    },
+    {
+      "slug": "minigame-sapper-badge",
+      "name": "Sapper Badge",
+      "group": "minigame",
+      "earnable": "yes",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Winning three times in the ",
+          "href": null
+        },
+        {
+          "text": "Mission to Hadrian",
+          "href": "https://robertsspaceindustries.com/comm-link/transmission/17203-Aegis-Nautilus"
+        },
+        {
+          "text": " minigame included with the Nautilus concept sale.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_SapperBadge.png",
+        "url": "https://media.starcitizen.tools/b/be/Title_SapperBadge.png",
+        "width": 200,
+        "height": 200
+      }
+    },
+    {
+      "slug": "minigame-spoils-of-war-badge",
+      "name": "Spoils of War Badge",
+      "group": "minigame",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Allying with the Wild Sevens, the winning faction of the Mission to Hadrian minigame included with the Nautilus concept sale.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_SpoilsOfWarBadge.png",
+        "url": "https://media.starcitizen.tools/7/77/Title_SpoilsOfWarBadge.png",
+        "width": 200,
+        "height": 200
+      }
+    },
+    {
+      "slug": "arena-commander-aggressor",
+      "name": "Aggressor",
+      "group": "arena_commander",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Completing Vanduul Swarm in online play after GamesCom 2015.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Aggressor.png",
+        "url": "https://media.starcitizen.tools/c/ca/Title_Aggressor.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "arena-commander-2946-aggressor",
+      "name": "2946 Aggressor",
+      "group": "arena_commander",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Completing Vanduul Swarm in online play after GamesCom 2016.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_2946_Aggressor.png",
+        "url": "https://media.starcitizen.tools/d/d5/Title_2946_Aggressor.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "arena-commander-2946-pirate-aggressor",
+      "name": "2946 Pirate Aggressor",
+      "group": "arena_commander",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Completing Pirate Swarm in online play after GamesCom 2016.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_2946_Pirate_Aggressor.png",
+        "url": "https://media.starcitizen.tools/1/19/Title_2946_Pirate_Aggressor.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "arena-commander-2949-pirate-aggressor",
+      "name": "2949 Pirate Aggressor",
+      "group": "arena_commander",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Completing Pirate Swarm in online play after Alpha 3.7.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_2949_Pirate_Aggressor.png",
+        "url": "https://media.starcitizen.tools/8/84/Title_2949_Pirate_Aggressor.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "arena-commander-2953-pirate-aggressor",
+      "name": "2953 Pirate Aggressor",
+      "group": "arena_commander",
+      "earnable": "yes",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Completing Pirate Swarm in online play after Alpha 3.20. Unlocks the Pirate Gladius and Pirate Caterpillar Pledges.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [
+        {
+          "label": "Arena Commander 3.20 Patch Notes",
+          "url": "https://robertsspaceindustries.com/comm-link//19456-Star-Citizen-Alpha-3200#ArenaCommander"
+        }
+      ],
+      "icon": {
+        "file": "Title_2953_Pirate_Aggressor.png",
+        "url": "https://media.starcitizen.tools/7/77/Title_2953_Pirate_Aggressor.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "arena-commander-2953-vanduul-aggressor",
+      "name": "2953 Vanduul Aggressor",
+      "group": "arena_commander",
+      "earnable": "yes",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Reach Wave 25 of Endless Vanduul Swarm in online play. Unlocks the Esperia Glaive pledge.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_2953_Vanduul_Aggressor.png",
+        "url": "https://media.starcitizen.tools/0/08/Title_2953_Vanduul_Aggressor.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "arena-commander-2953-master-at-arms",
+      "name": "2953 Master-At-Arms",
+      "group": "arena_commander",
+      "earnable": "yes",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Win a match of Gun Rush in online play.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_2953_Master_of_Arms.png",
+        "url": "https://media.starcitizen.tools/f/fc/Title_2953_Master_of_Arms.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "arena-commander-2953-tonk-commander",
+      "name": "2953 Tonk Commander",
+      "group": "arena_commander",
+      "earnable": "yes",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Finish 1st place in either Tank Royale or Team Tank Battle in online play.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_2953_Tonk_Commander.jpg",
+        "url": "https://media.starcitizen.tools/0/00/Title_2953_Tonk_Commander.jpg",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "arena-commander-999th-test-squadron",
+      "name": "999th Test Squadron",
+      "group": "arena_commander",
+      "earnable": "yes",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Participate until the match ends in every experimental mode in the patch cycle in online play.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_AC_-_Experimental_Tester.jpg",
+        "url": "https://media.starcitizen.tools/a/a7/Title_AC_-_Experimental_Tester.jpg",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "arena-commander-chief-prosperitor",
+      "name": "Chief Prosperitor",
+      "group": "arena_commander",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Win a match of Kill Collector mode (FPS or Vehicle) between January 28 - February 11, 2025.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [
+        {
+          "label": "Lunar New Year - Red Festival 2025",
+          "url": "https://robertsspaceindustries.com/spectrum/community/SC/forum/1/thread/lunar-new-year-red-festival-2025"
+        }
+      ],
+      "icon": {
+        "file": "Title_Chief_Prosperitor.png",
+        "url": "https://media.starcitizen.tools/7/7d/Title_Chief_Prosperitor.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "arena-commander-coramor-2025-reward",
+      "name": "Coramor 2025 Reward",
+      "group": "arena_commander",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Win a match of Duo Showdown between February 11 - March 3, 2025.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [
+        {
+          "label": "Coramor 2955 - Valentine's Day 2025",
+          "url": "https://robertsspaceindustries.com/spectrum/community/SC/forum/1/thread/coramor-2955"
+        }
+      ],
+      "icon": {
+        "file": "Title_Coramor_2025_Reward.png",
+        "url": "https://media.starcitizen.tools/2/2b/Title_Coramor_2025_Reward.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "arena-commander-downsized",
+      "name": "Downsized",
+      "group": "arena_commander",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Play on the EZ Hab map between April 1 - April 7, 2025.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [
+        {
+          "label": "HONEY, I SHRUNK THE SHIPS!",
+          "url": "https://robertsspaceindustries.com/en/comm-link/transmission/20508-Honey-I-Shrunk-The-Ships"
+        }
+      ],
+      "icon": {
+        "file": "Title_Downsized.png",
+        "url": "https://media.starcitizen.tools/a/a8/Title_Downsized.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "persistent-universe-civilian-defense-force",
+      "name": "Civilian Defense Force",
+      "group": "persistent_universe",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Participating in the ",
+          "href": null
+        },
+        {
+          "text": "Assault On Stanton",
+          "href": "https://robertsspaceindustries.com/comm-link/transmission/17925-Assault-On-Stanton"
+        },
+        {
+          "text": " event which ran during the first week of Alpha patch 3.12.1.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_CDF.png",
+        "url": "https://media.starcitizen.tools/f/f7/Title_CDF.png",
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "slug": "persistent-universe-civilian-defense-force-round-2",
+      "name": "Civilian Defense Force Round 2",
+      "group": "persistent_universe",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Participating in the ",
+          "href": null
+        },
+        {
+          "text": "Xenothreat Returns",
+          "href": "https://robertsspaceindustries.com/comm-link/transmission/18255-XenoThreat-Returns"
+        },
+        {
+          "text": " event which ran during the first week of Alpha patch 3.14.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "CDF_Round_2_Title.png",
+        "url": "https://media.starcitizen.tools/a/a1/CDF_Round_2_Title.png",
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "slug": "persistent-universe-iae-2951",
+      "name": "IAE 2951",
+      "group": "persistent_universe",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Logging in any time during Intergalactic Aerospace Expo 2951.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [
+        {
+          "label": "Aerospace Expo 2951 Faq Visit Us on",
+          "url": "https://robertsspaceindustries.com/spectrum/community/SC/forum/3/thread/intergalactic-aerospace-expo-2951-faq-visit-us-on-"
+        }
+      ],
+      "icon": {
+        "file": "Iae-title-badge-iae.png",
+        "url": "https://media.starcitizen.tools/d/da/Iae-title-badge-iae.png",
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "slug": "persistent-universe-iae-2951-aegis",
+      "name": "IAE 2951 - AEGIS",
+      "group": "persistent_universe",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Logging in while the Aegis event hall was open during Intergalactic Aerospace Expo 2951 .",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Iae-title-badge-aegis.png",
+        "url": "https://media.starcitizen.tools/0/09/Iae-title-badge-aegis.png",
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "slug": "persistent-universe-iae-2951-anvil",
+      "name": "IAE 2951 - ANVIL",
+      "group": "persistent_universe",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Logging in while the Anvil event hall was open during Intergalactic Aerospace Expo 2951.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Iae-title-badge-anvil.png",
+        "url": "https://media.starcitizen.tools/a/a1/Iae-title-badge-anvil.png",
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "slug": "persistent-universe-iae-2951-argo",
+      "name": "IAE 2951 - ARGO",
+      "group": "persistent_universe",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Logging in while the Argo event hall was open during Intergalactic Aerospace Expo 2951.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Iae-title-badge-argo.png",
+        "url": "https://media.starcitizen.tools/b/bb/Iae-title-badge-argo.png",
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "slug": "persistent-universe-iae-2951-crusader",
+      "name": "IAE 2951 - CRUSADER",
+      "group": "persistent_universe",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Logging in while the Crusader event hall was open during Intergalactic Aerospace Expo 2951.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Iae-title-badge-crus.png",
+        "url": "https://media.starcitizen.tools/6/66/Iae-title-badge-crus.png",
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "slug": "persistent-universe-iae-2951-drake",
+      "name": "IAE 2951 - DRAKE",
+      "group": "persistent_universe",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Logging in while the Drake event hall was open during Intergalactic Aerospace Expo 2951.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Iae-title-badge-drak.png",
+        "url": "https://media.starcitizen.tools/2/29/Iae-title-badge-drak.png",
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "slug": "persistent-universe-iae-2951-esperia",
+      "name": "IAE 2951 - ESPERIA",
+      "group": "persistent_universe",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Logging in while the Esperia event hall was open during Intergalactic Aerospace Expo 2951.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Iae-title-badge-esperia.png",
+        "url": "https://media.starcitizen.tools/8/8d/Iae-title-badge-esperia.png",
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "slug": "persistent-universe-iae-2951-misc",
+      "name": "IAE 2951 - MISC",
+      "group": "persistent_universe",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Logging in while the MISC event hall was open during Intergalactic Aerospace Expo 2951.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Iae-title-badge-misc.png",
+        "url": "https://media.starcitizen.tools/7/74/Iae-title-badge-misc.png",
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "slug": "persistent-universe-iae-2951-origin",
+      "name": "IAE 2951 - ORIGIN",
+      "group": "persistent_universe",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Logging in while the Origin event hall was open during Intergalactic Aerospace Expo 2951.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Iae-title-badge-orig.png",
+        "url": "https://media.starcitizen.tools/9/91/Iae-title-badge-orig.png",
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "slug": "persistent-universe-iae-2951-rsi",
+      "name": "IAE 2951 - RSI",
+      "group": "persistent_universe",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Logging in while the RSI event hall was open during Intergalactic Aerospace Expo 2951.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Iae-title-badge-rsi.png",
+        "url": "https://media.starcitizen.tools/d/de/Iae-title-badge-rsi.png",
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "slug": "persistent-universe-invictus-launch-week-2952-attendee",
+      "name": "Invictus Launch Week 2952 Attendee",
+      "group": "persistent_universe",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Logging into the Stanton system at least 5 days during Invictus 2952.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [
+        {
+          "label": "Launch Week 2952 Faq",
+          "url": "https://robertsspaceindustries.com/spectrum/community/SC/forum/3/thread/invictus-launch-week-2952-faq"
+        }
+      ],
+      "icon": {
+        "file": "Title_Invictus_Launch_Week_2952_Attendee.png",
+        "url": "https://media.starcitizen.tools/c/cf/Title_Invictus_Launch_Week_2952_Attendee.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "persistent-universe-iae-2952",
+      "name": "IAE 2952",
+      "group": "persistent_universe",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Visiting a majority of the expo halls during Intergalactic Aerospace Expo 2952.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "IAE2952-spectrum-badge-bis.png",
+        "url": "https://media.starcitizen.tools/6/63/IAE2952-spectrum-badge-bis.png",
+        "width": 224,
+        "height": 224
+      }
+    },
+    {
+      "slug": "persistent-universe-iae-2952-drake",
+      "name": "IAE 2952 - DRAKE",
+      "group": "persistent_universe",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Visiting the Drake expo hall during Intergalactic Aerospace Expo 2952.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "IAE2952-spectrum-badge-drake.png",
+        "url": "https://media.starcitizen.tools/9/98/IAE2952-spectrum-badge-drake.png",
+        "width": 224,
+        "height": 224
+      }
+    },
+    {
+      "slug": "persistent-universe-iae-2952-origin",
+      "name": "IAE 2952 - ORIGIN",
+      "group": "persistent_universe",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Visiting the Origin expo hall during Intergalactic Aerospace Expo 2952.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "IAE2952-spectrum-badge-origin.png",
+        "url": "https://media.starcitizen.tools/f/fa/IAE2952-spectrum-badge-origin.png",
+        "width": 224,
+        "height": 224
+      }
+    },
+    {
+      "slug": "persistent-universe-iae-2952-aegis",
+      "name": "IAE 2952 - AEGIS",
+      "group": "persistent_universe",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Visiting the Aegis expo hall during Intergalactic Aerospace Expo 2952.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "IAE2952-spectrum-badge-aegis.png",
+        "url": "https://media.starcitizen.tools/3/34/IAE2952-spectrum-badge-aegis.png",
+        "width": 224,
+        "height": 224
+      }
+    },
+    {
+      "slug": "persistent-universe-iae-2952-esperia",
+      "name": "IAE 2952 - ESPERIA",
+      "group": "persistent_universe",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Visiting the Alien expo hall during Intergalactic Aerospace Expo 2952.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "IAE2952-spectrum-badge-esperia.png",
+        "url": "https://media.starcitizen.tools/8/80/IAE2952-spectrum-badge-esperia.png",
+        "width": 224,
+        "height": 224
+      }
+    },
+    {
+      "slug": "persistent-universe-iae-2952-anvil",
+      "name": "IAE 2952 - ANVIL",
+      "group": "persistent_universe",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Visiting the Anvil expo hall during Intergalactic Aerospace Expo 2952.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "IAE2952-spectrum-badge-anvil.png",
+        "url": "https://media.starcitizen.tools/4/49/IAE2952-spectrum-badge-anvil.png",
+        "width": 224,
+        "height": 224
+      }
+    },
+    {
+      "slug": "persistent-universe-iae-2952-argo",
+      "name": "IAE 2952 - ARGO",
+      "group": "persistent_universe",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Visiting the Argo expo hall during Intergalactic Aerospace Expo 2952.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "IAE2952-spectrum-badge-argo.png",
+        "url": "https://media.starcitizen.tools/5/5a/IAE2952-spectrum-badge-argo.png",
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "slug": "persistent-universe-iae-2952-greycat",
+      "name": "IAE 2952 - GREYCAT",
+      "group": "persistent_universe",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Visiting the Greycat expo hall during Intergalactic Aerospace Expo 2952.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "IAE2952-spectrum-badge-greycat.png",
+        "url": "https://media.starcitizen.tools/8/88/IAE2952-spectrum-badge-greycat.png",
+        "width": 224,
+        "height": 224
+      }
+    },
+    {
+      "slug": "persistent-universe-iae-2952-crusader",
+      "name": "IAE 2952 - CRUSADER",
+      "group": "persistent_universe",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Visiting the Crusader expo hall during Intergalactic Aerospace Expo 2952.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "IAE2952-spectrum-badge-crusader.png",
+        "url": "https://media.starcitizen.tools/a/a1/IAE2952-spectrum-badge-crusader.png",
+        "width": 224,
+        "height": 224
+      }
+    },
+    {
+      "slug": "persistent-universe-iae-2952-misc",
+      "name": "IAE 2952 - MISC",
+      "group": "persistent_universe",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Visiting the MISC expo hall during Intergalactic Aerospace Expo 2952.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "IAE2952-spectrum-badge-misc.png",
+        "url": "https://media.starcitizen.tools/4/42/IAE2952-spectrum-badge-misc.png",
+        "width": 224,
+        "height": 224
+      }
+    },
+    {
+      "slug": "persistent-universe-iae-2952-rsi",
+      "name": "IAE 2952 - RSI",
+      "group": "persistent_universe",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Visiting the RSI expo hall during Intergalactic Aerospace Expo 2952.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "IAE2952-spectrum-badge-rsi.png",
+        "url": "https://media.starcitizen.tools/5/5a/IAE2952-spectrum-badge-rsi.png",
+        "width": 224,
+        "height": 224
+      }
+    },
+    {
+      "slug": "persistent-universe-farewell-port-olisar",
+      "name": "Farewell, Port Olisar",
+      "group": "persistent_universe",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Visiting Port Olisar from September 7, 2023, 17:00 UTC until Alpha 3.20.0 goes live.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [
+        {
+          "label": "Farewell, Port Olisar",
+          "url": "https://robertsspaceindustries.com/spectrum/community/SC/forum/3/thread/farewell-port-olisar-1"
+        }
+      ],
+      "icon": {
+        "file": "Farewell,_Port_Olisar.png",
+        "url": "https://media.starcitizen.tools/2/2d/Farewell%2C_Port_Olisar.png",
+        "width": 1000,
+        "height": 1000
+      }
+    },
+    {
+      "slug": "persistent-universe-spooktacular",
+      "name": "Spooktacular",
+      "group": "persistent_universe",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Locate all six flavors of the Fieldbury Dark Bear helmets OR both of the \"Hill Horror\" Neville Lott masks OR the vicious Snarling Vanduul mask by November 1 2000 UTC, and you’ll receive the coveted Spooktacular Spectrum badge",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [
+        {
+          "label": "Day of the Vara 2954",
+          "url": "https://robertsspaceindustries.com/spectrum/community/SC/forum/1/thread/day-of-the-vara-2954-begins-now/7238112"
+        }
+      ],
+      "icon": {
+        "file": "Title_Spooktacular_2953.png",
+        "url": "https://media.starcitizen.tools/3/3b/Title_Spooktacular_2953.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "persistent-universe-2953-cdf-gold",
+      "name": "2953 CDF Gold",
+      "group": "persistent_universe",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Interacting with a rental kiosk while having the CDF F8C Certification Pass (Gold).",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [
+        {
+          "label": "The Hunt is On",
+          "url": "https://robertsspaceindustries.com/spectrum/community/SC/forum/1/thread/the-hunt-is-on/383574"
+        }
+      ],
+      "icon": {
+        "file": "Title_2953_CDF_Gold.png",
+        "url": "https://media.starcitizen.tools/e/e1/Title_2953_CDF_Gold.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "persistent-universe-2953-cdf-platinum",
+      "name": "2953 CDF Platinum",
+      "group": "persistent_universe",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Interacting with a ship dealership kiosk while having the Platinum License from the Running the Gauntlet event.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "2953_CDF_Platinum.png",
+        "url": "https://media.starcitizen.tools/3/35/2953_CDF_Platinum.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "persistent-universe-invictus-launch-week-2954-attendee",
+      "name": "Invictus Launch Week 2954 Attendee",
+      "group": "persistent_universe",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Logging into the Stanton system at least 3 different days during the Invictus Launch Week 2954 event. Also rewarded an in-game Medivac Beacon.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [
+        {
+          "label": "Invictus Launch Week 2954 FAQ",
+          "url": "https://robertsspaceindustries.com/spectrum/community/SC/forum/3/thread/invictus-launch-week-2954-faq"
+        }
+      ],
+      "icon": {
+        "file": "Title_Invictus_Launch_Week_2954.png",
+        "url": "https://media.starcitizen.tools/c/cc/Title_Invictus_Launch_Week_2954.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "persistent-universe-iae2954",
+      "name": "IAE2954",
+      "group": "persistent_universe",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Visiting the expo hall on 5 separate days during the Intergalactic Aerospace Expo 2954.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [
+        {
+          "label": "IAE 2954 FAQ – Welcome Back to microTech!",
+          "url": "https://robertsspaceindustries.com/spectrum/community/SC/forum/1/thread/intergalactic-aerospace-expo-2954-faq-welcome-back"
+        }
+      ],
+      "icon": {
+        "file": "Title_IAE2954.png",
+        "url": "https://media.starcitizen.tools/6/6b/Title_IAE2954.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "persistent-universe-stella-fortuna-2955",
+      "name": "Stella Fortuna 2955",
+      "group": "persistent_universe",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Login to the game during Stella Fortuna 2025.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [
+        {
+          "label": "Stella Fortuna 2955 - St. Patrick’s Day 2025",
+          "url": "https://robertsspaceindustries.com/spectrum/community/SC/forum/1/thread/stella-fortuna-2955-st-patrick-s-day-2025"
+        }
+      ],
+      "icon": {
+        "file": "Title_Stella_Fortuna_2955.png",
+        "url": "https://media.starcitizen.tools/7/77/Title_Stella_Fortuna_2955.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "website-event-fooled",
+      "name": "Fooled!",
+      "group": "website_event",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Attempting to buy the April Fools 2016 Big Benny Reliant in Careers: ",
+          "href": null
+        },
+        {
+          "text": "Intergalactic Food Delivery",
+          "href": "https://robertsspaceindustries.com/comm-link/transmission/15274-Careers-Intergalactic-Food-Delivery"
+        },
+        {
+          "text": " on RSI Website.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Fooled.png",
+        "url": "https://media.starcitizen.tools/9/9f/Title_Fooled.png",
+        "width": 120,
+        "height": 81
+      }
+    },
+    {
+      "slug": "website-event-no-scents",
+      "name": "No Scents",
+      "group": "website_event",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Attempting to buy the April Fools 2019 Quantum fragrance by Christiano Roberto on the ",
+          "href": null
+        },
+        {
+          "text": "RSI Website",
+          "href": "https://robertsspaceindustries.com/comm-link/transmission/17015-New-Merchandise"
+        },
+        {
+          "text": ".",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "No_Scents_Title_Image.png",
+        "url": "https://media.starcitizen.tools/4/4f/No_Scents_Title_Image.png",
+        "width": 80,
+        "height": 80
+      }
+    },
+    {
+      "slug": "website-event-flattened",
+      "name": "Flattened",
+      "group": "website_event",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Clicking the \"learn more\" link in the April Fools 2020 ",
+          "href": null
+        },
+        {
+          "text": "Planet Tech V5 - The Flattening comm-link",
+          "href": "https://robertsspaceindustries.com/comm-link/transmission/17504-Planet-Tech-V5-The-Flattening"
+        },
+        {
+          "text": ".",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Flattened.png",
+        "url": "https://media.starcitizen.tools/c/c5/Title_Flattened.png",
+        "width": 3840,
+        "height": 2160
+      }
+    },
+    {
+      "slug": "website-event-404-ship-not-found",
+      "name": "404: Ship Not Found",
+      "group": "website_event",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Clicking the \"Reveal\" link in the April Fools 2021 ",
+          "href": null
+        },
+        {
+          "text": "Origin 404 reveal comm-link",
+          "href": "https://robertsspaceindustries.com/comm-link/transmission/18064-404"
+        },
+        {
+          "text": ".",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_404_Ship_Not_Found.png",
+        "url": "https://media.starcitizen.tools/3/33/Title_404_Ship_Not_Found.png",
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "slug": "website-event-luminalia",
+      "name": "Luminalia",
+      "group": "website_event",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Opening the Luminalia advent calendar on December 17 2020 .",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [
+        {
+          "label": "Luminalia 2950",
+          "url": "https://robertsspaceindustries.com/comm-link/transmission/17907-Luminalia-2950"
+        }
+      ],
+      "icon": {
+        "file": "Luminalia_Title_Icon_2950.png",
+        "url": "https://media.starcitizen.tools/0/00/Luminalia_Title_Icon_2950.png",
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "slug": "website-event-luminalia-2951",
+      "name": "Luminalia 2951",
+      "group": "website_event",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Opening the Luminalia advent calendar on December 11 2021.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [
+        {
+          "label": "Celebrate Luminalia 2951",
+          "url": "https://robertsspaceindustries.com/comm-link/transmission/18448-Celebrate-Luminalia-2951"
+        }
+      ],
+      "icon": {
+        "file": "Luminalia_Title_Icon_2951.png",
+        "url": "https://media.starcitizen.tools/2/2c/Luminalia_Title_Icon_2951.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "website-event-luminalia-2954",
+      "name": "Luminalia 2954",
+      "group": "website_event",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Day 1 reward for opening the Luminalia advent calendar on 2024-12-12.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [
+        {
+          "label": "Celebrate Luminalia 2954",
+          "url": "https://robertsspaceindustries.com/comm-link/transmission/20280-Luminalia-2954#dab06510"
+        }
+      ],
+      "icon": {
+        "file": "Luminalia_2954_badge.png",
+        "url": "https://media.starcitizen.tools/2/2d/Luminalia_2954_badge.png",
+        "width": 250,
+        "height": 250
+      }
+    },
+    {
+      "slug": "website-event-luminalia-banu",
+      "name": "Luminalia Banu",
+      "group": "website_event",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Opening the Luminalia advent calendar on December 17 2021.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Luminalia_Banu.png",
+        "url": "https://media.starcitizen.tools/7/7d/Title_Luminalia_Banu.png",
+        "width": 250,
+        "height": 250
+      }
+    },
+    {
+      "slug": "website-event-illyana-sharrad-supporter",
+      "name": "Illyana Sharrad Supporter",
+      "group": "website_event",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Clicking the \"I support Illyana Sharrad\" link on the ",
+          "href": null
+        },
+        {
+          "text": "2950 Imperator Election Ballot",
+          "href": "https://robertsspaceindustries.com/comm-link/transmission/17806-2950-Imperator-Election-Ballot"
+        },
+        {
+          "text": ".",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Illyana_Sharrad_Supporter.png",
+        "url": "https://media.starcitizen.tools/2/21/Title_Illyana_Sharrad_Supporter.png",
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "slug": "website-event-mira-ngo-supporter",
+      "name": "Mira Ngo Supporter",
+      "group": "website_event",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Clicking the \"I support Mira Ngo\" link on the 2950 Imperator Election Ballot.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Mira_Ngo_Supporter.png",
+        "url": "https://media.starcitizen.tools/6/68/Title_Mira_Ngo_Supporter.png",
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "slug": "website-event-paul-lesalle-supporter",
+      "name": "Paul LeSalle Supporter",
+      "group": "website_event",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Clicking the \"I support Paul LeSalle\" link on the 2950 Imperator Election Ballot.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Paul_Lesalle_Supporter.png",
+        "url": "https://media.starcitizen.tools/8/8a/Title_Paul_Lesalle_Supporter.png",
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "slug": "website-event-titus-costigan-supporter",
+      "name": "Titus Costigan Supporter",
+      "group": "website_event",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Clicking the \"I support Titus Costigan\" link on the 2950 Imperator Election Ballot.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Titus_Costigan_Supporter.png",
+        "url": "https://media.starcitizen.tools/5/5a/Title_Titus_Costigan_Supporter.png",
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "slug": "website-event-laylani-addison-supporter",
+      "name": "Laylani Addison Supporter",
+      "group": "website_event",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Clicking the \"I support Laylani Addison\" link on the 2950 Imperator Election Ballot.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Laylani_Addison_Supporter.png",
+        "url": "https://media.starcitizen.tools/0/0b/Title_Laylani_Addison_Supporter.png",
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "slug": "website-event-hopeless-romantic",
+      "name": "Hopeless Romantic",
+      "group": "website_event",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Clicking the \"Download\" link in the April Fools 2022 ",
+          "href": null
+        },
+        {
+          "text": "Mesher app introduction",
+          "href": "https://robertsspaceindustries.com/comm-link/transmission/18601-Introducing-Mesher"
+        },
+        {
+          "text": ".",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Hopeless_romantic.png",
+        "url": "https://media.starcitizen.tools/d/d2/Title_Hopeless_romantic.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "website-event-swept-away",
+      "name": "Swept Away",
+      "group": "website_event",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Attempting to buy the April Fools 2954 ",
+          "href": null
+        },
+        {
+          "text": "MISC Raptor",
+          "href": "https://robertsspaceindustries.com/comm-link/transmission/19819-MISC-Raptor"
+        },
+        {
+          "text": ".",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Swept_Away.png",
+        "url": "https://media.starcitizen.tools/f/fd/Title_Swept_Away.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "website-event-nostradamus",
+      "name": "Nostradamus",
+      "group": "website_event",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Voting the winner of every phase 2 match-up during ",
+          "href": null
+        },
+        {
+          "text": "Ship Showdown 2955",
+          "href": "https://robertsspaceindustries.com/en/ship-showdown2025/community-call"
+        },
+        {
+          "text": ".",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [
+        {
+          "label": "Ship Showdown 2955 - Phase 1: The Clash Commences!",
+          "url": "https://robertsspaceindustries.com/spectrum/community/SC/forum/1/thread/ship-showdown-2955-phase-1-the-clash-commences"
+        }
+      ],
+      "icon": {
+        "file": "Title_Nostradamus.png",
+        "url": "https://media.starcitizen.tools/2/2c/Title_Nostradamus.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "website-event-pumpkino",
+      "name": "Pumpkino",
+      "group": "website_event",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Participating in the ",
+          "href": null
+        },
+        {
+          "text": "2025 Pumpkin Decorating Contest",
+          "href": "https://robertsspaceindustries.com/spectrum/community/SC/forum/3/thread/2025-pumpkin-decorating-contest"
+        },
+        {
+          "text": ".",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Pumpkino.png",
+        "url": "https://media.starcitizen.tools/6/6d/Title_Pumpkino.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "website-event-ship-showdown-2956-regular",
+      "name": "Ship Showdown 2956 Regular",
+      "group": "website_event",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Voting in every phase 2 match-up during Ship Showdown 2956.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [
+        {
+          "label": "Ship Showdown 2956 - Phase 1: Vesselmania Begins!",
+          "url": "https://robertsspaceindustries.com/spectrum/community/SC/forum/1/thread/ship-showdown-2956-phase-1-vesselmania-begins"
+        }
+      ],
+      "icon": {
+        "file": "Title_Ship_Showdown_2956_Regular.png",
+        "url": "https://media.starcitizen.tools/2/25/Title_Ship_Showdown_2956_Regular.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "other-most-valuable-poster",
+      "name": "Most Valuable Poster",
+      "group": "other",
+      "earnable": "yes",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Submitting content to the Community Hub which Cloud Imperium Games deems worthy in the This Week in Star Citizen comm-link.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_MVP.png",
+        "url": "https://media.starcitizen.tools/6/60/Title_MVP.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "other-clearance-level-ultra",
+      "name": "Clearance Level Ultra",
+      "group": "other",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Purchasing the Aegis Eclipse during the concierge pre-sale event.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Clearance_level_ultra.png",
+        "url": "https://media.starcitizen.tools/f/fa/Title_Clearance_level_ultra.png",
+        "width": 250,
+        "height": 250
+      }
+    },
+    {
+      "slug": "other-nox-racing-club",
+      "name": "Nox Racing Club",
+      "group": "other",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Purchasing the AopoA Nox during the pre-sale event.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Nox_Racing_Club.png",
+        "url": "https://media.starcitizen.tools/6/65/Title_Nox_Racing_Club.png",
+        "width": 1000,
+        "height": 1000
+      }
+    },
+    {
+      "slug": "other-tumbril-stock-owner",
+      "name": "Tumbril Stock Owner",
+      "group": "other",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Purchasing the Tumbril Cyclone during the pre-sale event.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Tumbril_Stock_Owner.png",
+        "url": "https://media.starcitizen.tools/1/13/Title_Tumbril_Stock_Owner.png",
+        "width": 375,
+        "height": 375
+      }
+    },
+    {
+      "slug": "other-philanthropist-badge",
+      "name": "Philanthropist Badge",
+      "group": "other",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Purchasing the Hercules during the concierge pre-sale event.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Philanthropist.png",
+        "url": "https://media.starcitizen.tools/3/32/Title_Philanthropist.png",
+        "width": 44,
+        "height": 44
+      }
+    },
+    {
+      "slug": "other-odin-founders-club",
+      "name": "Odin Founders Club",
+      "group": "other",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Purchasing the Anvil Odin during the Odin Founders Club sale event.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Odin_Founders_Club.png",
+        "url": "https://media.starcitizen.tools/c/c4/Title_Odin_Founders_Club.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "other-pyrotechnic-amalgamated",
+      "name": "Pyrotechnic Amalgamated",
+      "group": "other",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Purchasing the CitizenCon 2953 Digital Goodies Pack or CitizenCon 2953 Access Ticket.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [
+        {
+          "label": "CitizenCon 2953 Digital Goodies Pack",
+          "url": "https://robertsspaceindustries.com/spectrum/community/SC/forum/1/thread/citizencon-2953-digital-goodies-pack-now-available"
+        }
+      ],
+      "icon": {
+        "file": "Title_Pyrotechnic_Amalgamated.png",
+        "url": "https://media.starcitizen.tools/2/29/Title_Pyrotechnic_Amalgamated.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "other-citizencon-2954",
+      "name": "CitizenCon 2954",
+      "group": "other",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Purchasing the CitizenCon 2954 Digital Goodies Pack or CitizenCon 2954 Access Ticket.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [
+        {
+          "label": "CitizenCon 2954 Digital Goodies Pack",
+          "url": "https://robertsspaceindustries.com/spectrum/community/SC/forum/1/thread/citizencon-2954-digital-goodies-pack"
+        }
+      ],
+      "icon": {
+        "file": "Title_CitizenCon_2954.png",
+        "url": "https://media.starcitizen.tools/6/63/Title_CitizenCon_2954.png",
+        "width": 5669,
+        "height": 5669
+      }
+    },
+    {
+      "slug": "other-golden-ticket",
+      "name": "Golden Ticket",
+      "group": "other",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Signing up for the RSI site before Star Citizen was announced on October 10, 2012.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [
+        {
+          "label": "Star Citizen Updated FAQ",
+          "url": "https://www.kickstarter.com/projects/cig/star-citizen/posts/361848"
+        }
+      ],
+      "icon": {
+        "file": "Title_GoldenTicket.png",
+        "url": "https://media.starcitizen.tools/a/aa/Title_GoldenTicket.png",
+        "width": 1047,
+        "height": 1040
+      }
+    },
+    {
+      "slug": "other-kickstarted",
+      "name": "Kickstarted",
+      "group": "other",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Backing Star Citizen on Kickstarter.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Kickstarter.png",
+        "url": "https://media.starcitizen.tools/6/6c/Title_Kickstarter.png",
+        "width": 1047,
+        "height": 1040
+      }
+    },
+    {
+      "slug": "other-original-backer",
+      "name": "Original Backer",
+      "group": "other",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Backing before the end of the original funding campaign on November 26, 2012. Mutually exclusive with New and Veteran backer titles.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_OriginalBacker.png",
+        "url": "https://media.starcitizen.tools/8/87/Title_OriginalBacker.png",
+        "width": 1047,
+        "height": 1040
+      }
+    },
+    {
+      "slug": "other-veteran-backer",
+      "name": "Veteran Backer",
+      "group": "other",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Backing after November 26, 2012 but on or before July 6th 2013. Mutually exclusive with New and Original backer titles.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_VeteranBacker.png",
+        "url": "https://media.starcitizen.tools/f/f7/Title_VeteranBacker.png",
+        "width": 1047,
+        "height": 1040
+      }
+    },
+    {
+      "slug": "other-new-backer",
+      "name": "New Backer",
+      "group": "other",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Backing after July 6, 2013. Mutually exclusive with Veteran and Original backer titles.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_NewBacker.png",
+        "url": "https://media.starcitizen.tools/9/9f/Title_NewBacker.png",
+        "width": 1047,
+        "height": 1040
+      }
+    },
+    {
+      "slug": "other-aeon-club",
+      "name": "Aeon Club",
+      "group": "other",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Being one of the first 1 million accounts.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Aeon_Club_Title.png",
+        "url": "https://media.starcitizen.tools/a/a6/Aeon_Club_Title.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "other-epoch-society",
+      "name": "Epoch Society",
+      "group": "other",
+      "earnable": "no",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Being one of the first 2 million accounts.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Epoch_Society_Title.png",
+        "url": "https://media.starcitizen.tools/f/fd/Epoch_Society_Title.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "other-subscriber",
+      "name": "Subscriber",
+      "group": "other",
+      "earnable": "yes",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Subscribing. Lost when the subscription ends.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Subscriber.png",
+        "url": "https://media.starcitizen.tools/6/62/Title_Subscriber.png",
+        "width": 1047,
+        "height": 1040
+      }
+    },
+    {
+      "slug": "other-vip",
+      "name": "VIP",
+      "group": "other",
+      "earnable": "unknown",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Unknown.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_VIP.png",
+        "url": "https://media.starcitizen.tools/a/a8/Title_VIP.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "other-humbug",
+      "name": "Humbug",
+      "group": "other",
+      "earnable": "unknown",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Unknown.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Humbug.png",
+        "url": "https://media.starcitizen.tools/9/90/Title_Humbug.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "other-commander",
+      "name": "Commander",
+      "group": "other",
+      "earnable": "unknown",
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Unknown.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Commander_badge.png",
+        "url": "https://media.starcitizen.tools/3/33/Title_Commander_badge.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "unique-holder-of-the-golden-shirt",
+      "name": "Holder of the Golden Shirt",
+      "group": "unique",
+      "earnable": null,
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Held by the purchaser of the golden shirt which Mark Skelton wore during The Next Great Starship.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Holder_Of_The_Golden_Shirt.png",
+        "url": "https://media.starcitizen.tools/2/26/Title_Holder_Of_The_Golden_Shirt.png",
+        "width": 873,
+        "height": 765
+      }
+    },
+    {
+      "slug": "unique-1st-place-2020-cosplay-contest",
+      "name": "1st Place - 2020 Cosplay Contest",
+      "group": "unique",
+      "earnable": null,
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Diabolus, the 1st place winner of the ",
+          "href": null
+        },
+        {
+          "text": "2020 cosplay contest",
+          "href": "https://robertsspaceindustries.com/spectrum/community/SC/forum/3/thread/virtual-star-citizen-cosplay-contest"
+        },
+        {
+          "text": ".",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_1st_Place_2020_Cosplay_Contest.png",
+        "url": "https://media.starcitizen.tools/1/15/Title_1st_Place_2020_Cosplay_Contest.png",
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "slug": "unique-2nd-place-2020-cosplay-contest",
+      "name": "2nd Place - 2020 Cosplay Contest",
+      "group": "unique",
+      "earnable": null,
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Kinshadow, the 2nd place winner of the 2020 cosplay contest.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_2nd_Place_2020_Cosplay_Contest.png",
+        "url": "https://media.starcitizen.tools/b/b4/Title_2nd_Place_2020_Cosplay_Contest.png",
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "slug": "unique-3rd-place-2020-cosplay-contest",
+      "name": "3rd Place - 2020 Cosplay Contest",
+      "group": "unique",
+      "earnable": null,
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "DirectorGunner and A3ATOT, the two 3rd place winners of the 2020 cosplay contest.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_3rd_Place_2020_Cosplay_Contest.png",
+        "url": "https://media.starcitizen.tools/7/7e/Title_3rd_Place_2020_Cosplay_Contest.png",
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "slug": "unique-1st-place-2021-cosplay-contest",
+      "name": "1st Place - 2021 Cosplay Contest",
+      "group": "unique",
+      "earnable": null,
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Kinshadow, the 1st place winner of the ",
+          "href": null
+        },
+        {
+          "text": "2021 cosplay contest",
+          "href": "https://robertsspaceindustries.com/spectrum/community/SC/forum/3/thread/2021-star-citizen-cosplay-contest"
+        },
+        {
+          "text": ".",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_1st_Place_2021_Cosplay_Contest.png",
+        "url": "https://media.starcitizen.tools/6/6b/Title_1st_Place_2021_Cosplay_Contest.png",
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "slug": "unique-2nd-place-2021-cosplay-contest",
+      "name": "2nd Place - 2021 Cosplay Contest",
+      "group": "unique",
+      "earnable": null,
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Diabolus, the 2nd place winner of the 2021 cosplay contest.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_2nd_Place_2021_Cosplay_Contest.png",
+        "url": "https://media.starcitizen.tools/4/41/Title_2nd_Place_2021_Cosplay_Contest.png",
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "slug": "unique-3rd-place-2021-cosplay-contest",
+      "name": "3rd Place - 2021 Cosplay Contest",
+      "group": "unique",
+      "earnable": null,
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Kalamyti, the 3rd place winner of the 2021 cosplay contest.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_3rd_Place_2021_Cosplay_Contest.png",
+        "url": "https://media.starcitizen.tools/6/6c/Title_3rd_Place_2021_Cosplay_Contest.png",
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "slug": "official-n-a",
+      "name": "N/A",
+      "group": "official",
+      "earnable": null,
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Unknown. PTU - 1st Wave 2.2",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_NA.png",
+        "url": "https://media.starcitizen.tools/0/08/Title_NA.png",
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "slug": "official-game-master",
+      "name": "Game Master",
+      "group": "official",
+      "earnable": null,
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Unknown.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_GameMaster.png",
+        "url": "https://media.starcitizen.tools/9/93/Title_GameMaster.png",
+        "width": 24,
+        "height": 24
+      }
+    },
+    {
+      "slug": "official-moderator",
+      "name": "Moderator",
+      "group": "official",
+      "earnable": null,
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Spectrum moderators.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Moderator.png",
+        "url": "https://media.starcitizen.tools/8/85/Title_Moderator.png",
+        "width": 1047,
+        "height": 1040
+      }
+    },
+    {
+      "slug": "official-qa",
+      "name": "QA",
+      "group": "official",
+      "earnable": null,
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Quality Assurance.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_QA.png",
+        "url": "https://media.starcitizen.tools/8/88/Title_QA.png",
+        "width": 61,
+        "height": 61
+      }
+    },
+    {
+      "slug": "official-staff",
+      "name": "Staff",
+      "group": "official",
+      "earnable": null,
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Cloud Imperium Games staff.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Staff.png",
+        "url": "https://media.starcitizen.tools/9/9c/Title_Staff.png",
+        "width": 1047,
+        "height": 1040
+      }
+    },
+    {
+      "slug": "official-developer",
+      "name": "Developer",
+      "group": "official",
+      "earnable": null,
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Game developers.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Developer.png",
+        "url": "https://media.starcitizen.tools/7/7c/Title_Developer.png",
+        "width": 1047,
+        "height": 1040
+      }
+    },
+    {
+      "slug": "official-creator",
+      "name": "Creator",
+      "group": "official",
+      "earnable": null,
+      "requirement": null,
+      "earned_by": [
+        {
+          "text": "Exclusive to Chris Roberts, the creator of Star Citizen.",
+          "href": null
+        }
+      ],
+      "reward": null,
+      "packages": null,
+      "sources": [],
+      "icon": {
+        "file": "Title_Creator.png",
+        "url": "https://media.starcitizen.tools/1/1f/Title_Creator.png",
+        "width": 1047,
+        "height": 1040
+      }
+    }
+  ]
+}

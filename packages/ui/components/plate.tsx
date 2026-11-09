@@ -22,6 +22,8 @@ export interface PlateProps {
   readonly caption: ReactNode;
   /** "Image: Roberts Space Industries"; omitted when there is no picture. */
   readonly credit?: string | undefined;
+  /** The credit's source page; with one, the credit is a link that opens in a new tab. */
+  readonly creditHref?: string | undefined;
   /** Where the picture itself links (the caption carries the visible link). */
   readonly href?: string | undefined;
   /** The frame's shape: `wide` 2:1, `panorama` 16:7, `card` 16:9. */
@@ -41,6 +43,7 @@ export function Plate({
   numeral,
   caption,
   credit,
+  creditHref,
   href,
   aspect,
   sizes,
@@ -82,8 +85,18 @@ export function Plate({
         <span>
           <span className="font-medium text-primary">{numeral}.</span> {caption}
         </span>
-        {credit === undefined || image === null ? null : (
+        {credit === undefined || image === null ? null : creditHref ===
+          undefined ? (
           <span className="lab text-muted">{credit}</span>
+        ) : (
+          <a
+            href={creditHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="lab rounded-control text-muted no-underline hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+          >
+            {credit}
+          </a>
         )}
       </figcaption>
     </figure>

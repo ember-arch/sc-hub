@@ -23,7 +23,7 @@ The full scope and plan live in `docs/scope.md`. Phase specs live in `docs/specs
 - Never mutate a published data version. A fix is a new version.
 - Never hand-enter game data. Every stat comes from the pipeline; if the pipeline cannot produce it, the field stays empty.
 - Never add a color, type size, spacing value, or radius outside `packages/ui` tokens without an ADR.
-- Never use emoji, glow, scanlines, hex grids, bevels, neon-on-black, or sci-fi display fonts anywhere in the UI. This is a reference product, not a game HUD. One owner-approved exception (2026-11-08, ADR-012, ADR-015): inside the 3D holoviewer canvases (the holoviewer and the Scale lineup) the models may be drawn as CIG draws them in its own holoviewer, with glow, scan bands, a floor grid and a dark backdrop; never outside those canvases.
+- Never use emoji, glow, scanlines, hex grids, bevels, neon-on-black, or sci-fi display fonts anywhere in the UI. This is a reference product, not a game HUD. The 3D canvases (the holomodel and the Scale lineup) draw the models in ink on the page's own paper (ADR-020): a flat-shaded body with inked edges, a ground line, slowly turning; no glow, scan bands, grid or backdrop there either (the CIG-holoviewer look of ADR-012 and ADR-015 was withdrawn on 2026-11-09).
 - Never infer a game stat, a dev post's meaning, or an entity link with less than the confidence thresholds in `docs/data-model.md`.
 - Never claim to CIG, in code comments, UI copy, or docs, that the site is official or endorsed.
 

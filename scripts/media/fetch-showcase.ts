@@ -14,11 +14,10 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { SHOWCASE } from "./showcase.js";
 import { createSpacer } from "./sources.js";
+import { rsiUserAgent } from "../user-agent.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..", "..", "fixtures", "showcase");
-const USER_AGENT =
-  "sc-hub-media/0.0 (non-commercial fan reference in development; github.com/ember-arch/sc-hub)";
 
 const sleep = (ms: number): Promise<void> =>
   new Promise((r) => setTimeout(r, ms));
@@ -32,7 +31,7 @@ async function get(url: string): Promise<Response> {
     url.includes("robertsspaceindustries.com") ? spacers.rsi : spacers.other
   )();
   const response = await fetch(url, {
-    headers: { "User-Agent": USER_AGENT },
+    headers: { "User-Agent": rsiUserAgent("media") },
     redirect: "follow",
   });
   if (!response.ok) throw new Error(`${url} returned ${response.status}`);

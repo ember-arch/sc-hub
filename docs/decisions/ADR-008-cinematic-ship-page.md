@@ -1,6 +1,6 @@
 # ADR-008: Cinematic ship page concept
 
-- Status: proposed (a concept on its own branch for the owner to react to; not merged until the owner approves the direction)
+- Status: accepted (the owner approved the direction on 2026-11-08); its ship-page parts are superseded by ADR-012, ADR-014 and ADR-015, and its armament strip by ADR-016
 - Date: 2026-11-07
 - Deciders: owner ("Yes, build it", 2026-11-07, on the proposal below), Claude Code session 2026-11-07
 

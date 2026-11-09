@@ -3,6 +3,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   LOANER_ARTICLE_URL,
+  checkLoanerMatrix,
   cellText,
   parseLoanerArticle,
   parseLoanerRows,
@@ -83,5 +84,43 @@ describe("RSI loaner matrix", () => {
     expect(
       sameMatrix(a, { ...b, rows: [{ ships: "Odin", loaners: ["Idris-M"] }] }),
     ).toBe(false);
+  });
+});
+
+describe("checkLoanerMatrix", () => {
+  const fake =
+    (status = 200) =>
+    async (url: string, init: { headers: Record<string, string> }) => {
+      expect(url).toMatch(/360003093114\.json$/);
+      expect(init.headers["User-Agent"]).toContain("ops@example.org");
+      return { ok: status === 200, status, json: async () => sample };
+    };
+
+  it("reports a change when nothing is on file, and none for the same article", async () => {
+    const first = await checkLoanerMatrix(
+      fake(),
+      null,
+      "sc-hub-data/0.0 (ops@example.org)",
+      () => AT,
+    );
+    expect(first.changed).toBe(true);
+    const again = await checkLoanerMatrix(
+      fake(),
+      first.next,
+      "sc-hub-data/0.0 (ops@example.org)",
+      () => "2026-11-15T00:00:00.000Z",
+    );
+    expect(again.changed).toBe(false);
+  });
+
+  it("halts on an error from the help centre", async () => {
+    await expect(
+      checkLoanerMatrix(
+        fake(503),
+        null,
+        "sc-hub-data/0.0 (ops@example.org)",
+        () => AT,
+      ),
+    ).rejects.toThrow(/503/);
   });
 });

@@ -16,14 +16,14 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { z } from "zod";
 import { createWikiClient } from "./fetch.js";
+import { userAgent } from "../user-agent.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(here, "..", "..");
 const packDir = join(repoRoot, "fixtures", "bootstrap");
 const outDir = join(repoRoot, "fixtures", "descriptions");
 
-const USER_AGENT =
-  "sc-hub-bootstrap/0.0 (non-commercial fan reference; github.com/ember-arch/sc-hub)";
+const USER_AGENT = userAgent("bootstrap");
 
 const Localized = z.record(z.string(), z.string()).nullable().optional();
 const WikiVehicle = z.object({

@@ -35,7 +35,10 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter schema build
+      # The contact address RSI requests carry (CLAUDE.md section 9): a repository variable.
       - run: pnpm exec tsx scripts/bootstrap-fixtures/loaners.ts
+        env:
+          SC_HUB_CONTACT_EMAIL: ${{ vars.SC_HUB_CONTACT_EMAIL }}
       - name: Propose the change for review
         env:
           GH_TOKEN: ${{ github.token }}

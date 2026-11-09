@@ -20,6 +20,7 @@ import { fileURLToPath } from "node:url";
 import { ConceptShip, PledgeOffer, ShopPrice } from "schema";
 import { z } from "zod";
 import { createWikiClient } from "./fetch.js";
+import { rsiUserAgent, userAgent } from "../user-agent.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(here, "..", "..");
@@ -32,8 +33,7 @@ const conceptFile = join(
 );
 const outDir = join(repoRoot, "fixtures", "acquisition");
 
-const USER_AGENT =
-  "sc-hub-bootstrap/0.0 (non-commercial fan reference; github.com/ember-arch/sc-hub)";
+const USER_AGENT = userAgent("bootstrap");
 const RSI_SPACING_MS = 5_000;
 
 const Sku = z
@@ -270,7 +270,7 @@ async function conceptOffers(fetchedAt: string): Promise<PledgeOffer[]> {
   for (const [i, concept] of concepts.entries()) {
     if (i > 0) await sleep(RSI_SPACING_MS);
     const response = await globalThis.fetch(concept.page_url, {
-      headers: { "User-Agent": USER_AGENT },
+      headers: { "User-Agent": rsiUserAgent("bootstrap") },
     });
     if (!response.ok) {
       throw new Error(`${concept.page_url}: HTTP ${response.status}`);

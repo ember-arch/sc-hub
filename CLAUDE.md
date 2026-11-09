@@ -52,7 +52,7 @@ pipeline/        Windows-only: detect, extract, normalize, optimize, publish
 apps/web/        Next.js app
 workers/         pollers (news, spectrum), import job, link-entities job
 fixtures/        real extracted records per game version; small, committed
-scripts/         one-off dev scripts; nothing here runs in production
+scripts/         one-off dev scripts; nothing here runs in production (one runs weekly in CI to propose a fixture update for review: the loaner-matrix check, ADR-015)
 ```
 
 Create exactly this layout in Phase 0. Add folders only with an ADR.
@@ -132,6 +132,7 @@ SENTRY_DSN
 SITE_URL (the public origin; canonical URLs, sitemap.xml and Open Graph resolve against it)
 SC_INSTALL_ROOT (Windows only, for example C:\Program Files\Roberts Space Industries\StarCitizen)
 STARBREAKER_BIN (Windows only)
+SC_HUB_CONTACT_EMAIL (dev scripts and the weekly loaner check; the contact address RSI requests carry, ADR-015; a repository variable in CI)
 ```
 
 When `DATABASE_URL` is unset, `pnpm db:migrate` and `pnpm db:seed` use an embedded PGlite database in `packages/db/.pglite/` (local development only; ADR-004). Every deployed runtime requires it.

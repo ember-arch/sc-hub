@@ -98,35 +98,5 @@
     "source_url": "https://robertsspaceindustries.com/en/comm-link/transmission/21133-Anvil-Odin",
     "source_title": "Anvil Odin | Star Citizen",
     "published_at": "2026-05-24T16:00:00+00:00"
-  },
-  {
-    "slug": "perseus",
-    "section": "combat",
-    "label": "Torpedoes",
-    "value": "Reloaded from the adjacent cargo hold",
-    "quote": "torpedoes that can be reloaded quickly from the adjacent cargo hold",
-    "source_url": "https://robertsspaceindustries.com/en/comm-link/transmission/20738-RSI-Perseus",
-    "source_title": "RSI Perseus",
-    "published_at": "2026-05-25T10:00:00+00:00"
-  },
-  {
-    "slug": "perseus",
-    "section": "combat",
-    "label": "Turret layout",
-    "value": "2 manned (S8 and S3), 2 remote (S3), 6 point-defence",
-    "quote": "2x Manned 2x S8, 2x S3",
-    "source_url": "https://robertsspaceindustries.com/en/comm-link/transmission/20738-RSI-Perseus",
-    "source_title": "RSI Perseus",
-    "published_at": "2026-05-25T10:00:00+00:00"
-  },
-  {
-    "slug": "perseus",
-    "section": "logistics",
-    "label": "Hold",
-    "value": "Cargo and ground vehicles",
-    "quote": "flexible storage allows for cargo and ground vehicle transport",
-    "source_url": "https://robertsspaceindustries.com/en/comm-link/transmission/20738-RSI-Perseus",
-    "source_title": "RSI Perseus",
-    "published_at": "2026-05-25T10:00:00+00:00"
   }
 ]

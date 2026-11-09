@@ -31,6 +31,8 @@ export const envSchema = z.object({
   SC_INSTALL_ROOT: nonEmpty.optional(),
   /** Windows only. */
   STARBREAKER_BIN: nonEmpty.optional(),
+  /** Dev scripts and the weekly loaner check: the contact address RSI requests carry (ADR-015). */
+  SC_HUB_CONTACT_EMAIL: z.email().optional(),
 });
 export type Env = z.infer<typeof envSchema>;
 export type EnvKey = keyof Env;

@@ -19,7 +19,7 @@ The owner's direction (2026-11-09): "build out the full ship catalog and all of 
 - [x] **Every flyable ship.** `scripts/bootstrap-fixtures` with `"all": true` fetches every vehicle the Wiki API lists for the current build with a production status (vehicles the ship matrix does not list are counted and left out, ADR-022), maps and validates it as before, and writes the pack under the 40 MB cap; the pack is committed; every vehicle has an entry page, and the register, compare, the palette and the sitemap carry every entry (an edition that shares another's name is listed under it, ADR-022); unit and e2e tests pass on the full pack.
 - [ ] **Every announced ship.** `scripts/media/snapshot-matrix.ts` writes every ship-matrix row that is not flight ready and not in the pack to `fixtures/ship-matrix/ConceptShip.json` with RSI's figures, each with a slug the pack does not use; every one has an entry page labelled in concept, with RSI's figures and their source.
 - [ ] **Images for all of them.** `scripts/media/fetch-rsi.ts` copies RSI's ship-matrix image for every pack ship and every concept ship (local only, ADR-009), reusing files already on disk; `prepare.ts` writes the concepts' renditions into the manifest; the front page, the register and the entries show them where a showcase has none.
-- [ ] **Performance holds.** Lighthouse performance and accessibility stay at 90 or more on the front page, the register (cards and table) and a ship page with the full pack, in CI.
+- [x] **Performance holds.** Lighthouse performance and accessibility stay at 90 or more on the front page, the register (cards and table) and a ship page with the full pack, in CI.
 
 ## Verification
 

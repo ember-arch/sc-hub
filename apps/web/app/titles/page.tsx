@@ -98,7 +98,7 @@ function SubBlock({
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-        <h3 className="m-0 text-ui font-medium text-primary">{heading}</h3>
+        <h3 className="lab m-0 text-primary">{heading}</h3>
         {status === null ? null : <StatusBadge status={status} />}
       </div>
       {children}
@@ -235,7 +235,7 @@ export default async function TitlesPage({
             `${catalog.groups.length} groups`,
             `${formatNumber(earnable)} still earnable`,
           ]}
-          title="Titles"
+          title="Honours and titles"
           lede={wikiText(catalog.lead[0] ?? [])}
         />
       }
@@ -323,16 +323,16 @@ export default async function TitlesPage({
                     key={s.group}
                     id={slug}
                     aria-labelledby={`${slug}-heading`}
-                    className="flex scroll-mt-8 flex-col gap-4"
+                    className="flex scroll-mt-8 flex-col gap-4 border-t border-hairline-strong pt-4"
                   >
                     <div className="flex flex-wrap items-baseline justify-between gap-2">
                       <h2
                         id={`${slug}-heading`}
-                        className="text-heading text-primary"
+                        className="m-0 text-heading text-primary"
                       >
                         {s.label}
                       </h2>
-                      <p className="m-0 text-caption text-secondary">
+                      <p className="lab m-0 text-secondary">
                         {countLine(s.titles, s.total, filtered)}
                       </p>
                     </div>

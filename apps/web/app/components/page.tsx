@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Masthead } from "../masthead";
+import { FigureStrip } from "../strip";
 import { ItemType } from "schema";
 import {
   EmptyState,
@@ -60,7 +61,7 @@ export default async function ComponentsPage({
             </span>,
             r.liveVersion ?? "no LIVE build",
           ]}
-          title="Components"
+          title="Parts, by type"
           lede="Every weapon, shield, power plant, cooler, quantum drive and the rest, with its stats by build and the ships that carry it as stock."
         />
       }
@@ -88,25 +89,16 @@ export default async function ComponentsPage({
             />
           </FilterBar>
           {groups.length > 1 ? (
-            // Each type as a tile with its count (ADR-019): the page's map, and a jump to its table.
+            // Each type as a figure with its count (ADR-019, as the almanac's strip per ADR-020): the page's map, and a jump to its table.
             <nav aria-label="Component types">
-              <ul className="m-0 grid list-none grid-cols-2 gap-2 p-0 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-                {groups.map((g) => (
-                  <li key={g.type}>
-                    <a
-                      href={`#${g.type}`}
-                      className="group flex h-full flex-col gap-2 rounded-card border border-hairline bg-surface p-3 no-underline transition-colors duration-hover hover:border-hairline-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
-                    >
-                      <span className="font-mono text-heading text-primary group-hover:text-accent">
-                        {g.items.length}
-                      </span>
-                      <span className="text-caption text-secondary">
-                        {sentence(g.type)}
-                      </span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
+              <FigureStrip
+                columns={6}
+                figures={groups.map((g) => ({
+                  label: sentence(g.type),
+                  value: String(g.items.length),
+                  href: `#${g.type}`,
+                }))}
+              />
             </nav>
           ) : null}
         </div>

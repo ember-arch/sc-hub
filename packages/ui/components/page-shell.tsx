@@ -48,7 +48,7 @@ export function PageShell({
       >
         Skip to content
       </a>
-      {/* The running head (ADR-020): the site name and the sections as small labels over a rule, the search field at the right. On a phone the nav takes its own row (ADR-017). */}
+      {/* The running head (ADR-020): the site name and the sections as small labels over a rule, the search field at the right. Below lg the nav takes its own row (ADR-017), since the three do not fit in one. */}
       <header className="border-b border-hairline-strong">
         <div className="mx-auto flex w-full max-w-content flex-wrap items-center justify-between gap-x-6 gap-y-2 px-4 py-3">
           <NextLink
@@ -59,7 +59,7 @@ export function PageShell({
           </NextLink>
           <nav
             aria-label="Primary"
-            className="lab order-last flex w-full items-center gap-6 md:order-none md:w-auto md:flex-1 md:justify-center"
+            className="lab order-last flex w-full flex-wrap items-center gap-x-6 gap-y-2 lg:order-none lg:w-auto lg:flex-1 lg:justify-center"
           >
             {NAV.map((item) => (
               <NextLink

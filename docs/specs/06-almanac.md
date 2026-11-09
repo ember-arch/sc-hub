@@ -17,7 +17,7 @@ Rebuild the site's look as an illustrated almanac (ADR-020): paper and ink, two 
 ## Acceptance criteria
 
 - [x] **Foundation.** Tokens (palette, radii, shadow, width, faces, the `label` size), the generated CSS, the fonts, the shell (running head, search field, footer), the masthead without art and the card frame carry ADR-020; `system.md` reads as the almanac; every page wears the new tokens on its existing layout; token, contrast and e2e tests pass.
-- [ ] **Front page and register.** Home opens on a counters strip, a hero plate with side plates, a contents list and entry cards; the ships index is a register table with large plates, sortable, phone rows expanding (section 7 of `CLAUDE.md`).
+- [x] **Front page and register.** Home opens on a counters strip, a hero plate with side plates, a contents list and entry cards; the ships index is a register table with large plates, sortable, phone rows expanding (section 7 of `CLAUDE.md`).
 - [ ] **Entry.** The ship file draws the holomodel in ink (monochrome, inked edges, slowly turning, in a framed plate with a scale bar and tabs), with the particulars as a ruled table, chapter plates and a figure strip; the ADR-012/015 holoviewer look is replaced inside the canvas.
 - [ ] **Ledger, honours, parts and dispatches.** Funding as a ledger on graph paper with a year table of inline bars and a daily strip; titles as stamps on slate wells with the guide table and events list; components and news as the almanac's parts and dispatches.
 

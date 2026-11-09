@@ -37,7 +37,7 @@ export function Card({
   return (
     <NextLink
       href={href}
-      className="group flex h-full flex-col gap-3 rounded-card border border-hairline bg-surface p-4 no-underline transition-colors duration-hover hover:border-hairline-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+      className="group flex h-full flex-col overflow-hidden rounded-card border border-hairline bg-surface no-underline transition-colors duration-hover hover:border-hairline-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
     >
       {/* No image, no well: an empty box is chrome the reader could lose (design review, ADR-006). */}
       {image === undefined || image === null ? null : (
@@ -54,43 +54,46 @@ export function Card({
             loading={imageLoading === "lazy" ? "lazy" : "eager"}
             fetchPriority={imageLoading === "high" ? "high" : undefined}
             decoding="async"
-            className="block aspect-video h-auto w-full rounded-control object-cover"
+            className="block aspect-video h-auto w-full object-cover"
           />
         </picture>
       )}
-      <div className="flex flex-col gap-1">
-        <p className="text-ui font-medium text-primary group-hover:text-accent">
-          {name}
-        </p>
-        <p className="text-caption text-secondary">
-          {manufacturer}
-          {role !== null ? ` · ${role}` : ""}
-        </p>
+      {/* The art runs to the card's edges (ADR-019); the words sit in their own padded block. */}
+      <div className="flex flex-1 flex-col gap-3 p-4">
+        <div className="flex flex-col gap-1">
+          <p className="text-heading text-primary group-hover:text-accent">
+            {name}
+          </p>
+          <p className="text-caption text-secondary">
+            {manufacturer}
+            {role !== null ? ` · ${role}` : ""}
+          </p>
+        </div>
+        <dl className="m-0 mt-auto grid grid-cols-2 gap-2 border-t border-hairline pt-3">
+          {stats.slice(0, 2).map((stat) => (
+            <div key={stat.label} className="flex flex-col">
+              <dt className="text-caption text-secondary">{stat.label}</dt>
+              <dd className="m-0 font-mono text-ui text-primary">
+                {stat.value === null ? (
+                  <span className="text-secondary">—</span>
+                ) : (
+                  <>
+                    {typeof stat.value === "number"
+                      ? formatNumber(stat.value)
+                      : stat.value}
+                    {stat.unit !== undefined ? (
+                      <span className="font-sans text-caption text-secondary">
+                        {" "}
+                        {stat.unit}
+                      </span>
+                    ) : null}
+                  </>
+                )}
+              </dd>
+            </div>
+          ))}
+        </dl>
       </div>
-      <dl className="m-0 mt-auto grid grid-cols-2 gap-2 border-t border-hairline pt-3">
-        {stats.slice(0, 2).map((stat) => (
-          <div key={stat.label} className="flex flex-col">
-            <dt className="text-caption text-secondary">{stat.label}</dt>
-            <dd className="m-0 font-mono text-ui text-primary">
-              {stat.value === null ? (
-                <span className="text-secondary">—</span>
-              ) : (
-                <>
-                  {typeof stat.value === "number"
-                    ? formatNumber(stat.value)
-                    : stat.value}
-                  {stat.unit !== undefined ? (
-                    <span className="font-sans text-caption text-secondary">
-                      {" "}
-                      {stat.unit}
-                    </span>
-                  ) : null}
-                </>
-              )}
-            </dd>
-          </div>
-        ))}
-      </dl>
     </NextLink>
   );
 }

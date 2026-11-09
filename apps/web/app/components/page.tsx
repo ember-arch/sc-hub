@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { bandArt } from "../../lib/bands";
+import { Masthead } from "../masthead";
 import { ItemType } from "schema";
 import {
   EmptyState,
@@ -47,21 +49,26 @@ export default async function ComponentsPage({
     .filter((g) => g.items.length > 0);
   const clearHref = componentIndexHref({});
   return (
-    <Site current="components">
-      <div className="flex flex-col gap-12 pt-8">
-        <div className="flex flex-col gap-8">
-          <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <h1 className="text-title text-primary">Components</h1>
-            <p
-              className="text-caption text-secondary"
-              data-testid="component-count"
-            >
+    <Site
+      current="components"
+      stage={
+        <Masthead
+          eyebrow={[
+            <span key="count" data-testid="component-count">
               {filtered
                 ? `${components.length} of ${r.components.length} components`
-                : `${r.components.length} components in ${groups.length} types`}{" "}
-              · {r.liveVersion ?? "no LIVE build"}
-            </p>
-          </div>
+                : `${r.components.length} components in ${groups.length} types`}
+            </span>,
+            r.liveVersion ?? "no LIVE build",
+          ]}
+          title="Components"
+          lede="Every weapon, shield, power plant, cooler, quantum drive and the rest, with its stats by build and the ships that carry it as stock."
+          art={bandArt("components")}
+        />
+      }
+    >
+      <div className="flex flex-col gap-12 pt-8">
+        <div className="flex flex-col gap-8">
           <FilterBar
             action="/components"
             label="Filter components"
@@ -83,19 +90,25 @@ export default async function ComponentsPage({
             />
           </FilterBar>
           {groups.length > 1 ? (
-            <nav
-              aria-label="Component types"
-              className="flex flex-wrap gap-2 text-caption"
-            >
-              {groups.map((g) => (
-                <a
-                  key={g.type}
-                  href={`#${g.type}`}
-                  className="rounded-control border border-hairline bg-inset px-2 py-1 text-secondary no-underline hover:text-primary"
-                >
-                  {sentence(g.type)} ({g.items.length})
-                </a>
-              ))}
+            // Each type as a tile with its count (ADR-019): the page's map, and a jump to its table.
+            <nav aria-label="Component types">
+              <ul className="m-0 grid list-none grid-cols-2 gap-2 p-0 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+                {groups.map((g) => (
+                  <li key={g.type}>
+                    <a
+                      href={`#${g.type}`}
+                      className="group flex h-full flex-col gap-2 rounded-card border border-hairline bg-surface p-3 no-underline transition-colors duration-hover hover:border-hairline-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+                    >
+                      <span className="font-mono text-heading text-primary group-hover:text-accent">
+                        {g.items.length}
+                      </span>
+                      <span className="text-caption text-secondary">
+                        {sentence(g.type)}
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
             </nav>
           ) : null}
         </div>

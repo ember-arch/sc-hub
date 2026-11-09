@@ -66,7 +66,7 @@ export function PageShell({
                 key={item.section}
                 href={item.href}
                 aria-current={current === item.section ? "page" : undefined}
-                className={`rounded-control text-ui no-underline transition-colors duration-hover hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent ${current === item.section ? "text-primary" : "text-secondary"}`}
+                className={`rounded-control text-ui no-underline transition-colors duration-hover hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent ${current === item.section ? "nav-current text-primary" : "text-secondary"}`}
               >
                 {item.label}
               </NextLink>

@@ -1,0 +1,64 @@
+# Weekly check of RSI's loaner ship matrix (ADR-015).
+#
+# Runs scripts/bootstrap-fixtures/loaners.ts, which rewrites fixtures/acquisition/LoanerMatrix.json
+# only when RSI changed the article. On a change it pushes a branch and opens a pull request for
+# review; if the repository does not let Actions open pull requests, it opens an issue naming the
+# branch instead. One request to RSI's help centre per run. Scheduled runs use the default branch.
+name: Loaner matrix
+
+on:
+  schedule:
+    # Mondays, 09:17 UTC.
+    - cron: "17 9 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: loaner-matrix
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  refresh:
+    name: Check RSI's loaner matrix
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter schema build
+      # The contact address RSI requests carry (CLAUDE.md section 9): a repository variable.
+      - run: pnpm exec tsx scripts/bootstrap-fixtures/loaners.ts
+        env:
+          SC_HUB_CONTACT_EMAIL: ${{ vars.SC_HUB_CONTACT_EMAIL }}
+      - name: Propose the change for review
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          file=fixtures/acquisition/LoanerMatrix.json
+          if git diff --quiet -- "$file" && git ls-files --error-unmatch "$file" >/dev/null 2>&1; then
+            echo "RSI's loaner matrix is unchanged."
+            exit 0
+          fi
+          day=$(date -u +%Y-%m-%d)
+          branch="data/loaner-matrix-$day"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$branch"
+          git add "$file"
+          git commit -m "data: RSI loaner matrix changed ($day)"
+          git push --force origin "$branch"
+          body="RSI edited its loaner ship matrix. This branch carries the new copy of $file, written by scripts/bootstrap-fixtures/loaners.ts (ADR-015). Review the diff: ship pages show these loaners. CI does not run on pull requests opened by Actions; run it by pushing to the branch or closing and reopening this pull request."
+          if ! gh pr create --base "${{ github.event.repository.default_branch }}" --head "$branch" \
+            --title "data: RSI loaner matrix changed ($day)" --body "$body"; then
+            gh issue create --title "RSI loaner matrix changed ($day)" \
+              --body "Branch $branch carries the new matrix. Actions could not open a pull request; open one from the branch, or allow Actions to create pull requests in the repository settings."
+          fi

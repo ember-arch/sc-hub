@@ -155,7 +155,7 @@ export function CommandPalette({
       onClick={openPalette}
       aria-haspopup="dialog"
       aria-expanded={open}
-      className="inline-flex items-center gap-3 rounded-control border border-hairline-strong bg-surface px-3 py-1 text-ui italic text-muted transition-colors duration-hover hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent md:min-w-[16rem]"
+      className="inline-flex items-center gap-3 rounded-control border border-hairline-strong bg-surface px-3 py-1 text-ui italic text-muted transition-colors duration-hover hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
     >
       <span className="hidden md:inline">Look up a ship, a part, a title…</span>
       <span className="md:hidden">Search</span>

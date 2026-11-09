@@ -91,6 +91,7 @@ export const typeTokens = [
   "body",
   "ui",
   "caption",
+  "label",
 ] as const;
 export type TypeToken = (typeof typeTokens)[number];
 
@@ -111,6 +112,8 @@ export const type: Record<TypeToken, TypeStyle> = {
   body: { size: 16, line: 26, weight: 400 },
   ui: { size: 14, line: 20, weight: 400 },
   caption: { size: 12.5, line: 18, weight: 400 },
+  /** The almanac's labels (ADR-020): the mono as letter-spaced capitals, through the .lab rule. */
+  label: { size: 11, line: 16, weight: 400 },
 };
 
 /** The only two weights on any page. */
@@ -119,7 +122,7 @@ export const weight = { regular: 400, medium: 500 } as const;
 /**
  * ADR-020 (replacing ADR-005's pair): Newsreader for text and interface, Fraunces for display
  * (titles, ship names, headline figures), IBM Plex Mono for numbers. Loaded by the app with
- * next/font/google.  keeps its name as the text face's slot so every  stays valid.
+ * next/font/google. The `sans` slot keeps its name as the text face so every `font-sans` stays valid.
  */
 export const font = {
   sans: {

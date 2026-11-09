@@ -197,13 +197,16 @@ describe("contrast", () => {
 });
 
 // accent.bg carries text where something is selected (the palette's active result, a pressed
-// compare toggle, the news source chip); only text.primary sits on it.
+// compare toggle, the news source chip); only primary and secondary text sit on it (ADR-020:
+// muted text and the accent itself fall short on the tint, so nothing may set them there).
 describe("contrast on accent.bg", () => {
   for (const scheme of ["light", "dark"] as const) {
-    it(`text.primary reads at 4.5:1 or more on accent.bg, ${scheme}`, () => {
-      expect(
-        contrast(color[scheme]["text.primary"], color[scheme]["accent.bg"]),
-      ).toBeGreaterThanOrEqual(4.5);
-    });
+    for (const fg of ["text.primary", "text.secondary"] as const) {
+      it(`${fg} reads at 4.5:1 or more on accent.bg, ${scheme}`, () => {
+        expect(
+          contrast(color[scheme][fg], color[scheme]["accent.bg"]),
+        ).toBeGreaterThanOrEqual(4.5);
+      });
+    }
   }
 });

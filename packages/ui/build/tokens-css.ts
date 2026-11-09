@@ -134,13 +134,22 @@ export function renderTokensCss(): string {
   push("    font-variant-numeric: tabular-nums;");
   push("    -webkit-font-smoothing: antialiased;");
   push("  }");
-  // Display type (ADR-020): titles, ship names and headline figures in the display face, set a
-  // little tight; the mono keeps lining figures for tables and figures.
-  push("  h1,");
-  push("  h2,");
+  // Display type (ADR-020): the display sizes take the display face, set a little tight; the
+  // mono keeps lining figures for tables and figures. Labels are the mono as capitals.
+  push("  .text-hero,");
+  push("  .text-display,");
+  push("  .text-title,");
+  push("  .text-heading,");
   push("  .font-display {");
   push("    font-family: var(--font-display);");
   push("    letter-spacing: -0.02em;");
+  push("  }");
+  push("  .lab {");
+  push("    font-family: var(--font-mono);");
+  push(`    font-size: ${type.label.size}px;`);
+  push(`    line-height: ${type.label.line}px;`);
+  push("    letter-spacing: 0.1em;");
+  push("    text-transform: uppercase;");
   push("  }");
   push("  @media (prefers-reduced-motion: reduce) {");
   push("    *,");

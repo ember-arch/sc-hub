@@ -13,14 +13,12 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { LoanerMatrix, type LoanerRow } from "schema";
 import { z } from "zod";
+import { rsiUserAgent } from "../user-agent.js";
 
 export const LOANER_ARTICLE_URL =
   "https://support.robertsspaceindustries.com/hc/en-us/articles/360003093114-Loaner-Ship-Matrix";
 export const LOANER_API_URL =
   "https://support.robertsspaceindustries.com/api/v2/help_center/en-us/articles/360003093114.json";
-
-const USER_AGENT =
-  "sc-hub-data/0.0 (non-commercial fan reference in development; github.com/ember-arch/sc-hub)";
 
 const Article = z.object({
   article: z.object({
@@ -130,26 +128,47 @@ export function sameMatrix(a: LoanerMatrix, b: LoanerMatrix): boolean {
   return content(a) === content(b);
 }
 
+export type FetchJson = (
+  url: string,
+  init: { headers: Record<string, string> },
+) => Promise<{ ok: boolean; status: number; json(): Promise<unknown> }>;
+
+/**
+ * One check of the matrix (CLAUDE.md section 6: fetchers take an injected fetch): fetches the
+ * article, compares it with the copy on file and returns the copy to write, or null when RSI has
+ * not changed it.
+ */
+export async function checkLoanerMatrix(
+  fetchJson: FetchJson,
+  previous: LoanerMatrix | null,
+  userAgent: string,
+  now: () => string,
+): Promise<{ next: LoanerMatrix; changed: boolean }> {
+  const response = await fetchJson(LOANER_API_URL, {
+    headers: { "User-Agent": userAgent, Accept: "application/json" },
+  });
+  if (!response.ok) {
+    throw new Error(`${LOANER_API_URL} returned ${response.status}`);
+  }
+  const next = parseLoanerArticle(await response.json(), now());
+  return { next, changed: previous === null || !sameMatrix(previous, next) };
+}
+
 async function main(): Promise<void> {
   const runId = randomUUID();
   const started = Date.now();
   const here = dirname(fileURLToPath(import.meta.url));
   const outDir = join(here, "..", "..", "fixtures", "acquisition");
   const file = join(outDir, "LoanerMatrix.json");
-  const response = await fetch(LOANER_API_URL, {
-    headers: { "User-Agent": USER_AGENT, Accept: "application/json" },
-  });
-  if (!response.ok) {
-    throw new Error(`${LOANER_API_URL} returned ${response.status}`);
-  }
-  const next = parseLoanerArticle(
-    await response.json(),
-    new Date().toISOString(),
-  );
   const previous = existsSync(file)
     ? LoanerMatrix.parse(JSON.parse(readFileSync(file, "utf8")))
     : null;
-  const changed = previous === null || !sameMatrix(previous, next);
+  const { next, changed } = await checkLoanerMatrix(
+    (url, init) => globalThis.fetch(url, init),
+    previous,
+    rsiUserAgent("data"),
+    () => new Date().toISOString(),
+  );
   if (changed) {
     mkdirSync(outDir, { recursive: true });
     writeFileSync(file, `${JSON.stringify(next, null, 2)}\n`, "utf8");

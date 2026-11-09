@@ -19,6 +19,7 @@ const full: Record<string, string> = {
   SITE_URL: "https://site.example.test",
   SC_INSTALL_ROOT: "C:\\Games\\StarCitizen",
   STARBREAKER_BIN: "C:\\Tools\\starbreaker.exe",
+  SC_HUB_CONTACT_EMAIL: "contact@example.org",
 };
 
 function without(keys: string[]): Record<string, string> {

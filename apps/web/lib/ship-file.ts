@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import type { PortType } from "schema";
+import { type PortType, ShipClaim } from "schema";
 import { REPO_ROOT } from "./data";
 import type { LoadoutEntry, LoadoutGroup } from "./loadout";
 
@@ -10,18 +10,8 @@ import type { LoadoutEntry, LoadoutGroup } from "./loadout";
  * pack or from CIG's stated claims, never written by hand.
  */
 
-export type ClaimSection = "operations" | "combat" | "logistics" | "command";
-
-export interface ShipClaim {
-  readonly slug: string;
-  readonly section: ClaimSection;
-  readonly label: string;
-  readonly value: string;
-  readonly quote: string;
-  readonly source_url: string;
-  readonly source_title: string;
-  readonly published_at: string;
-}
+export { ShipClaim };
+export type ClaimSection = ShipClaim["section"];
 
 const CLAIMS_FILE = join(
   REPO_ROOT,
@@ -35,7 +25,7 @@ let claims: readonly ShipClaim[] | undefined;
 /** CIG's stated claims for a ship (scripts/media/claims.ts checks each quote against its article). */
 export function claimsFor(slug: string): readonly ShipClaim[] {
   claims ??= existsSync(CLAIMS_FILE)
-    ? (JSON.parse(readFileSync(CLAIMS_FILE, "utf8")) as ShipClaim[])
+    ? ShipClaim.array().parse(JSON.parse(readFileSync(CLAIMS_FILE, "utf8")))
     : [];
   return claims.filter((c) => c.slug === slug);
 }

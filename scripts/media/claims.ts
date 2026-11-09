@@ -1,5 +1,5 @@
 /**
- * What CIG has stated about a showcase ship where the game has no data for it (ADR-012), written as
+ * What CIG has stated about a concept ship the game has no data for (ADR-012; ships in the game data carry none), written as
  * neutral facts, each backed by a verbatim quote from the ship's Comm-Link. `pnpm exec tsx
  * scripts/media/claims.ts` checks every quote against the article copied in fixtures/showcase and
  * writes fixtures/ship-claims/ShipClaim.json. A quote that is not in the article stops the run.
@@ -8,6 +8,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { ShipClaim } from "schema";
 
 export type ClaimSection = "operations" | "combat" | "logistics" | "command";
 
@@ -87,40 +88,12 @@ const CLAIMS: Readonly<Record<string, readonly ClaimInput[]>> = {
       quote: "A vast ship-spanning ammunition reserve",
     },
   ],
-  perseus: [
-    {
-      section: "combat",
-      label: "Torpedoes",
-      value: "Reloaded from the adjacent cargo hold",
-      quote:
-        "torpedoes that can be reloaded quickly from the adjacent cargo hold",
-    },
-    {
-      section: "combat",
-      label: "Turret layout",
-      value: "2 manned (S8 and S3), 2 remote (S3), 6 point-defence",
-      quote: "2x Manned 2x S8, 2x S3",
-    },
-    {
-      section: "logistics",
-      label: "Hold",
-      value: "Cargo and ground vehicles",
-      quote: "flexible storage allows for cargo and ground vehicle transport",
-    },
-  ],
 };
-
-export interface ShipClaimRow extends ClaimInput {
-  readonly slug: string;
-  readonly source_url: string;
-  readonly source_title: string;
-  readonly published_at: string;
-}
 
 function main(): void {
   const here = dirname(fileURLToPath(import.meta.url));
   const root = join(here, "..", "..");
-  const rows: ShipClaimRow[] = [];
+  const rows: ShipClaim[] = [];
   for (const [slug, claims] of Object.entries(CLAIMS)) {
     const articlePath = join(
       root,
@@ -141,13 +114,15 @@ function main(): void {
       if (!article.text.includes(claim.quote)) {
         throw new Error(`${slug}: quote not in the article: ${claim.quote}`);
       }
-      rows.push({
-        slug,
-        ...claim,
-        source_url: article.url,
-        source_title: article.title,
-        published_at: article.published_at,
-      });
+      rows.push(
+        ShipClaim.parse({
+          slug,
+          ...claim,
+          source_url: article.url,
+          source_title: article.title,
+          published_at: article.published_at,
+        }),
+      );
     }
   }
   const out = join(root, "fixtures", "ship-claims");

@@ -21,14 +21,12 @@ import {
   matchShips,
   originalOf,
 } from "./sources.js";
+import { rsiUserAgent } from "../user-agent.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(here, "..", "..");
 const packDir = join(repoRoot, "fixtures", "bootstrap");
 const outDir = join(repoRoot, "fixtures", "rsi-media");
-
-const USER_AGENT =
-  "sc-hub-media/0.0 (non-commercial fan reference in development; github.com/ember-arch/sc-hub)";
 
 const PackVehicleRow = z.object({
   class_name: z.string(),
@@ -64,7 +62,7 @@ async function main(): Promise<void> {
   const get = async (url: string): Promise<Response> => {
     await spacer();
     const response = await fetch(url, {
-      headers: { "User-Agent": USER_AGENT },
+      headers: { "User-Agent": rsiUserAgent("media") },
     });
     if (!response.ok) throw new Error(`${url} returned ${response.status}`);
     return response;
@@ -79,7 +77,7 @@ async function main(): Promise<void> {
     const original = originalOf(match.imageUrl);
     await spacer();
     const first = await fetch(original, {
-      headers: { "User-Agent": USER_AGENT },
+      headers: { "User-Agent": rsiUserAgent("media") },
     });
     const response = first.ok ? first : await get(match.imageUrl);
     const imageUrl = first.ok ? original : match.imageUrl;

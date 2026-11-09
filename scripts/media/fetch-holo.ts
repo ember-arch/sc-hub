@@ -13,11 +13,10 @@ import { fileURLToPath } from "node:url";
 import { readCtm } from "./ctm.js";
 import { HOLO_FIGURE, HOLO_MODELS } from "./holo.js";
 import { RSI_SPACING_MS, createSpacer } from "./sources.js";
+import { rsiUserAgent } from "../user-agent.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const outDir = join(here, "..", "..", "fixtures", "holo");
-const USER_AGENT =
-  "sc-hub-media/0.0 (non-commercial fan reference in development; github.com/ember-arch/sc-hub)";
 
 interface Row {
   slug: string;
@@ -59,7 +58,7 @@ async function main(): Promise<void> {
     }
     await spacer();
     const response = await fetch(item.url, {
-      headers: { "User-Agent": USER_AGENT },
+      headers: { "User-Agent": rsiUserAgent("media") },
     });
     if (!response.ok)
       throw new Error(`${item.url} returned ${response.status}`);

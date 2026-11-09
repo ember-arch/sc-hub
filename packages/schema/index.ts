@@ -6,6 +6,7 @@ export * from "./entities/vehicle.js";
 export * from "./entities/vehicle-stats.js";
 export * from "./entities/vehicle-description.js";
 export * from "./entities/acquisition.js";
+export * from "./entities/ship-claim.js";
 export * from "./media.js";
 export * from "./concept.js";
 export * from "./entities/port.js";

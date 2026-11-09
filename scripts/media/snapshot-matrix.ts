@@ -12,6 +12,7 @@ import { ConceptShip } from "schema";
 import { z } from "zod";
 import { SHOWCASE } from "./showcase.js";
 import { RSI_ORIGIN, SHIP_MATRIX_URL } from "./sources.js";
+import { rsiUserAgent } from "../user-agent.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(here, "..", "..");
@@ -48,7 +49,7 @@ const raw: unknown =
     ? await (
         await fetch(SHIP_MATRIX_URL, {
           headers: {
-            "User-Agent": "sc-hub-media/0.0 (github.com/ember-arch/sc-hub)",
+            "User-Agent": rsiUserAgent("media"),
           },
         })
       ).json()

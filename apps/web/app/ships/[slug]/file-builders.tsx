@@ -80,7 +80,6 @@ function artCredit(show: ShowcaseView): { text: string; href: string } {
     : { text: "Art: Roberts Space Industries", href: show.article.url };
 }
 
-/** Sources in a fixed order; claims and captions cite them by number. */
 /** The holoviewer's model and the person beside it (ADR-015), with the model's credit. */
 function holoVisual(slug: string): {
   model: ShipFileProps["visual"]["model"];
@@ -107,12 +106,25 @@ function holoVisual(slug: string): {
   };
 }
 
+/**
+ * Sources in a fixed order; claims and captions cite them by number. A claim's article is listed
+ * from the claim itself, so its citation holds when no media is built (CI, a deploy).
+ */
 function sourceList(
   show: ShowcaseView | null,
   extra: readonly SourceEntry[],
   holo: HoloModel | null,
+  claims: readonly ShipClaim[] = [],
 ): SourceEntry[] {
+  const articles = [
+    ...new Map(claims.map((c) => [c.source_url, c])).values(),
+  ].filter((c) => c.source_url !== show?.article?.url);
   return [
+    ...articles.map((c) => ({
+      text: `Roberts Space Industries, Comm-Link "${c.source_title}", ${c.published_at.slice(0, 10)}`,
+      href: c.source_url,
+      note: "CIG's stated claims",
+    })),
     ...(show?.article == null
       ? []
       : [
@@ -373,7 +385,8 @@ export function packShipFile(ship: ShipView): ShipFileProps {
   const s = ship.stats;
   const status = vehicleStatusBadge(v.status);
   const show = showcaseFor(v.slug, v.name);
-  const claims = claimsFor(v.slug);
+  // CIG's stated claims stand in only where the game has no data (ADR-012): none for a pack ship.
+  const claims: readonly ShipClaim[] = [];
   const maker = ship.manufacturer;
   const version = s?.game_version ?? r.liveVersion ?? null;
   const groups = loadoutGroups(
@@ -969,6 +982,7 @@ export function conceptShipFile(concept: ConceptShip): ShipFileProps {
       ...loanerSource(loaner),
     ],
     media().holo(concept.slug),
+    claims,
   );
   const matrix = sources.findIndex((x) => x.href === concept.page_url) + 1;
   const crew =

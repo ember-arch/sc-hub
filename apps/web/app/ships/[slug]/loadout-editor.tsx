@@ -107,11 +107,7 @@ function summary(o: EditorOption): string {
       if (s.dps !== null) bits.push(`${n0(s.dps)} DPS`);
       if (s.alpha !== null) bits.push(`${n0(s.alpha)} per shot`);
       if (s.range !== null) bits.push(`${n2(s.range / 1000)} km`);
-      {
-        const lasts = ammoSeconds(o);
-        if (s.ammo !== null && lasts !== null)
-          bits.push(`${n0(s.ammo)} rounds, ${duration(lasts)} of fire`);
-      }
+      if (s.ammo !== null) bits.push(`${n0(s.ammo)} rounds`);
       break;
     case "missiles":
       if (s.tracking !== null) bits.push(s.tracking);
@@ -557,49 +553,6 @@ function DamageMix({ t }: { readonly t: LoadoutTotals }) {
  * What the parts here would draw at full power against what the power plants make. Stock builds
  * often want more than is made; it is a comparison between builds, not a warning.
  */
-/** Seconds of continuous fire a ballistic gun's rounds last at its listed rate; null for energy guns. */
-function ammoSeconds(o: EditorOption): number | null {
-  const { ammo, rpm } = o.stats;
-  return ammo === null || rpm === null || rpm <= 0 ? null : ammo / (rpm / 60);
-}
-
-/** "2 min 41 s", "48 s". */
-function duration(seconds: number): string {
-  const s = Math.round(seconds);
-  if (s < 60) return `${s} s`;
-  const m = Math.floor(s / 60);
-  return s % 60 === 0 ? `${m} min` : `${m} min ${s % 60} s`;
-}
-
-/** Which ballistic gun runs dry first, holding the trigger: ammunition is the limit energy guns lack. */
-function AmmoNote({
-  slots,
-  fitted,
-  options,
-}: {
-  readonly slots: readonly EditorSlot[];
-  readonly fitted: Fitted;
-  readonly options: Readonly<Record<string, EditorOption>>;
-}) {
-  const ballistic = slots.flatMap((s) => {
-    if (s.group !== "guns") return [];
-    const id = current(s, fitted);
-    const o = id === null ? undefined : options[id];
-    const lasts = o === undefined ? null : ammoSeconds(o);
-    return o === undefined || lasts === null ? [] : [{ o, lasts }];
-  });
-  if (ballistic.length === 0) return null;
-  const first = ballistic.reduce((a, b) => (b.lasts < a.lasts ? b : a));
-  return (
-    <p className="m-0 text-caption text-secondary">
-      {ballistic.length === 1
-        ? `The ${first.o.name} carries ${n0(first.o.stats.ammo ?? 0)} rounds: ${duration(first.lasts)} of continuous fire at its listed rate.`
-        : `Of the ${ballistic.length} ballistic guns, the ${first.o.name} runs out of rounds first, after ${duration(first.lasts)} of continuous fire at its listed rate.`}{" "}
-      Energy guns draw on power instead.
-    </p>
-  );
-}
-
 /**
  * The build among the ships on record: its sums against each other ship's stock build, the same
  * rank bars the rest of the ship file uses. Log scales, because the ships on record span a fighter
@@ -832,7 +785,6 @@ export function LoadoutEditor({
           />
         </dl>
         <DamageMix t={now} />
-        <AmmoNote slots={slots} fitted={fitted} options={options} />
         <PowerBar t={now} stock={stock} />
         <Ranks name={name} t={now} peers={peers} changed={changed > 0} />
       </section>

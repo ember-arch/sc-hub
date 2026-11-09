@@ -2,7 +2,7 @@
 
 Some game data via the Star Citizen Wiki API (api.star-citizen.wiki).
 
-Bootstrap placeholders for Phase 0: five ships, their stock loadouts, the components those loadouts reference and the catalogue of ship guns, missiles and torpedoes, shields, power plants, coolers and quantum drives the loadout editor offers (ADR-016), fetched from the Star Citizen Wiki API by `scripts/bootstrap-fixtures` on 2026-11-08T22:22:55.346Z. Phase 1 replaces this pack with records extracted from the game files; until then every page that shows this data carries the credit line above (`docs/legal/attribution.md`).
+Bootstrap placeholders for Phase 0: five ships, their stock loadouts, the components those loadouts reference and the catalogue of ship guns, missiles and torpedoes, shields, power plants, coolers and quantum drives the loadout editor offers (ADR-016), fetched from the Star Citizen Wiki API by `scripts/bootstrap-fixtures` on 2026-11-09T02:03:36.140Z. Phase 1 replaces this pack with records extracted from the game files; until then every page that shows this data carries the credit line above (`docs/legal/attribution.md`).
 
 **Do not edit these files by hand.** Regenerate with:
 

@@ -323,7 +323,7 @@ export default async function TitlesPage({
                     key={s.group}
                     id={slug}
                     aria-labelledby={`${slug}-heading`}
-                    className="flex scroll-mt-8 flex-col gap-4 border-t border-hairline-strong pt-4"
+                    className="flex scroll-mt-8 flex-col gap-4 border-t border-hairline pt-4"
                   >
                     <div className="flex flex-wrap items-baseline justify-between gap-2">
                       <h2

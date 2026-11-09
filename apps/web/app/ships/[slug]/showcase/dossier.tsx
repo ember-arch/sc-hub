@@ -36,7 +36,7 @@ export function DossierSection({
       aria-labelledby={`${id}-title`}
       className="flex scroll-mt-6 flex-col gap-6"
     >
-      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-t-2 border-primary pt-4">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-t border-hairline pt-4">
         <h2
           id={`${id}-title`}
           className="m-0 flex items-baseline gap-3 text-title text-primary"

@@ -67,7 +67,7 @@ function Section({
     <section
       id={id}
       aria-labelledby={`${id}-heading`}
-      className="flex scroll-mt-8 flex-col gap-4 border-t border-hairline-strong pt-4"
+      className="flex scroll-mt-8 flex-col gap-4 border-t border-hairline pt-4"
     >
       <div className="flex flex-col gap-1">
         <h2 id={`${id}-heading`} className="m-0 text-heading text-primary">
@@ -97,7 +97,7 @@ function TableView({
       </summary>
       <table className="mt-3 w-full text-caption">
         <thead>
-          <tr className="lab border-b-2 border-primary text-left text-secondary">
+          <tr className="lab border-b border-hairline text-left text-secondary">
             <th scope="col" className="py-1 font-regular">
               Year
             </th>

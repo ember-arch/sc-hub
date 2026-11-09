@@ -73,7 +73,7 @@ export function Hero({
       </div>
       {image === undefined ? null : image === null ? (
         <div
-          className="flex aspect-video w-full items-center justify-center rounded-card border border-hairline bg-inset px-4 text-center text-ui text-secondary md:w-1/2"
+          className="flex aspect-video w-full items-center justify-center rounded-card bg-inset px-4 text-center text-ui text-secondary md:w-1/2"
           role="img"
           aria-label={placeholder ?? "No image yet"}
         >
@@ -84,7 +84,7 @@ export function Hero({
           <img
             src={image.src}
             alt={image.alt}
-            className="aspect-video w-full rounded-card border border-hairline object-cover"
+            className="aspect-video w-full rounded-card shadow-soft object-cover"
           />
           {image.caption !== undefined ? (
             <figcaption className="mt-1 text-caption text-secondary">
@@ -114,7 +114,7 @@ export interface KeyFactsProps {
 /** Reads in one glance at 390 px: two columns on phone, four on desktop. */
 export function KeyFacts({ facts }: KeyFactsProps) {
   return (
-    <dl className="m-0 grid grid-cols-2 gap-x-6 gap-y-4 rounded-card border border-hairline bg-surface p-4 md:grid-cols-4">
+    <dl className="m-0 grid grid-cols-2 gap-x-6 gap-y-4 rounded-card bg-surface shadow-soft p-4 md:grid-cols-4">
       {facts
         .filter((fact) => fact.value !== null)
         .map((fact) => (
@@ -162,7 +162,7 @@ export function Section({ id, title, aside, number, children }: SectionProps) {
       className={`flex flex-col ${dossier ? "scroll-mt-6 gap-6" : "gap-4"}`}
     >
       <div
-        className={`flex flex-wrap items-baseline justify-between gap-2 ${dossier ? "border-t border-hairline-strong pt-4" : ""}`}
+        className={`flex flex-wrap items-baseline justify-between gap-2 ${dossier ? "border-t border-hairline pt-4" : ""}`}
       >
         <h2
           id={`${id}-heading`}
@@ -191,7 +191,7 @@ export function Section({ id, title, aside, number, children }: SectionProps) {
 /** Empty states name the space and the next step (system.md section 5). */
 export function EmptyState({ children }: { readonly children: ReactNode }) {
   return (
-    <p className="rounded-card border border-hairline bg-inset px-4 py-6 text-center text-ui text-secondary">
+    <p className="rounded-card bg-inset px-4 py-6 text-center text-ui text-secondary">
       {children}
     </p>
   );

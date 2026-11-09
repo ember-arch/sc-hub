@@ -106,7 +106,7 @@ export function HoloLineup({
   }, []);
 
   const option =
-    "rounded-control border px-2 py-1 text-caption transition-colors duration-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent";
+    "rounded-pill border px-3 py-1 text-caption transition-colors duration-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent";
   const choice = (on: boolean) =>
     `${option} ${on ? "border-accent bg-accent-bg text-primary" : "border-hairline-strong text-secondary hover:text-primary"}`;
 
@@ -117,7 +117,7 @@ export function HoloLineup({
         className={`flex flex-col gap-2 ${full ? "bg-page p-4" : ""}`}
       >
         <div
-          className={`relative w-full overflow-hidden border border-hairline-strong bg-inset ${full ? "min-h-0 flex-1" : "aspect-video lg:aspect-[2/1]"}`}
+          className={`relative w-full overflow-hidden rounded-card bg-inset ${full ? "min-h-0 flex-1" : "aspect-video lg:aspect-[2/1]"}`}
         >
           <div
             ref={box}

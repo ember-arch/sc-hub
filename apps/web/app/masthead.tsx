@@ -18,9 +18,9 @@ export function Masthead({
   readonly aside?: ReactNode;
 }) {
   return (
-    <div className="border-b border-hairline-strong">
+    <div>
       <div className="mx-auto flex w-full max-w-content flex-col gap-4 px-4 pb-6 pt-8 md:pb-8 md:pt-12">
-        <p className="lab m-0 flex flex-wrap items-baseline gap-x-3 gap-y-1 text-secondary">
+        <p className="lab m-0 flex flex-wrap items-baseline gap-x-3 gap-y-1 text-muted">
           {eyebrow.map((item, i) => (
             <span key={i} className="flex items-baseline gap-x-3">
               {i > 0 ? <span aria-hidden="true">·</span> : null}

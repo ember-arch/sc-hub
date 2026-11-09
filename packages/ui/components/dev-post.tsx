@@ -25,7 +25,7 @@ export function DevPost({
   sourceUrl,
 }: DevPostProps) {
   return (
-    <article className="flex flex-col gap-3 rounded-card border border-hairline bg-surface p-4">
+    <article className="flex flex-col gap-3 rounded-card bg-surface shadow-soft p-4">
       <header className="flex flex-wrap items-baseline justify-between gap-2">
         <div className="flex flex-wrap items-baseline gap-2 text-ui">
           {author.href !== undefined ? (

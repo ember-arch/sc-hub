@@ -65,7 +65,7 @@ export function Plate({
       />
     );
   return (
-    <figure className="m-0 flex h-full flex-col border border-hairline-strong bg-inset">
+    <figure className="m-0 flex h-full flex-col overflow-hidden rounded-card bg-surface shadow-soft">
       {image === null ? null : href === undefined ? (
         image
       ) : (
@@ -80,7 +80,7 @@ export function Plate({
         </NextLink>
       )}
       <figcaption
-        className={`mt-auto flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 bg-surface px-3 py-2 text-caption text-secondary ${image === null ? "" : "border-t border-hairline-strong"}`}
+        className={`mt-auto flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 bg-surface px-3 py-2 text-caption text-secondary ${image === null ? "" : "border-t border-hairline"}`}
       >
         <span>
           <span className="font-medium text-primary">{numeral}.</span> {caption}

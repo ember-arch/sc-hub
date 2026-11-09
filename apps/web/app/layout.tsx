@@ -12,13 +12,22 @@ export const metadata: Metadata = {
   description: SITE_TAGLINE,
 };
 
+/**
+ * Applies the reader's stored theme before the first paint (ADR-021), so a page never flashes the
+ * other scheme. Reads the same key the switch writes; anything else leaves the system's choice.
+ */
+const THEME_SCRIPT = `try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}`;
+
 export default function RootLayout({
   children,
 }: {
   readonly children: ReactNode;
 }) {
   return (
-    <html lang="en" className={fontClasses}>
+    <html lang="en" className={fontClasses} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
       <body className="min-h-dvh">{children}</body>
     </html>
   );

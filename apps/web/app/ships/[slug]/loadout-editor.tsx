@@ -353,7 +353,7 @@ function Picker({
           placeholder="Filter by name, maker or type"
           // The picker opens on a reader's request; its filter takes the focus.
           autoFocus
-          className="min-w-0 basis-full rounded-control border border-hairline-strong bg-surface px-2 py-1 text-ui text-primary placeholder:text-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent sm:basis-auto sm:flex-1"
+          className="min-w-0 basis-full rounded-control bg-surface shadow-soft px-2 py-1 text-ui text-primary placeholder:text-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent sm:basis-auto sm:flex-1"
         />
         {matching.length > 1 ? (
           <label className="flex items-center gap-2 text-caption text-secondary">
@@ -370,7 +370,7 @@ function Picker({
           <button
             type="button"
             onClick={() => onFit(keys, null)}
-            className="rounded-control border border-hairline-strong px-2 py-1 text-caption text-secondary hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+            className="rounded-control border border-hairline px-2 py-1 text-caption text-secondary hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
           >
             Leave empty
           </button>
@@ -378,7 +378,7 @@ function Picker({
         <button
           type="button"
           onClick={onClose}
-          className="rounded-control border border-hairline-strong px-2 py-1 text-caption text-secondary hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+          className="rounded-control border border-hairline px-2 py-1 text-caption text-secondary hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
         >
           Close
         </button>
@@ -428,7 +428,7 @@ function SlotRow({
       : `S${slot.sizeMin}–${slot.sizeMax}`;
   return (
     <div className="flex flex-wrap items-center gap-x-4 gap-y-2 px-3 py-3">
-      <span className="w-12 shrink-0 rounded-control border border-hairline-strong px-1 py-1 text-center font-mono text-caption text-primary">
+      <span className="w-12 shrink-0 rounded-control border border-hairline px-1 py-1 text-center font-mono text-caption text-primary">
         {size}
       </span>
       <div className="flex min-w-0 flex-1 flex-col gap-1">
@@ -453,7 +453,7 @@ function SlotRow({
           <button
             type="button"
             onClick={onReset}
-            className="rounded-control border border-hairline-strong px-2 py-1 text-caption text-secondary hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+            className="rounded-control border border-hairline px-2 py-1 text-caption text-secondary hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
           >
             Stock
           </button>
@@ -463,7 +463,7 @@ function SlotRow({
           onClick={onOpen}
           aria-expanded={open}
           aria-controls={panelId}
-          className={`rounded-control border px-2 py-1 text-caption focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent ${open ? "border-accent bg-accent-bg text-primary" : "border-hairline-strong text-primary hover:border-accent"}`}
+          className={`rounded-pill border px-3 py-1 text-caption focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent ${open ? "border-accent bg-accent-bg text-primary" : "border-hairline-strong text-primary hover:border-accent"}`}
         >
           {open ? "Close" : "Change"}
         </button>
@@ -700,7 +700,7 @@ export function LoadoutEditor({
     <div className="flex flex-col gap-6">
       <section
         aria-label={`${name} build summary`}
-        className="flex flex-col gap-4 rounded-card border border-hairline bg-surface p-4"
+        className="flex flex-col gap-4 rounded-card bg-surface shadow-soft p-4"
       >
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h3 className="m-0 text-ui font-medium text-primary">
@@ -713,7 +713,7 @@ export function LoadoutEditor({
               <button
                 type="button"
                 onClick={() => setFitted(() => ({}))}
-                className="rounded-control border border-hairline-strong px-2 py-1 text-caption text-primary hover:border-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+                className="rounded-control border border-hairline px-2 py-1 text-caption text-primary hover:border-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
               >
                 Back to stock
               </button>
@@ -729,7 +729,7 @@ export function LoadoutEditor({
                   })
                   .catch(() => undefined);
               }}
-              className="rounded-control border border-hairline-strong px-2 py-1 text-caption text-primary hover:border-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+              className="rounded-control border border-hairline px-2 py-1 text-caption text-primary hover:border-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
             >
               {copied ? "Link copied" : "Copy link to this build"}
             </button>
@@ -810,7 +810,7 @@ export function LoadoutEditor({
           <section
             key={g.id}
             aria-labelledby={`${base}-${g.id}`}
-            className="overflow-hidden rounded-card border border-hairline bg-surface"
+            className="overflow-hidden rounded-card bg-surface shadow-soft"
           >
             <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-hairline px-3 py-2">
               <h3

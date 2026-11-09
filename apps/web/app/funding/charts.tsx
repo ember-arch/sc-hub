@@ -94,15 +94,19 @@ export function YearBars({
   );
 }
 
-/** The ink's tint for a month, by its share of the largest month on the grid (ADR-018, ADR-020). */
+/**
+ * The ink's tint for a month, by its share of the largest month on the grid (ADR-018, ADR-020),
+ * with the one text colour that reads on it: each band clears 4.5:1 in both modes (the lowest is
+ * ink on the 35% tint, dark, 4.6:1), so the figures stay legible as the tint deepens.
+ */
 function tint(value: number, max: number): string {
   const share = max <= 0 ? 0 : value / max;
-  if (share <= 0) return "";
-  if (share < 0.15) return "bg-primary/10";
-  if (share < 0.3) return "bg-primary/20";
-  if (share < 0.5) return "bg-primary/35";
-  if (share < 0.75) return "bg-primary/50 text-page";
-  return "bg-primary/70 text-page";
+  if (share <= 0) return "text-primary";
+  if (share < 0.15) return "bg-primary/10 text-primary";
+  if (share < 0.3) return "bg-primary/20 text-primary";
+  if (share < 0.5) return "bg-primary/35 text-primary";
+  if (share < 0.75) return "bg-primary/70 text-page";
+  return "bg-primary/80 text-page";
 }
 
 /**
@@ -178,9 +182,7 @@ export function MonthGrid({
                   key={i}
                   title={cellTitle(r, i)}
                   className={`px-1 py-2 text-right font-mono ${
-                    v === null
-                      ? "bg-inset text-muted"
-                      : `text-primary ${tint(v, max)}`
+                    v === null ? "bg-inset text-muted" : tint(v, max)
                   }`}
                 >
                   {cellText(r, i)}
@@ -220,7 +222,7 @@ export function MonthGrid({
                   >
                     <span className="text-secondary">{MONTHS[i]}</span>
                     <span
-                      className={`font-mono ${v === null ? "text-muted" : "text-primary"}`}
+                      className={`font-mono ${v === null ? "text-muted" : ""}`}
                     >
                       {cellText(r, i)}
                     </span>

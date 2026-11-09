@@ -292,15 +292,14 @@ export function dailyRate(list: readonly Reading[]): DailyPoint[] {
   return out;
 }
 
-/** The amount added across a gap in the data, for the note under the monthly grid. */
-/** A run of readings for the running-total line;  spans a gap in the data (drawn dashed). */
+/** A run of readings for the running-total line; a `bridge` spans a gap in the data (drawn dashed). */
 export interface TotalSegment {
   readonly points: readonly Reading[];
   readonly bridge: boolean;
 }
 
 /**
- * The running total as runs of readings, split where the data has no snapshot for  or
+ * The running total as runs of readings, split where the data has no snapshot for `minDays` or
  * more: each such stretch becomes a two-point bridge between the readings either side, so the
  * line can show where it is drawn through nothing (ADR-018: never estimated, only joined).
  */
@@ -329,7 +328,7 @@ export function totalSegments(
   return out;
 }
 
-/** The first reading at or above , or null when the counter has not reached it. */
+/** The first reading at or above `threshold`, or null when the counter has not reached it. */
 export function firstCrossing(
   list: readonly Reading[],
   threshold: number,
@@ -363,6 +362,7 @@ export function declines(list: readonly Reading[]): Decline[] {
   return out;
 }
 
+/** The amount added across a gap in the data, for the note under the monthly grid. */
 export function gapTotal(
   list: readonly Reading[],
   gap: { readonly from: string; readonly to: string },

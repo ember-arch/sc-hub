@@ -63,3 +63,6 @@ apps/web/generated/
 
 # showcase ships' art, videos and 3D models (ADR-010): local only, never committed
 fixtures/showcase/
+
+# local design-review helpers (screenshots, overflow checks, a local Playwright config); never committed
+apps/web/*.local.*

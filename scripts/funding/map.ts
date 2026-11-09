@@ -64,6 +64,7 @@ export function dropImplausible(snapshots: readonly FundingSnapshot[]): {
 } {
   const kept: FundingSnapshot[] = [];
   const dropped: Dropped[] = [];
+  let lastCitizens: number | null = null;
   for (const s of snapshots) {
     const prev = kept.at(-1);
     if (
@@ -75,9 +76,17 @@ export function dropImplausible(snapshots: readonly FundingSnapshot[]): {
         funds_usd: s.funds_usd,
         previous_funds_usd: prev.funds_usd,
       });
-    } else {
-      kept.push(s);
+      continue;
     }
+    // The same rule for citizens, on the field alone: the money reading that day still stands.
+    const citizens: number | null =
+      s.citizens !== null &&
+      lastCitizens !== null &&
+      s.citizens < lastCitizens * IMPLAUSIBLE_SHARE
+        ? null
+        : s.citizens;
+    if (citizens !== null) lastCitizens = citizens;
+    kept.push(citizens === s.citizens ? s : { ...s, citizens });
   }
   return { kept, dropped };
 }

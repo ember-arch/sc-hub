@@ -142,6 +142,28 @@ describe("dropImplausible", () => {
     ]);
   });
 
+  it("nulls a citizen count that fell to a fraction but keeps the row", () => {
+    const snaps = mapSnapshots([
+      {
+        funds: "100.00",
+        fans: 500,
+        fleet: 500,
+        timestamp: "2020-01-01T20:00:00Z",
+      },
+      { funds: "101.00", fans: 0, fleet: 0, timestamp: "2020-01-02T20:00:00Z" },
+      {
+        funds: "102.00",
+        fans: 510,
+        fleet: 510,
+        timestamp: "2020-01-03T20:00:00Z",
+      },
+    ]);
+    const { kept, dropped } = dropImplausible(snaps);
+    expect(dropped).toEqual([]);
+    expect(kept.map((s) => s.citizens)).toEqual([500, null, 510]);
+    expect(kept[1]?.funds_usd).toBe(101);
+  });
+
   it("matches the committed fixture's dropped list", () => {
     const series = FundingSeries.parse(
       JSON.parse(readFileSync(join(fundingDir, "Funding.json"), "utf8")),

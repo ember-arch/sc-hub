@@ -1,7 +1,5 @@
 # fixtures/funding
 
-Some game data via the Star Citizen Wiki API (api.star-citizen.wiki).
-
 RSI's public counters of money pledged and citizens registered, one snapshot a day from 13 November 2012 to the day of the last fetch, as the Star Citizen Wiki API records them from robertsspaceindustries.com/funding-goals (ADR-018). Not game data. Nothing here is written by hand.
 
 | File | What it is |

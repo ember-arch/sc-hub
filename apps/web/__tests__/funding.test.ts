@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   type Reading,
   dailyRate,
+  declines,
   formatChange,
   formatCompact,
   fundingHref,
@@ -11,6 +12,7 @@ import {
   parseMeasure,
   readingAt,
   readings,
+  sameDayPriorYear,
   trailingTrend,
   yearPaths,
   yearRows,
@@ -88,6 +90,25 @@ describe("yearRows", () => {
     );
     expect(y2020?.months[1]).toBe(29 * 10);
     expect(y2020?.change).toBeNull();
+  });
+
+  it("counts a leap year's 366 days and places 31 December at day 366", () => {
+    const list = synthetic("2023-12-31", 400, 10);
+    expect(yearRows(list).find((r) => r.year === 2024)?.total).toBe(366 * 10);
+    const path = yearPaths(list, [2024])[0];
+    expect(path?.points.at(-1)?.doy).toBe(366);
+    expect(path?.points.find((p) => p.doy === 60)?.value).toBe(60 * 10);
+  });
+
+  it("tolerates a snapshot exactly three days before a period's end", () => {
+    const list = synthetic("2019-12-31", 400, 10, [
+      "2020-03-31",
+      "2020-03-30",
+      "2020-03-29",
+    ]);
+    expect(yearRows(list).find((r) => r.year === 2020)?.months[2]).toBe(
+      31 * 10 - 30,
+    );
   });
 
   it("tolerates a snapshot up to three days before a period's end, not four", () => {
@@ -171,6 +192,29 @@ describe("rates, gaps, URL state and formatting", () => {
     expect(parseMeasure({ measure: "other" })).toBe("pledges");
     expect(fundingHref("pledges")).toBe("/funding");
     expect(fundingHref("citizens")).toBe("/funding?measure=citizens");
+  });
+
+  it("compares to the same calendar date a year earlier, 29 February included", () => {
+    expect(sameDayPriorYear("2026-11-08")).toBe("2025-11-08");
+    expect(sameDayPriorYear("2028-02-29")).toBe("2027-02-28");
+    expect(sameDayPriorYear("2025-03-01")).toBe("2024-03-01");
+  });
+
+  it("lists the days the counter read lower than the day before", () => {
+    const list: Reading[] = [
+      { day: "2020-01-01", value: 10 },
+      { day: "2020-01-02", value: 12 },
+      { day: "2020-01-03", value: 11 },
+      { day: "2020-01-04", value: 11 },
+      { day: "2020-01-05", value: 9 },
+    ];
+    expect(declines(list)).toEqual([
+      { day: "2020-01-03", by: 1 },
+      { day: "2020-01-05", by: 2 },
+    ]);
+    const real = declines(pledges);
+    expect(real.length).toBeGreaterThan(0);
+    expect(real.some((d) => d.day.startsWith("2019-11"))).toBe(true);
   });
 
   it("formats compact values and signed changes", () => {

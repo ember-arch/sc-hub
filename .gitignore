@@ -12,6 +12,13 @@ pipeline/out/
 pipeline/reports/*.md
 !pipeline/reports/.gitkeep
 
+# title icons copied from the Star Citizen Wiki's uploads (CIG's art, ADR-017): local only, never
+# committed; only their README and sources.json are. Web copies go to apps/web/public/media/.
+fixtures/titles-media/*
+!fixtures/titles-media/README.md
+!fixtures/titles-media/sources.json
+apps/web/public/media/
+
 # fankit downloads (large; licensed separately)
 fixtures/fankit/
 

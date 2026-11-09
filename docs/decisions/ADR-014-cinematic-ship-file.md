@@ -21,6 +21,6 @@ The owner on the ADR-012 ship file: better, but "too far in the other direction"
 
 ## Consequences
 
-- `MediaWall` and `mediaOf` are removed; `FramedArt` stays for the home page's featured files.
+- `MediaWall` and `mediaOf` are removed; `FramedArt` stayed for the home page's featured files until ADR-020 replaced the opening band and the featured files with plates.
 - Committed screenshots still carry no CIG images (taken with `public/media` moved aside); the band then shows the text on the page colour.
 - Fetching more official art for the other pack ships would give them figures too; the config and the test are ready for it.

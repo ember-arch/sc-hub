@@ -1,6 +1,6 @@
 # ADR-015: RSI's holoviewer models, RSI's loaner matrix, full-size art and section order
 
-- Status: accepted (owner direction 2026-11-08); amends ADR-012 (hologram, model source), ADR-013 (loaners), ADR-014 (section order, opening band, render loops)
+- Status: accepted (owner direction 2026-11-08); amends ADR-012 (hologram, model source), ADR-013 (loaners), ADR-014 (section order, opening band, render loops); the CIG-holoviewer look is withdrawn by ADR-020, which draws the same models in ink
 - Date: 2026-11-08
 - Deciders: owner, Claude Code session 2026-11-08
 

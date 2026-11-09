@@ -310,7 +310,7 @@ async function start(
   el.insertBefore(renderer.domElement, el.firstChild);
 
   const scene = new THREE.Scene();
-  const removeLights = inkLights(THREE, scene);
+  const removeLights = inkLights(THREE, scene, palette.bodyDim);
   for (const mesh of meshes) scene.add(mesh);
   for (const line of lines) scene.add(line);
 

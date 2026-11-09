@@ -12,6 +12,7 @@ import {
   RSI_HOLO_CREDIT,
   RSI_IMAGE_CREDIT,
   STARBREAKER_CREDIT,
+  TITLES_TEXT_CREDIT,
   TRADEMARK_LINE,
   UEX_CREDIT,
   UNP4K_CREDIT,
@@ -63,6 +64,16 @@ export default function AboutPage() {
               <TextLink href={WIKI_CREDIT.url} external>
                 {WIKI_CREDIT.text}
               </TextLink>
+            </li>
+            <li data-testid="titles-credit">
+              <TextLink href={TITLES_TEXT_CREDIT.url} external>
+                {TITLES_TEXT_CREDIT.text}
+              </TextLink>{" "}
+              That text stays under the{" "}
+              <TextLink href={TITLES_TEXT_CREDIT.licenceUrl} external>
+                {TITLES_TEXT_CREDIT.licence}
+              </TextLink>{" "}
+              licence on the <TextLink href="/titles">titles page</TextLink>.
             </li>
             <li>
               <TextLink href={UEX_CREDIT.url} external>

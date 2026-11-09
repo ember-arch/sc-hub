@@ -109,6 +109,7 @@ Added with the ship file (ADR-008, ADR-012 to ADR-016):
 | Manufacturer page | `EntityPage` with a 3 px brand rule (the `border.strong` token until the fankit supplies brand colors). Sections: lineup (cards), in the news. |
 | News feed | Source filter chips, then `FeedItem` list, infinite scroll in pages of 20, RSS and JSON links in the header. Dev tracker is a tab: author filter, `DevPost` list, thread grouping. |
 | Author page | `EntityPage` without a hero image: handle, role, first seen, post count; posts newest first. |
+| Titles | The wiki's lead and a count line with its credit; a filter form (search, group, status) as URL state; a group index (sticky rail on desktop); one section per group in its own shape: ladder tiles with the threshold as a figure, the bonus titles under their shared icon, the guide track-by-rank grid, cards with the wiki's sentence; a Sources section last. Icons on an inset well at up to 64 px and at most twice their size; no well without an icon (ADR-017). |
 
 ## 5. Copy
 

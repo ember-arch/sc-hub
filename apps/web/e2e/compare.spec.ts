@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { expect, test } from "@playwright/test";
+import { listedVehicles } from "../lib/editions";
 
 // Spec 02, criterion "Compare": /compare?ships=a,b,c,d shows up to four ships side by side on
 // the key-facts set and the full stats table, shareable by URL, with add and remove from the
@@ -10,6 +11,8 @@ interface VehicleRow {
   class_name: string;
   slug: string;
   name: string;
+  manufacturer_code: string;
+  base_variant_of: string | null;
 }
 interface StatsRow {
   class_name: string;
@@ -24,7 +27,8 @@ const fixture = <T>(file: string): T =>
       "utf8",
     ),
   ) as T;
-const vehicles = fixture<VehicleRow[]>("Vehicle.json");
+// Editions are listed under their base (ADR-022), so the chooser and the counts see entries.
+const vehicles = listedVehicles(fixture<VehicleRow[]>("Vehicle.json"));
 const stats = fixture<StatsRow[]>("VehicleStats.json");
 const [a, b, c, d, e] = vehicles;
 if (a === undefined || b === undefined || c === undefined)

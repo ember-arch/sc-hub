@@ -31,6 +31,21 @@ export const ShipImage = z.strictObject({
 });
 export type ShipImage = z.infer<typeof ShipImage>;
 
+/**
+ * A concept ship's image from RSI's ship matrix (ADR-022), keyed by the concept's slug since it
+ * has no class name yet. Local only, like every image here.
+ */
+export const ConceptImage = z.strictObject({
+  slug: z.string().min(1),
+  source: z.literal("rsi_ship_matrix"),
+  page_url: z.url(),
+  image_url: z.url(),
+  fetched_at: Timestamp,
+  /** Widest first. */
+  renditions: z.array(MediaRendition).min(1),
+});
+export type ConceptImage = z.infer<typeof ConceptImage>;
+
 export const MakerLogo = z.strictObject({
   manufacturer_code: ManufacturerCode,
   source: z.literal("fankit"),
@@ -171,5 +186,7 @@ export const MediaManifest = z.strictObject({
   holo_figure: HoloFigure.nullable().default(null),
   /** Title icons (ADR-017), from `fixtures/titles-media/`; absent in manifests built before it. */
   titles: z.array(TitleIconMedia).default([]),
+  /** Concept ships' images (ADR-022), by slug; absent in manifests built before it. */
+  concepts: z.array(ConceptImage).default([]),
 });
 export type MediaManifest = z.infer<typeof MediaManifest>;

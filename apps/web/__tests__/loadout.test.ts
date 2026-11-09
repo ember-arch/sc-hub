@@ -8,6 +8,7 @@ import {
   loadoutGroups,
   portTypeGroups,
   subtypeLabel,
+  throughStructure,
 } from "../lib/loadout";
 import { bootstrapPack } from "./pack";
 
@@ -32,12 +33,13 @@ describe("loadoutGroups on the fixture pack", () => {
 
   for (const { ship, roots, groups } of perShip) {
     it(`${ship.vehicle.name}: accounts for every listed port once`, () => {
-      // Listed: every port that is not a structural `other` with nothing mounted, at any depth,
-      // but only under listed parents (a structural parent hides its children too).
+      // Listed: every port that is not a structural `other` with nothing mounted, at any depth;
+      // a structural parent is transparent, its children count at its level.
       const listed = (nodes: typeof roots): number =>
-        nodes
-          .filter((n) => n.port.port_type !== "other" || n.item !== null)
-          .reduce((n, node) => n + 1 + listed(node.children), 0);
+        throughStructure(nodes).reduce(
+          (n, node) => n + 1 + listed(node.children),
+          0,
+        );
       expect(groups.reduce((n, g) => n + countEntries(g.entries), 0)).toBe(
         listed(roots),
       );
@@ -61,7 +63,7 @@ describe("loadoutGroups on the fixture pack", () => {
       const anyNested = flattenPorts(roots).some(
         ({ node }) =>
           node.port.port_type !== "other" &&
-          node.children.some((c) => c.item !== null),
+          throughStructure(node.children).some((c) => c.item !== null),
       );
       if (anyNested) {
         expect(

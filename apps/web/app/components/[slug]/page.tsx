@@ -103,7 +103,10 @@ export default async function ComponentPage({ params }: Params) {
             <ul className="m-0 grid list-none grid-cols-2 gap-4 p-0 md:grid-cols-3 lg:grid-cols-4">
               {stockOn.map((ship) => (
                 <li key={ship.vehicle.class_name}>
-                  <Card {...shipCard(ship, shipCardImage(ship))} />
+                  <Card
+                    {...shipCard(ship, shipCardImage(ship))}
+                    name={ship.label}
+                  />
                 </li>
               ))}
             </ul>

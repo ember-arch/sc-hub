@@ -32,7 +32,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     entry("/about", 0.3),
     entry("/privacy", 0.2),
     entry("/licenses", 0.1),
-    ...r.ships.map((s) => entry(`/ships/${s.vehicle.slug}`, 0.8, lastModified)),
+    ...r.entries.map((s) =>
+      entry(`/ships/${s.vehicle.slug}`, 0.8, lastModified),
+    ),
     ...r.manufacturers.map((m) => entry(`/manufacturers/${m.slug}`, 0.6)),
     ...r.components.map((c) =>
       entry(`/components/${c.item.slug}`, 0.5, lastModified),

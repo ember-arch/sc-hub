@@ -2,7 +2,7 @@
   "schema_version": 1,
   "channel": "LIVE",
   "game_version": "4.10.2-LIVE.12881860",
-  "created_at": "2026-11-09T02:03:36.140Z",
+  "created_at": "2026-11-09T21:51:08.379Z",
   "source": "wiki-bootstrap",
   "source_url": "https://api.star-citizen.wiki",
   "credit": "Some game data via the Star Citizen Wiki API (api.star-citizen.wiki).",
@@ -17,44 +17,44 @@
     {
       "name": "Manufacturer.json",
       "entity": "Manufacturer",
-      "sha256": "c55373db85eb6a575f826d62f03a75971b08ad5f43e27ceb543e559c541bf24b",
-      "bytes": 5422,
-      "count": 52
+      "sha256": "925f9a40cf73ff335090e8689a4176786feb344c67d1e705c074849b8e391fbc",
+      "bytes": 6301,
+      "count": 60
     },
     {
       "name": "Vehicle.json",
       "entity": "Vehicle",
-      "sha256": "38194f7c0756c7e44596a77218a29f3cd4d8bfcad10fd0d293b515597b3529e9",
-      "bytes": 1679,
-      "count": 6
+      "sha256": "531ae3642d763d4d59470eb624c8dcbf17b54b6f3855041d8e6a2e5631130133",
+      "bytes": 74487,
+      "count": 253
     },
     {
       "name": "VehicleStats.json",
       "entity": "VehicleStats",
-      "sha256": "b4889ac468778d6a74327d61422bfcb5c8c7b8122b716ab68345b669c0a43eba",
-      "bytes": 53221,
-      "count": 6
+      "sha256": "c5e646e078fb435d5c38d65be943672b92c55dc08ff0f50a79e85c36ebd7ba3f",
+      "bytes": 1919970,
+      "count": 253
     },
     {
       "name": "Port.json",
       "entity": "Port",
-      "sha256": "9dc82bfda28c1e3510ada3a436f9eb003c3ebaa5aac899cc31be41716eecbfd7",
-      "bytes": 316893,
-      "count": 966
+      "sha256": "ab703e8fc09d0cdb5c6cc35264af0a08b293fd4f64ba64ad4dec1cd4840cb8b6",
+      "bytes": 8145348,
+      "count": 25100
     },
     {
       "name": "Item.json",
       "entity": "Item",
-      "sha256": "41dff031e20c838e11f656cc43f801e1924e85ed016fc6e3fd1140503f8e6dce",
-      "bytes": 144055,
-      "count": 578
+      "sha256": "07415d78788e618b4a1717d0d0e4f9fed4676a608b000c94fe0d31461e26492a",
+      "bytes": 764718,
+      "count": 2909
     },
     {
       "name": "ItemStats.json",
       "entity": "ItemStats",
-      "sha256": "b909253b402052e88bb5e2933b1eff8929981b0efca2d45e4943ebbacc56daf7",
-      "bytes": 1095706,
-      "count": 578
+      "sha256": "5fae49869873181cf231aa5202409379556797773ba974438f71fb79de49e099",
+      "bytes": 7833572,
+      "count": 2909
     }
   ]
 }

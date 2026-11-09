@@ -7,6 +7,7 @@
       "url": [
         "http://localhost:3000/",
         "http://localhost:3000/ships",
+        "http://localhost:3000/ships?view=table",
         "http://localhost:3000/ships/gladius",
         "http://localhost:3000/ships/polaris",
         "http://localhost:3000/compare?ships=gladius,polaris",

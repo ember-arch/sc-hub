@@ -70,6 +70,19 @@ export const TYPE_MAP: Readonly<Record<string, PortType>> = {
   Paints: "paint",
   Cargo: "cargo_grid",
   CargoGrid: "cargo_grid",
+  // Seen first on the full catalog (ADR-022).
+  BombLauncher: "missile_rack",
+  GroundVehicleMissileLauncher: "missile_rack",
+  ExternalFuelTank: "fuel_tank",
+  UtilityTurret: "turret",
+  WeaponMining: "mining_laser",
+  EMP: "utility",
+  QuantumInterdictionGenerator: "utility",
+  SalvageHead: "utility",
+  Bomb: "missile",
+  MiningModifier: "utility",
+  SalvageModifier: "utility",
+  TowingBeam: "tractor_beam",
 };
 
 /**
@@ -81,6 +94,17 @@ export const TYPE_OTHER: ReadonlySet<string> = new Set([
   "LifeSupportGenerator",
   "Misc",
   "",
+  // Seen first on the full catalog (ADR-022): real ports with no component kind in the model.
+  "Container",
+  "Module",
+  "SalvageFieldEmitter",
+  "SalvageFieldSupporter",
+  "SalvageFillerStation",
+  "SalvageInternalStorage",
+  "ToolArm",
+  "WeaponMount",
+  "UNDEFINED",
+  "AmmoBox",
 ]);
 
 /** Structure, interior fittings and controllers: not hardpoints. No row, no item fetch, counted in the report. */
@@ -96,6 +120,12 @@ export const TYPE_EXCLUDE: ReadonlySet<string> = new Set([
   "LandingSystem",
   "Relay",
   "SelfDestruct",
+  // Seen first on the full catalog (ADR-022): fittings and cosmetics.
+  "ControlPanel",
+  "Decal",
+  "Flair_Floor",
+  "Light",
+  "TargetSelector",
 ]);
 
 export function classifyType(type: string): TypeOutcome {
@@ -376,8 +406,11 @@ export function mapStatus(raw: WikiVehicle): VehicleStatus {
   return status;
 }
 
-export function mapSizeClass(raw: WikiVehicle): string {
+export function mapSizeClass(raw: WikiVehicle): string | null {
   const value = en(raw.size)?.toLowerCase();
+  // The wiki writes the literal "undefined" where the game files class no size (ground vehicles,
+  // ADR-022); the data model's size_class is nullable for exactly that.
+  if (value === "undefined") return null;
   if (value === undefined || !SIZE_CLASSES.has(value)) {
     throw new MapError(
       `vehicle ${raw.class_name}: size ${JSON.stringify(value ?? raw.size ?? null)} is not one of the data model's size classes`,
@@ -487,6 +520,18 @@ export function mapPorts(
 
   const walk = (list: readonly WikiPort[], parentPath: string | null): void => {
     for (const port of list) {
+      // A dummy hardpoint (ADR-022): no name, so no port path, and nothing it could carry. Counted
+      // and left out; one that did carry a part would lose it, so that halts instead.
+      if (port.name === "") {
+        if ((port.equipped_item ?? null) !== null) {
+          throw new MapError(
+            `port ${raw.class_name}/<unnamed>: an unnamed port carries ${port.equipped_item?.class_name ?? "an item"}, which the Port primary key cannot hold`,
+            { class_name: raw.class_name, parent: parentPath },
+          );
+        }
+        bump(excluded, "unnamed");
+        continue;
+      }
       const classified = classifyType(port.type);
       if (classified.outcome === "unknown") {
         unknown.add(port.type);

@@ -172,22 +172,35 @@ describe("armamentPlan", () => {
 // ADR-016: the editor reads its figures from the wiki's raw records; when that shape changes the
 // figures must not quietly become empty. Every catalogue part of these kinds has its headline.
 describe("the catalogue's figures are all there", () => {
-  const all = r.ships.flatMap((s) =>
-    Object.values(
-      editorModel(r.shipPorts(s.vehicle.class_name), r.components).options,
-    ),
+  const models = r.ships.map((s) =>
+    editorModel(r.shipPorts(s.vehicle.class_name), r.components),
   );
-  it("every gun has damage per second and per shot", () => {
+  const all = models.flatMap((m) => Object.values(m.options));
+  // A part the game mounts stock on some ship is offered even without a record (a beam weapon
+  // without a fire rate, a bomb without a missile's damage); the page then shows no figure.
+  const stock = new Set(
+    models
+      .flatMap((m) => m.slots.map((s) => s.stock))
+      .filter((s) => s !== null),
+  );
+  it("every swappable gun has damage per second and per shot", () => {
     const guns = all.filter((o) => o.group === "guns");
     expect(guns.length).toBeGreaterThan(50);
+    const unmeasured: string[] = [];
     for (const o of guns) {
-      expect(o.stats.dps, o.id).not.toBeNull();
-      expect(o.stats.alpha, o.id).not.toBeNull();
+      if (o.stats.dps === null || o.stats.alpha === null) {
+        expect(stock.has(o.id), o.id).toBe(true);
+        unmeasured.push(o.id);
+        continue;
+      }
     }
+    // A handful of stock beams, never the catalogue.
+    expect(unmeasured.length).toBeLessThan(guns.length / 20);
   });
-  it("every missile and torpedo has its damage, every shield its health", () => {
-    for (const o of all.filter((x) => x.group === "missiles"))
-      expect(o.stats.damage, o.id).not.toBeNull();
+  it("every swappable missile has its damage, every shield its health", () => {
+    for (const o of all.filter((x) => x.group === "missiles")) {
+      if (o.stats.damage === null) expect(stock.has(o.id), o.id).toBe(true);
+    }
     for (const o of all.filter((x) => x.group === "shields"))
       expect(o.stats.shieldHp, o.id).not.toBeNull();
   });

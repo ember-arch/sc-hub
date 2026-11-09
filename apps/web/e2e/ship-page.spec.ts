@@ -200,10 +200,20 @@ test("Acquisition shows pledge and in-game prices with their sources", async ({
   await expect(page.getByText(/may not reflect live servers/)).toBeVisible();
   await page.goto(`/compare?ships=${sold.slug}`);
   await expect(page.getByRole("main")).toContainText("Pledge status");
+  // The front shows the first entries A to Z with their headline prices (ADR-020).
   await page.goto("/");
-  await expect(page.getByRole("main")).toContainText(
-    odin.price_usd.toLocaleString("en-US"),
+  const priced = offers.find((o) =>
+    vehicles
+      .slice()
+      .sort((x, y) => x.name.localeCompare(y.name, "en"))
+      .slice(0, 10)
+      .some((v) => v.slug === o.slug),
   );
+  if (priced !== undefined) {
+    await expect(page.getByRole("main")).toContainText(
+      priced.price_usd.toLocaleString("en-US"),
+    );
+  }
 });
 
 test("a component page shows its stats with the version and the ships that carry it", async ({

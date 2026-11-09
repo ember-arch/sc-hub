@@ -27,6 +27,7 @@ import {
   type HoloFigure,
   type HoloModel,
   MediaManifest,
+  type ConceptImage,
   type MakerLogo,
   type ShipImage,
   type Showcase,
@@ -34,10 +35,12 @@ import {
 import sharp from "sharp";
 import { z } from "zod";
 import {
+  ConceptSource,
   FANKIT_LOGOS,
   LOGO_HEIGHT,
   RsiSource,
   SHIP_WIDTHS,
+  conceptRenditionPath,
   logoRenditionPath,
   shipRenditionPath,
 } from "./sources.js";
@@ -90,6 +93,46 @@ async function ships(): Promise<ShipImage[]> {
     if (renditions.length === 0) continue;
     out.push({
       class_name: row.class_name,
+      source: "rsi_ship_matrix",
+      page_url: row.page_url,
+      image_url: row.image_url,
+      fetched_at: row.fetched_at,
+      renditions,
+    });
+  }
+  return out;
+}
+
+/** Concept ships' images (ADR-022), the same renditions as the pack's ships, by slug. */
+async function concepts(): Promise<ConceptImage[]> {
+  const sourcesFile = join(rsiDir, "concept-sources.json");
+  if (!existsSync(sourcesFile)) return [];
+  const rows = z
+    .array(ConceptSource)
+    .parse(JSON.parse(readFileSync(sourcesFile, "utf8")));
+  const out: ConceptImage[] = [];
+  for (const row of rows) {
+    const input = join(rsiDir, row.file);
+    if (!existsSync(input)) continue;
+    const meta = await sharp(input).metadata();
+    const renditions = [];
+    for (const width of SHIP_WIDTHS) {
+      if (
+        meta.width === undefined ||
+        meta.height === undefined ||
+        width > meta.width
+      )
+        continue;
+      const src = conceptRenditionPath(row.slug, width);
+      const info = await sharp(input)
+        .resize({ width })
+        .webp({ quality: width >= 1280 ? 78 : 74 })
+        .toFile(fileFor(src));
+      renditions.push({ src, width: info.width, height: info.height });
+    }
+    if (renditions.length === 0) continue;
+    out.push({
+      slug: row.slug,
       source: "rsi_ship_matrix",
       page_url: row.page_url,
       image_url: row.image_url,
@@ -360,6 +403,7 @@ async function main(): Promise<void> {
   rmSync(mediaDir, { recursive: true, force: true });
   mkdirSync(join(mediaDir, "ships"), { recursive: true });
   mkdirSync(join(mediaDir, "makers"), { recursive: true });
+  mkdirSync(join(mediaDir, "concepts"), { recursive: true });
   const models = await holoModels();
   const manifest = MediaManifest.parse({
     generated_at: new Date().toISOString(),
@@ -374,6 +418,7 @@ async function main(): Promise<void> {
       sourcesDir: titlesDir,
       mediaDir,
     }),
+    concepts: await concepts(),
   });
   writeFileSync(
     join(mediaDir, "manifest.json"),
@@ -384,6 +429,7 @@ async function main(): Promise<void> {
       run_id: runId,
       job: "media:prepare",
       ships: manifest.ships.length,
+      concepts: manifest.concepts.length,
       makers: manifest.makers.length,
       showcase: manifest.showcase.map(
         (x) =>

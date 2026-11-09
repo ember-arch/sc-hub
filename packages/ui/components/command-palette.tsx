@@ -14,7 +14,9 @@ import {
 /**
  * ⌘K on desktop, the always-visible header button on phone; results grouped by entity type; keyboard
  * navigable; closes on escape; shows recent entities (system.md section 3). Phase 0 searches a
- * client-side index of fixture entities; Meilisearch replaces the matcher in spec 02.
+ * client-side index of fixture entities; Meilisearch replaces the matcher in spec 02. The index
+ * comes either in `entries` (stories, tests) or from `indexUrl`, fetched once when the palette
+ * is first opened or hovered, so a page does not carry the whole catalogue (ADR-022).
  */
 
 import { SITE_NAME } from "../brand";
@@ -28,7 +30,10 @@ export type { SearchEntry, SearchEntryType } from "./search-match";
 export { matchEntries } from "./search-match";
 
 export interface CommandPaletteProps {
-  readonly entries: readonly SearchEntry[];
+  /** The index itself; stories and tests. */
+  readonly entries?: readonly SearchEntry[] | undefined;
+  /** Where the index is fetched from on first use, when `entries` is not given. */
+  readonly indexUrl?: string | undefined;
   /** Stories only: render open. */
   readonly initialOpen?: boolean | undefined;
   readonly initialQuery?: string | undefined;
@@ -60,13 +65,56 @@ function writeRecent(hrefs: string[]): void {
   }
 }
 
+function isEntries(value: unknown): value is SearchEntry[] {
+  return (
+    Array.isArray(value) &&
+    value.every(
+      (e: unknown) =>
+        typeof e === "object" &&
+        e !== null &&
+        typeof (e as SearchEntry).name === "string" &&
+        typeof (e as SearchEntry).href === "string" &&
+        typeof (e as SearchEntry).type === "string",
+    )
+  );
+}
+
 export function CommandPalette({
-  entries,
+  entries: given,
+  indexUrl,
   initialOpen,
   initialQuery,
 }: CommandPaletteProps) {
   const router = useRouter();
   const [open, setOpen] = useState(initialOpen === true);
+  const [fetched, setFetched] = useState<readonly SearchEntry[] | null>(null);
+  const [indexState, setIndexState] = useState<"idle" | "loading" | "failed">(
+    "idle",
+  );
+  const entries = useMemo(() => given ?? fetched ?? [], [given, fetched]);
+  // The index is fetched once, when the reader first reaches for the palette; the ref keeps a
+  // hover, a focus and a tap in the same instant from starting it twice.
+  const fetching = useRef(false);
+  const loadIndex = useCallback(() => {
+    if (given !== undefined || indexUrl === undefined) return;
+    if (fetched !== null || fetching.current) return;
+    fetching.current = true;
+    setIndexState("loading");
+    fetch(indexUrl)
+      .then((response) => (response.ok ? response.json() : null))
+      .then((json: unknown) => {
+        if (isEntries(json)) {
+          setFetched(json);
+          setIndexState("idle");
+        } else {
+          setIndexState("failed");
+        }
+      })
+      .catch(() => setIndexState("failed"))
+      .finally(() => {
+        fetching.current = false;
+      });
+  }, [given, indexUrl, fetched]);
   const [query, setQuery] = useState(initialQuery ?? "");
   const [active, setActive] = useState(0);
   const [recent, setRecent] = useState<string[]>([]);
@@ -105,7 +153,8 @@ export function CommandPalette({
   const openPalette = useCallback(() => {
     setRecent(readRecent());
     setOpen(true);
-  }, []);
+    loadIndex();
+  }, [loadIndex]);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent): void => {
@@ -153,6 +202,8 @@ export function CommandPalette({
     <button
       type="button"
       onClick={openPalette}
+      onPointerEnter={loadIndex}
+      onFocus={loadIndex}
       aria-haspopup="dialog"
       aria-expanded={open}
       className="inline-flex items-center gap-3 rounded-pill bg-surface px-4 py-2 text-ui text-muted shadow-soft transition-colors duration-hover hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
@@ -211,9 +262,13 @@ export function CommandPalette({
             >
               {results.length === 0 ? (
                 <li className="px-3 py-6 text-center text-ui text-secondary">
-                  {query.trim() === ""
-                    ? "Type to search. Recent entities appear here."
-                    : `No results for "${query.trim()}". Try a ship, component or manufacturer name.`}
+                  {indexState === "loading" && fetched === null
+                    ? "Loading the index"
+                    : indexState === "failed" && fetched === null
+                      ? "The index could not be loaded. Close and open the search to try again."
+                      : query.trim() === ""
+                        ? "Type to search. Recent entities appear here."
+                        : `No results for "${query.trim()}". Try a ship, component or manufacturer name.`}
                 </li>
               ) : (
                 GROUPS.map((group) => {

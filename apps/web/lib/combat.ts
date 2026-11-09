@@ -30,9 +30,9 @@ export interface CombatPeer {
   readonly shieldHp: number;
 }
 
-/** Every ship on record with a stock build, except the one named. */
+/** Every entry on record with a stock build, except the one named (editions are not peers). */
 export function combatPeers(exceptClassName: string | null): CombatPeer[] {
-  return repo().ships.flatMap((s) => {
+  return repo().entries.flatMap((s) => {
     if (s.vehicle.class_name === exceptClassName) return [];
     const t = stockCombat(s.vehicle.class_name);
     return t === null

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { bandArt } from "../../lib/bands";
 import { Masthead } from "../masthead";
 import NextLink from "next/link";
 import { ContentSource } from "schema";
@@ -53,7 +52,6 @@ export default async function NewsPage({ searchParams }: Props) {
           ]}
           title="News"
           lede="What CIG publishes and what its developers say, in one feed, each item linked to its source and to the ships and parts it mentions."
-          art={bandArt("news")}
         />
       }
     >

@@ -30,6 +30,9 @@ Tick only what is confirmed in writing. Quote the relevant sentence from the con
   - Interiors: included / exteriors only — TBD
   - Resolution ceiling, if any — TBD
 
+- [ ] **Title icons** — CIG's title (badge) icons, copied from the Star Citizen Wiki's uploads because RSI publishes no list of them, shown on the public titles page with credit (ADR-017). The wiki labels them "Cloud Imperium IP"; neither the fankit nor the Terms of Service fansite grant covers them. Local development only until ticked; the owner allowed the local copy on 2026-11-08.
+  > quote: TBD
+
 - [ ] **DataCore game data** — extraction and publication of vehicle and item stats for LIVE and PTU.
   > quote: TBD
   - PTU data publication explicitly covered — yes / no — TBD

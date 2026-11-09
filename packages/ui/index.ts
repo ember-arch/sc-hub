@@ -54,6 +54,7 @@ export {
   type FilterOption,
   FilterSelect,
   type FilterSelectProps,
+  filterHref,
 } from "./components/filter-bar";
 export { Footer, type FooterProps } from "./components/footer";
 export {

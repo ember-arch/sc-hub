@@ -189,7 +189,7 @@ export function CommandPalette({
                 setActive(0);
               }}
               onKeyDown={onInputKey}
-              placeholder="Search ships, components, manufacturers"
+              placeholder="Search ships, components, manufacturers, titles"
               aria-label="Search"
               aria-controls={listId}
               aria-activedescendant={

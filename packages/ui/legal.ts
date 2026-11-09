@@ -95,3 +95,23 @@ export const CONTACT_EMAIL: string | null = null;
 /** One sentence the about page must state plainly (docs/legal/attribution.md). */
 export const ABOUT_STATEMENT =
   "This site is a fan project built by one person and has no affiliation with Cloud Imperium Games or Roberts Space Industries.";
+
+/**
+ * The titles page's text source (ADR-017, docs/legal/attribution.md). The wiki's sentences are
+ * CC BY-SA 4.0: credited to the article and its contributors, with the licence linked, on the
+ * titles page and the about page, and they stay under that licence.
+ */
+export const TITLES_TEXT_CREDIT = {
+  text: "Titles and how each is earned: the Star Citizen Wiki's Titles article (starcitizen.tools), by its contributors, CC BY-SA 4.0.",
+  url: "https://starcitizen.tools/Titles",
+  historyUrl: "https://starcitizen.tools/index.php?title=Titles&action=history",
+  licence: "CC BY-SA 4.0",
+  licenceUrl: "https://creativecommons.org/licenses/by-sa/4.0/",
+  changes:
+    "Changes: the tables rearranged into tiles, a grid and cards; section headings shortened; the tick and cross marks shown as words; wiki markup, formatting, footnote numbers and links to other wiki pages removed; links to other sites kept.",
+} as const;
+
+/** Shown on the titles page only while icons are built locally (ADR-017); never deployed. */
+export const TITLE_ICON_CREDIT = {
+  text: "Icons: Cloud Imperium Games' art, copied from the Star Citizen Wiki's uploads for local development.",
+} as const;

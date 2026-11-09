@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { ClassName, ManufacturerCode, Timestamp } from "./common.js";
+import { TitleIconMedia } from "./entities/title.js";
 
 /**
  * The media manifest (ADR-009): which images exist for which entities, written by
@@ -168,5 +169,7 @@ export const MediaManifest = z.strictObject({
   showcase: z.array(Showcase).default([]),
   holo: z.array(HoloModel).default([]),
   holo_figure: HoloFigure.nullable().default(null),
+  /** Title icons (ADR-017), from `fixtures/titles-media/`; absent in manifests built before it. */
+  titles: z.array(TitleIconMedia).default([]),
 });
 export type MediaManifest = z.infer<typeof MediaManifest>;

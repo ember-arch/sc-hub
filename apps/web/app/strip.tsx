@@ -59,13 +59,13 @@ export function FigureStrip({
             <dt className="lab text-secondary">{f.label}</dt>
             <dd className="m-0 flex flex-col gap-1">
               {f.href === undefined ? (
-                <span className="font-mono text-title tracking-normal text-primary">
+                <span className="font-mono text-heading tracking-normal text-primary">
                   {value}
                 </span>
               ) : (
                 <NextLink
                   href={f.href}
-                  className={`${link} font-mono text-title tracking-normal text-primary`}
+                  className={`${link} font-mono text-heading tracking-normal text-primary`}
                 >
                   {value}
                 </NextLink>

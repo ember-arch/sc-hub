@@ -45,7 +45,6 @@ export function FundingStrip() {
   return (
     <NextLink
       href="/funding"
-      aria-label="Funding: the counters by month and year"
       className="group grid grid-cols-1 gap-px overflow-hidden rounded-card border border-hairline bg-hairline no-underline transition-colors duration-hover hover:border-hairline-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent md:grid-cols-3"
     >
       {figures.map((f) => (

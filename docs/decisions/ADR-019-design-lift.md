@@ -25,6 +25,19 @@ The owner chose, from three options, the bolder one: an editorial and accent-led
 | Type sizes | Per page: `display` (masthead title), `heading` (card names, section titles, figures), `body` (ledes), with `ui` and `caption` besides. The old `title` size (28) leaves the index pages | At most three sizes per page (CLAUDE.md section 7) |
 | Letter-spacing | Masthead titles at -0.02 em, like the dossier names (ADR-011) | |
 
+### Values added (CLAUDE.md section 2)
+
+- The masthead scrim: two gradients of the page colour over the art, one bottom to top (`bg.page` at 100, 55 and 0 percent at 0, 40 and 75 percent of the height) and one left to right (90, 68 and 30 percent at 0, 60 and 100 percent of the width). Over art, the eyebrow and lede are set in `text.primary`. This is the second allowed gradient after the ship file's fade (ADR-014); system.md's anti-reference stands for gradients as decoration.
+- The nav underline sits 1 px below the header's padding (`--spacing-3`), on its border.
+
+### Deferred (from the audit of PR 12)
+
+- The band image is each index page's largest paint; its LCP on throttled 4G cannot be measured in CI, which has no media. If it misses the 1.5 s budget on a deploy, the 1200 px rendition becomes the fallback `src`.
+- Wrapped eyebrows begin a line with the separator dot.
+- Component type tiles run two to a row on phones, about 700 px before the first table.
+- The home page shows `hero`, `display`, `title` and `heading` besides `ui` and `caption`; the funding strip adds a `heading` block to a page that already had four sizes before this change.
+- The masthead's h1 sits in the stage wrapper, which carries `id="main"` for the skip link, as on the ship file.
+
 ## Alternatives considered
 
 | Option | Why not |

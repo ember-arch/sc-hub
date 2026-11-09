@@ -145,7 +145,10 @@ export function ShipFileOpening({
         >
           {/* With a model, a phone reads the head and name before the figure and a wide screen draws the figure first; without one the key art leads, so its description reads first. */}
           {visual.model === null ? figure : null}
-          <div className="flex flex-col gap-4">
+          {/* Without a figure (no media built) the head keeps a reading width instead of spanning the page. */}
+          <div
+            className={`flex flex-col gap-4 ${figure === null ? "max-w-prose" : ""}`}
+          >
             <p className="lab m-0 flex flex-wrap items-center gap-x-3 gap-y-1 text-secondary">
               <span>Entry {file}</span>
               {maker === null ? null : (

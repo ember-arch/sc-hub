@@ -23,18 +23,18 @@ All tokens live in `packages/ui/tokens.ts`. Tailwind config is generated from th
 
 | Token | Light | Dark | Use |
 | --- | --- | --- | --- |
-| `bg.page` | `#F7F7F5` | `#0C0D0F` | Page canvas |
-| `bg.surface` | `#FFFFFF` | `#141619` | Cards, panels |
-| `bg.raised` | `#FFFFFF` | `#1B1E22` | Popovers, command palette |
-| `bg.inset` | `#EFEFEC` | `#0F1012` | Table header, code, muted wells |
-| `text.primary` | `#131416` | `#F2F2F0` | Body |
-| `text.secondary` | `#5C5F66` | `#A2A6AD` | Supporting |
-| `text.muted` | `#696D74` | `#82868E` | Captions, placeholders |
-| `border.default` | `rgba(0,0,0,0.10)` | `rgba(255,255,255,0.10)` | Hairlines |
-| `border.strong` | `rgba(0,0,0,0.20)` | `rgba(255,255,255,0.18)` | Emphasis, hover |
-| `accent` | `#2560E8` | `#5B8CFF` | Links, focus, selected, primary action |
-| `accent.bg` | `#E8EFFF` | `#17223D` | Accent tint |
-| `success` / `warning` / `danger` | `#1A7A43` / `#9A5B00` / `#C7352B` | `#3DBA6E` / `#E0962B` / `#E5574D` | Status only |
+| `bg.page` | `#F4EFE5` | `#1D1B17` | Page canvas: paper by day, slate by night (ADR-020) |
+| `bg.surface` | `#FBF8F1` | `#24221D` | Cards, panels |
+| `bg.raised` | `#FFFDF8` | `#2B2924` | Popovers, command palette |
+| `bg.inset` | `#EBE4D6` | `#17150F` | Table header, code, muted wells, plate mounts |
+| `text.primary` | `#1C1A16` | `#EFE9DC` | Body: ink |
+| `text.secondary` | `#57534A` | `#B8B0A0` | Supporting |
+| `text.muted` | `#6B665B` | `#9A927F` | Captions, placeholders |
+| `border.default` | `rgba(28,26,22,0.16)` | `rgba(239,233,220,0.16)` | Hairlines |
+| `border.strong` | `rgba(28,26,22,0.42)` | `rgba(239,233,220,0.40)` | Rules, plate frames, emphasis |
+| `accent` | `#A8321F` | `#E6735F` | Links, focus, selected, primary action: oxblood |
+| `accent.bg` | `#F2DED7` | `#4A2A22` | Accent tint |
+| `success` / `warning` / `danger` | `#2F6B3A` / `#8A5A00` / `#B3261E` | `#6FBF7F` / `#E0A94A` / `#EF7A6E` | Status only |
 
 Rules: one accent. Manufacturer brand colors may appear only as a 3 px rule on the manufacturer page hero, never as fills. Semantic colors are for status (flight-ready, concept, PTU-only), never decoration.
 
@@ -50,14 +50,14 @@ Rules: one accent. Manufacturer brand colors may appear only as a 3 px rule on t
 | `ui` | 14 / 20 | 400 / 500 | Controls, table cells, nav |
 | `caption` | 12.5 / 18 | 400 | Units, metadata, timestamps |
 
-Faces: Geist Sans and Geist Mono, or Inter Tight and JetBrains Mono. Pick one pair in Phase 0 and record it in an ADR. Every number uses tabular figures (`font-variant-numeric: tabular-nums`). Sentence case everywhere. No all-caps labels except unit abbreviations and the game's own acronyms (SCM, NAV, EM, IR, LIVE, PTU, EPTU).
+Faces: Newsreader (ADR-020, replacing the Phase 0 pair) for text and interface, Fraunces for display (`hero`, `display`, `title` and `heading` sizes, every `h1` and `h2`, set at -0.02 em), IBM Plex Mono for numbers. Every number uses tabular figures (`font-variant-numeric: tabular-nums`). Sentence case everywhere, with one exception: the almanac's small labels (`.lab`: running heads, column heads, eyebrows) are set in the mono at 11 px as letter-spaced capitals. Unit abbreviations and the game's own acronyms (SCM, NAV, EM, IR, LIVE, PTU, EPTU) keep their case.
 
 ### Space, radius, elevation
 
 - Spacing scale: 4, 8, 12, 16, 24, 32, 48, 64, 96 px. Nothing in between.
-- Radius: 6 px controls, 10 px cards, 14 px the command palette. Nothing else.
-- Elevation: none. Hairline borders only. The command palette and popovers get one shadow token, `shadow.popover: 0 8px 24px rgba(0,0,0,0.12)`.
-- Max content width 1200 px; prose max 68 ch.
+- Radius: 2 px controls, 2 px cards, 2 px the command palette. Nothing else: frames are square, as on paper (ADR-020).
+- Elevation: none. Hairline borders only; plates and panels take the strong rule as a frame. The command palette and popovers get one shadow token, `shadow.popover: 0 8px 24px rgba(28,26,22,0.14)`.
+- Max content width 1400 px; prose max 68 ch.
 
 ### Motion
 

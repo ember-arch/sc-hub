@@ -48,37 +48,38 @@ export const colorUtility: Record<ColorToken, string> = {
 };
 
 export const color: Record<Scheme, Record<ColorToken, string>> = {
+  // Paper and ink (ADR-020): warm paper by day, ink on slate by night.
   light: {
-    "bg.page": "#F7F7F5",
-    "bg.surface": "#FFFFFF",
-    "bg.raised": "#FFFFFF",
-    "bg.inset": "#EFEFEC",
-    "text.primary": "#131416",
-    "text.secondary": "#5C5F66",
-    "text.muted": "#696D74",
-    "border.default": "rgba(0,0,0,0.10)",
-    "border.strong": "rgba(0,0,0,0.20)",
-    accent: "#2560E8",
-    "accent.bg": "#E8EFFF",
-    success: "#1A7A43",
-    warning: "#9A5B00",
-    danger: "#C7352B",
+    "bg.page": "#F4EFE5",
+    "bg.surface": "#FBF8F1",
+    "bg.raised": "#FFFDF8",
+    "bg.inset": "#EBE4D6",
+    "text.primary": "#1C1A16",
+    "text.secondary": "#57534A",
+    "text.muted": "#6B665B",
+    "border.default": "rgba(28,26,22,0.16)",
+    "border.strong": "rgba(28,26,22,0.42)",
+    accent: "#A8321F",
+    "accent.bg": "#F2DED7",
+    success: "#2F6B3A",
+    warning: "#8A5A00",
+    danger: "#B3261E",
   },
   dark: {
-    "bg.page": "#0C0D0F",
-    "bg.surface": "#141619",
-    "bg.raised": "#1B1E22",
-    "bg.inset": "#0F1012",
-    "text.primary": "#F2F2F0",
-    "text.secondary": "#A2A6AD",
-    "text.muted": "#82868E",
-    "border.default": "rgba(255,255,255,0.10)",
-    "border.strong": "rgba(255,255,255,0.18)",
-    accent: "#5B8CFF",
-    "accent.bg": "#17223D",
-    success: "#3DBA6E",
-    warning: "#E0962B",
-    danger: "#E5574D",
+    "bg.page": "#1D1B17",
+    "bg.surface": "#24221D",
+    "bg.raised": "#2B2924",
+    "bg.inset": "#17150F",
+    "text.primary": "#EFE9DC",
+    "text.secondary": "#B8B0A0",
+    "text.muted": "#9A927F",
+    "border.default": "rgba(239,233,220,0.16)",
+    "border.strong": "rgba(239,233,220,0.40)",
+    accent: "#E6735F",
+    "accent.bg": "#4A2A22",
+    success: "#6FBF7F",
+    warning: "#E0A94A",
+    danger: "#EF7A6E",
   },
 };
 
@@ -115,16 +116,25 @@ export const type: Record<TypeToken, TypeStyle> = {
 /** The only two weights on any page. */
 export const weight = { regular: 400, medium: 500 } as const;
 
-/** ADR-005: Geist Sans for interface text, Geist Mono for numbers. Loaded by the app with next/font. */
+/**
+ * ADR-020 (replacing ADR-005's pair): Newsreader for text and interface, Fraunces for display
+ * (titles, ship names, headline figures), IBM Plex Mono for numbers. Loaded by the app with
+ * next/font/google.  keeps its name as the text face's slot so every  stays valid.
+ */
 export const font = {
   sans: {
-    family: "Geist Sans",
-    cssVariable: "--font-geist-sans",
-    fallback: "ui-sans-serif, system-ui, sans-serif",
+    family: "Newsreader",
+    cssVariable: "--font-newsreader",
+    fallback: "Georgia, 'Times New Roman', serif",
+  },
+  display: {
+    family: "Fraunces",
+    cssVariable: "--font-fraunces",
+    fallback: "Georgia, 'Times New Roman', serif",
   },
   mono: {
-    family: "Geist Mono",
-    cssVariable: "--font-geist-mono",
+    family: "IBM Plex Mono",
+    cssVariable: "--font-plex-mono",
     fallback: "ui-monospace, SFMono-Regular, Menlo, monospace",
   },
 } as const;
@@ -133,12 +143,13 @@ export const font = {
 export const space = [4, 8, 12, 16, 24, 32, 48, 64, 96] as const;
 
 /** px. Nothing else. */
-export const radius = { control: 6, card: 10, palette: 14 } as const;
+/** px. Nothing else. Square frames, as on paper (ADR-020). */
+export const radius = { control: 2, card: 2, palette: 2 } as const;
 
 /** Elevation is otherwise none: hairline borders only. */
-export const shadow = { popover: "0 8px 24px rgba(0,0,0,0.12)" } as const;
+export const shadow = { popover: "0 8px 24px rgba(28,26,22,0.14)" } as const;
 
-export const layout = { contentMaxWidth: 1200, proseMaxWidth: "68ch" } as const;
+export const layout = { contentMaxWidth: 1400, proseMaxWidth: "68ch" } as const;
 
 export const motion = {
   /** ms */

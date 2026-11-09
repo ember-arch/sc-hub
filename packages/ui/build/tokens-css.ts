@@ -66,6 +66,9 @@ export function renderTokensCss(): string {
   push();
   push("  --font-*: initial;");
   push(`  --font-sans: var(${font.sans.cssVariable}), ${font.sans.fallback};`);
+  push(
+    `  --font-display: var(${font.display.cssVariable}), ${font.display.fallback};`,
+  );
   push(`  --font-mono: var(${font.mono.cssVariable}), ${font.mono.fallback};`);
   push();
   push("  --text-*: initial;");
@@ -130,6 +133,14 @@ export function renderTokensCss(): string {
   push("    font-family: var(--font-sans);");
   push("    font-variant-numeric: tabular-nums;");
   push("    -webkit-font-smoothing: antialiased;");
+  push("  }");
+  // Display type (ADR-020): titles, ship names and headline figures in the display face, set a
+  // little tight; the mono keeps lining figures for tables and figures.
+  push("  h1,");
+  push("  h2,");
+  push("  .font-display {");
+  push("    font-family: var(--font-display);");
+  push("    letter-spacing: -0.02em;");
   push("  }");
   push("  @media (prefers-reduced-motion: reduce) {");
   push("    *,");

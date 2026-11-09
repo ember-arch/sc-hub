@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import { GeistMono } from "geist/font/mono";
-import { GeistSans } from "geist/font/sans";
 import type { ReactNode } from "react";
 import { SITE_NAME, SITE_TAGLINE } from "ui/brand";
 import { siteUrl } from "../lib/seo";
+import { fontClasses } from "./fonts";
 import "./globals.css";
 
 // Canonical and Open Graph URLs resolve against the public origin (spec 02, "SEO"; ADR-006).
@@ -19,7 +18,7 @@ export default function RootLayout({
   readonly children: ReactNode;
 }) {
   return (
-    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`}>
+    <html lang="en" className={fontClasses}>
       <body className="min-h-dvh">{children}</body>
     </html>
   );

@@ -47,12 +47,14 @@ import { HOLO_FIGURE } from "./holo.js";
 import { packHoloModel } from "./holo-glb.js";
 import { mp4Size } from "./mp4.js";
 import { FILE_SECTIONS, SHOWCASE } from "./showcase.js";
+import { prepareTitleIcons } from "../titles/prepare-icons.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(here, "..", "..");
 const rsiDir = join(repoRoot, "fixtures", "rsi-media");
 const fankitDir = join(repoRoot, "fixtures", "fankit");
 const holoDir = join(repoRoot, "fixtures", "holo");
+const titlesDir = join(repoRoot, "fixtures", "titles-media");
 const publicDir = join(repoRoot, "apps", "web", "public");
 const mediaDir = join(publicDir, "media");
 
@@ -366,6 +368,12 @@ async function main(): Promise<void> {
     showcase: await showcases(),
     holo: models.holo,
     holo_figure: models.figure,
+    // Title icons (ADR-017): CIG art copied from the wiki, local only like everything here.
+    titles: await prepareTitleIcons({
+      image: sharp,
+      sourcesDir: titlesDir,
+      mediaDir,
+    }),
   });
   writeFileSync(
     join(mediaDir, "manifest.json"),
@@ -381,6 +389,7 @@ async function main(): Promise<void> {
         (x) =>
           `${x.slug}: ${x.images.length} images, ${x.videos.length} videos, ${x.chapters.length} chapters`,
       ),
+      titles: manifest.titles.length,
       holo: manifest.holo.map(
         (h) => `${h.slug}: ${(h.bytes / 1e6).toFixed(2)} MB`,
       ),

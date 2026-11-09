@@ -25,7 +25,7 @@ Rebuild the site's look as an illustrated almanac (ADR-020): paper and ink, two 
 
 The owner's feedback on the finished almanac: softer, more contemporary, a theme switch, the key art in the entry's header, a smoother face. Two more PRs.
 
-- [ ] **Gallery foundation.** Manrope as the one face; the lighter palette; radii 10 and 20 px and pills; cards and panels by tone and soft shadow with no frames; hairlines only inside tables and lists; labels as small sentence-case text; the shell with pill nav, pill search and a theme switch whose choice is kept and applied before the first paint; no page forces a scheme; `system.md` reads as the gallery; token, contrast and e2e tests pass.
+- [x] **Gallery foundation.** Manrope as the one face; the lighter palette; radii 10 and 20 px and pills; cards and panels by tone and soft shadow with no frames; hairlines only between rows and under section heads; labels as small sentence-case text; the shell with pill nav, pill search and a theme switch whose choice is kept and applied before the first paint; no page forces a scheme; `system.md` reads as the gallery; token, contrast and e2e tests pass.
 - [ ] **Gallery pages.** The front page as a bento of image cards with airy counters; the entry's key art as a rounded cover with the name over it, the holomodel and the particulars in rounded panels, the sections' lead figures as cards; the ledger, honours, parts and dispatches softened to match.
 
 ## Verification

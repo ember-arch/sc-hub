@@ -11,7 +11,9 @@ import { useSyncExternalStore } from "react";
  */
 
 export const THEME_KEY = "theme";
-const CHANGE_EVENT = "sc-hub:theme";
+/** Fired on `window` after the switch changes the scheme; canvases that paint from tokens listen. */
+export const THEME_CHANGE_EVENT = "sc-hub:theme";
+const CHANGE_EVENT = THEME_CHANGE_EVENT;
 
 type Scheme = "light" | "dark";
 
@@ -60,7 +62,7 @@ export function ThemeToggle() {
     >
       <span
         aria-hidden="true"
-        className={`absolute top-1 h-4 w-4 rounded-pill bg-primary transition-transform duration-hover ${dark ? "translate-x-7" : "translate-x-1"}`}
+        className={`absolute top-1 h-4 w-4 rounded-pill bg-primary ${dark ? "translate-x-6" : "translate-x-1"}`}
       />
     </button>
   );

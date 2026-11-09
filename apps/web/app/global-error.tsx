@@ -3,6 +3,7 @@
 import { Footer } from "ui";
 import { SITE_NAME } from "ui/brand";
 import { fontClasses } from "./fonts";
+import { THEME_SCRIPT } from "./theme-script";
 import "./globals.css";
 
 /**
@@ -16,7 +17,10 @@ export default function GlobalError({
   readonly reset: () => void;
 }) {
   return (
-    <html lang="en" className={fontClasses}>
+    <html lang="en" className={fontClasses} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
       <body className="min-h-dvh">
         <div className="flex min-h-dvh flex-col bg-page text-primary">
           <main className="mx-auto w-full max-w-content flex-1 px-4 pb-8">

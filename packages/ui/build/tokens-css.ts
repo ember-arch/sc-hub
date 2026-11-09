@@ -19,8 +19,8 @@ import {
  * "Tailwind config is generated from them"). Three parts:
  *
  * 1. Scheme variables (`--bg-page` and friends) on `:root`, switched by the system preference and
- *    overridable by `data-theme` on any element, so a ship page can default to dark (system.md
- *    principle 3) while the rest of the shell follows the system.
+ *    overridable by `data-theme` on any element: the theme switch sets it on `<html>` (ADR-021) and
+ *    a well can set it on itself (the honours' slate wells).
  * 2. An `@theme inline` block that maps those variables onto Tailwind's namespaces and resets every
  *    default palette, size, radius and shadow, so a class outside the token set produces no CSS.
  * 3. Utilities for the three motion durations.

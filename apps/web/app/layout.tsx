@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { SITE_NAME, SITE_TAGLINE } from "ui/brand";
 import { siteUrl } from "../lib/seo";
 import { fontClasses } from "./fonts";
+import { THEME_SCRIPT } from "./theme-script";
 import "./globals.css";
 
 // Canonical and Open Graph URLs resolve against the public origin (spec 02, "SEO"; ADR-006).
@@ -11,12 +12,6 @@ export const metadata: Metadata = {
   title: { default: SITE_NAME, template: `%s — ${SITE_NAME}` },
   description: SITE_TAGLINE,
 };
-
-/**
- * Applies the reader's stored theme before the first paint (ADR-021), so a page never flashes the
- * other scheme. Reads the same key the switch writes; anything else leaves the system's choice.
- */
-const THEME_SCRIPT = `try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}`;
 
 export default function RootLayout({
   children,

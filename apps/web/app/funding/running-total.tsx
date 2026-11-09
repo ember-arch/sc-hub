@@ -41,7 +41,7 @@ export function RunningTotal({
     at: pct(s.y(f * yMax), H),
     text: formatCompact(f * yMax, measure),
   }));
-  // A hover column per month keeps the targets to a few hundred.
+  // A hover column per thirty readings keeps the targets to a few hundred.
   const columns: { from: number; to: number }[] = [];
   for (let i = 0; i < list.length; i += 30) {
     columns.push({ from: i, to: Math.min(i + 30, list.length) });
@@ -63,7 +63,8 @@ export function RunningTotal({
     <Frame
       summary={`The running total from ${formatDay(first.day)} to ${formatDay(last.day)}: ${formatValue(first.value, measure)} to ${formatValue(last.value, measure)}.${bridgeNote}${crossingNote}`}
       yTicks={ticks}
-      xTicks={yearTicks(from, to, 2).filter((t) => Number(t.text) % 2 === 0)}
+      // Even years only, each shown on phones too: seven short labels fit a 390 px plot.
+      xTicks={yearTicks(from, to, 1).filter((t) => Number(t.text) % 2 === 0)}
       labels={
         crossing === null || milestone === null ? null : (
           // The label sits below and to the left of the point, so it never runs off the right edge

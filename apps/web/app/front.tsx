@@ -1,6 +1,8 @@
 import NextLink from "next/link";
 import type { ReactNode } from "react";
 import { Plate, type PlatePicture } from "ui";
+import { RSI_IMAGE_CREDIT } from "ui/legal";
+import { CONTENTS, romanNumeral } from "../lib/front";
 import { type Figure, FigureStrip } from "./strip";
 
 export type Counter = Figure;
@@ -13,8 +15,6 @@ export function Counters({
 }) {
   return <FigureStrip figures={counters} />;
 }
-import { RSI_IMAGE_CREDIT } from "ui/legal";
-import { CONTENTS, romanNumeral } from "../lib/front";
 
 /**
  * The front page's parts (ADR-020): the contents list, the counters (the figure strip) and the

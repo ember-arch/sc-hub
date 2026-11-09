@@ -42,6 +42,11 @@ export const metadata: Metadata = {
     "How Star Citizen's crowdfunding has grown: pledges and citizens by year and month, this year against the last two, and the trailing-year trend, from RSI's public counters.",
 };
 
+/** A gap this long is drawn dashed on the running total and named under the month grid. */
+const LONG_GAP_DAYS = 60;
+/** The round figure the running total marks: a presentation choice, located in the data. */
+const MILESTONE_USD = 1_000_000_000;
+
 const LABEL: Record<Measure, { noun: string; verb: string }> = {
   pledges: { noun: "pledged", verb: "raised" },
   citizens: { noun: "citizens", verb: "joined" },
@@ -166,7 +171,9 @@ export default async function FundingPage({
   const daily = dailyRate(list);
   const fell = declines(list);
   const words = LABEL[measure];
-  const longGap = series.source.gaps.find((g) => g.days >= 60);
+  const longGap = series.source.gaps.find((g) => g.days >= LONG_GAP_DAYS);
+  const crossed =
+    measure === "pledges" && list.some((r) => r.value >= MILESTONE_USD);
   const longGapTotal = longGap === undefined ? null : gapTotal(list, longGap);
 
   return (
@@ -250,13 +257,13 @@ export default async function FundingPage({
         <Section
           id="total"
           title="The running total"
-          intro={`RSI's counter since the first snapshot. Solid where the API has readings; dashed where it has none for two months or more, joined across the gap, never estimated.${measure === "pledges" ? " The point marks the first billion dollars." : ""}`}
+          intro={`RSI's counter since the first snapshot. Solid where the API has readings; dashed where it has none for two months or more, joined across the gap, never estimated.${crossed ? " The point marks the first billion dollars." : ""}`}
         >
           <RunningTotal
             list={list}
             measure={measure}
-            gapDays={60}
-            milestone={measure === "pledges" ? 1_000_000_000 : null}
+            gapDays={LONG_GAP_DAYS}
+            milestone={measure === "pledges" ? MILESTONE_USD : null}
           />
         </Section>
 

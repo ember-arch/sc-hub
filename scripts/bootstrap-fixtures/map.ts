@@ -376,8 +376,11 @@ export function mapStatus(raw: WikiVehicle): VehicleStatus {
   return status;
 }
 
-export function mapSizeClass(raw: WikiVehicle): string {
+export function mapSizeClass(raw: WikiVehicle): string | null {
   const value = en(raw.size)?.toLowerCase();
+  // The wiki writes the literal "undefined" where the game files class no size (ground vehicles,
+  // ADR-022); the data model's size_class is nullable for exactly that.
+  if (value === "undefined") return null;
   if (value === undefined || !SIZE_CLASSES.has(value)) {
     throw new MapError(
       `vehicle ${raw.class_name}: size ${JSON.stringify(value ?? raw.size ?? null)} is not one of the data model's size classes`,

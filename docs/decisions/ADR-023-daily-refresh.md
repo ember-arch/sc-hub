@@ -30,7 +30,7 @@ CIG changes all of this without notice: a build changes every stat, the ship mat
 ## What the job does not hide
 
 - A new build replaces the pack (append.ts keeps rows only within a build); slugs are pinned against the pack on disk whatever its build, so a vehicle that gains a namesake keeps its slug (CLAUDE.md section 5).
-- The descriptions follow the pack: they run after a rebuild, and also whenever the file on disk is for another build than the pack's or covers fewer vehicles than it holds.
+- The descriptions follow the pack: they run after a rebuild, and also whenever the file on disk is missing or for another build than the pack's. Coverage is not a reason to run: a vehicle the wiki has no text for never gets a row (one of the 253 today), and a gate on the count would fetch every description every day.
 - After a stamp-only revert the page's "copied <date>" line keeps the earlier date: the data was checked that day, not copied; a "checked" date on the pages is a later change.
 - A concept pledge offer carries `observed_at`, so once the RSI sources run the prices commit daily; the funding counters commit daily by design.
 - A removed title halts the titles fetcher until `TITLES_ACCEPT_REMOVED` names it, which the workflow cannot pass: that one needs a local run and a pull request.

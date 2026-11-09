@@ -33,13 +33,24 @@ export type Outcome =
 /** Fields that change on every run without the data changing. */
 export const STAMP_KEYS: ReadonlySet<string> = new Set(["fetched_at"]);
 
-/** Whether the pack must be rebuilt: the API serves another build, or the run was forced. */
+/**
+ * Whether the pack must be rebuilt: the API serves another build, or the run was forced. A
+ * build that was fetched on a day its checks failed waits on its branch (the workflow names it
+ * `data/refresh-build-<build>`) and is not fetched again until the branch is gone or the run
+ * is forced, so a broken page does not cost two hours of requests every day.
+ */
 export function needsRebuild(
   packVersion: string | null,
   apiVersion: string,
   force: boolean,
+  waiting: readonly string[] = [],
 ): { rebuild: boolean; reason: string } {
   if (force) return { rebuild: true, reason: "rebuild forced" };
+  if (waiting.includes(apiVersion))
+    return {
+      rebuild: false,
+      reason: `build ${apiVersion} was fetched on a day its checks failed and waits on branch data/refresh-build-${apiVersion}; fix the code and merge or delete the branch, or force a rebuild`,
+    };
   if (packVersion === null)
     return { rebuild: true, reason: "the pack has no game version" };
   if (packVersion === apiVersion)

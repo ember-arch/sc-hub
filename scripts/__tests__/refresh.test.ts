@@ -25,6 +25,19 @@ describe("needsRebuild", () => {
     });
     expect(needsRebuild(null, "4.10.2-LIVE.1", false).rebuild).toBe(true);
   });
+
+  it("does not fetch again a build that waits on a branch, unless forced", () => {
+    const waiting = ["4.10.3-LIVE.2"];
+    const held = needsRebuild("4.10.2-LIVE.1", "4.10.3-LIVE.2", false, waiting);
+    expect(held.rebuild).toBe(false);
+    expect(held.reason).toContain("data/refresh-build-4.10.3-LIVE.2");
+    expect(
+      needsRebuild("4.10.2-LIVE.1", "4.10.3-LIVE.2", true, waiting).rebuild,
+    ).toBe(true);
+    expect(
+      needsRebuild("4.10.2-LIVE.1", "4.10.4-LIVE.3", false, waiting).rebuild,
+    ).toBe(true);
+  });
 });
 
 describe("sameIgnoringStamps", () => {

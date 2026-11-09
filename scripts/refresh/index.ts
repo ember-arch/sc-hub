@@ -14,10 +14,16 @@
  *      SC_HUB_CONTACT_EMAIL (CLAUDE.md section 9); skipped, and said so, without it.
  *   6. titles, 7. funding: the wiki's article and counters.
  *
+ * The out folder holds summary.md, commit.txt, issue-title.txt, issue.md, needs-contact.txt,
+ * build.txt (the build the API served) and one <step>.log per fetcher run; placeholders are
+ * written first so the workflow always finds them. REFRESH_WAITING_BUILDS lists builds that
+ * failed their checks on an earlier day and wait on a branch; they are not fetched again.
+ *
  * Exit code 0 when every step ran or was skipped, 2 when a step failed (its report is in the
  * summary and the issue text), 1 when the job itself could not run.
  */
 import { spawnSync } from "node:child_process";
+import { randomUUID } from "node:crypto";
 import {
   existsSync,
   mkdirSync,
@@ -54,10 +60,35 @@ const outDir =
     : join(tmpdir(), "sc-hub-refresh");
 const day = new Date().toISOString().slice(0, 10);
 const hasContact = (process.env["SC_HUB_CONTACT_EMAIL"] ?? "").trim() !== "";
+const waitingBuilds = (process.env["REFRESH_WAITING_BUILDS"] ?? "")
+  .split(/\s+/)
+  .filter((b) => b !== "");
+const runId = randomUUID();
+const startedAt = Date.now();
 
 const log = (event: Record<string, unknown>): void => {
-  process.stderr.write(`${JSON.stringify({ job: "refresh", ...event })}\n`);
+  process.stderr.write(
+    `${JSON.stringify({ job: "refresh", run_id: runId, ...event })}\n`,
+  );
 };
+
+const outFile = (name: string, text: string): void =>
+  writeFileSync(join(outDir, name), text);
+// Placeholders first: a job that dies midway still leaves the workflow something to read.
+mkdirSync(outDir, { recursive: true });
+outFile(
+  "summary.md",
+  `## Refresh ${day}\n\nThe job did not finish; see the log.\n`,
+);
+outFile("commit.txt", "");
+outFile("issue-title.txt", "Refresh needs attention: the job did not finish\n");
+outFile(
+  "issue.md",
+  "The daily refresh stopped before writing its summary; see the run log.\n",
+);
+outFile("needs-contact.txt", "no\n");
+outFile("build.txt", "");
+outFile("outcomes.json", "[]\n");
 
 interface Step {
   readonly id: string;
@@ -69,8 +100,13 @@ interface Step {
   readonly needsRsi?: boolean;
   /** Runs only when this earlier step changed something. */
   readonly after?: string;
-  /** Decides whether to run; a string is the reason to skip. */
-  readonly gate?: () => Promise<{ run: true; note?: string } | string>;
+  /** Decides whether to run, given the earlier outcomes; a string is the reason to skip. */
+  readonly gate?: (
+    outcomes: readonly Outcome[],
+  ) =>
+    | Promise<{ run: true; note?: string } | string>
+    | { run: true; note?: string }
+    | string;
 }
 
 /** Every file under the paths, as text, keyed by repository-relative path. */
@@ -138,9 +174,50 @@ async function catalogGate(): Promise<{ run: true; note?: string } | string> {
   const served = WikiGameVersionResponse.parse(
     await client.getJson("/api/game-versions/default"),
   ).data.code;
-  const decision = needsRebuild(packVersion, served, force);
+  outFile("build.txt", `${served}\n`);
+  const decision = needsRebuild(packVersion, served, force, waitingBuilds);
   log({ event: "refresh.build", pack: packVersion, served, ...decision });
   return decision.rebuild ? { run: true, note: served } : decision.reason;
+}
+
+/**
+ * The descriptions follow the pack: they run when the catalog changed in this run, and also when
+ * the file on disk is for another build than the pack's or covers fewer vehicles than it holds
+ * (a rebuild that landed on a day the descriptions halted, or a pack that grew).
+ */
+function descriptionsGate(
+  outcomes: readonly Outcome[],
+): { run: true } | string {
+  if (outcomes.find((o) => o.id === "catalog")?.kind === "changed")
+    return { run: true };
+  const packFile = join(repoRoot, "fixtures", "bootstrap", "GameVersion.json");
+  const vehiclesFile = join(repoRoot, "fixtures", "bootstrap", "Vehicle.json");
+  const file = join(
+    repoRoot,
+    "fixtures",
+    "descriptions",
+    "VehicleDescription.json",
+  );
+  if (!existsSync(packFile) || !existsSync(vehiclesFile))
+    return "no pack to describe";
+  const packVersion = (
+    JSON.parse(readFileSync(packFile, "utf8")) as { version: string }[]
+  )[0]?.version;
+  const vehicles = (
+    JSON.parse(readFileSync(vehiclesFile, "utf8")) as { class_name: string }[]
+  ).map((v) => v.class_name);
+  if (!existsSync(file)) return { run: true };
+  const rows = JSON.parse(readFileSync(file, "utf8")) as {
+    class_name: string;
+    game_version: string;
+  }[];
+  const covered = new Set(
+    rows.filter((r) => r.game_version === packVersion).map((r) => r.class_name),
+  );
+  const missing = vehicles.filter((v) => !covered.has(v)).length;
+  return missing === 0
+    ? `every vehicle in the pack has its description for ${packVersion ?? "this build"}`
+    : { run: true };
 }
 
 const STEPS: readonly Step[] = [
@@ -156,7 +233,7 @@ const STEPS: readonly Step[] = [
     label: "descriptions",
     files: ["fixtures/descriptions"],
     script: "scripts/bootstrap-fixtures/descriptions.ts",
-    after: "catalog",
+    gate: descriptionsGate,
   },
   {
     id: "ship-matrix",
@@ -225,7 +302,7 @@ async function runStep(
   if (step.gate !== undefined) {
     let decision: { run: true; note?: string } | string;
     try {
-      decision = await step.gate();
+      decision = await step.gate(outcomes);
     } catch (error) {
       return {
         id,
@@ -243,6 +320,8 @@ async function runStep(
   log({ event: "refresh.step", id, script: step.script });
   const started = Date.now();
   const result = runScript(step.script);
+  // The fetcher's whole log, for the job's summary; the issue quotes its last lines.
+  outFile(`${id}.log`, result.stderr);
   const after = snapshot(step.files);
   if (result.code !== 0) {
     restore(before, after);
@@ -275,7 +354,6 @@ async function runStep(
 const outcomes: Outcome[] = [];
 for (const step of STEPS) outcomes.push(await runStep(step, outcomes));
 
-mkdirSync(outDir, { recursive: true });
 const runUrl = process.env["REFRESH_RUN_URL"] ?? null;
 const message = commitMessage(day, outcomes);
 const issue = issueText(day, outcomes, runUrl);
@@ -303,7 +381,10 @@ const failed = outcomes.filter((o) => o.kind === "failed").length;
 console.log(
   JSON.stringify({
     job: "refresh",
+    run_id: runId,
     day,
+    duration_ms: Date.now() - startedAt,
+    errors: failed,
     changed: outcomes.filter((o) => o.kind === "changed").map((o) => o.id),
     unchanged: outcomes.filter((o) => o.kind === "unchanged").map((o) => o.id),
     skipped: outcomes.filter((o) => o.kind === "skipped").map((o) => o.id),

@@ -21,6 +21,7 @@ const ROUTES = [
   "/components",
   "/news",
   "/titles",
+  "/funding",
   "/about",
 ] as const;
 

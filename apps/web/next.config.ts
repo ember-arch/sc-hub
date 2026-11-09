@@ -18,6 +18,7 @@ const nextConfig: NextConfig = {
       "../../fixtures/acquisition/**",
       "../../fixtures/ship-claims/**",
       "../../fixtures/titles/Titles.json",
+      "../../fixtures/funding/Funding.json",
       "../../pnpm-workspace.yaml",
     ],
   },

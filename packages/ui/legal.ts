@@ -111,6 +111,17 @@ export const TITLES_TEXT_CREDIT = {
     "Changes: the tables rearranged into tiles, a grid and cards; section headings shortened; the tick and cross marks shown as words; wiki markup, formatting, footnote numbers and links to other wiki pages removed; links to other sites kept.",
 } as const;
 
+/**
+ * The funding page follows the measures of Sycend's Tableau dashboard (ADR-018): the breakdown by
+ * year and month, the year-against-year running totals and the trailing-year comparison. None of
+ * its data is used (its downloads are off); the credit is for the idea, on the page and the about page.
+ */
+export const FUNDING_INSPIRATION = {
+  text: "The measures follow Sycend's Star Citizen Funding Dashboard on Tableau Public, which this page is modelled on; its data is its own and not used here.",
+  linkText: "Star Citizen Funding Dashboard by Sycend",
+  url: "https://public.tableau.com/app/profile/sycend/viz/StarCitizenFundingDashboard/IncomeView",
+} as const;
+
 /** Shown on the titles page only while icons are built locally (ADR-017); never deployed. */
 export const TITLE_ICON_CREDIT = {
   text: "Icons: Cloud Imperium Games' art, copied from the Star Citizen Wiki's uploads for local development.",

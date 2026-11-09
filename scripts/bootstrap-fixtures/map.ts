@@ -79,6 +79,10 @@ export const TYPE_MAP: Readonly<Record<string, PortType>> = {
   EMP: "utility",
   QuantumInterdictionGenerator: "utility",
   SalvageHead: "utility",
+  Bomb: "missile",
+  MiningModifier: "utility",
+  SalvageModifier: "utility",
+  TowingBeam: "tractor_beam",
 };
 
 /**
@@ -100,6 +104,7 @@ export const TYPE_OTHER: ReadonlySet<string> = new Set([
   "ToolArm",
   "WeaponMount",
   "UNDEFINED",
+  "AmmoBox",
 ]);
 
 /** Structure, interior fittings and controllers: not hardpoints. No row, no item fetch, counted in the report. */

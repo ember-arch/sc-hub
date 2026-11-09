@@ -1,4 +1,3 @@
-import { Badge } from "./badge";
 import { formatTime } from "./format";
 import { TextLink } from "./text-link";
 
@@ -30,10 +29,11 @@ export function FeedItem({
 }: FeedItemProps) {
   return (
     <article className="flex flex-col gap-2 border-b border-hairline py-4">
-      <div className="flex flex-wrap items-center gap-2 text-caption text-secondary">
-        <Badge tone="neutral">{source}</Badge>
+      {/* The dispatch line (ADR-020): the source and the time as a label. */}
+      <p className="lab m-0 flex flex-wrap items-center gap-x-3 text-secondary">
+        <span className="text-primary">{source}</span>
         <time dateTime={publishedAt}>{formatTime(publishedAt, now)}</time>
-      </div>
+      </p>
       <h3 className="text-heading text-primary">
         <TextLink href={sourceUrl} external className="text-primary">
           {title}

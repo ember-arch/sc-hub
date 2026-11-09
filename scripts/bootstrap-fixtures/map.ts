@@ -487,6 +487,18 @@ export function mapPorts(
 
   const walk = (list: readonly WikiPort[], parentPath: string | null): void => {
     for (const port of list) {
+      // A dummy hardpoint (ADR-022): no name, so no port path, and nothing it could carry. Counted
+      // and left out; one that did carry a part would lose it, so that halts instead.
+      if (port.name === "") {
+        if ((port.equipped_item ?? null) !== null) {
+          throw new MapError(
+            `port ${raw.class_name}/<unnamed>: an unnamed port carries ${port.equipped_item?.class_name ?? "an item"}, which the Port primary key cannot hold`,
+            { class_name: raw.class_name, parent: parentPath },
+          );
+        }
+        bump(excluded, "unnamed");
+        continue;
+      }
       const classified = classifyType(port.type);
       if (classified.outcome === "unknown") {
         unknown.add(port.type);

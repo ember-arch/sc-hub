@@ -21,6 +21,10 @@ The same sources that fed the bootstrap can feed the whole catalog: the Wiki API
 | Holoviewer models | Not fetched for the catalog: each model's address is on its RSI pledge page, and reading three hundred pages is a further decision. The showcase ships keep theirs | A page without a model still has its particulars, figures and sections; the lineup draws the ships that have models |
 | What the site does | Nothing new: the register, the entries, the compare basket, the palette and the sitemap already take whatever the pack holds; the front page shows ten entries and five bento cards whatever the count | The pages were built for the full catalog from the start |
 
+## What the full list taught the mapper
+
+- Dummy hardpoints: some vehicles (first seen on the Greycat MDC) declare a port with an empty name, an empty type and nothing mounted. The data model keys ports by name, so such a port is counted under `excluded` as `unnamed` and left out; an unnamed port that carried a part would halt the run, as every unknown shape does.
+
 ## Consequences
 
 - `fixtures/bootstrap` grows from six ships to every ship in the build; the pack README says so; `PACK_BYTE_LIMIT` is 40 MB; CLAUDE.md section 4 reads "committed; the catalog since ADR-022".

@@ -34,7 +34,8 @@ export const WikiEquippedItem = z.looseObject({
 export type WikiEquippedItem = z.infer<typeof WikiEquippedItem>;
 
 export const WikiPort = z.looseObject({
-  name: z.string().min(1),
+  /** May be empty: the game files declare dummy hardpoints with no name, type or item (ADR-022). */
+  name: z.string(),
   position: str,
   class_name: str,
   type: z.string(),

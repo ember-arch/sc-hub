@@ -138,7 +138,7 @@ Added with the ship file (ADR-008, ADR-012 to ADR-016):
 
 1. Any color outside the token table?
 2. Any type size or weight outside the type table?
-3. Any decoration: gradient, glow, texture, emoji, icon used as ornament?
+3. Any decoration: gradient, glow, texture, emoji, icon used as ornament? (Two gradients are allowed because they keep text legible over CIG's art, never as decoration: the ship file's fade, ADR-014, and the masthead scrim, ADR-019.)
 4. Any page element the reader could lose without losing meaning?
 5. Does the ship page key-facts block read in one glance at 390 px?
 6. Does every table pass the phone rule (no sideways scroll)?

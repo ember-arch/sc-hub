@@ -59,7 +59,7 @@ function Tile({
 }) {
   return (
     <div
-      className={`flex flex-col gap-1 rounded-card border border-hairline bg-surface p-4 ${lead ? "md:col-span-2" : ""}`}
+      className={`flex flex-col gap-1 rounded-card border border-hairline bg-surface p-4 ${lead ? "col-span-2" : ""}`}
     >
       <span className="text-caption text-secondary">{label}</span>
       <span

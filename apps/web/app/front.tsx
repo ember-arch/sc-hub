@@ -74,7 +74,7 @@ export function Counters({
           <dd className="m-0 flex flex-col gap-1">
             <NextLink
               href={c.href}
-              className={`${link} font-mono text-heading text-primary hover:text-accent`}
+              className={`${link} font-mono text-heading tracking-normal text-primary hover:text-accent`}
             >
               {c.value}
             </NextLink>

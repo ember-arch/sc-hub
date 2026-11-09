@@ -49,13 +49,12 @@ test("opens from the search button and groups results by entity type", async ({
   ).toBeVisible();
 });
 
-test("the home search field opens the palette", async ({ page }) => {
+// The front page has no search field of its own (ADR-020); the running head's opens the palette.
+test("the running head's search field opens the palette on the front page", async ({
+  page,
+}) => {
   await page.goto("/");
-  await page
-    .getByRole("button", {
-      name: /Search ships, components, manufacturers and titles/,
-    })
-    .click();
+  await page.getByRole("button", { name: /Look up a ship/ }).click();
   await expect(page.getByRole("dialog", { name: "Search" })).toBeVisible();
 });
 

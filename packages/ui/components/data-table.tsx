@@ -143,30 +143,34 @@ export function DataTable<T>({
                 key={column.key}
                 scope="col"
                 aria-sort={ariaSort}
-                className={`lab sticky top-0 border-b-2 border-primary bg-page px-3 py-2 text-secondary ${cellAlign(column)} ${isPrimary(column, index) ? "" : bp.cell}`}
+                className={`lab sticky top-0 border-b-2 border-primary bg-page px-2 py-2 text-secondary ${cellAlign(column)} ${isPrimary(column, index) ? "" : bp.cell}`}
               >
+                {/* Header text and its unit may wrap at their spaces (labels are wide, ADR-020); the sort arrow stays attached to the last word. */}
                 {column.sortValue === undefined ? (
-                  <span className="whitespace-nowrap">
+                  <span>
                     {column.header}
                     {column.unit !== undefined ? (
-                      <span className="text-secondary"> ({column.unit})</span>
+                      <span className="text-secondary">
+                        {unitsBelow ? <br /> : " "}({column.unit})
+                      </span>
                     ) : null}
                   </span>
                 ) : (
                   <button
                     type="button"
                     onClick={() => toggleSort(column)}
-                    className={`inline-flex items-center gap-x-1 rounded-control hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent ${unitsBelow ? `flex-wrap ${column.align === "right" ? "justify-end" : ""}` : "whitespace-nowrap"}`}
+                    className={`rounded-control hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent ${cellAlign(column)}`}
                   >
                     {column.header}
                     {column.unit !== undefined && !unitsBelow ? (
-                      <span className="text-secondary">({column.unit})</span>
+                      <span className="text-secondary"> ({column.unit})</span>
                     ) : null}
                     <span aria-hidden="true" className="text-secondary">
+                      {" "}
                       {active ? (sort?.direction === "asc" ? "↑" : "↓") : "↕"}
                     </span>
                     {column.unit !== undefined && unitsBelow ? (
-                      <span className="basis-full text-secondary">
+                      <span className="block text-secondary">
                         ({column.unit})
                       </span>
                     ) : null}
@@ -195,13 +199,13 @@ export function DataTable<T>({
                 {columns.map((column, index) => (
                   <td
                     key={column.key}
-                    className={`break-words px-3 py-3 align-middle ${cellAlign(column)} ${isPrimary(column, index) ? "" : bp.cell} ${column.align === "right" ? "font-mono" : ""}`}
+                    className={`break-words px-2 py-3 align-middle ${cellAlign(column)} ${isPrimary(column, index) ? "" : bp.cell} ${column.align === "right" ? "font-mono" : ""}`}
                   >
                     {column.render(row)}
                   </td>
                 ))}
                 {secondary.length > 0 ? (
-                  <td className={`px-3 py-3 text-right ${bp.phone}`}>
+                  <td className={`px-2 py-3 text-right ${bp.phone}`}>
                     <button
                       type="button"
                       aria-expanded={open}
@@ -215,7 +219,7 @@ export function DataTable<T>({
               </tr>
               {open ? (
                 <tr className={`border-b border-hairline ${bp.phone}`}>
-                  <td colSpan={columns.length + 1} className="px-3 py-2">
+                  <td colSpan={columns.length + 1} className="px-2 py-2">
                     <dl className="m-0 grid grid-cols-2 gap-x-4 gap-y-2">
                       {secondary.map((column) => (
                         <div key={column.key} className="flex flex-col">

@@ -37,7 +37,7 @@ export function Card({
   return (
     <NextLink
       href={href}
-      className="group flex h-full flex-col overflow-hidden rounded-card border border-hairline-strong bg-inset no-underline transition-colors duration-hover hover:border-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+      className="group flex h-full flex-col overflow-hidden rounded-card bg-surface shadow-soft no-underline transition-colors duration-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
     >
       {/* No image, no well: an empty box is chrome the reader could lose (design review, ADR-006). */}
       {image === undefined || image === null ? null : (
@@ -69,7 +69,7 @@ export function Card({
             {role !== null ? ` · ${role}` : ""}
           </p>
         </div>
-        <dl className="m-0 mt-auto grid grid-cols-2 gap-2 border-t border-hairline-strong pt-3">
+        <dl className="m-0 mt-auto grid grid-cols-2 gap-2 border-t border-hairline pt-3">
           {stats.slice(0, 2).map((stat) => (
             <div key={stat.label} className="flex flex-col">
               <dt className="text-caption text-secondary">{stat.label}</dt>

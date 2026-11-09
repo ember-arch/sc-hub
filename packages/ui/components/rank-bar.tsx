@@ -72,7 +72,7 @@ export function RankBar({
         </span>
       </div>
       <div className="relative py-2" aria-hidden="true">
-        <div className="border-t border-hairline-strong" />
+        <div className="border-t border-hairline" />
         {values.map((v) => (
           <svg
             key={v.key}

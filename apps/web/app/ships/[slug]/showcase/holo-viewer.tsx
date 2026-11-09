@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { TextLink } from "ui";
+import { THEME_CHANGE_EVENT, TextLink } from "ui";
 import {
   inkBody,
   inkEdges,
@@ -119,7 +119,7 @@ export function HoloViewer({
     maximumFractionDigits: 1,
   });
   const option =
-    "rounded-control border px-2 py-1 text-caption transition-colors duration-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent";
+    "rounded-pill border px-3 py-1 text-caption transition-colors duration-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent";
   const choice = (on: boolean) =>
     `${option} ${on ? "border-accent bg-accent-bg text-primary" : "border-hairline-strong bg-surface text-secondary hover:text-primary"}`;
 
@@ -127,7 +127,7 @@ export function HoloViewer({
     <figure className="m-0 flex flex-col">
       <div ref={frame} className={`flex flex-col ${full ? "bg-page p-4" : ""}`}>
         <div
-          className={`relative w-full overflow-hidden border border-hairline-strong bg-inset ${full ? "min-h-0 flex-1" : "aspect-[4/3]"}`}
+          className={`relative w-full overflow-hidden rounded-card bg-inset ${full ? "min-h-0 flex-1" : "aspect-[4/3]"}`}
         >
           <div
             ref={box}
@@ -179,7 +179,7 @@ export function HoloViewer({
             {full ? "Exit full screen" : "Full screen"}
           </button>
         </div>
-        <fieldset className="m-0 flex flex-wrap items-center gap-1 border-0 border-x border-b border-hairline-strong bg-surface p-2">
+        <fieldset className="m-0 flex flex-wrap items-center gap-1 border-0 bg-surface p-2">
           <legend className="sr-only">View</legend>
           {VIEWS.map((v) => (
             <button
@@ -300,6 +300,17 @@ async function start(
 
   // The ground: one line under the keel, the length of the ship and a little more.
   const groundInk = inkLine(THREE, palette.inkDim, 0.5);
+  // The switch (ADR-021) changes the tokens under the canvas; repaint from them.
+  const repaint = (): void => {
+    const next = inkPalette(THREE, el);
+    renderer.setClearColor(next.paper, 1);
+    body.color.copy(next.body);
+    ink.color.copy(next.ink);
+    personMaterials?.body.color.copy(next.bodyDim);
+    personMaterials?.ink.color.copy(next.inkDim);
+    groundInk.color.copy(next.inkDim);
+  };
+  window.addEventListener(THEME_CHANGE_EVENT, repaint);
   const ground = new THREE.Line(
     new THREE.BufferGeometry().setFromPoints([
       new THREE.Vector3(-size.x * 0.9, bounds.min.y, 0),
@@ -439,6 +450,7 @@ async function start(
     },
     setRender,
     dispose() {
+      window.removeEventListener(THEME_CHANGE_EVENT, repaint);
       cancelAnimationFrame(frame);
       onScreen.disconnect();
       resize.disconnect();

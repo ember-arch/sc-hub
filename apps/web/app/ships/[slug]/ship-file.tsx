@@ -131,10 +131,7 @@ export function ShipFileOpening({
       />
     );
   return (
-    <section
-      aria-labelledby="ship-name"
-      className="border-b border-hairline-strong"
-    >
+    <section aria-labelledby="ship-name" className="border-b border-hairline">
       <div className="mx-auto flex w-full max-w-content flex-col gap-8 px-4 pb-8 pt-8">
         {/* The key art reads first in the document so its description and credit lead; it is drawn last, under the opening. */}
         {visual.model !== null && keyArt !== null ? (
@@ -208,7 +205,7 @@ function SpecTable({
 }) {
   return (
     <div className="flex flex-col gap-2">
-      <table className="w-full border-collapse border-b-2 border-primary text-ui">
+      <table className="w-full border-collapse border-b border-hairline text-ui">
         <caption className="sr-only">Particulars</caption>
         <tbody>
           {rows.map((row) => (
@@ -300,7 +297,7 @@ function Caption({
   readonly text: string;
 }) {
   return (
-    <figcaption className="border-t border-hairline-strong bg-surface px-3 py-2 text-caption text-secondary">
+    <figcaption className="border-t border-hairline bg-surface px-3 py-2 text-caption text-secondary">
       <span className="lab text-primary">{label}</span> {text}
     </figcaption>
   );
@@ -361,7 +358,7 @@ function LeadFigure({
   readonly label: string;
 }) {
   return (
-    <figure className="m-0 flex flex-col overflow-hidden border border-hairline-strong bg-inset">
+    <figure className="m-0 flex flex-col overflow-hidden rounded-card bg-inset">
       {figure.kind === "video" ? (
         <AutoVideo
           src={figure.src}
@@ -396,7 +393,7 @@ function SupportingFigures({
         const label = `Fig. ${section}.${i + 2}`;
         return (
           <li key={figure.kind === "video" ? figure.src : figure.picture.src}>
-            <figure className="m-0 flex h-full flex-col overflow-hidden border border-hairline-strong bg-inset">
+            <figure className="m-0 flex h-full flex-col overflow-hidden rounded-card bg-inset">
               {figure.kind === "video" ? (
                 <AutoVideo
                   src={figure.src}
@@ -475,7 +472,7 @@ export function Claims({
 }) {
   if (claims.length === 0) return null;
   return (
-    <div className="flex flex-col gap-2 border border-hairline-strong bg-surface p-4">
+    <div className="flex flex-col gap-2 rounded-card bg-surface shadow-soft p-4">
       <p className="lab m-0 text-secondary">
         Stated by CIG, not in the game data
       </p>

@@ -31,6 +31,7 @@ import type { SearchEntry } from "../components/search-match";
 import { SegmentedLinks } from "../components/segmented-links";
 import { StatList, StatRow } from "../components/stat-row";
 import { StatsByChannel } from "../components/stats-by-channel";
+import { ThemeToggle } from "../components/theme-toggle";
 import { channelBadge, vehicleStatusBadge } from "../components/status";
 import { DataTableStory } from "./data-table-story";
 import { storyMeta } from "./ids";
@@ -373,6 +374,15 @@ const renderers: Record<string, { title: string; render: Story["render"] }> = {
           },
         ]}
       />
+    ),
+  },
+  "theme-toggle": {
+    title: "ThemeToggle",
+    render: () => (
+      <div className="flex items-center gap-3 p-4">
+        <ThemeToggle />
+        <span className="text-ui text-secondary">Light or dark</span>
+      </div>
     ),
   },
   "page-shell": {

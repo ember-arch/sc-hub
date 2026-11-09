@@ -125,12 +125,12 @@ export function LadderTile({
   return (
     <li
       id={title.slug}
-      className={`flex flex-col gap-3 border border-hairline-strong bg-surface p-3 ${anchor}`}
+      className={`flex flex-col gap-3 rounded-card bg-surface shadow-soft p-3 ${anchor}`}
     >
       {icon === null ? null : (
         <div
           data-theme="dark"
-          className="flex h-24 items-center justify-center border border-hairline-strong bg-page"
+          className="flex h-24 items-center justify-center border border-hairline bg-page"
         >
           <Icon image={icon} max={64} />
         </div>
@@ -184,12 +184,12 @@ export function TitleCard({
   return (
     <li
       id={title.slug}
-      className={`flex gap-4 border border-hairline-strong bg-surface p-4 ${anchor}`}
+      className={`flex gap-4 rounded-card bg-surface shadow-soft p-4 ${anchor}`}
     >
       {icon === null ? null : (
         <div
           data-theme="dark"
-          className="flex size-24 shrink-0 items-center justify-center border border-hairline-strong bg-page"
+          className="flex size-24 shrink-0 items-center justify-center border border-hairline bg-page"
         >
           <Icon image={icon} max={64} />
         </div>
@@ -260,7 +260,7 @@ export function GuideGridView({
     <div className="flex flex-col gap-2">
       <div
         aria-hidden="true"
-        className="hidden gap-2 border-b-2 border-primary pb-2 lg:grid lg:grid-cols-7"
+        className="hidden gap-2 border-b border-hairline pb-2 lg:grid lg:grid-cols-7"
       >
         <span className="lab text-secondary">Track</span>
         {grid.ranks.map((r) => (
@@ -299,7 +299,7 @@ export function GuideGridView({
                 <div
                   key={cell.slug}
                   id={cell.slug}
-                  className={`flex flex-col items-center justify-center gap-1 border border-hairline-strong bg-surface p-2 text-center ${anchor}`}
+                  className={`flex flex-col items-center justify-center gap-1 rounded-card bg-surface shadow-soft p-2 text-center ${anchor}`}
                 >
                   {icon === null ? null : (
                     <span

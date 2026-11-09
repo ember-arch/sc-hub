@@ -109,7 +109,7 @@ export function AutoVideo({
               video.pause();
             }
           }}
-          className="absolute bottom-2 right-2 rounded-control border border-hairline-strong bg-page px-2 py-1 text-caption text-primary hover:border-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+          className="absolute bottom-2 right-2 rounded-control border border-hairline bg-page px-2 py-1 text-caption text-primary hover:border-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
         >
           {stopped ? "Play" : "Pause"}
           <span className="sr-only"> {label}</span>

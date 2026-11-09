@@ -75,7 +75,7 @@ export function ShipTable({
                   decoding="async"
                   width={171}
                   height={96}
-                  className="hidden aspect-video h-24 w-auto shrink-0 border border-hairline-strong object-cover lg:block xl:h-16"
+                  className="hidden aspect-video h-24 w-auto shrink-0 border border-hairline object-cover lg:block xl:h-16"
                 />
               )}
               <NextLink

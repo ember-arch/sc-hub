@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import type { BufferGeometry } from "three";
 import { THEME_CHANGE_EVENT, TextLink } from "ui";
 import {
   inkBody,
@@ -17,6 +18,10 @@ import {
  * line, largest first, with a person beside the smallest. The page's ship is drawn in full ink;
  * the others dimmer. Labels name each ship and its length; the buttons below fly the camera to
  * any one ship or back to the whole line. Drag to turn, scroll or pinch to zoom.
+ *
+ * The row is laid out from the recorded lengths before any model arrives, so the paper, the ground
+ * line and the camera are up at once and each ship is drawn where it stands the moment its own
+ * model lands; its inked edges follow in an idle moment. Nothing waits for the whole set.
  */
 
 export interface LineupShip {
@@ -35,6 +40,11 @@ type Focus = "around" | "all" | string;
 interface Api {
   focus(focus: Focus): void;
   dispose(): void;
+}
+
+interface Progress {
+  readonly done: number;
+  readonly total: number;
 }
 
 const n0 = (v: number): string =>
@@ -58,10 +68,13 @@ export function HoloLineup({
   const [state, setState] = useState<"idle" | "loading" | "ready" | "error">(
     "idle",
   );
+  const [progress, setProgress] = useState<Progress>({
+    done: 0,
+    total: ships.length,
+  });
   const [full, setFull] = useState(false);
   const order = [...ships].sort((a, b) => b.length - a.length);
   const current = ships.find((s) => s.current);
-  const bytes = ships.reduce((n, s) => n + s.bytes, 0);
   // The largest ship's neighbourhood is the whole row.
   const largest = current !== undefined && order[0]?.slug === current.slug;
   const [focus, setFocus] = useState<Focus>(largest ? "all" : "around");
@@ -76,7 +89,9 @@ export function HoloLineup({
         if (entry?.isIntersecting !== true) return;
         near.disconnect();
         setState("loading");
-        void start(el, tags, ships, figure?.src ?? null)
+        void start(el, tags, ships, figure?.src ?? null, (p) => {
+          if (!cancelled) setProgress(p);
+        })
           .then((made) => {
             if (cancelled) {
               made.dispose();
@@ -109,6 +124,8 @@ export function HoloLineup({
     "rounded-pill border px-3 py-1 text-caption transition-colors duration-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent";
   const choice = (on: boolean) =>
     `${option} ${on ? "border-accent bg-accent-bg text-primary" : "border-hairline-strong text-secondary hover:text-primary"}`;
+  const loading =
+    state === "loading" || (state === "ready" && progress.done < ships.length);
 
   return (
     <figure className="m-0 flex flex-col gap-2">
@@ -130,13 +147,18 @@ export function HoloLineup({
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 z-10"
           />
-          {state === "ready" ? null : (
+          {state === "error" ? (
             <p className="absolute bottom-3 left-3 m-0 text-caption text-secondary">
-              {state === "error"
-                ? "The models could not be loaded."
-                : `Loading ${ships.length} models (${(bytes / 1_000_000).toLocaleString("en-US", { maximumFractionDigits: 1 })} MB)`}
+              The models could not be loaded.
             </p>
-          )}
+          ) : loading ? (
+            <p
+              role="status"
+              className="absolute bottom-3 left-3 m-0 text-caption text-secondary"
+            >
+              Loading models, {progress.done} of {ships.length}
+            </p>
+          ) : null}
           <button
             type="button"
             className={`${option} absolute right-2 top-2 z-20 border-hairline-strong bg-page text-primary hover:border-accent`}
@@ -207,11 +229,25 @@ export function HoloLineup({
 const ease = (t: number): number =>
   t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
 
+/** A person's footprint along the row, before the figure's model says. */
+const PERSON_WIDTH = 0.8;
+
+/** Runs `job` when the browser has a moment, within half a second at most. */
+function whenIdle(job: () => void): () => void {
+  if (typeof window.requestIdleCallback === "function") {
+    const id = window.requestIdleCallback(job, { timeout: 500 });
+    return () => window.cancelIdleCallback(id);
+  }
+  const id = window.setTimeout(job, 16);
+  return () => window.clearTimeout(id);
+}
+
 async function start(
   el: HTMLDivElement,
   tags: HTMLDivElement,
   ships: readonly LineupShip[],
   figureSrc: string | null,
+  onProgress: (progress: Progress) => void,
 ): Promise<Api> {
   const THREE = await import("three");
   const { GLTFLoader } =
@@ -223,24 +259,48 @@ async function start(
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
   const palette = inkPalette(THREE, el);
+  let disposed = false;
 
+  // The row from the recorded lengths alone: a model scaled to its length is exactly that long
+  // along the row, so every ship has its place before any model arrives. Largest first, with gaps
+  // that keep the small ships near each other; the ship's height is a guess until its model says.
   const order = [...ships].sort((a, b) => b.length - a.length);
-  const [geometries, person] = await Promise.all([
-    Promise.all(order.map((s) => loadHoloGeometry(THREE, loader, s.src))),
-    figureSrc === null
-      ? Promise.resolve(null)
-      : loadHoloGeometry(THREE, loader, figureSrc).catch(() => null),
-  ]);
-
-  // Each ship: scaled to its recorded length, turned so its nose points along +X, keel on the
-  // floor. Then in a row, largest first, with gaps that keep the small ships near each other.
-  const placed: {
-    ship: LineupShip;
+  interface Slot {
+    readonly ship: LineupShip;
+    /** Where the bow starts along the row, before the row is centred. */
+    readonly from: number;
     x: number;
     top: number;
-    length: number;
-  }[] = [];
+    readonly length: number;
+    ready: boolean;
+  }
+  const slots: Slot[] = [];
   let cursor = 0;
+  order.forEach((ship, i) => {
+    slots.push({
+      ship,
+      from: cursor,
+      x: cursor + ship.length / 2,
+      top: ship.length * 0.28,
+      length: ship.length,
+      ready: false,
+    });
+    const next = order[i + 1];
+    cursor +=
+      ship.length +
+      Math.max(2, 0.22 * Math.min(ship.length, next?.length ?? ship.length));
+  });
+  const personAt = cursor;
+  const last = slots[slots.length - 1];
+  const rowLength =
+    figureSrc === null && last !== undefined
+      ? last.from + last.length
+      : personAt + PERSON_WIDTH;
+  // Centre the row on the origin.
+  const shift = -rowLength / 2;
+  for (const s of slots) s.x += shift;
+  let tallest = Math.max(1, ...slots.map((s) => s.top));
+
   const meshes: InstanceType<typeof THREE.Mesh>[] = [];
   const lines: InstanceType<typeof THREE.LineSegments>[] = [];
   const materials: InstanceType<typeof THREE.Material>[] = [];
@@ -248,66 +308,7 @@ async function start(
   const dimBody = inkBody(THREE, palette.bodyDim);
   const fullInk = inkLine(THREE, palette.ink, 0.6);
   const dimInk = inkLine(THREE, palette.inkDim, 0.45);
-  // The switch (ADR-021) changes the tokens under the canvas; repaint from them.
-  const repaint = (): void => {
-    const next = inkPalette(THREE, el);
-    renderer.setClearColor(next.paper, 1);
-    fullBody.color.copy(next.body);
-    dimBody.color.copy(next.bodyDim);
-    fullInk.color.copy(next.ink);
-    dimInk.color.copy(next.inkDim);
-  };
-  window.addEventListener(THEME_CHANGE_EVENT, repaint);
   materials.push(fullBody, dimBody, fullInk, dimInk);
-  let tallest = 0;
-  let widest = 0;
-  order.forEach((ship, i) => {
-    const g = geometries[i]!;
-    g.computeBoundingBox();
-    const b = g.boundingBox!;
-    const c = b.getCenter(new THREE.Vector3());
-    g.translate(-c.x, -c.y, -c.z);
-    const modelLength = b.max.z - b.min.z;
-    const k = modelLength > 0 ? ship.length / modelLength : 1;
-    g.scale(k, k, k);
-    g.rotateY(-Math.PI / 2);
-    g.computeBoundingBox();
-    const placedBox = g.boundingBox!;
-    g.translate(cursor - placedBox.min.x, -placedBox.min.y, 0);
-    g.computeBoundingBox();
-    const box = g.boundingBox!;
-    const size = box.getSize(new THREE.Vector3());
-    tallest = Math.max(tallest, size.y);
-    widest = Math.max(widest, size.z);
-    placed.push({
-      ship,
-      x: (box.min.x + box.max.x) / 2,
-      top: box.max.y,
-      length: size.x,
-    });
-    const next = order[i + 1];
-    cursor =
-      box.max.x +
-      Math.max(2, 0.22 * Math.min(ship.length, next?.length ?? ship.length));
-    meshes.push(new THREE.Mesh(g, ship.current ? fullBody : dimBody));
-    lines.push(inkEdges(THREE, g, ship.current ? fullInk : dimInk));
-  });
-  let rowEnd = cursor;
-  if (person !== null) {
-    person.computeBoundingBox();
-    const pb = person.boundingBox!;
-    person.translate(cursor - pb.min.x, -pb.min.y, -(pb.min.z + pb.max.z) / 2);
-    person.computeBoundingBox();
-    meshes.push(new THREE.Mesh(person, dimBody));
-    lines.push(inkEdges(THREE, person, dimInk, 40));
-    rowEnd = person.boundingBox!.max.x;
-  }
-  // Centre the row on the origin.
-  const shift = -rowEnd / 2;
-  for (const mesh of meshes) mesh.position.x = shift;
-  for (const line of lines) line.position.x = shift;
-  for (const p of placed) p.x += shift;
-  const rowLength = rowEnd;
 
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -319,13 +320,22 @@ async function start(
   renderer.domElement.style.touchAction = "none";
   el.insertBefore(renderer.domElement, el.firstChild);
 
+  // The switch (ADR-021) changes the tokens under the canvas; repaint from them.
+  const repaint = (): void => {
+    const next = inkPalette(THREE, el);
+    renderer.setClearColor(next.paper, 1);
+    fullBody.color.copy(next.body);
+    dimBody.color.copy(next.bodyDim);
+    fullInk.color.copy(next.ink);
+    dimInk.color.copy(next.inkDim);
+  };
+  window.addEventListener(THEME_CHANGE_EVENT, repaint);
+
   const scene = new THREE.Scene();
   const removeLights = inkLights(THREE, scene, palette.bodyDim);
-  for (const mesh of meshes) scene.add(mesh);
-  for (const line of lines) scene.add(line);
 
   // The ground: one line under every keel, the row and a little more.
-  const span = Math.max(rowLength * 1.15, widest * 3);
+  const span = rowLength * 1.15;
   const ground = new THREE.Line(
     new THREE.BufferGeometry().setFromPoints([
       new THREE.Vector3(-span / 2, 0, 0),
@@ -362,14 +372,23 @@ async function start(
   const whole = () => view(0, rowLength, tallest * 1.25);
   // The page's ship among its neighbours: the next larger ship, then everything smaller.
   const around = () => {
-    const at = placed.findIndex((p) => p.ship.current);
+    const at = slots.findIndex((s) => s.ship.current);
     if (at < 0) return whole();
-    const near = placed.slice(Math.max(0, at - 1));
+    const near = slots.slice(Math.max(0, at - 1));
     const from = near[0]!.x - near[0]!.length / 2;
     const to = shift + rowLength;
-    const top = Math.max(...near.map((p) => p.top));
+    const top = Math.max(...near.map((s) => s.top));
     return view((from + to) / 2, (to - from) * 1.04, top * 1.35);
   };
+  const viewOf = (focus: Focus) => {
+    const s = slots.find((x) => x.ship.slug === focus);
+    return focus === "around"
+      ? around()
+      : s === undefined
+        ? whole()
+        : view(s.x, s.length * 1.15, s.top * 1.4);
+  };
+  let looking: Focus = "around";
   const start0 = around();
   camera.position.copy(start0.position);
   controls.target.copy(start0.target);
@@ -381,16 +400,32 @@ async function start(
     toTarget: InstanceType<typeof THREE.Vector3>;
     began: number;
   } | null = null;
+  // Once the reader has turned or zoomed the row, the arriving models no longer move the camera.
+  let touched = false;
   controls.addEventListener("start", () => {
     tween = null;
+    touched = true;
   });
+  /** A model has arrived and the heights are truer: keep the camera on what it was looking at. */
+  const refocus = (): void => {
+    if (touched) return;
+    const to = viewOf(looking);
+    if (tween !== null) {
+      tween.to = to.position;
+      tween.toTarget = to.target;
+      return;
+    }
+    camera.position.copy(to.position);
+    controls.target.copy(to.target);
+  };
 
   // Labels: one per ship, over its highest point, stepped up where they would collide.
-  const tagEls = placed.map((p) => {
+  const tagEls = slots.map((s) => {
     const tag = document.createElement("span");
-    tag.textContent = `${p.ship.name} ${n0(p.ship.length)} m`;
-    tag.className = `absolute whitespace-nowrap rounded-control bg-page px-1 text-caption ${p.ship.current ? "text-accent" : "text-secondary"}`;
+    tag.textContent = `${s.ship.name} ${n0(s.ship.length)} m`;
+    tag.className = `absolute whitespace-nowrap rounded-control bg-page px-1 text-caption ${s.ship.current ? "text-accent" : "text-secondary"}`;
     tag.style.transform = "translate(-50%, -100%)";
+    tag.style.display = "none";
     tags.appendChild(tag);
     return tag;
   });
@@ -399,19 +434,19 @@ async function start(
   const placeTags = () => {
     const w = el.clientWidth;
     const h = el.clientHeight;
-    const shown = placed
-      .map((p, i) => {
+    const shown = slots
+      .map((s, i) => {
         // A ship drawn shorter than a label is too small to name; the buttons still list it.
-        stern.set(p.x - p.length / 2, 0, 0).project(camera);
-        anchor.set(p.x + p.length / 2, 0, 0).project(camera);
+        stern.set(s.x - s.length / 2, 0, 0).project(camera);
+        anchor.set(s.x + s.length / 2, 0, 0).project(camera);
         const drawn = Math.abs(anchor.x - stern.x) * 0.5 * w;
-        anchor.set(p.x, p.top + Math.max(p.length * 0.03, 0.5), 0);
+        anchor.set(s.x, s.top + Math.max(s.length * 0.03, 0.5), 0);
         anchor.project(camera);
         return {
           i,
           x: (anchor.x * 0.5 + 0.5) * w,
           y: (-anchor.y * 0.5 + 0.5) * h,
-          visible: anchor.z < 1 && (drawn >= 28 || p.ship.current),
+          visible: s.ready && anchor.z < 1 && (drawn >= 28 || s.ship.current),
         };
       })
       .sort((a, b) => a.x - b.x);
@@ -427,6 +462,94 @@ async function start(
       tag.style.top = `${s.y - level * 20}px`;
     }
   };
+
+  // The ink is drawn in idle moments, one body at a time, so frames run between.
+  const inking: (() => void)[] = [];
+  let cancelIdle: (() => void) | null = null;
+  const drainInk = (): void => {
+    cancelIdle = null;
+    const job = inking.shift();
+    if (job === undefined || disposed) return;
+    job();
+    if (inking.length > 0) cancelIdle = whenIdle(drainInk);
+  };
+  const ink = (job: () => void): void => {
+    inking.push(job);
+    if (cancelIdle === null) cancelIdle = whenIdle(drainInk);
+  };
+
+  // Every download starts now; each ship is drawn where it stands as its own model lands.
+  let done = 0;
+  const landed = (): void => {
+    done += 1;
+    onProgress({ done, total: order.length });
+  };
+  const placeShip = (g: BufferGeometry, slot: Slot): void => {
+    // Scaled to its recorded length, turned so its nose points along +X, keel on the floor.
+    g.computeBoundingBox();
+    const b = g.boundingBox!;
+    const c = b.getCenter(new THREE.Vector3());
+    g.translate(-c.x, -c.y, -c.z);
+    const modelLength = b.max.z - b.min.z;
+    const k = modelLength > 0 ? slot.ship.length / modelLength : 1;
+    g.scale(k, k, k);
+    g.rotateY(-Math.PI / 2);
+    g.computeBoundingBox();
+    const placedBox = g.boundingBox!;
+    g.translate(slot.from + shift - placedBox.min.x, -placedBox.min.y, 0);
+    g.computeBoundingBox();
+    const box = g.boundingBox!;
+    slot.x = (box.min.x + box.max.x) / 2;
+    slot.top = box.max.y;
+    slot.ready = true;
+    tallest = Math.max(tallest, box.max.y);
+    const mesh = new THREE.Mesh(g, slot.ship.current ? fullBody : dimBody);
+    meshes.push(mesh);
+    scene.add(mesh);
+    ink(() => {
+      const line = inkEdges(THREE, g, slot.ship.current ? fullInk : dimInk);
+      lines.push(line);
+      scene.add(line);
+    });
+    refocus();
+  };
+  for (const slot of slots) {
+    loadHoloGeometry(THREE, loader, slot.ship.src)
+      .then((g) => {
+        if (disposed) {
+          g.dispose();
+          return;
+        }
+        placeShip(g, slot);
+      })
+      .catch(() => undefined)
+      .finally(landed);
+  }
+  if (figureSrc !== null) {
+    loadHoloGeometry(THREE, loader, figureSrc)
+      .then((person) => {
+        if (disposed) {
+          person.dispose();
+          return;
+        }
+        person.computeBoundingBox();
+        const pb = person.boundingBox!;
+        person.translate(
+          personAt + shift - pb.min.x,
+          -pb.min.y,
+          -(pb.min.z + pb.max.z) / 2,
+        );
+        const mesh = new THREE.Mesh(person, dimBody);
+        meshes.push(mesh);
+        scene.add(mesh);
+        ink(() => {
+          const line = inkEdges(THREE, person, dimInk, 40);
+          lines.push(line);
+          scene.add(line);
+        });
+      })
+      .catch(() => undefined);
+  }
 
   let visible = true;
   const onScreen = new IntersectionObserver(([entry]) => {
@@ -461,13 +584,8 @@ async function start(
 
   return {
     focus(slug: Focus) {
-      const p = placed.find((x) => x.ship.slug === slug);
-      const to =
-        slug === "around"
-          ? around()
-          : p === undefined
-            ? whole()
-            : view(p.x, p.length * 1.15, p.top * 1.4);
+      looking = slug;
+      const to = viewOf(slug);
       if (reduced) {
         camera.position.copy(to.position);
         controls.target.copy(to.target);
@@ -482,6 +600,9 @@ async function start(
       };
     },
     dispose() {
+      disposed = true;
+      cancelIdle?.();
+      inking.length = 0;
       window.removeEventListener(THEME_CHANGE_EVENT, repaint);
       cancelAnimationFrame(frame);
       onScreen.disconnect();

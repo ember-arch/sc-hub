@@ -56,6 +56,6 @@ What the sources offer, read on 2026-11-08:
 ## Consequences
 
 - Schema additions: `Title`, `TitleCatalog`, `TitleGroup`, `WikiText`, `TitleIcon`, `TitleIconMedia`, `TitleIconManifest`.
-- The palette's entity types gain `title`; the nav gains Titles, so every page's screenshot changes.
+- The palette's entity types gain `title`; the nav gains Titles, so every page's screenshot changes. With four sections the nav no longer fits beside the site name and search at 390 px (the name wrapped), so on phones `PageShell` puts the nav on its own row under them; from the `md` breakpoint up the header is unchanged.
 - `docs/legal/attribution.md` gains the wiki text and title icon rows; `cig-approval.md` gains the "Title icons" box; CLAUDE.md section 9 gains the starcitizen.tools limit; spec 02 gains a "Titles" criterion; system.md section 4 gains the page's layout.
 - Unit tests run the parser on a trimmed copy of the article committed in `fixtures/titles/samples/` (CC BY-SA, credited in its README) and check that it matches the committed catalogue row for row; e2e tests cover URL state, anchors, the palette, the phone width and the page without icons.

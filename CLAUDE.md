@@ -43,7 +43,7 @@ docs/
   legal/cig-approval.md, obligations.md, takedown.md, attribution.md
   decisions/ADR-NNN-*.md
   specs/0N-*.md
-  runbooks/patch-day.md
+  runbooks/patch-day.md, refresh.md
 packages/
   schema/        Zod types + JSON schema export; the pipeline↔web contract
   ui/            design tokens + components (no app logic)
@@ -52,7 +52,7 @@ pipeline/        Windows-only: detect, extract, normalize, optimize, publish
 apps/web/        Next.js app
 workers/         pollers (news, spectrum), import job, link-entities job
 fixtures/        real extracted records per game version; committed (the whole catalog since ADR-022, under 40 MB)
-scripts/         one-off dev scripts; nothing here runs in production (one runs weekly in CI to propose a fixture update for review: the loaner-matrix check, ADR-015)
+scripts/         one-off dev scripts; nothing here runs in production (one orchestrator, scripts/refresh, runs daily in CI to refresh the fixtures from their sources and land real changes on main, ADR-023)
 ```
 
 Create exactly this layout in Phase 0. Add folders only with an ADR.
@@ -132,7 +132,7 @@ SENTRY_DSN
 SITE_URL (the public origin; canonical URLs, sitemap.xml and Open Graph resolve against it)
 SC_INSTALL_ROOT (Windows only, for example C:\Program Files\Roberts Space Industries\StarCitizen)
 STARBREAKER_BIN (Windows only)
-SC_HUB_CONTACT_EMAIL (dev scripts and the weekly loaner check; the contact address RSI requests carry, ADR-015; a repository variable in CI)
+SC_HUB_CONTACT_EMAIL (dev scripts and the daily refresh; the contact address RSI requests carry, ADR-015, ADR-023; a repository variable in CI)
 ```
 
 When `DATABASE_URL` is unset, `pnpm db:migrate` and `pnpm db:seed` use an embedded PGlite database in `packages/db/.pglite/` (local development only; ADR-004). Every deployed runtime requires it.

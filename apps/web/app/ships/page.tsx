@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { bandArt } from "../../lib/bands";
+import { Masthead } from "../masthead";
 import {
   Card,
   EmptyState,
@@ -71,20 +73,27 @@ export default async function ShipsPage({
     shipIndexHref({ filters: state.filters, view });
 
   return (
-    <Site current="ships">
-      <div className="flex flex-col gap-8 pt-8">
-        <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <h1 className="text-title text-primary">Ships</h1>
-          <div className="flex flex-wrap items-baseline gap-4">
-            <CompareLink />
-            <p className="text-caption text-secondary" data-testid="ship-count">
+    <Site
+      current="ships"
+      stage={
+        <Masthead
+          eyebrow={[
+            <span key="count" data-testid="ship-count">
               {filtered
                 ? `${ships.length} of ${r.ships.length} ships`
-                : `${r.ships.length} ships`}{" "}
-              · {r.liveVersion ?? "no LIVE build"}
-            </p>
-          </div>
-        </div>
+                : `${r.ships.length} ships`}
+            </span>,
+            r.liveVersion ?? "no LIVE build",
+            ...(concepts.length > 0 ? [`${concepts.length} in concept`] : []),
+          ]}
+          title="Ships"
+          lede="Every ship and vehicle on record: CIG's art, the game's numbers by build, what it carries and where it ranks."
+          art={bandArt("ships")}
+          aside={<CompareLink />}
+        />
+      }
+    >
+      <div className="flex flex-col gap-8 pt-8">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <FilterBar
             action="/ships"

@@ -87,6 +87,11 @@ Added by spec 02 (ADR-006):
 - `FilterBar` — a GET form of labelled native selects; filters are URL state, so each change navigates to a shareable address.
 - `SegmentedLinks` — a row of links that reads as one control (the card/table toggle).
 
+Added with the design lift (ADR-019):
+
+- `Masthead` (in `apps/web`) — every index page's opening in the shell's `stage` slot: a mono eyebrow of facts, the title in `display` over a 4 px accent rule, a one-line lede, the page's control on the right, and CIG key art full-bleed behind it under a legibility scrim when media is built. The current nav section carries a 2 px accent underline.
+- `FundingStrip` (in `apps/web`) — the home page's live counters from the funding snapshots, one link to the funding page.
+
 Added with the ship file (ADR-008, ADR-012 to ADR-016):
 
 - `ScaleLineup` — ships on record and a person drawn to scale from length and height, the page's ship in the accent; the Scale section's fallback when no models are built.
@@ -103,14 +108,14 @@ Added with the ship file (ADR-008, ADR-012 to ADR-016):
 | Page | Layout |
 | --- | --- |
 | Home | The file strip and search, the featured files of the concept hero and the live example (each with its key art when built), the register of every ship as a `DataTable`, then today's feed (news and dev posts merged, 10 items); the patch strip is in the footer. Follows the reader's light or dark setting. No hero banner. |
-| Ships index | Filter bar (manufacturer, role, size, status, kind) + card/table toggle. Cards in a 2/3/4 column grid by breakpoint, each with a Compare toggle. Table mode uses `DataTable` with a Compare column. |
+| Ships index | `Masthead` with the Perseus key art (ADR-019), the compare link on its right. Filter bar (manufacturer, role, size, status, kind) + card/table toggle. Cards in a 2/3/4 column grid by breakpoint, art to the card's edges and the name in `heading`, each with a Compare toggle. Table mode uses `DataTable` with a Compare column. Components, Titles, Funding and News open on a `Masthead` the same way. |
 | Ship page | The ship file (ADR-012, ADR-014, ADR-015), dark by default. A full-bleed opening band of the ship's key art (with CIG's cut-out where it publishes one) under a scrim that keeps the name, a factual sentence and four headline figures legible; credited. Two columns below: on the left, sticky on wide screens, the holoviewer, the particulars and the contents; on the right the same nine numbered sections for every ship (Brief, Acquisition and status, Weapons and combat, Crew and operations, Mobility, Scale, Specifications, Hardpoints and loadout, Sources), each with its images and render loops, every game figure with its build, and related ships with the sources. |
 | Component page | `EntityPage`. Key facts: type, size, grade, class, manufacturer. Sections: stats by channel, stock on (ships that carry it by default), in the news. |
 | Manufacturer page | `EntityPage` with a 3 px brand rule (the `border.strong` token until the fankit supplies brand colors). Sections: lineup (cards), in the news. |
 | News feed | Source filter chips, then `FeedItem` list, infinite scroll in pages of 20, RSS and JSON links in the header. Dev tracker is a tab: author filter, `DevPost` list, thread grouping. |
 | Author page | `EntityPage` without a hero image: handle, role, first seen, post count; posts newest first. |
 | Titles | The wiki's lead and a count line with its credit; a filter form (search, group, status) as URL state; a group index (sticky rail on desktop); one section per group in its own shape: ladder tiles with the threshold as a figure, the bonus titles under their shared icon, the guide track-by-rank grid, cards with the wiki's sentence; a Sources section last. Icons on an inset well at up to 64 px and at most twice their size; no well without an icon (ADR-017). |
-| Funding | Four stat tiles (total, this year with the same-days change, last 365 days with its change, last 30 days); a Pledges/Citizens segmented control as URL state; year bars with the change on the year before; a month grid shaded by one hue (the accent's tint), one block per year on phones; this year against the last two as running totals; the trailing-year trend; the daily rate since 2012; a Sources section. One accent: earlier years in ink tokens with a dash as the second cue; every mark carries a title; a table of every month sits under the grid (ADR-018). |
+| Funding | Four stat tiles (the total in `display` over two columns, this year with the same-days change, last 365 days with its change, last 30 days); a Pledges/Citizens segmented control as URL state; year bars with the change on the year before; a month grid shaded by one hue (the accent's tint), one block per year on phones; this year against the last two as running totals; the trailing-year trend; the daily rate since 2012; a Sources section. One accent: earlier years in ink tokens with a dash as the second cue; every mark carries a title; a table of every month sits under the grid (ADR-018). |
 
 ## 5. Copy
 
@@ -133,7 +138,7 @@ Added with the ship file (ADR-008, ADR-012 to ADR-016):
 
 1. Any color outside the token table?
 2. Any type size or weight outside the type table?
-3. Any decoration: gradient, glow, texture, emoji, icon used as ornament?
+3. Any decoration: gradient, glow, texture, emoji, icon used as ornament? (Two gradients are allowed because they keep text legible over CIG's art, never as decoration: the ship file's fade, ADR-014, and the masthead scrim, ADR-019.)
 4. Any page element the reader could lose without losing meaning?
 5. Does the ship page key-facts block read in one glance at 390 px?
 6. Does every table pass the phone rule (no sideways scroll)?

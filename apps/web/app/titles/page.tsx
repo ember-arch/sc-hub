@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { bandArt } from "../../lib/bands";
+import { Masthead } from "../masthead";
 import type { ReactNode } from "react";
 import type { Title, TitleCatalog } from "schema";
 import {
@@ -25,6 +27,7 @@ import {
   statusOf,
   titleCatalog,
   titleSections,
+  wikiText,
 } from "../../lib/titles";
 import { TitleSearch } from "./title-search";
 import {
@@ -224,20 +227,31 @@ export default async function TitlesPage({
   const icons = catalog.titles.some((t) => titleIcon(t) !== null);
 
   return (
-    <Site current="titles">
+    <Site
+      current="titles"
+      stage={
+        <Masthead
+          eyebrow={[
+            `${formatNumber(total)} titles`,
+            `${catalog.groups.length} groups`,
+            `${formatNumber(earnable)} still earnable`,
+          ]}
+          title="Titles"
+          lede={wikiText(catalog.lead[0] ?? [])}
+          art={bandArt("titles")}
+        />
+      }
+    >
       <div className="flex flex-col gap-8 pt-8">
         <header className="flex flex-col gap-3">
-          <h1 className="text-title text-primary">Titles</h1>
-          {catalog.lead.map((p, i) => (
+          {catalog.lead.slice(1).map((p, i) => (
             <p key={i} className="m-0 max-w-prose text-body text-secondary">
               <WikiTextView runs={p} />
             </p>
           ))}
           <p className="m-0 text-caption text-secondary">
-            {formatNumber(total)} titles in {catalog.groups.length} groups ·{" "}
-            {formatNumber(earnable)} still earnable · text from the{" "}
-            <TextLink href="#sources">Star Citizen Wiki</TextLink>,{" "}
-            {TITLES_TEXT_CREDIT.licence}
+            Text from the <TextLink href="#sources">Star Citizen Wiki</TextLink>
+            , {TITLES_TEXT_CREDIT.licence}
           </p>
         </header>
 

@@ -14,6 +14,7 @@ import {
   GROUP_RULES,
   packageList,
   parseTitlesArticle,
+  removedSlugs,
   slugify,
 } from "../titles/parse.js";
 import {
@@ -131,7 +132,10 @@ describe("parseTitlesArticle on the committed sample", () => {
         .filter((t) => t.group === "other" || t.group === "minigame")
         .map((t) => t.earnable),
     );
-    expect([...marks].every((m) => m === "yes" || m === "no")).toBe(true);
+    expect([...marks].sort()).toEqual(["no", "unknown", "yes"]);
+    expect(bySlug("other-vip").earnable).toBe("unknown");
+    expect(bySlug("other-subscriber").earnable).toBe("yes");
+    expect(bySlug("minigame-class-g-license").earnable).toBe("no");
     for (const t of parsed.titles.filter(
       (x) => x.group === "unique" || x.group === "official",
     )) {
@@ -140,12 +144,11 @@ describe("parseTitlesArticle on the committed sample", () => {
     }
   });
 
-  it("matches the committed catalogue row for row", () => {
-    for (const title of parsed.titles) {
-      expect(catalog.titles.find((t) => t.slug === title.slug)).toEqual(title);
-    }
-    expect(catalog.groups).toEqual(parsed.groups);
-    expect(catalog.lead).toEqual(parsed.lead);
+  it("matches the committed catalogue, every title, group and paragraph", () => {
+    // The sample keeps every table row, so a hand edit anywhere in Titles.json fails here.
+    expect(parsed.titles).toEqual(catalog.titles);
+    expect(parsed.groups).toEqual(catalog.groups);
+    expect(parsed.lead).toEqual(catalog.lead);
   });
 });
 
@@ -169,7 +172,49 @@ describe("parseTitlesArticle halts on shapes it does not know", () => {
     [
       "a reworded earnable rule",
       (h) => h.replace(GROUP_RULES.backer, "Backer titles can be earned."),
-      /earnable rule changed/,
+      /paragraph changed/,
+    ],
+    [
+      "a sentence added to a group's paragraph",
+      (h) =>
+        h.replace(
+          GROUP_RULES.backer,
+          `${GROUP_RULES.backer} The Civilian title can no longer be earned.`,
+        ),
+      /paragraph changed/,
+    ],
+    [
+      "struck-out text in a sentence",
+      (h) =>
+        h.replace(
+          "Completing 3 sessions during the 2020 Foundation Festival.",
+          "Completing <s>3</s> sessions during the 2020 Foundation Festival.",
+        ),
+      /markup this parser does not know/,
+    ],
+    [
+      "a style block in a name",
+      (h) =>
+        h.replace("<td>Civilian", "<td><style>.x{color:red}</style>Civilian"),
+      /markup this parser does not know/,
+    ],
+    [
+      "hidden text in a sentence",
+      (h) =>
+        h.replace(
+          "Completing 3 sessions during",
+          '<span style="display:none">SORTKEY</span>Completing 3 sessions during',
+        ),
+      /markup this parser does not know/,
+    ],
+    [
+      "a seventh guide rank",
+      (h) =>
+        h.replace(
+          /(<th><div align="center">150<br\/>Master<\/div>\s*<\/th>)/,
+          '$1\n<th><div align="center">200<br/>Legend</div>\n</th>',
+        ),
+      /different number of ranks/,
     ],
     [
       "an earnable mark it has not seen",
@@ -240,6 +285,12 @@ describe("text helpers", () => {
     expect(packageList('"Lancer"', "t")).toEqual(["Lancer"]);
     expect(packageList('"A", "B"', "t")).toEqual(["A", "B"]);
     expect(() => packageList("Lancer and more", "t")).toThrow(TitlesShapeError);
+  });
+
+  it("lists slugs a new copy would drop", () => {
+    const before = [{ slug: "a" }, { slug: "b" }, { slug: "c" }];
+    expect(removedSlugs(before, [{ slug: "a" }, { slug: "c" }])).toEqual(["b"]);
+    expect(removedSlugs(before, [...before, { slug: "d" }])).toEqual([]);
   });
 
   it("makes stable slugs", () => {

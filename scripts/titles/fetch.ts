@@ -11,12 +11,12 @@
  */
 
 import { randomUUID } from "node:crypto";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { TitleCatalog } from "schema";
 import { TitlesShapeError } from "./html.js";
-import { ARTICLE_URL, parseTitlesArticle } from "./parse.js";
+import { ARTICLE_URL, parseTitlesArticle, removedSlugs } from "./parse.js";
 import { USER_AGENT, createPoliteClient } from "./polite.js";
 import { trimArticle } from "./sample.js";
 
@@ -39,6 +39,29 @@ async function main(): Promise<void> {
   const html = await client.text(ARTICLE_URL);
   const fetchedAt = new Date().toISOString();
   const article = parseTitlesArticle(html);
+
+  // Slugs are addresses: refuse to drop one unless TITLES_ACCEPT_REMOVED lists exactly those dropped.
+  const catalogFile = join(outDir, "Titles.json");
+  if (existsSync(catalogFile)) {
+    const previous = TitleCatalog.parse(
+      JSON.parse(readFileSync(catalogFile, "utf8")),
+    );
+    const removed = removedSlugs(previous.titles, article.titles);
+    const accepted = (process.env["TITLES_ACCEPT_REMOVED"] ?? "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .sort();
+    if (
+      removed.length > 0 &&
+      removed.slice().sort().join(",") !== accepted.join(",")
+    ) {
+      throw new TitlesShapeError(
+        "titles would disappear; if the wiki renamed or removed them on purpose, rerun with TITLES_ACCEPT_REMOVED set to this list",
+        { removed: removed.join(",") },
+      );
+    }
+  }
   const catalog = TitleCatalog.parse({
     source: {
       article_url: ARTICLE_URL,

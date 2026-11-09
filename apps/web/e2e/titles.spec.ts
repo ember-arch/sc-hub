@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { expect, test } from "@playwright/test";
@@ -8,9 +8,14 @@ import { TITLES_TEXT_CREDIT } from "../../../packages/ui/legal";
 // credited with its licence, and the page renders with or without locally built icons.
 
 const here = dirname(fileURLToPath(import.meta.url));
-const mediaBuilt = existsSync(
-  join(here, "..", "public", "media", "manifest.json"),
-);
+const manifest = join(here, "..", "public", "media", "manifest.json");
+/** Icons count as built only when the media manifest lists some; ship images alone do not. */
+const iconsBuilt =
+  existsSync(manifest) &&
+  (
+    (JSON.parse(readFileSync(manifest, "utf8")) as { titles?: unknown[] })
+      .titles ?? []
+  ).length > 0;
 
 test("lists every group with the wiki's text credited and the nav marking Titles", async ({
   page,
@@ -68,6 +73,30 @@ test("search, group and status are URL state, and clear filters resets them", as
   await expect(page.getByText("No titles match these filters.")).toBeVisible();
 });
 
+test("typing while a search loads keeps every letter and adds no history per pause", async ({
+  page,
+}) => {
+  await page.goto("/titles");
+  const search = page.getByRole("searchbox", { name: "Search titles" });
+  // Wait for hydration: a first search must reach the address.
+  await expect(async () => {
+    await search.fill("");
+    await search.fill("min");
+    await expect(page).toHaveURL(/\?q=min$/, { timeout: 2_000 });
+  }).toPass();
+  const entries = await page.evaluate(() => history.length);
+  // Keep typing straight after a pause, while that search is still loading.
+  await search.pressSequentially("ing ", { delay: 80 });
+  await page.waitForTimeout(400);
+  await search.pressSequentially("escort", { delay: 80 });
+  await expect(page).toHaveURL(/\?q=mining\+escort$/);
+  await expect(search).toHaveValue("mining escort");
+  await expect(search).toBeFocused();
+  await expect(page.locator("#guide-mining-escort")).toBeVisible();
+  await expect(page.getByTestId("title-count")).toHaveText(/^1 of \d+ titles$/);
+  expect(await page.evaluate(() => history.length)).toBe(entries);
+});
+
 test("a title's anchor scrolls it into view and the palette links to it", async ({
   page,
 }) => {
@@ -107,7 +136,7 @@ test("draws icons only where they were built, sized and without alt text", async
 }) => {
   await page.goto("/titles");
   const icons = page.locator("main img");
-  if (!mediaBuilt) {
+  if (!iconsBuilt) {
     // CI and deploys have no icons (CIG art, local only): no image and no empty icon box.
     await expect(icons).toHaveCount(0);
     return;

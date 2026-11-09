@@ -38,7 +38,8 @@ export function iconImage(entry: TitleIconMedia): TitleIconImage {
   return {
     src: smallest.src,
     srcSet: entry.renditions
-      .map((r) => `${r.src} ${Math.round(r.width / smallest.width)}x`)
+      // Exact densities ("1.09x" for a 70 px original beside its 64 px copy), never two "1x".
+      .map((r) => `${r.src} ${Number((r.width / smallest.width).toFixed(2))}x`)
       .join(", "),
     width: smallest.width,
     height: smallest.height,

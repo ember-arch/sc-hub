@@ -6,7 +6,7 @@ import {
   type TitleGroup,
   type WikiText,
 } from "schema";
-import type { SearchEntry } from "ui";
+import { type SearchEntry, formatNumber } from "ui";
 import { REPO_ROOT } from "./data";
 
 /**
@@ -111,7 +111,7 @@ export const wikiText = (runs: WikiText): string =>
 
 /** Lower-case, accents removed, so "IAE" finds "iae" and "e" finds "é". */
 const fold = (text: string): string =>
-  text.normalize("NFKD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  text.normalize("NFKD").replace(/\p{M}/gu, "").toLowerCase();
 
 /** Everything a search looks through for one title. */
 export function searchText(title: Title): string {
@@ -223,4 +223,28 @@ export function titleSearchEntries(
           : GROUP_LABELS[t.group],
     };
   });
+}
+
+/** The aside beside a group's heading: how many titles, and how many can still be earned. */
+export function countLine(
+  titles: readonly Title[],
+  total: number,
+  filtered: boolean,
+): string {
+  const n = titles.length;
+  const count =
+    filtered && n < total
+      ? `${formatNumber(n)} of ${formatNumber(total)} titles`
+      : `${formatNumber(n)} ${n === 1 ? "title" : "titles"}`;
+  const statuses = titles.map(statusOf).filter((s) => s !== null);
+  if (statuses.length === 0) return count;
+  const earnable = statuses.filter((s) => s === "earnable").length;
+  const unknown = statuses.filter((s) => s === "unknown").length;
+  if (earnable === n) return `${count} · all earnable`;
+  if (unknown === n) return `${count} · status unknown`;
+  const parts = [
+    earnable === 0 ? "none earnable now" : `${formatNumber(earnable)} earnable`,
+    ...(unknown > 0 ? [`${formatNumber(unknown)} status unknown`] : []),
+  ];
+  return [count, ...parts].join(" · ");
 }

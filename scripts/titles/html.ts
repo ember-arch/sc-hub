@@ -64,6 +64,33 @@ export function attributes(tag: string): Record<string, string> {
   return out;
 }
 
+/** The only tags wiki text may hold here: links, bold, italics, line and paragraph breaks. */
+const TEXT_TAGS = new Set(["a", "b", "i", "br", "p", "span"]);
+
+/**
+ * Checks a cell of text holds only known inline markup. Anything else (a `<style>`, a struck-out
+ * `<s>`, a hidden or styled span) could put text on the page the wiki does not show, so it stops
+ * the run. Footnote markers must be taken out first.
+ */
+export function assertTextTags(html: string, where: string): void {
+  const body = html.replace(/<!--[\s\S]*?-->/g, "");
+  for (const m of body.matchAll(/<(\/?)([a-zA-Z][a-zA-Z0-9]*)\b([^>]*)>/g)) {
+    const [whole, closing, rawTag, attrText = ""] = m;
+    const tag = (rawTag ?? "").toLowerCase();
+    const attrs = attrText.replace(/\/\s*$/, "").trim();
+    const unknown =
+      !TEXT_TAGS.has(tag) ||
+      (closing === "" && tag === "span" && attrs !== "") ||
+      /\bstyle=/i.test(attrs);
+    if (unknown) {
+      throw new TitlesShapeError("markup this parser does not know in text", {
+        where,
+        tag: whole,
+      });
+    }
+  }
+}
+
 /** Collapses whitespace (`\s` includes no-break spaces and newlines) to single spaces. */
 export function squash(text: string): string {
   return text.replace(/\s+/g, " ");
@@ -108,12 +135,8 @@ const isExternal = (a: Record<string, string>): boolean =>
  * pages become plain text, and formatting (bold, italics) is dropped. Images and footnote markers
  * must already be gone; any image left over is an unknown shape.
  */
-export function toRuns(html: string): WikiTextRun[] {
-  if (/<(img|figure|table|ul|ol|h\d)\b/i.test(html)) {
-    throw new TitlesShapeError("text cell holds an image, list or table", {
-      html: html.slice(0, 300),
-    });
-  }
+export function toRuns(html: string, where = "text"): WikiTextRun[] {
+  assertTextTags(html, where);
   const raw: WikiTextRun[] = [];
   let last = 0;
   for (const m of html.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/g)) {

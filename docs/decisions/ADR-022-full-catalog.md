@@ -25,6 +25,9 @@ The same sources that fed the bootstrap can feed the whole catalog: the Wiki API
 
 - Dummy hardpoints: some vehicles (first seen on the Greycat MDC) declare a port with an empty name, an empty type and nothing mounted. The data model keys ports by name, so such a port is counted under `excluded` as `unnamed` and left out; an unnamed port that carried a part would halt the run, as every unknown shape does.
 
+- Unlisted variants: 57 of the 310 vehicles in the build have no production status, because RSI's ship matrix does not list them: event and reward variants (the Wikelo specials, the PYAM Exec editions, the Alliance and Star Kitten paints, the Mauler Destroyer). The data model needs a status, so they are counted under `unlisted` and left out; folding them under their base ships as variants is a later decision.
+- Duplicate names: 19 names are shared by two or three vehicles with a status (sale editions such as `_BIS2950`, `_GS` and `_Plat`, and four showroom `_Display` copies). They stay in the pack as the game files have them; the slug rules give each its own slug (the maker prefix, then the class name), and the register shows them as separate entries until variants are folded under their base.
+
 ## Consequences
 
 - `fixtures/bootstrap` grows from six ships to every ship in the build; the pack README says so; `PACK_BYTE_LIMIT` is 40 MB; CLAUDE.md section 4 reads "committed; the catalog since ADR-022".

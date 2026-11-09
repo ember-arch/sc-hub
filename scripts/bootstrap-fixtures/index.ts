@@ -184,7 +184,7 @@ async function main(): Promise<void> {
 
   // Each vehicle by uuid, with its port tree.
   const vehicleRaws = new Map<string, Record<string, unknown>>();
-  const vehicles = [];
+  const fetched = [];
   for (const { className, uuid } of targets) {
     const json = await get(
       `/api/vehicles/${encodeURIComponent(uuid)}?include=hardpoints`,
@@ -200,13 +200,26 @@ async function main(): Promise<void> {
       raw.class_name,
       (json as { data: Record<string, unknown> }).data,
     );
-    vehicles.push(raw);
+    fetched.push(raw);
     log({
       event: "bootstrap.fetched",
       kind: "vehicle",
       class_name: raw.class_name,
       name: raw.name,
       ports: raw.ports?.length ?? 0,
+    });
+  }
+
+  // Vehicles the ship matrix does not list have no production status: in-game reward and event
+  // variants (ADR-022). The data model needs a status, so they are counted and left out.
+  const unlisted = fetched.filter((v) => v.production_status == null);
+  const vehicles = fetched.filter((v) => v.production_status != null);
+  for (const v of unlisted) vehicleRaws.delete(v.class_name);
+  if (unlisted.length > 0) {
+    log({
+      event: "bootstrap.unlisted",
+      count: unlisted.length,
+      class_names: unlisted.map((v) => v.class_name),
     });
   }
 

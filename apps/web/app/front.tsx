@@ -1,12 +1,24 @@
 import NextLink from "next/link";
 import type { ReactNode } from "react";
 import { Plate, type PlatePicture } from "ui";
+import { type Figure, FigureStrip } from "./strip";
+
+export type Counter = Figure;
+
+/** The front page's counters: the figure strip, every figure a link. */
+export function Counters({
+  counters,
+}: {
+  readonly counters: readonly Counter[];
+}) {
+  return <FigureStrip figures={counters} />;
+}
 import { RSI_IMAGE_CREDIT } from "ui/legal";
 import { CONTENTS, romanNumeral } from "../lib/front";
 
 /**
- * The front page's parts (ADR-020): the contents list, the counters strip and the plates. Pure
- * presentation; page.tsx reads the data and hands it in.
+ * The front page's parts (ADR-020): the contents list, the counters (the figure strip) and the
+ * plates. Pure presentation; page.tsx reads the data and hands it in.
  */
 
 const link =
@@ -36,53 +48,6 @@ export function Contents() {
         ))}
       </ol>
     </nav>
-  );
-}
-
-export interface Counter {
-  readonly label: string;
-  readonly value: string;
-  readonly note: ReactNode;
-  readonly href: string;
-}
-
-/** Literal class names per count so Tailwind's scanner sees each one. */
-const COLUMNS: Readonly<Record<number, string>> = {
-  2: "md:grid-cols-2",
-  3: "md:grid-cols-3",
-  4: "md:grid-cols-4",
-  5: "md:grid-cols-5",
-};
-
-/** The site's headline figures over a 2 px ink rule, each a link to the page it summarises. */
-export function Counters({
-  counters,
-}: {
-  readonly counters: readonly Counter[];
-}) {
-  if (counters.length === 0) return null;
-  return (
-    <dl
-      className={`m-0 grid grid-cols-2 gap-x-6 gap-y-4 border-b border-t-2 border-b-hairline-strong border-t-primary py-3 md:gap-x-0 md:divide-x md:divide-hairline ${COLUMNS[counters.length] ?? "md:grid-cols-5"}`}
-    >
-      {counters.map((c, i) => (
-        <div
-          key={c.label}
-          className={`flex flex-col gap-1 ${i === 0 ? "md:pr-4" : "md:px-4"}`}
-        >
-          <dt className="lab text-secondary">{c.label}</dt>
-          <dd className="m-0 flex flex-col gap-1">
-            <NextLink
-              href={c.href}
-              className={`${link} font-mono text-heading tracking-normal text-primary hover:text-accent`}
-            >
-              {c.value}
-            </NextLink>
-            <span className="text-caption text-secondary">{c.note}</span>
-          </dd>
-        </div>
-      ))}
-    </dl>
   );
 }
 

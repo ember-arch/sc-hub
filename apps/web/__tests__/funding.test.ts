@@ -16,6 +16,8 @@ import {
   trailingTrend,
   yearPaths,
   yearRows,
+  firstCrossing,
+  totalSegments,
 } from "../lib/funding";
 
 // ADR-018: the funding page's numbers, on the committed fixture and on small synthetic series.
@@ -223,5 +225,38 @@ describe("rates, gaps, URL state and formatting", () => {
     expect(formatChange(0.1994)).toBe("+19.9%");
     expect(formatChange(-0.15)).toBe("-15%");
     expect(formatChange(0)).toBe("0%");
+  });
+});
+
+describe("totalSegments and firstCrossing", () => {
+  const r = (day: string, value: number) => ({ day, value });
+  const list = [
+    r("2021-01-01", 10),
+    r("2021-01-02", 11),
+    r("2021-01-03", 12),
+    r("2021-03-10", 20),
+    r("2021-03-11", 21),
+  ];
+  it("splits the line at a gap and bridges it with the readings either side", () => {
+    const segments = totalSegments(list, 60);
+    expect(segments.map((s) => [s.bridge, s.points.map((p) => p.day)])).toEqual(
+      [
+        [false, ["2021-01-01", "2021-01-02", "2021-01-03"]],
+        [true, ["2021-01-03", "2021-03-10"]],
+        [false, ["2021-03-10", "2021-03-11"]],
+      ],
+    );
+  });
+  it("keeps one run when no gap reaches the threshold", () => {
+    const segments = totalSegments(list, 100);
+    expect(segments).toHaveLength(1);
+    expect(segments[0]?.bridge).toBe(false);
+    expect(segments[0]?.points).toHaveLength(5);
+    expect(totalSegments([], 60)).toEqual([]);
+  });
+  it("finds the first reading at or above a threshold", () => {
+    expect(firstCrossing(list, 12)?.day).toBe("2021-01-03");
+    expect(firstCrossing(list, 20)?.day).toBe("2021-03-10");
+    expect(firstCrossing(list, 1000)).toBeNull();
   });
 });

@@ -293,6 +293,50 @@ export function dailyRate(list: readonly Reading[]): DailyPoint[] {
 }
 
 /** The amount added across a gap in the data, for the note under the monthly grid. */
+/** A run of readings for the running-total line;  spans a gap in the data (drawn dashed). */
+export interface TotalSegment {
+  readonly points: readonly Reading[];
+  readonly bridge: boolean;
+}
+
+/**
+ * The running total as runs of readings, split where the data has no snapshot for  or
+ * more: each such stretch becomes a two-point bridge between the readings either side, so the
+ * line can show where it is drawn through nothing (ADR-018: never estimated, only joined).
+ */
+export function totalSegments(
+  list: readonly Reading[],
+  minDays: number,
+): TotalSegment[] {
+  const out: TotalSegment[] = [];
+  let run: Reading[] = [];
+  for (let i = 0; i < list.length; i += 1) {
+    const r = list[i]!;
+    const prev = list[i - 1];
+    if (
+      prev !== undefined &&
+      dayNumber(r.day) - dayNumber(prev.day) >= minDays
+    ) {
+      if (run.length > 0) out.push({ points: run, bridge: false });
+      out.push({ points: [prev, r], bridge: true });
+      run = [r];
+      continue;
+    }
+    run.push(r);
+  }
+  if (run.length > 1 || (run.length === 1 && out.length === 0))
+    out.push({ points: run, bridge: false });
+  return out;
+}
+
+/** The first reading at or above , or null when the counter has not reached it. */
+export function firstCrossing(
+  list: readonly Reading[],
+  threshold: number,
+): Reading | null {
+  return list.find((r) => r.value >= threshold) ?? null;
+}
+
 /** The same calendar date a year earlier; 29 February falls back to 28 February. */
 export function sameDayPriorYear(day: string): string {
   const year = Number(day.slice(0, 4)) - 1;

@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { type NavSection, PageShell } from "ui";
 import { repo } from "./data";
+import { titleCatalog, titleSearchEntries } from "./titles";
 
 export interface SiteProps {
   readonly children: ReactNode;
@@ -14,7 +15,10 @@ export function Site({ children, current, theme, stage }: SiteProps) {
   const r = repo();
   return (
     <PageShell
-      searchEntries={r.searchEntries}
+      searchEntries={[
+        ...r.searchEntries,
+        ...titleSearchEntries(titleCatalog()),
+      ]}
       versions={r.versions}
       current={current}
       theme={theme}

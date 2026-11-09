@@ -52,7 +52,9 @@ test("opens from the search button and groups results by entity type", async ({
 test("the home search field opens the palette", async ({ page }) => {
   await page.goto("/");
   await page
-    .getByRole("button", { name: /Search ships, components and manufacturers/ })
+    .getByRole("button", {
+      name: /Search ships, components, manufacturers and titles/,
+    })
     .click();
   await expect(page.getByRole("dialog", { name: "Search" })).toBeVisible();
 });

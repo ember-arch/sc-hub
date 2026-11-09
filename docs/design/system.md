@@ -8,7 +8,7 @@ Numbered rules are the ones the design-review prompt checks by number.
 
 1. Imagery does the mood, chrome stays quiet. Paper and ink surfaces (warm paper by day, ink on slate by night, ADR-020), one accent, no decoration.
 2. Typography-led. A serif text face, a serif display face and one mono for numbers (ADR-020). At most three sizes per page besides interface text, captions and labels, and two weights.
-3. Light and dark are both first-class and follow the system; the dark mode is designed as ink on slate, not inverted. Ship pages default to dark.
+3. Light and dark are both first-class. The site follows the system until the reader uses the switch in the header, whose choice is kept (ADR-021); the dark mode is designed, not inverted. No page forces its own scheme.
 4. Search is the navigation. The command palette is reachable from every page.
 5. Every entity page uses one template: hero, key facts, body sections, related entities.
 6. Tables earn their density: fixed columns, sticky header, units in the header, sort on tap; rows expand on phone instead of the table scrolling sideways.
@@ -23,17 +23,17 @@ All tokens live in `packages/ui/tokens.ts`. Tailwind config is generated from th
 
 | Token | Light | Dark | Use |
 | --- | --- | --- | --- |
-| `bg.page` | `#F4EFE5` | `#1D1B17` | Page canvas: paper by day, slate by night (ADR-020) |
-| `bg.surface` | `#FBF8F1` | `#24221D` | Cards, panels |
-| `bg.raised` | `#FFFDF8` | `#2B2924` | Popovers, command palette |
-| `bg.inset` | `#EBE4D6` | `#17150F` | Table header, code, muted wells, plate mounts |
-| `text.primary` | `#1C1A16` | `#EFE9DC` | Body: ink |
-| `text.secondary` | `#57534A` | `#B8B0A0` | Supporting |
-| `text.muted` | `#6B665B` | `#9A927F` | Captions, placeholders |
-| `border.default` | `rgba(28,26,22,0.16)` | `rgba(239,233,220,0.16)` | Hairlines |
-| `border.strong` | `rgba(28,26,22,0.42)` | `rgba(239,233,220,0.40)` | Rules, plate frames, emphasis |
-| `accent` | `#A8321F` | `#E6735F` | Links, focus, selected, primary action: oxblood |
-| `accent.bg` | `#F2DED7` | `#4A2A22` | Accent tint |
+| `bg.page` | `#F6F4EF` | `#161513` | Page canvas: the gallery's warm white wall by day, charcoal by night (ADR-021) |
+| `bg.surface` | `#FFFFFF` | `#1F1E1B` | Cards, panels |
+| `bg.raised` | `#FFFFFF` | `#262522` | Popovers, command palette |
+| `bg.inset` | `#ECE9E2` | `#272622` | Pills, table header, muted wells |
+| `text.primary` | `#1A1917` | `#F1EEE6` | Body: ink |
+| `text.secondary` | `#5A5852` | `#B5B1A6` | Supporting |
+| `text.muted` | `#67635B` | `#9B968B` | Captions, placeholders |
+| `border.default` | `rgba(26,25,23,0.10)` | `rgba(241,238,230,0.10)` | Hairlines, the only dividers |
+| `border.strong` | `rgba(26,25,23,0.24)` | `rgba(241,238,230,0.24)` | A firmer hairline where a table or a field needs one |
+| `accent` | `#B8381F` | `#EE7A5F` | Links, focus, selected, primary action: oxblood |
+| `accent.bg` | `#F6E1DB` | `#4A2A22` | Accent tint |
 | `success` / `warning` / `danger` | `#2F6B3A` / `#8A5A00` / `#B3261E` | `#6FBF7F` / `#E0A94A` / `#EF7A6E` | Status only |
 
 Rules: one accent. Manufacturer brand colors may appear only as a 3 px rule on the manufacturer page hero, never as fills. Semantic colors are for status (flight-ready, concept, PTU-only), never decoration.
@@ -42,22 +42,22 @@ Rules: one accent. Manufacturer brand colors may appear only as a 3 px rule on t
 
 | Token | Size / line | Weight | Use |
 | --- | --- | --- | --- |
-| `hero` | 80 / 84 | 500 | The front page's title and an entry's name, desktop (ADR-020) |
-| `display` | 40 / 44 | 500 | Page and entry titles on phones; headline figures |
-| `title` | 28 / 34 | 500 | Page title |
-| `heading` | 20 / 28 | 500 | Section heading |
+| `hero` | 80 / 84 | 400 | The front page's title and an entry's name, desktop (ADR-021) |
+| `display` | 40 / 44 | 400 | Page and entry titles on phones; headline figures |
+| `title` | 28 / 34 | 400 | Page title; the figure strip's numbers |
+| `heading` | 20 / 26 | 500 | Section heading, card names |
 | `body` | 16 / 26 | 400 | Prose |
 | `ui` | 14 / 20 | 400 / 500 | Controls, table cells, nav |
 | `caption` | 12.5 / 18 | 400 | Units, metadata, timestamps |
-| `label` | 11 / 16 | 400 / 500 | The almanac's labels (`.lab`): running heads, column heads, eyebrows; the mono as letter-spaced capitals (ADR-020) |
+| `label` | 12 / 16 | 500 | Small labels (`.lab`): eyebrows, column heads, the names over counters; sentence case (ADR-021) |
 
-Faces: Newsreader (ADR-020, replacing the Phase 0 pair) for text and interface, Fraunces for display (the `hero`, `display`, `title` and `heading` sizes and `.font-display`, set at -0.02 em; a heading set at a smaller size stays in the text face), IBM Plex Mono for numbers. Every number uses tabular figures (`font-variant-numeric: tabular-nums`). Sentence case everywhere, with one exception: the almanac's labels (`.lab`, the `label` size: running heads, column heads, eyebrows) are set in the mono as letter-spaced capitals. Unit abbreviations and the game's own acronyms (SCM, NAV, EM, IR, LIVE, PTU, EPTU) keep their case.
+Faces: Manrope (ADR-021, replacing the almanac's serifs) for everything: text, interface, display and figures. The `hero`, `display` and `title` sizes are set at -0.03 em, `heading` at -0.01 em, and the large sizes regular rather than medium: the face carries them, emphasis is medium. Every number uses tabular figures (`font-variant-numeric: tabular-nums`). Sentence case everywhere, labels included. Unit abbreviations and the game's own acronyms (SCM, NAV, EM, IR, LIVE, PTU, EPTU) keep their case.
 
 ### Space, radius, elevation
 
 - Spacing scale: 4, 8, 12, 16, 24, 32, 48, 64, 96 px. Nothing in between.
-- Radius: 2 px controls, 2 px cards, 2 px the command palette. Nothing else: frames are square, as on paper (ADR-020).
-- Elevation: none. Hairline borders only; plates and panels take the strong rule as a frame. The command palette and popovers get one shadow token, `shadow.popover: 0 8px 24px rgba(28,26,22,0.14)`.
+- Radius: 10 px controls, 20 px cards, 20 px the command palette; pills (nav, chips, the search field, the theme switch) round fully, `radius.pill`. Nothing else (ADR-021).
+- Elevation (ADR-021): cards and panels sit on the page by tone and a soft shadow, never a frame: `shadow.soft: 0 10px 30px rgba(26,25,23,0.08)` for cards and panels, `shadow.lift: 0 24px 64px rgba(26,25,23,0.14), 0 2px 6px rgba(26,25,23,0.06)` for the hero card and the command palette, `shadow.popover: 0 16px 48px rgba(26,25,23,0.18)` for menus. Hairlines divide rows inside tables and lists; nothing else is ruled.
 - Max content width 1400 px; prose max 68 ch.
 
 ### Motion
@@ -71,11 +71,12 @@ Faces: Newsreader (ADR-020, replacing the Phase 0 pair) for text and interface, 
 
 `packages/ui` ships these, each with light and dark stories and a Playwright screenshot:
 
-- `PageShell` — top nav (Ships, Components, News), search button, theme follows system.
+- `PageShell` — the brand, the sections as pills (the current one filled), the search field as a pill and the theme switch (ADR-021); the footer on every page.
+- `ThemeToggle` — a switch between light and dark; the choice is kept in localStorage and applied as `data-theme` on `<html>` before the first paint, and the site follows the system until it is used (ADR-021).
 - `CommandPalette` — ⌘K on desktop, persistent button on phone; results grouped by entity type; keyboard navigable; shows recent entities.
 - `EntityPage` — the template: `Hero` (name, manufacturer, status badge, one image or the viewer slot), `KeyFacts` (4 to 8 label/value pairs), `Section`s, `Related`.
-- `DataTable` — fixed columns, sticky header (column heads as labels over a 2 px ink rule, ADR-020), sort, unit in header, expand-row mode below a breakpoint chosen per table (with a "Sort by" select for the hidden columns).
-- `Plate` — a picture in a printed frame with a numbered caption ("Plate I."), the name linked, the credit as a label at the right (ADR-020). Three shapes: wide 2:1, panorama 16:7, card 16:9. Without a picture the frame holds the caption alone.
+- `DataTable` — fixed columns, sticky header (column heads as small labels over a hairline, ADR-021), sort, unit in header, expand-row mode below a breakpoint chosen per table (with a "Sort by" select for the hidden columns).
+- `Plate` — a picture in a rounded card with a soft shadow and a numbered caption ("Plate I."), the name linked, the credit as a label at the right (ADR-020, ADR-021). Three shapes: wide 2:1, panorama 16:7, card 16:9. Without a picture the card holds the caption alone.
 - `StatRow` — label, value, unit, optional delta (for PTU diffs) with a muted arrow, never color-only.
 - `Badge` — status only; uses semantic colors.
 - `Card` — ship card: image, name, manufacturer, role, two stats.
@@ -91,8 +92,8 @@ Added by spec 02 (ADR-006):
 
 Added with the design lift (ADR-019):
 
-- `Masthead` (in `apps/web`) — every index page's opening in the shell's `stage` slot: a label line of facts, the title in the display face, a one-line deck and the page's control on the right, over a rule (ADR-020; the art band of ADR-019 is gone: pictures are plates). The current nav section is set in the accent and underlined.
-- `Counters`, `Contents`, `HeroPlates`, `RunningHead` (in `apps/web/app/front.tsx`) — the front page's parts (ADR-020): the headline figures over a 2 px ink rule (each a link), the numbered sections, the three plates, and a label-sized heading with a link at the right.
+- `Masthead` (in `apps/web`) — every index page's opening in the shell's `stage` slot: a label line of facts, the title in the display face, a one-line deck and the page's control on the right (ADR-020, softened by ADR-021: no rule under it). The current nav section is a filled pill.
+- `Counters`, `Contents`, `HeroPlates`, `RunningHead` (in `apps/web/app/front.tsx`) — the front page's parts (ADR-020, ADR-021): the headline figures as the figure strip (each a link; no rules), the numbered sections, the three plates as rounded cards, and a label-sized heading with a link at the right.
 
 Added with the ship file (ADR-008, ADR-012 to ADR-016):
 
@@ -112,7 +113,7 @@ Added with the ship file (ADR-008, ADR-012 to ADR-016):
 | Home | The front page of the almanac (ADR-020): the date as a label, the title in the display face beside the numbered contents, the counters (pledged, citizens, this year, ships and parts on record, each a link), three plates (the live example wide, the concept hero and the longest other ship beside it), the first ten entries A to Z as cards with a link to the register, then six dispatches; the builds stay in the footer's patch strip (ADR-007). Follows the reader's light or dark setting. Without media the plates hold their captions alone. |
 | Ships index | "The register of ships": `Masthead` (ADR-020), the compare link on its right. Filter bar (manufacturer, role, size, status, kind) + card/table toggle. Cards in a 2/3/4 column grid by breakpoint, art to the card's edges and the name in `heading`, each with a Compare toggle. Table mode is the register: `DataTable` with each row's plate over its name in the display face (from lg; smaller at xl, where every column shows; none without media) and a Compare column. Components, Titles, Funding and News open on a `Masthead` the same way. |
 | Components index | "Parts, by type" (ADR-020): `Masthead`, the filter bar (size, manufacturer), the type counts as a figure strip (each a jump to its table), then one ruled section per type with its `DataTable`. |
-| Ship page | The ship entry (ADR-012, ADR-014, ADR-015, ADR-020), dark by default. The opening: the holomodel in ink (or the key art as a plate when no model is built) beside the entry's head (entry code, maker, role, status), the name in the display face, a factual sentence and the particulars as a ruled table; under them the key art as Plate I, credited. Below, the contents stay in view on wide screens beside the same nine numbered sections for every ship (Brief, Acquisition and status, Weapons and combat, Crew and operations, Mobility, Scale, Specifications, Hardpoints and loadout, Sources), each section opening on a 2 px rule with its number as a label, its images and render loops as captioned plates, every game figure with its build, and related ships with the sources. |
+| Ship page | The ship entry (ADR-012, ADR-014, ADR-015, ADR-020, ADR-021), in the reader's scheme. The opening: the holomodel in ink (or the key art as a plate when no model is built) beside the entry's head (entry code, maker, role, status), the name in the display face, a factual sentence and the particulars as a ruled table; under them the key art as Plate I, credited. Below, the contents stay in view on wide screens beside the same nine numbered sections for every ship (Brief, Acquisition and status, Weapons and combat, Crew and operations, Mobility, Scale, Specifications, Hardpoints and loadout, Sources), each section opening on a hairline with its number as a label, its images and render loops as captioned cards, every game figure with its build, and related ships with the sources. |
 | Component page | `EntityPage`. Key facts: type, size, grade, class, manufacturer. Sections: stats by channel, stock on (ships that carry it by default), in the news. |
 | Manufacturer page | `EntityPage` with a 3 px brand rule (the `border.strong` token until the fankit supplies brand colors). Sections: lineup (cards), in the news. |
 | News feed | "Dispatches" (ADR-020): source filter chips as labels, then the `FeedItem` list, each dispatch opening on a label line (source, time) over its title in the display face, ruled by hairlines; infinite scroll in pages of 20, RSS and JSON links in the header. Dev tracker is a tab: author filter, `DevPost` list, thread grouping. |
@@ -141,7 +142,7 @@ Added with the ship file (ADR-008, ADR-012 to ADR-016):
 
 1. Any color outside the token table?
 2. Any type size or weight outside the type table?
-3. Any decoration: gradient, glow, texture, emoji, icon used as ornament? (None is allowed; the ship file's fade and the masthead scrim of ADR-014 and ADR-019 are gone with ADR-020: pictures are plates.)
+3. Any decoration: gradient, glow, texture, emoji, icon used as ornament? (One gradient is allowed because it keeps text legible over CIG's art, never as decoration: the scrim over the entry's cover, ADR-021.)
 4. Any page element the reader could lose without losing meaning?
 5. Does the ship page key-facts block read in one glance at 390 px?
 6. Does every table pass the phone rule (no sideways scroll)?

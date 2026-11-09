@@ -12,3 +12,4 @@ packages/db/migrations/
 *.md
 packages/ui/tokens.css
 apps/web/public/media
+apps/web/public/mockup/

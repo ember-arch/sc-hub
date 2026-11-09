@@ -4,6 +4,7 @@ import { SITE_NAME } from "../brand";
 import { CommandPalette, type SearchEntry } from "./command-palette";
 import { Footer } from "./footer";
 import type { ChannelVersion } from "./patch-strip";
+import { ThemeToggle } from "./theme-toggle";
 
 export type NavSection = "ships" | "components" | "titles" | "funding" | "news";
 
@@ -20,59 +21,60 @@ export interface PageShellProps {
   readonly searchEntries: readonly SearchEntry[];
   readonly versions: readonly ChannelVersion[];
   readonly current?: NavSection | undefined;
-  /** Ship pages default to dark (system.md principle 3); everything else follows the system. */
-  readonly theme?: "light" | "dark" | undefined;
-  /** Full-bleed content above the main column: the ship page's stage (ADR-008). */
+  /** Full-bleed content above the main column: the ship entry's opening (ADR-020). */
   readonly stage?: ReactNode;
   readonly wikiCredit?: boolean | undefined;
 }
 
-/** Top nav (Ships, Components, Titles, Funding, News), search button, theme follows system; footer on every page. */
+/**
+ * The shell (ADR-021): the brand, the sections as pills with the current one filled, the search
+ * field as a pill and the theme switch at the right; the footer on every page. The scheme is the
+ * reader's (the switch) or the system's; no page forces its own.
+ */
 export function PageShell({
   children,
   searchEntries,
   versions,
   current,
-  theme,
   stage,
   wikiCredit = true,
 }: PageShellProps) {
   return (
-    <div
-      data-theme={theme}
-      className="flex min-h-dvh flex-col bg-page text-primary"
-    >
+    <div className="flex min-h-dvh flex-col bg-page text-primary">
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-control focus:bg-raised focus:px-3 focus:py-2 focus:text-ui focus:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
       >
         Skip to content
       </a>
-      {/* The running head (ADR-020): the site name and the sections as small labels over a rule, the search field at the right. Below lg the nav takes its own row (ADR-017), since the three do not fit in one. */}
-      <header className="border-b border-hairline-strong">
-        <div className="mx-auto flex w-full max-w-content flex-wrap items-center justify-between gap-x-6 gap-y-2 px-4 py-3">
+      <header>
+        <div className="mx-auto flex w-full max-w-content flex-wrap items-center justify-between gap-x-6 gap-y-3 px-4 py-4">
           <NextLink
             href="/"
-            className="lab whitespace-nowrap text-primary no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+            className="whitespace-nowrap text-ui font-medium text-primary no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
           >
             {SITE_NAME}
           </NextLink>
+          {/* Below lg the nav takes its own row (ADR-017): the three do not fit in one. */}
           <nav
             aria-label="Primary"
-            className="lab order-last flex w-full flex-wrap items-center gap-x-6 gap-y-2 lg:order-none lg:w-auto lg:flex-1 lg:justify-center"
+            className="order-last flex w-full flex-wrap items-center gap-1 lg:order-none lg:w-auto lg:flex-1 lg:justify-center"
           >
             {NAV.map((item) => (
               <NextLink
                 key={item.section}
                 href={item.href}
                 aria-current={current === item.section ? "page" : undefined}
-                className={`rounded-control no-underline transition-colors duration-hover hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent ${current === item.section ? "font-medium text-accent underline underline-offset-4" : "text-secondary"}`}
+                className={`rounded-pill px-3 py-1 text-ui font-medium no-underline transition-colors duration-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent ${current === item.section ? "bg-primary text-page" : "text-secondary hover:bg-inset hover:text-primary"}`}
               >
                 {item.label}
               </NextLink>
             ))}
           </nav>
-          <CommandPalette entries={searchEntries} />
+          <div className="flex items-center gap-3">
+            <CommandPalette entries={searchEntries} />
+            <ThemeToggle />
+          </div>
         </div>
       </header>
       {stage === undefined ? null : <div id="main">{stage}</div>}

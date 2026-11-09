@@ -101,7 +101,9 @@ export function renderTokensCss(): string {
   push("  --inset-shadow-*: initial;");
   push("  --drop-shadow-*: initial;");
   push("  --text-shadow-*: initial;");
-  push(`  --shadow-popover: ${shadow.popover};`);
+  for (const [name, value] of Object.entries(shadow)) {
+    push(`  --shadow-${name}: ${value};`);
+  }
   push();
   push("  --container-*: initial;");
   push(`  --container-content: ${layout.contentMaxWidth}px;`);
@@ -134,22 +136,20 @@ export function renderTokensCss(): string {
   push("    font-variant-numeric: tabular-nums;");
   push("    -webkit-font-smoothing: antialiased;");
   push("  }");
-  // Display type (ADR-020): the display sizes take the display face, set a little tight; the
-  // mono keeps lining figures for tables and figures. Labels are the mono as capitals.
+  // Display type (ADR-021): the large sizes are set tight; headings a little; labels are small
+  // medium text in sentence case.
   push("  .text-hero,");
   push("  .text-display,");
-  push("  .text-title,");
-  push("  .text-heading,");
-  push("  .font-display {");
-  push("    font-family: var(--font-display);");
-  push("    letter-spacing: -0.02em;");
+  push("  .text-title {");
+  push("    letter-spacing: -0.03em;");
+  push("  }");
+  push("  .text-heading {");
+  push("    letter-spacing: -0.01em;");
   push("  }");
   push("  .lab {");
-  push("    font-family: var(--font-mono);");
   push(`    font-size: ${type.label.size}px;`);
   push(`    line-height: ${type.label.line}px;`);
-  push("    letter-spacing: 0.1em;");
-  push("    text-transform: uppercase;");
+  push(`    font-weight: ${type.label.weight};`);
   push("  }");
   push("  @media (prefers-reduced-motion: reduce) {");
   push("    *,");

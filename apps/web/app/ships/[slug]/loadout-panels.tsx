@@ -100,7 +100,7 @@ export function LoadoutPanels({
         <section
           key={group.id}
           aria-labelledby={`loadout-${group.id}`}
-          className="flex flex-col rounded-card border border-hairline bg-surface p-4"
+          className="flex flex-col rounded-card bg-surface shadow-soft p-4"
         >
           <div className="flex items-baseline justify-between gap-4 border-b border-hairline pb-2">
             <h3

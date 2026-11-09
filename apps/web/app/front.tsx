@@ -124,7 +124,7 @@ export function RunningHead({
   readonly aside?: ReactNode;
 }) {
   return (
-    <div className="flex items-baseline justify-between gap-4 border-b border-hairline-strong pb-2">
+    <div className="flex items-baseline justify-between gap-4 border-b border-hairline pb-2">
       <h2 id={id} className="lab m-0 text-primary">
         {title}
       </h2>

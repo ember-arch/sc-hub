@@ -155,11 +155,11 @@ export function CommandPalette({
       onClick={openPalette}
       aria-haspopup="dialog"
       aria-expanded={open}
-      className="inline-flex items-center gap-3 rounded-control border border-hairline-strong bg-surface px-3 py-1 text-ui italic text-muted transition-colors duration-hover hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+      className="inline-flex items-center gap-3 rounded-pill bg-surface px-4 py-2 text-ui text-muted shadow-soft transition-colors duration-hover hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent md:min-w-64"
     >
       <span className="hidden md:inline">Look up a ship, a part, a title…</span>
       <span className="md:hidden">Search</span>
-      <kbd className="ml-auto hidden font-mono text-caption not-italic text-secondary md:inline">
+      <kbd className="ml-auto hidden font-mono text-caption text-secondary md:inline">
         ⌘K
       </kbd>
     </button>

@@ -3,7 +3,7 @@
  * (CLAUDE.md sections 2 and 7). `tokens.css` is generated from this file by
  * `pnpm --filter ui build:tokens`; a unit test fails when the generated file is stale and another
  * fails when a value here drifts from the table in the design document. Changing any value needs
- * an ADR. The font pair is ADR-005.
+ * an ADR. The current values are the gallery's (ADR-021).
  */
 
 export const colorTokens = [
@@ -48,34 +48,35 @@ export const colorUtility: Record<ColorToken, string> = {
 };
 
 export const color: Record<Scheme, Record<ColorToken, string>> = {
-  // Paper and ink (ADR-020): warm paper by day, ink on slate by night.
+  // The gallery (ADR-021): warm white walls and white cards by day, charcoal by night; the ink
+  // and the oxblood accent of the almanac stay. Surfaces separate by tone and shadow, not frames.
   light: {
-    "bg.page": "#F4EFE5",
-    "bg.surface": "#FBF8F1",
-    "bg.raised": "#FFFDF8",
-    "bg.inset": "#EBE4D6",
-    "text.primary": "#1C1A16",
-    "text.secondary": "#57534A",
-    "text.muted": "#6B665B",
-    "border.default": "rgba(28,26,22,0.16)",
-    "border.strong": "rgba(28,26,22,0.42)",
-    accent: "#A8321F",
-    "accent.bg": "#F2DED7",
+    "bg.page": "#F6F4EF",
+    "bg.surface": "#FFFFFF",
+    "bg.raised": "#FFFFFF",
+    "bg.inset": "#ECE9E2",
+    "text.primary": "#1A1917",
+    "text.secondary": "#5A5852",
+    "text.muted": "#67635B",
+    "border.default": "rgba(26,25,23,0.10)",
+    "border.strong": "rgba(26,25,23,0.24)",
+    accent: "#B8381F",
+    "accent.bg": "#F6E1DB",
     success: "#2F6B3A",
     warning: "#8A5A00",
     danger: "#B3261E",
   },
   dark: {
-    "bg.page": "#1D1B17",
-    "bg.surface": "#24221D",
-    "bg.raised": "#2B2924",
-    "bg.inset": "#17150F",
-    "text.primary": "#EFE9DC",
-    "text.secondary": "#B8B0A0",
-    "text.muted": "#9A927F",
-    "border.default": "rgba(239,233,220,0.16)",
-    "border.strong": "rgba(239,233,220,0.40)",
-    accent: "#E6735F",
+    "bg.page": "#161513",
+    "bg.surface": "#1F1E1B",
+    "bg.raised": "#262522",
+    "bg.inset": "#272622",
+    "text.primary": "#F1EEE6",
+    "text.secondary": "#B5B1A6",
+    "text.muted": "#9B968B",
+    "border.default": "rgba(241,238,230,0.10)",
+    "border.strong": "rgba(241,238,230,0.24)",
+    accent: "#EE7A5F",
     "accent.bg": "#4A2A22",
     success: "#6FBF7F",
     warning: "#E0A94A",
@@ -105,52 +106,64 @@ export interface TypeStyle {
 }
 
 export const type: Record<TypeToken, TypeStyle> = {
-  hero: { size: 80, line: 84, weight: 500 },
-  display: { size: 40, line: 44, weight: 500 },
-  title: { size: 28, line: 34, weight: 500 },
-  heading: { size: 20, line: 28, weight: 500 },
+  // The large sizes are set regular and tight (ADR-021): the face carries them; emphasis is medium.
+  hero: { size: 80, line: 84, weight: 400 },
+  display: { size: 40, line: 44, weight: 400 },
+  title: { size: 28, line: 34, weight: 400 },
+  heading: { size: 20, line: 26, weight: 500 },
   body: { size: 16, line: 26, weight: 400 },
   ui: { size: 14, line: 20, weight: 400 },
   caption: { size: 12.5, line: 18, weight: 400 },
-  /** The almanac's labels (ADR-020): the mono as letter-spaced capitals, through the .lab rule. */
-  label: { size: 11, line: 16, weight: 400 },
+  /** Small labels (`.lab`): eyebrows, column heads, counters' names; sentence case, medium. */
+  label: { size: 12, line: 16, weight: 500 },
 };
 
 /** The only two weights on any page. */
 export const weight = { regular: 400, medium: 500 } as const;
 
 /**
- * ADR-020 (replacing ADR-005's pair): Newsreader for text and interface, Fraunces for display
- * (titles, ship names, headline figures), IBM Plex Mono for numbers. Loaded by the app with
- * next/font/google. The `sans` slot keeps its name as the text face so every `font-sans` stays valid.
+ * ADR-021 (replacing ADR-020's serifs): one face, Manrope, for text, display and figures, with
+ * tabular numerals everywhere a number is set. Loaded by the app with next/font/google. The three
+ * slots stay so `font-sans`, `font-display` and `font-mono` keep their meaning in the components.
  */
 export const font = {
   sans: {
-    family: "Newsreader",
-    cssVariable: "--font-newsreader",
-    fallback: "Georgia, 'Times New Roman', serif",
+    family: "Manrope",
+    cssVariable: "--font-manrope",
+    fallback: "system-ui, -apple-system, 'Segoe UI', sans-serif",
   },
   display: {
-    family: "Fraunces",
-    cssVariable: "--font-fraunces",
-    fallback: "Georgia, 'Times New Roman', serif",
+    family: "Manrope",
+    cssVariable: "--font-manrope",
+    fallback: "system-ui, -apple-system, 'Segoe UI', sans-serif",
   },
   mono: {
-    family: "IBM Plex Mono",
-    cssVariable: "--font-plex-mono",
-    fallback: "ui-monospace, SFMono-Regular, Menlo, monospace",
+    family: "Manrope",
+    cssVariable: "--font-manrope",
+    fallback: "system-ui, -apple-system, 'Segoe UI', sans-serif",
   },
 } as const;
 
 /** px. Nothing in between. */
 export const space = [4, 8, 12, 16, 24, 32, 48, 64, 96] as const;
 
-/** px. Nothing else. */
-/** px. Nothing else. Square frames, as on paper (ADR-020). */
-export const radius = { control: 2, card: 2, palette: 2 } as const;
+/** px. Nothing else. Soft corners (ADR-021); `pill` rounds a control fully. */
+export const radius = {
+  control: 10,
+  card: 20,
+  palette: 20,
+  pill: 999,
+} as const;
 
-/** Elevation is otherwise none: hairline borders only. */
-export const shadow = { popover: "0 8px 24px rgba(28,26,22,0.14)" } as const;
+/**
+ * Elevation (ADR-021): cards and panels sit on the page by tone and a soft shadow, not a frame;
+ * `lift` is the hero card's and the command palette's; `popover` the menus'.
+ */
+export const shadow = {
+  soft: "0 10px 30px rgba(26,25,23,0.08)",
+  lift: "0 24px 64px rgba(26,25,23,0.14), 0 2px 6px rgba(26,25,23,0.06)",
+  popover: "0 16px 48px rgba(26,25,23,0.18)",
+} as const;
 
 export const layout = { contentMaxWidth: 1400, proseMaxWidth: "68ch" } as const;
 

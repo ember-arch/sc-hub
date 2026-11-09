@@ -1,12 +1,7 @@
 import { Fragment, type ReactNode } from "react";
 import type { Title, WikiText } from "schema";
 import { Badge, type BadgeTone, TextLink, formatNumber } from "ui";
-import {
-  type GuideGrid,
-  type TitleStatus,
-  groupSlug,
-  statusOf,
-} from "../../lib/titles";
+import { type GuideGrid, type TitleStatus, statusOf } from "../../lib/titles";
 import type { TitleIconImage } from "../../lib/title-icons";
 
 /**
@@ -315,24 +310,3 @@ export function GuideGridView({
     </div>
   );
 }
-
-/** The aside beside a group's heading: how many titles, and how many can still be earned. */
-export function countLine(
-  titles: readonly Title[],
-  total: number,
-  filtered: boolean,
-): string {
-  const n = titles.length;
-  const count =
-    filtered && n < total
-      ? `${formatNumber(n)} of ${formatNumber(total)} titles`
-      : `${formatNumber(n)} ${n === 1 ? "title" : "titles"}`;
-  const statuses = titles.map(statusOf).filter((s) => s !== null);
-  if (statuses.length === 0) return count;
-  const earnable = statuses.filter((s) => s === "earnable").length;
-  if (earnable === n) return `${count} · all earnable`;
-  if (earnable === 0) return `${count} · none earnable now`;
-  return `${count} · ${formatNumber(earnable)} earnable`;
-}
-
-export { groupSlug };

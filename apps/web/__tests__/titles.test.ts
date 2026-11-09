@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   GROUP_LABELS,
+  countLine,
   filterTitles,
   groupSlug,
   guideGrid,
@@ -145,6 +146,35 @@ describe("titleSearchEntries", () => {
       entries.find((e) => e.href === "/titles#guide-mining-escort")?.meta,
     ).toBe("Guide · Mining");
     expect(titleSearchEntries(null)).toEqual([]);
+  });
+});
+
+describe("countLine", () => {
+  const titles = (slugs: string[]) =>
+    slugs.map((s) => {
+      const t = all.find((x) => x.slug === s);
+      if (t === undefined) throw new Error(`no ${s}`);
+      return t;
+    });
+
+  it("says how many can still be earned, and counts unknown apart", () => {
+    expect(
+      countLine(titles(["backer-civilian", "backer-scout"]), 16, false),
+    ).toBe("2 titles · all earnable");
+    expect(countLine(titles(["other-vip", "other-humbug"]), 19, true)).toBe(
+      "2 of 19 titles · status unknown",
+    );
+    expect(
+      countLine(
+        titles(["other-subscriber", "other-golden-ticket", "other-vip"]),
+        19,
+        true,
+      ),
+    ).toBe("3 of 19 titles · 1 earnable · 1 status unknown");
+    expect(countLine(titles(["website-event-fooled"]), 1, true)).toBe(
+      "1 title · none earnable now",
+    );
+    expect(countLine(titles(["official-staff"]), 7, false)).toBe("1 title");
   });
 });
 

@@ -53,7 +53,16 @@ export async function prepareTitleIcons(options: {
   const outDir = join(options.mediaDir, "titles");
   mkdirSync(outDir, { recursive: true });
   const out: TitleIconMedia[] = [];
+  const stems = new Map<string, string>();
   for (const row of rows) {
+    const stem = iconStem(row.file);
+    const other = stems.get(stem);
+    if (other !== undefined && other !== row.file) {
+      throw new Error(
+        `title icons ${other} and ${row.file} would share the web name ${stem}`,
+      );
+    }
+    stems.set(stem, row.file);
     const input = join(options.sourcesDir, row.file);
     if (!existsSync(input)) continue;
     const meta = await options.image(input).metadata();
@@ -65,7 +74,7 @@ export async function prepareTitleIcons(options: {
       if (renditions.some((r) => Math.max(r.width, r.height) === target)) {
         continue;
       }
-      const src = `/media/titles/${iconStem(row.file)}-${target}.webp`;
+      const src = `/media/titles/${stem}-${target}.webp`;
       const info = await options
         .image(input)
         .resize({

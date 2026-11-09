@@ -1,12 +1,16 @@
 /**
- * Cuts the fetched article down to a small committed sample for the parser's unit tests: the
- * revision id, the edit time, every section and paragraph, the first rows of every table and only
- * the references those rows cite. The skin's navigation, scripts and styles are left out.
+ * Cuts the fetched article down to the committed copy the parser's unit tests read: the revision
+ * id, the edit time, the article body (every section, paragraph and table row, so the tests can
+ * check the whole catalogue against its source) and the references the rows cite. The skin's
+ * navigation, scripts and styles are left out. `rowsPerTable` trims tables further when needed.
  */
 
 import { TitlesShapeError } from "./html.js";
 
-export function trimArticle(html: string, rowsPerTable = 3): string {
+export function trimArticle(
+  html: string,
+  rowsPerTable = Number.POSITIVE_INFINITY,
+): string {
   const revision = /"wgRevisionId":\d+/.exec(html)?.[0];
   const time =
     /<time id="citizen-page-aside-lastmod-time" datetime="[^"]+">/.exec(

@@ -9,7 +9,7 @@ Icons are not here. They are CIG's art; see `fixtures/titles-media/`.
 | File | What it is |
 | --- | --- |
 | `Titles.json` | The catalogue: source and licence, the article's opening paragraphs, each group's heading and paragraphs, and every title. Validated against `TitleCatalog` in `packages/schema/entities/title.ts`. |
-| `samples/Titles.sample.html` | The article cut down to the first rows of each table and the references they cite, for the parser's unit tests. |
+| `samples/Titles.sample.html` | The article body with the skin removed (every section, paragraph and table row, and the references the rows cite), for the parser's unit tests, which check it reproduces `Titles.json` exactly. |
 
 **Do not edit by hand.** Regenerate with:
 

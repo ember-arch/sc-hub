@@ -16,6 +16,7 @@ import {
   type Query,
   STATUS_OPTIONS,
   type TitleSection,
+  countLine,
   filterTitles,
   groupSlug,
   guideGrid,
@@ -32,7 +33,6 @@ import {
   StatusBadge,
   TitleCard,
   WikiTextView,
-  countLine,
 } from "./title-views";
 
 // The canonical is the unfiltered page: filters are views of one page, not pages of their own.
@@ -291,6 +291,7 @@ export default async function TitlesPage({
                   <li key={s.group}>
                     <a
                       href={`#${groupSlug(s.group)}`}
+                      aria-label={`${s.label}, ${formatNumber(s.titles.length)} ${s.titles.length === 1 ? "title" : "titles"}`}
                       className="flex items-baseline justify-between gap-2 rounded-control text-ui text-secondary no-underline transition-colors duration-hover hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
                     >
                       <span>{s.label}</span>

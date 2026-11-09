@@ -108,7 +108,7 @@ export const TITLES_TEXT_CREDIT = {
   licence: "CC BY-SA 4.0",
   licenceUrl: "https://creativecommons.org/licenses/by-sa/4.0/",
   changes:
-    "Changes: wiki markup, footnote numbers and links to other wiki pages removed; links to other sites kept.",
+    "Changes: the tables rearranged into tiles, a grid and cards; section headings shortened; the tick and cross marks shown as words; wiki markup, formatting, footnote numbers and links to other wiki pages removed; links to other sites kept.",
 } as const;
 
 /** Shown on the titles page only while icons are built locally (ADR-017); never deployed. */

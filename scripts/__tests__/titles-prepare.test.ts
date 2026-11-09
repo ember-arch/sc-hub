@@ -95,6 +95,17 @@ describe("prepareTitleIcons", () => {
     expect(writes).toEqual([]);
   });
 
+  it("stops when two icons would share one web name", async () => {
+    const src = sourcesDir(["Title_X.png", "Title-X.png"]);
+    const { tool } = fakeImageTool({
+      "Title_X.png": [64, 64],
+      "Title-X.png": [64, 64],
+    });
+    await expect(
+      prepareTitleIcons({ image: tool, sourcesDir: src, mediaDir: src }),
+    ).rejects.toThrow(/share the web name/);
+  });
+
   it("names copies safely and uniquely per file", () => {
     expect(iconStem("Title_Civilian.png")).toBe("title-civilian-png");
     expect(iconStem("Farewell,_Port_Olisar.png")).toBe(

@@ -20,6 +20,7 @@ import type {
 import {
   type Cell,
   TitlesShapeError,
+  assertTextTags,
   attributes,
   plainText,
   runsText,
@@ -90,8 +91,8 @@ const HEADERS: Readonly<
 };
 
 /**
- * What the article says about a whole group. Each sentence decides its rows' `earnable`, so the
- * run stops if the wiki rewords it and the rule has to be read again.
+ * What the article says about a whole group whose table has no "Earnable?" column. Each rule
+ * sentence decides its rows' `earnable`.
  */
 export const GROUP_RULES = {
   backer: "All backer titles can still be earned.",
@@ -99,6 +100,24 @@ export const GROUP_RULES = {
     'All recruitment titles except for "bonus" titles can still be earned.',
   guide: "All guide titles except for the flames can still be earned.",
 } as const;
+
+/**
+ * The whole paragraph each of those groups has, word for word. Any change, even an added sentence
+ * ("Civilian can no longer be earned."), stops the run until a person reads it and updates this
+ * text and, if needed, the rule (CLAUDE.md section 5).
+ */
+export const GROUP_INTROS: Readonly<Record<keyof typeof GROUP_RULES, string>> =
+  {
+    backer:
+      "The number listed beside each title corresponds to the pledge total as displayed on the billing page required to earn that title. Original packages included titles that did not directly relate to pledge total. All backer titles can still be earned.",
+    recruitment:
+      'Titles earned via the recruitment of new backers (gained by use of referral codes). More information about the referral program can be found on the Referral Program page. All recruitment titles except for "bonus" titles can still be earned. "Bonus" recruitment titles were earned by recruiting at least one person during a certain time frame.',
+    guide:
+      'Titles earned via acting as a guide in the Guide System. Only "successful" sessions count. To be successful, a session must be in-game, last over 30 minutes, and receive positive feedback from the guidee on the post-guiding survey. All guide titles except for the flames can still be earned.',
+  };
+
+/** The guide grid's columns: six ranks. A seventh is a new shape to read, not to guess at. */
+export const GUIDE_RANKS = 6;
 
 export interface ParsedArticle {
   readonly revisionId: number;
@@ -111,7 +130,7 @@ export interface ParsedArticle {
 export function slugify(text: string): string {
   const slug = text
     .normalize("NFKD")
-    .replace(/[̀-ͯ]/g, "")
+    .replace(/\p{M}/gu, "")
     .toLowerCase()
     .replace(/&/g, " and ")
     .replace(/[^a-z0-9]+/g, "-")
@@ -120,6 +139,19 @@ export function slugify(text: string): string {
     throw new TitlesShapeError(`no slug can be made from "${text}"`);
   }
   return slug;
+}
+
+/**
+ * Slugs in the committed catalogue that a new copy would drop. A slug is a title's address on the
+ * site (`/titles#backer-colonel`) and never changes once published, so a rename or removal on the
+ * wiki stops the fetch until someone accepts that exact list.
+ */
+export function removedSlugs(
+  previous: readonly Pick<Title, "slug">[],
+  next: readonly Pick<Title, "slug">[],
+): string[] {
+  const kept = new Set(next.map((t) => t.slug));
+  return previous.map((t) => t.slug).filter((slug) => !kept.has(slug));
 }
 
 const groupPrefix = (group: TitleGroup): string => group.replace(/_/g, "-");
@@ -268,7 +300,7 @@ function textCell(
   where: string,
 ): { runs: WikiText | null; sources: TitleSourceLink[] } {
   const { html, notes } = takeFootnotes(cell.html);
-  const runs = toRuns(html);
+  const runs = toRuns(html, where);
   return {
     runs: runs.length === 0 ? null : (runs as WikiText),
     sources: sourcesFor(notes, references, where),
@@ -281,6 +313,7 @@ function nameCell(
   where: string,
 ): { name: string; sources: TitleSourceLink[] } {
   const { html, notes } = takeFootnotes(cell.html);
+  assertTextTags(html, where);
   const name = plainText(html);
   if (name === "") throw new TitlesShapeError("empty title name", { where });
   return { name, sources: sourcesFor(notes, references, where) };
@@ -293,6 +326,11 @@ function wholeNumber(cell: Cell, pattern: RegExp, where: string): number {
     throw new TitlesShapeError("number not recognised", { where, text });
   }
   return Number(m[1].replace(/,/g, ""));
+}
+
+function packagesText(cell: Cell, where: string): string {
+  assertTextTags(cell.html, where);
+  return plainText(cell.html);
 }
 
 /** `"Lancer"` or `"First Responder", "Early Adopter"`; "None" is an empty list. */
@@ -310,9 +348,10 @@ function rewardCell(
   where: string,
 ): { reward: NonNullable<Title["reward"]>; sources: TitleSourceLink[] } {
   const { html, notes } = takeFootnotes(cell.html);
+  assertTextTags(html, where);
   const bold = /^\s*<b>([\s\S]*?)<\/b>([\s\S]*)$/.exec(html);
   const name = bold === null ? null : plainText(bold[1] ?? "");
-  const runs = toRuns(bold === null ? html : (bold[2] ?? ""));
+  const runs = toRuns(bold === null ? html : (bold[2] ?? ""), where);
   if (runs.length === 0) {
     throw new TitlesShapeError("reward with no text", { where });
   }
@@ -371,9 +410,16 @@ function parseTable(
         const m = /^(\d+) (\S.*)$/.exec(h);
         return { sessions: Number(m?.[1]), rank: m?.[2] ?? "" };
       });
+    if (ranks.length !== GUIDE_RANKS) {
+      throw new TitlesShapeError("guide grid has a different number of ranks", {
+        expected: GUIDE_RANKS,
+        found: ranks.map((r) => r.rank),
+      });
+    }
     for (const row of body) {
       const where = `guide row ${out.length}`;
       expectCells(row, ranks.length + 1, where);
+      assertTextTags(row[0]?.html ?? "", where);
       const track = plainText(row[0]?.html ?? "");
       if (track === "") throw new TitlesShapeError("guide row without a track");
       for (const [i, rank] of ranks.entries()) {
@@ -424,7 +470,7 @@ function parseTable(
             kind: "pledge_total",
             usd: wholeNumber(c2, /^\$(\d{1,3}(?:,\d{3})+|\d+)$/, where),
           },
-          packages: packageList(plainText(packagesCell.html), where),
+          packages: packageList(packagesText(packagesCell, where), where),
           sources: named.sources,
         });
         break;
@@ -628,13 +674,14 @@ export function parseTitlesArticle(html: string): ParsedArticle {
       intro.push(p);
     }
     const introText = intro.map(runsText).join(" ");
-    const rule = GROUP_RULES[section.group as keyof typeof GROUP_RULES] as
-      string | undefined;
-    if (rule !== undefined && !introText.includes(rule)) {
-      throw new TitlesShapeError("a group's earnable rule changed", {
-        section: section.id,
-        expected: rule,
-      });
+    const expected = GROUP_INTROS[
+      section.group as keyof typeof GROUP_INTROS
+    ] as string | undefined;
+    if (expected !== undefined && introText !== expected) {
+      throw new TitlesShapeError(
+        "a group's paragraph changed; read it, then update GROUP_INTROS and the earnable rule",
+        { section: section.id, expected, found: introText },
+      );
     }
     if (tables.length !== section.tables.length) {
       throw new TitlesShapeError("section has a different number of tables", {

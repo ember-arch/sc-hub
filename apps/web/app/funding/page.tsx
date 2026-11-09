@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { bandArt } from "../../lib/bands";
 import { Masthead } from "../masthead";
 import type { ReactNode } from "react";
 import { EmptyState, SegmentedLinks, TextLink, formatNumber } from "ui";
@@ -222,7 +221,6 @@ export default async function FundingPage({
           ]}
           title="Funding"
           lede="Star Citizen has been crowdfunded since 2012. RSI publishes two running counters, money pledged and citizens registered; this page reads them day by day."
-          art={bandArt("funding")}
           aside={
             <SegmentedLinks
               label="Measure"

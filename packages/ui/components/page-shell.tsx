@@ -48,25 +48,25 @@ export function PageShell({
       >
         Skip to content
       </a>
-      <header className="border-b border-hairline">
-        {/* On a phone the nav takes its own row under the name and search, so four sections fit at 390 px (ADR-017). */}
+      {/* The running head (ADR-020): the site name and the sections as small labels over a rule, the search field at the right. On a phone the nav takes its own row (ADR-017). */}
+      <header className="border-b border-hairline-strong">
         <div className="mx-auto flex w-full max-w-content flex-wrap items-center justify-between gap-x-6 gap-y-2 px-4 py-3">
           <NextLink
             href="/"
-            className="whitespace-nowrap text-ui font-medium text-primary no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+            className="lab whitespace-nowrap text-primary no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
           >
             {SITE_NAME}
           </NextLink>
           <nav
             aria-label="Primary"
-            className="order-last flex w-full items-center gap-4 md:order-none md:w-auto md:flex-1"
+            className="lab order-last flex w-full items-center gap-6 md:order-none md:w-auto md:flex-1 md:justify-center"
           >
             {NAV.map((item) => (
               <NextLink
                 key={item.section}
                 href={item.href}
                 aria-current={current === item.section ? "page" : undefined}
-                className={`rounded-control text-ui no-underline transition-colors duration-hover hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent ${current === item.section ? "nav-current text-primary" : "text-secondary"}`}
+                className={`rounded-control no-underline transition-colors duration-hover hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent ${current === item.section ? "font-medium text-accent underline underline-offset-4" : "text-secondary"}`}
               >
                 {item.label}
               </NextLink>

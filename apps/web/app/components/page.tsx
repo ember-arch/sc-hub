@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { bandArt } from "../../lib/bands";
 import { Masthead } from "../masthead";
 import { ItemType } from "schema";
 import {
@@ -63,7 +62,6 @@ export default async function ComponentsPage({
           ]}
           title="Components"
           lede="Every weapon, shield, power plant, cooler, quantum drive and the rest, with its stats by build and the ships that carry it as stock."
-          art={bandArt("components")}
         />
       }
     >

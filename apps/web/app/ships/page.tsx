@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { bandArt } from "../../lib/bands";
 import { Masthead } from "../masthead";
 import {
   Card,
@@ -88,7 +87,6 @@ export default async function ShipsPage({
           ]}
           title="Ships"
           lede="Every ship and vehicle on record: CIG's art, the game's numbers by build, what it carries and where it ranks."
-          art={bandArt("ships")}
           aside={<CompareLink />}
         />
       }

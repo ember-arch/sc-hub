@@ -51,7 +51,7 @@ packages/
 pipeline/        Windows-only: detect, extract, normalize, optimize, publish
 apps/web/        Next.js app
 workers/         pollers (news, spectrum), import job, link-entities job
-fixtures/        real extracted records per game version; small, committed
+fixtures/        real extracted records per game version; committed (the whole catalog since ADR-022, under 40 MB)
 scripts/         one-off dev scripts; nothing here runs in production (one runs weekly in CI to propose a fixture update for review: the loaner-matrix check, ADR-015)
 ```
 

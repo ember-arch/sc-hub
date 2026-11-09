@@ -6,8 +6,10 @@ import type { PortNode } from "./data";
  * nested ports and each item linked). The raw port tree lists one row per game port; readers
  * want "what does this ship carry": the same tree folded into panels (weapons, defense, power
  * and cooling, flight, sensors and utility, cargo), identical ports merged with a count, and a
- * turret's or rack's mounted items kept nested under it. Structural ports typed `other` with
- * nothing mounted are counted, not listed. Pure; unit-tested over the fixture pack.
+ * turret's or rack's mounted items kept nested under it. A structural port typed `other` with
+ * nothing mounted is transparent: it is not listed, and whatever hangs under it (a ground
+ * vehicle's module attach carries its racks, missiles and countermeasures) is listed at its
+ * level, so no mounted part disappears with its mount. Pure; unit-tested over the fixture pack.
  */
 
 export interface LoadoutEntry {
@@ -95,11 +97,20 @@ function entryKey(node: PortNode, children: readonly LoadoutEntry[]): string {
 const listed = (node: PortNode): boolean =>
   node.port.port_type !== "other" || node.item !== null;
 
+/** The listed ports among these, with an unlisted structural port's children in its place. */
+export function throughStructure(
+  nodes: readonly PortNode[],
+): readonly PortNode[] {
+  return nodes.flatMap((node) =>
+    listed(node) ? [node] : throughStructure(node.children),
+  );
+}
+
 /** Merges sibling ports that carry the same part (and the same nested parts) into one entry. */
 function fold(nodes: readonly PortNode[], stats: StatsLookup): LoadoutEntry[] {
   const out = new Map<string, LoadoutEntry>();
   for (const node of nodes) {
-    const children = fold(node.children.filter(listed), stats);
+    const children = fold(throughStructure(node.children), stats);
     const key = entryKey(node, children);
     const existing = out.get(key);
     if (existing !== undefined) {
@@ -158,7 +169,7 @@ export function loadoutGroups(
   roots: readonly PortNode[],
   stats: StatsLookup,
 ): LoadoutGroup[] {
-  const shown = roots.filter(listed);
+  const shown = throughStructure(roots);
   return (Object.keys(GROUP_TITLES) as GroupId[])
     .map((id) => {
       const entries = fold(

@@ -60,7 +60,7 @@ export default async function ComparePage({
     .filter((s): s is ShipView => s !== undefined);
   const unknown = slugs.filter((slug) => r.shipBySlug(slug) === undefined);
   const chosen = ships.map((s) => s.vehicle.slug);
-  const others = r.ships.filter((s) => !chosen.includes(s.vehicle.slug));
+  const others = r.entries.filter((s) => !chosen.includes(s.vehicle.slug));
 
   return (
     <Site current="ships">

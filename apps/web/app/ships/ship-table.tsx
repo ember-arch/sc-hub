@@ -80,7 +80,7 @@ export function ShipTable({
               )}
               <NextLink
                 href={row.href}
-                className="rounded-control text-heading xl:whitespace-nowrap text-primary no-underline hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+                className="rounded-control text-heading text-primary no-underline hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
               >
                 {row.name}
               </NextLink>

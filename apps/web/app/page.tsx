@@ -23,7 +23,7 @@ import {
   type Reading,
   readings,
 } from "../lib/funding";
-import { shipCardImage } from "../lib/media";
+import { media, shipCardImage } from "../lib/media";
 import { conceptShips, showcaseFor } from "../lib/showcase";
 import { Site, now } from "../lib/site";
 import { crewRange, shipCard } from "../lib/views";
@@ -50,13 +50,12 @@ function conceptImage(
   pageUrl: string,
 ): ResponsiveImage | null {
   const poster = showcaseFor(slug, name)?.poster ?? null;
-  return poster === null
-    ? null
-    : {
-        ...poster,
-        alt: "",
-        credit: { text: RSI_IMAGE_CREDIT.text, href: pageUrl },
-      };
+  if (poster === null) return media().concept(slug, null);
+  return {
+    ...poster,
+    alt: "",
+    credit: { text: RSI_IMAGE_CREDIT.text, href: pageUrl },
+  };
 }
 
 /** How many entry cards the front shows; two rows of five on a wide screen. */
@@ -88,7 +87,7 @@ export default function HomePage() {
   const money = pledges === null ? null : headline(pledges);
   const people =
     series === null ? null : headline(readings(series, "citizens"));
-  const flightReady = r.ships.filter(
+  const flightReady = r.entries.filter(
     (s) => s.vehicle.status === "flight_ready",
   ).length;
   const partTypes = new Set(r.components.map((c) => c.item.type)).size;
@@ -131,7 +130,7 @@ export default function HomePage() {
         ]),
     {
       label: "Ships on record",
-      value: String(r.ships.length + concepts.length),
+      value: String(r.entries.length + concepts.length),
       note: `${flightReady} flight ready · ${concepts.length} in concept`,
       href: "/ships",
     },
@@ -149,9 +148,9 @@ export default function HomePage() {
     ...concepts.map((c) => ({
       slug: c.slug,
       length: c.length_m,
-      hasPicture: (showcaseFor(c.slug, c.name)?.poster ?? null) !== null,
+      hasPicture: conceptImage(c.slug, c.name, c.page_url) !== null,
     })),
-    ...r.ships.map((s) => ({
+    ...r.entries.map((s) => ({
       slug: s.vehicle.slug,
       length: s.stats?.length_m ?? null,
       hasPicture: shipCardImage(s) !== null,
@@ -172,7 +171,7 @@ export default function HomePage() {
         note: [concept.focus?.toLowerCase(), "in concept"]
           .filter((s): s is string => s !== undefined)
           .join(" · "),
-        picture: showcaseFor(concept.slug, concept.name)?.poster ?? null,
+        picture: conceptImage(concept.slug, concept.name, concept.page_url),
       };
     }
     const ship = r.shipBySlug(pick.slug);
@@ -213,7 +212,7 @@ export default function HomePage() {
       ],
       image: conceptImage(c.slug, c.name, c.page_url),
     })),
-    ...r.ships.map((ship) => shipCard(ship, shipCardImage(ship))),
+    ...r.entries.map((ship) => shipCard(ship, shipCardImage(ship))),
   ].sort((a, b) => a.name.localeCompare(b.name, "en"));
   // The front shows the first entries A to Z; the register has them all (ADR-020). With a full
   // pack the home stays a front page, not a catalogue.

@@ -53,10 +53,15 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     };
   }
   const ship = shipFor(slug);
+  // An edition (ADR-022) keeps its page but is listed under its base, which is the canonical one.
+  const canonical = ship.editionOf ?? ship.vehicle;
   return {
     title: ship.vehicle.name,
     description: describe(ship),
-    alternates: { canonical: `/ships/${ship.vehicle.slug}` },
+    alternates: { canonical: `/ships/${canonical.slug}` },
+    ...(ship.editionOf === null
+      ? {}
+      : { robots: { index: false, follow: true } }),
   };
 }
 

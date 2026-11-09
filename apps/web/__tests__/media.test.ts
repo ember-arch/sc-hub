@@ -47,6 +47,19 @@ const manifest: MediaManifest = {
   holo: [],
   holo_figure: null,
   titles: [],
+  concepts: [
+    {
+      slug: "odin",
+      source: "rsi_ship_matrix",
+      page_url: "https://robertsspaceindustries.com/pledge/ships/odin/Odin",
+      image_url: "https://media.robertsspaceindustries.com/x/odin.jpg",
+      fetched_at: "2026-11-09T06:00:00.000Z",
+      renditions: [
+        { src: "/media/concepts/odin-1920.webp", width: 1920, height: 1080 },
+        { src: "/media/concepts/odin-1280.webp", width: 1280, height: 720 },
+      ],
+    },
+  ],
 };
 
 describe("createMedia", () => {
@@ -69,6 +82,19 @@ describe("createMedia", () => {
 
   it("gives a card's image an empty alt, since the card names the ship", () => {
     expect(media.shipCard("AEGS_Gladius")?.alt).toBe("");
+  });
+
+  it("describes a concept ship's image by slug, credited to its RSI page (ADR-022)", () => {
+    const media = createMedia(manifest);
+    const image = media.concept("odin", "Odin");
+    expect(image?.alt).toBe("The Odin");
+    expect(image?.src).toBe("/media/concepts/odin-1280.webp");
+    expect(image?.srcSet).toContain("/media/concepts/odin-1920.webp 1920w");
+    expect(image?.credit.href).toBe(
+      "https://robertsspaceindustries.com/pledge/ships/odin/Odin",
+    );
+    expect(media.concept("odin", null)?.alt).toBe("");
+    expect(media.concept("nova", "Nova")).toBeNull();
   });
 
   it("returns null for anything the manifest does not list", () => {

@@ -39,21 +39,23 @@ describe("the committed bootstrap pack", () => {
   const manifestText = read("manifest.json") ?? "";
   const pack = parsePack(manifestText, read);
 
-  it("stays under the criterion's 2 MB and parses as a data pack", () => {
+  it("stays under the pack's size cap and parses as a data pack", () => {
     const bytes = filesUnder(packDir).reduce(
       (sum, path) => sum + statSync(path).size,
       0,
     );
     expect(bytes).toBeLessThan(PACK_BYTE_LIMIT);
-    expect(pack.rows.Vehicle).toHaveLength(6);
+    expect(pack.rows.Vehicle.length).toBeGreaterThanOrEqual(6);
   });
 
-  it("holds five ships of five sizes from five manufacturers", () => {
+  it("holds at least five ships of five sizes from five manufacturers", () => {
     expect(() => checkFiveShips(pack.rows.Vehicle)).not.toThrow();
-    expect(new Set(pack.rows.Vehicle.map((v) => v.size_class)).size).toBe(5);
+    expect(
+      new Set(pack.rows.Vehicle.map((v) => v.size_class)).size,
+    ).toBeGreaterThanOrEqual(5);
     expect(
       new Set(pack.rows.Vehicle.map((v) => v.manufacturer_code)).size,
-    ).toBe(5);
+    ).toBeGreaterThanOrEqual(5);
   });
 
   it("records the wiki credit line verbatim in the manifest and the README", () => {

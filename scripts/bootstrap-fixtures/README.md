@@ -8,11 +8,12 @@ Run it from the repo root after building the schema package:
 pnpm --filter schema build && pnpm exec tsx scripts/bootstrap-fixtures/index.ts
 ```
 
-It makes about 150 GET requests at one request per 2.5 seconds and takes about six minutes. Progress and problems are JSON lines on stderr; the summary line goes to stdout. For development reruns, `BOOTSTRAP_CACHE_DIR=<folder outside the repository>` replays cached responses instead of fetching; never point it inside the repository.
+With the six-ship list it makes about 150 GET requests at one request per 2.5 seconds and takes about six minutes; with `"all": true` (ADR-022) it fetches some 250 vehicles and every distinct stock component, several thousand requests, and takes a few hours. Progress and problems are JSON lines on stderr; the summary line goes to stdout. For development reruns, `BOOTSTRAP_CACHE_DIR=<folder outside the repository>` replays cached responses instead of fetching; never point it inside the repository.
 
 ## What it never does
 
-- Enter, default, convert or infer a game value. Every field is the API's own value or null; the only code "knowledge" is the vocabulary tables in `map.ts` that map the API's type names onto the data model's enumerations.
+- Enter, default, convert or infer a game value. Every field is the API's own value or null; the only code "knowledge" is the vocabulary tables in `map.ts` that map the API's type names onto the data model's enumerations, and one exclusion: a hardpoint with an empty name (a dummy the game files declare, with no type and nothing mounted) is counted and left out, since the data model keys ports by name; one that carried a part would halt the run (ADR-022). Likewise a vehicle with no production status (an in-game reward or event variant the ship matrix does not list) is counted under `unlisted` and left out, since the data model needs a status (ADR-022).
+- Guess a relation. The one relation the mapper derives is an edition's base (`editions.ts`, ADR-022): within one maker and one display name, a vehicle whose class name extends another's at an underscore (`_Display`, `_BIS2950`, `_Collector_Military`) points at it through `base_variant_of`; a same-name vehicle that extends no other is reported in the log, not linked.
 - Continue past something it does not understand. An unknown port type, a missing required field, a slug collision the manufacturer prefix does not resolve, or any record that fails the schema halts the run with a report and exit code 1, and nothing is written.
 - Exceed the rate limit in CLAUDE.md section 9 (30 requests per minute). One serial queue spaces every request and every retry.
 - Run in production or in unit tests. The tests in `scripts/__tests__/` use the trimmed samples the script writes to `fixtures/bootstrap/samples/` and an injected fetch.

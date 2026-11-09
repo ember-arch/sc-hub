@@ -26,8 +26,8 @@ export const WIKI_CREDIT_LINE =
   "Some game data via the Star Citizen Wiki API (api.star-citizen.wiki).";
 export const WIKI_SOURCE_URL = "https://api.star-citizen.wiki";
 export const PACK_DIR = "fixtures/bootstrap";
-/** Spec 00, criterion "Fixtures": under 2 MB total. */
-export const PACK_BYTE_LIMIT = 2_000_000;
+/** Spec 00 said under 2 MB for six ships; ADR-022 holds the whole catalog in the pack, under 40 MB. */
+export const PACK_BYTE_LIMIT = 40_000_000;
 
 export class BuildError extends Error {
   readonly details: Record<string, unknown>;
@@ -241,7 +241,7 @@ export function renderReadme(input: ReadmeInput): string {
 
 ${WIKI_CREDIT_LINE}
 
-Bootstrap placeholders for Phase 0: five ships, their stock loadouts, the components those loadouts reference and the catalogue of ship guns, missiles and torpedoes, shields, power plants, coolers and quantum drives the loadout editor offers (ADR-016), fetched from the Star Citizen Wiki API by \`scripts/bootstrap-fixtures\` on ${input.manifest.created_at}. Phase 1 replaces this pack with records extracted from the game files; until then every page that shows this data carries the credit line above (\`docs/legal/attribution.md\`).
+The catalog until Phase 1 (ADR-004, ADR-022): ${input.manifest.files.find((f) => f.entity === "Vehicle")?.count ?? 0} ships and vehicles of ${input.manifest.channel} ${input.manifest.game_version}, their stock loadouts, the components those loadouts reference and the catalogue of ship guns, missiles and torpedoes, shields, power plants, coolers and quantum drives the loadout editor offers (ADR-016), fetched from the Star Citizen Wiki API by \`scripts/bootstrap-fixtures\` on ${input.manifest.created_at}. Phase 1 replaces this pack with records extracted from the game files; until then every page that shows this data carries the credit line above (\`docs/legal/attribution.md\`).
 
 **Do not edit these files by hand.** Regenerate with:
 

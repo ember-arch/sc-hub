@@ -9,7 +9,12 @@ import { bootstrapPack } from "./pack";
 // with rows every ship lacks omitted. Checked over the fixture pack.
 
 const r = buildRepository(bootstrapPack(), []);
-const ships = r.ships.slice(0, 3);
+// Three entries with a pledge price on file, so the acquisition rows have values to show.
+const ships = r.entries
+  .filter(
+    (s) => pricesFor(s.vehicle.slug, s.vehicle.class_name).pledge !== null,
+  )
+  .slice(0, 3);
 
 describe("compareColumns", () => {
   it("links each ship and removes only that ship from the comparison", () => {

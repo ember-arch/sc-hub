@@ -18,7 +18,9 @@ const NAV: readonly { section: NavSection; label: string; href: string }[] = [
 
 export interface PageShellProps {
   readonly children: ReactNode;
-  readonly searchEntries: readonly SearchEntry[];
+  /** The search index itself (stories), or where the palette fetches it on first use. */
+  readonly searchEntries?: readonly SearchEntry[] | undefined;
+  readonly searchIndexUrl?: string | undefined;
   readonly versions: readonly ChannelVersion[];
   readonly current?: NavSection | undefined;
   /** Full-bleed content above the main column: the ship entry's opening (ADR-020). */
@@ -34,6 +36,7 @@ export interface PageShellProps {
 export function PageShell({
   children,
   searchEntries,
+  searchIndexUrl,
   versions,
   current,
   stage,
@@ -72,7 +75,7 @@ export function PageShell({
             ))}
           </nav>
           <div className="flex items-center gap-3">
-            <CommandPalette entries={searchEntries} />
+            <CommandPalette entries={searchEntries} indexUrl={searchIndexUrl} />
             <ThemeToggle />
           </div>
         </div>

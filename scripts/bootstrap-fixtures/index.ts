@@ -34,6 +34,7 @@ import {
   mapVehicle,
   mapVehicleStats,
 } from "./map.js";
+import { linkEditions } from "./editions.js";
 import {
   CATALOG_TYPES,
   ShipList,
@@ -49,8 +50,9 @@ import { userAgent } from "../user-agent.js";
 
 /**
  * One-off dev script (CLAUDE.md section 4: nothing in scripts/ runs in production). Fetches the
- * five ships in ships.json from the Star Citizen Wiki API, maps them onto the schema, validates the
- * result as a data pack and writes fixtures/bootstrap/. Any problem halts with a JSON report on
+ * ships in ships.json, or every vehicle in the build when it says `"all": true` (ADR-022), from
+ * the Star Citizen Wiki API, maps them onto the schema, validates the result as a data pack and
+ * writes fixtures/bootstrap/. Any problem halts with a JSON report on
  * stderr and exit code 1; nothing is written unless every check passes.
  */
 
@@ -92,9 +94,9 @@ function log(event: Record<string, unknown>): void {
 }
 
 async function main(): Promise<void> {
-  const ships = ShipList.parse(
+  const { ships, all } = ShipList.parse(
     JSON.parse(readFileSync(join(here, "ships.json"), "utf8")),
-  ).ships;
+  );
   const client = createWikiClient({
     fetch: (url, init) => globalThis.fetch(url, init),
     userAgent: USER_AGENT,
@@ -133,27 +135,64 @@ async function main(): Promise<void> {
   const now = new Date().toISOString();
   log({ event: "bootstrap.version", channel, version });
 
-  // Vehicles: resolve each class name to exactly one record, then fetch it with its port tree.
+  // Which ships: the names in ships.json, or every vehicle the API lists for the build (ADR-022).
   // A display name is ambiguous on the wiki (it resolves to special editions), class_name is not.
-  const vehicleRaws = new Map<string, Record<string, unknown>>();
-  const vehicles = [];
-  for (const className of ships) {
-    const list = WikiVehicleListResponse.parse(
-      await get(
-        `/api/vehicles?filter[class_name]=${encodeURIComponent(className)}&page[size]=50`,
-      ),
-    ).data;
-    const exact = list.filter((entry) => entry.class_name === className);
-    if (exact.length !== 1) {
-      throw new MapError(
-        `class name ${className} matched ${exact.length} vehicles exactly (${list.length} partial matches); expected exactly one`,
-        {
-          class_name: className,
-          candidates: list.map((entry) => entry.class_name),
-        },
+  const targets: { className: string; uuid: string }[] = [];
+  let placeholders = 0;
+  if (all) {
+    for (let page = 1; ; page += 1) {
+      const list = WikiVehicleListResponse.parse(
+        await get(`/api/vehicles?page[size]=200&page[number]=${page}`),
       );
+      for (const entry of list.data) {
+        // The wiki keeps unnamed placeholders the game files declare; they are not ships.
+        if (/^<=.*=>$/.test(entry.name.trim())) {
+          placeholders += 1;
+          continue;
+        }
+        if (!targets.some((t) => t.className === entry.class_name)) {
+          targets.push({ className: entry.class_name, uuid: entry.uuid });
+        }
+      }
+      if (list.meta === undefined) {
+        throw new MapError(
+          "the vehicle list carries no meta.last_page; the run cannot know whether it has every vehicle",
+          { page },
+        );
+      }
+      if (page >= list.meta.last_page) break;
     }
-    const uuid = exact[0]?.uuid ?? "";
+    targets.sort((a, b) => a.className.localeCompare(b.className));
+    log({
+      event: "bootstrap.listed",
+      vehicles: targets.length,
+      placeholders,
+    });
+  } else {
+    for (const className of ships) {
+      const list = WikiVehicleListResponse.parse(
+        await get(
+          `/api/vehicles?filter[class_name]=${encodeURIComponent(className)}&page[size]=50`,
+        ),
+      ).data;
+      const exact = list.filter((entry) => entry.class_name === className);
+      if (exact.length !== 1) {
+        throw new MapError(
+          `class name ${className} matched ${exact.length} vehicles exactly (${list.length} partial matches); expected exactly one`,
+          {
+            class_name: className,
+            candidates: list.map((entry) => entry.class_name),
+          },
+        );
+      }
+      targets.push({ className, uuid: exact[0]?.uuid ?? "" });
+    }
+  }
+
+  // Each vehicle by uuid, with its port tree.
+  const vehicleRaws = new Map<string, Record<string, unknown>>();
+  const fetched = [];
+  for (const { className, uuid } of targets) {
     const json = await get(
       `/api/vehicles/${encodeURIComponent(uuid)}?include=hardpoints`,
     );
@@ -168,13 +207,26 @@ async function main(): Promise<void> {
       raw.class_name,
       (json as { data: Record<string, unknown> }).data,
     );
-    vehicles.push(raw);
+    fetched.push(raw);
     log({
       event: "bootstrap.fetched",
       kind: "vehicle",
       class_name: raw.class_name,
       name: raw.name,
       ports: raw.ports?.length ?? 0,
+    });
+  }
+
+  // Vehicles the ship matrix does not list have no production status: in-game reward and event
+  // variants (ADR-022). The data model needs a status, so they are counted and left out.
+  const unlisted = fetched.filter((v) => v.production_status == null);
+  const vehicles = fetched.filter((v) => v.production_status != null);
+  for (const v of unlisted) vehicleRaws.delete(v.class_name);
+  if (unlisted.length > 0) {
+    log({
+      event: "bootstrap.unlisted",
+      count: unlisted.length,
+      class_names: unlisted.map((v) => v.class_name),
     });
   }
 
@@ -205,9 +257,19 @@ async function main(): Promise<void> {
     fallbacks(vehicleNames),
   );
 
-  const vehicleRows = vehicles.map((raw) =>
-    mapVehicle(raw, vehicleSlugs.get(raw.class_name) ?? "", version),
+  // Editions (showroom copies, sale editions) point at their base (ADR-022, editions.ts).
+  const linked = linkEditions(
+    vehicles.map((raw) =>
+      mapVehicle(raw, vehicleSlugs.get(raw.class_name) ?? "", version),
+    ),
   );
+  const vehicleRows = linked.vehicles;
+  log({
+    event: "bootstrap.editions",
+    count: linked.editions.length,
+    editions: linked.editions,
+    unlinked: linked.unlinked,
+  });
   const vehicleStatsRows = vehicles.map((raw) =>
     mapVehicleStats(raw, channel, version),
   );

@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { expect, test } from "@playwright/test";
+import { listedVehicles } from "../lib/editions";
 
 // Spec 02, criterion "Ship index": filters for manufacturer, role, size class, status and kind as
 // URL state; card and table views; the table sorted by name by default and by any stat column;
@@ -13,6 +14,7 @@ interface VehicleRow {
   name: string;
   size_class: string | null;
   manufacturer_code: string;
+  base_variant_of: string | null;
 }
 interface StatsRow {
   class_name: string;
@@ -39,7 +41,8 @@ const fixture = <T>(file: string): T =>
       "utf8",
     ),
   ) as T;
-const vehicles = fixture<VehicleRow[]>("Vehicle.json");
+// Editions are listed under their base (ADR-022), so the cards and counts see entries.
+const vehicles = listedVehicles(fixture<VehicleRow[]>("Vehicle.json"));
 const manufacturers = fixture<ManufacturerRow[]>("Manufacturer.json");
 const live = fixture<GameVersionRow[]>("GameVersion.json").find(
   (v) => v.channel === "LIVE" && v.is_current,
@@ -73,7 +76,10 @@ test("a size filter chosen from the select becomes URL state and narrows the car
   const cards = page.getByRole("main").locator("ul li a");
   await expect(cards).toHaveCount(expected.length);
   for (const v of expected) {
-    await expect(cards.filter({ hasText: v.name })).toHaveCount(1);
+    // The exact name: "Avenger Titan" must not count the "Avenger Titan Renegade" card.
+    await expect(
+      cards.filter({ has: page.getByText(v.name, { exact: true }) }),
+    ).toHaveCount(1);
   }
   // Clear filters restores the full list and the plain URL.
   await page.getByRole("link", { name: "Clear filters" }).click();

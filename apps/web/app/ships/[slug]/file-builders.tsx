@@ -106,7 +106,7 @@ function relatedTo(
       ships:
         role === null
           ? []
-          : r.ships
+          : r.entries
               .filter(
                 (o) =>
                   o.vehicle.class_name !== className && o.vehicle.role === role,
@@ -114,6 +114,42 @@ function relatedTo(
               .map(link),
     },
   ];
+}
+
+/**
+ * Editions (ADR-022): on an entry's file, the showroom and sale editions that carry its name,
+ * each told apart by its game class name; on an edition's file, the entry it is an edition of
+ * and the other editions beside it.
+ */
+function editionGroups(className: string) {
+  const r = repo();
+  const ship = r.ships.find((s) => s.vehicle.class_name === className);
+  if (ship === undefined) return [];
+  const entry = ship.editionOf ?? ship.vehicle;
+  const link = (o: ShipView) => ({
+    name: o.label,
+    href: `/ships/${o.vehicle.slug}`,
+  });
+  const others = r
+    .editionsOf(entry.class_name)
+    .filter((e) => e.vehicle.class_name !== className)
+    .map(link);
+  const groups = [];
+  if (ship.editionOf !== null) {
+    groups.push({
+      title: "An edition of",
+      ships: [
+        { name: ship.editionOf.name, href: `/ships/${ship.editionOf.slug}` },
+      ],
+    });
+  }
+  if (others.length > 0) {
+    groups.push({
+      title: ship.editionOf === null ? "Editions" : "Other editions",
+      ships: others,
+    });
+  }
+  return groups;
 }
 
 /** The holoviewer's model and the person beside it (ADR-015), with the model's credit. */
@@ -446,7 +482,7 @@ export function packShipFile(ship: ShipView): ShipFileProps {
   const ports = allPorts.filter(
     ({ node }) => node.port.port_type !== "other" || node.item !== null,
   );
-  const others = r.ships.filter((o) => o.stats !== null);
+  const others = r.entries.filter((o) => o.stats !== null);
   const variants = r.variantsOf(v.class_name);
   const image = media().ship(v.class_name, v.name);
   const acq = acquisitionFor(v.slug, v.class_name);
@@ -1015,7 +1051,10 @@ export function packShipFile(ship: ShipView): ShipFileProps {
         body: (
           <div className="flex flex-col gap-8">
             <Related
-              groups={relatedTo(v.manufacturer_code, v.class_name, v.role)}
+              groups={[
+                ...editionGroups(v.class_name),
+                ...relatedTo(v.manufacturer_code, v.class_name, v.role),
+              ]}
             />
             <Sources sources={sources} />
           </div>
@@ -1027,11 +1066,13 @@ export function packShipFile(ship: ShipView): ShipFileProps {
 
 export function conceptShipFile(concept: ConceptShip): ShipFileProps {
   const r = repo();
+  // The ship-matrix image (ADR-022) stands in where the concept has no showcase.
+  const conceptImage = media().concept(concept.slug, concept.name);
   const maker =
     r.manufacturers.find((m) => m.code === concept.manufacturer_code) ?? null;
   const show = showcaseFor(concept.slug, concept.name);
   const claims = claimsFor(concept.slug);
-  const others = r.ships.filter((o) => o.stats !== null);
+  const others = r.entries.filter((o) => o.stats !== null);
   const acq = acquisitionFor(concept.slug, null);
   const loaner = loanerFor(concept.name);
   const pledge = pledgeValue(acq.offers);
@@ -1095,16 +1136,22 @@ export function conceptShipFile(concept: ConceptShip): ShipFileProps {
     figures: show?.figures ?? {},
     visual: {
       ...holoVisual(concept.slug),
-      poster: show?.poster?.src ?? null,
+      poster: show?.poster?.src ?? conceptImage?.src ?? null,
       length: concept.length_m,
       art:
-        show?.background == null
-          ? null
-          : {
+        show?.background != null
+          ? {
               background: show.background,
               cutout: show.cutout,
               credit: artCredit(show),
-            },
+            }
+          : conceptImage === null
+            ? null
+            : {
+                background: conceptImage,
+                cutout: null,
+                credit: conceptImage.credit,
+              },
     },
     particulars: [
       {

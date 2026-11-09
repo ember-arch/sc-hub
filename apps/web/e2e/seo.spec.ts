@@ -2,6 +2,7 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { type Page, expect, test } from "@playwright/test";
+import { listedVehicles } from "../lib/editions";
 
 // Spec 02, criterion "SEO": server-rendered pages, canonical URLs, per-page title and
 // description, sitemap.xml, JSON-LD for ships and manufacturers, and an Open Graph image per
@@ -12,6 +13,11 @@ interface Row {
   slug: string;
   name: string;
 }
+interface VehicleRow extends Row {
+  class_name: string;
+  manufacturer_code: string;
+  base_variant_of: string | null;
+}
 const fixture = <T>(file: string): T =>
   JSON.parse(
     readFileSync(
@@ -21,7 +27,8 @@ const fixture = <T>(file: string): T =>
       "utf8",
     ),
   ) as T;
-const vehicles = fixture<Row[]>("Vehicle.json");
+// Entries only: an edition's canonical link points at its base and the sitemap lists entries.
+const vehicles = listedVehicles(fixture<VehicleRow[]>("Vehicle.json"));
 const items = fixture<Row[]>("Item.json");
 const manufacturers = fixture<Row[]>("Manufacturer.json");
 const ship = vehicles[0];

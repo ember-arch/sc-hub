@@ -17,7 +17,7 @@ import {
   type VehicleStats,
 } from "schema";
 import { parsePack } from "schema/pack";
-import { editionBase } from "./editions";
+import { editionBase, isPlaceholderName } from "./editions";
 import type { ChannelVersion, SearchEntry } from "ui";
 import { sentence } from "ui";
 
@@ -178,7 +178,12 @@ export function buildRepository(
   const itemPtu = new Map(
     rows.ItemStats.filter(isPtu).map((s) => [s.class_name, s]),
   );
-  const itemByClass = new Map(rows.Item.map((i) => [i.class_name, i]));
+  const itemByClass = new Map(
+    rows.Item.map((i) => [
+      i.class_name,
+      isPlaceholderName(i.name) ? { ...i, name: i.class_name } : i,
+    ]),
+  );
   const paintsByVehicle = new Map<string, Paint[]>();
   for (const paint of [...rows.Paint].sort(byName)) {
     const list = paintsByVehicle.get(paint.class_name) ?? [];
@@ -204,7 +209,11 @@ export function buildRepository(
           d.game_version === live.version,
       ) ?? null,
   }));
-  const components: ComponentView[] = [...rows.Item]
+  // A part without a name shows its class name (editions.ts); the row keeps the API's value.
+  const named = rows.Item.map((item) =>
+    isPlaceholderName(item.name) ? { ...item, name: item.class_name } : item,
+  );
+  const components: ComponentView[] = [...named]
     .sort(byName)
     .map((item) => ({
       item,
@@ -292,7 +301,10 @@ export function buildRepository(
         .filter((x) => x != null)
         .join(" · "),
     })),
-    ...components.map((c) => ({
+    // A part with no name of its own is not searched for.
+    ...components
+      .filter((c) => c.item.name !== c.item.class_name)
+      .map((c) => ({
       type: "component" as const,
       name: c.item.name,
       href: `/components/${c.item.slug}`,

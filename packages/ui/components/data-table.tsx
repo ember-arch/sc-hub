@@ -127,6 +127,8 @@ export function DataTable<T>({
         : "Z to A";
 
   const table = (
+    // Cells wrap anywhere: the wiki names some parts by their identifier, one unbreakable token,
+    // and a table's columns size to their longest word (ADR-022).
     <table className="w-full border-collapse text-ui">
       <caption className="sr-only">{caption}</caption>
       <thead>
@@ -199,7 +201,7 @@ export function DataTable<T>({
                 {columns.map((column, index) => (
                   <td
                     key={column.key}
-                    className={`break-words px-2 py-3 align-middle ${cellAlign(column)} ${isPrimary(column, index) ? "" : bp.cell} ${column.align === "right" ? "font-mono" : ""}`}
+                    className={`[overflow-wrap:anywhere] px-2 py-3 align-middle ${cellAlign(column)} ${isPrimary(column, index) ? "" : bp.cell} ${column.align === "right" ? "font-mono" : ""}`}
                   >
                     {column.render(row)}
                   </td>

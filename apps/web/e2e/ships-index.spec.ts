@@ -76,7 +76,10 @@ test("a size filter chosen from the select becomes URL state and narrows the car
   const cards = page.getByRole("main").locator("ul li a");
   await expect(cards).toHaveCount(expected.length);
   for (const v of expected) {
-    await expect(cards.filter({ hasText: v.name })).toHaveCount(1);
+    // The exact name: "Avenger Titan" must not count the "Avenger Titan Renegade" card.
+    await expect(
+      cards.filter({ has: page.getByText(v.name, { exact: true }) }),
+    ).toHaveCount(1);
   }
   // Clear filters restores the full list and the plain URL.
   await page.getByRole("link", { name: "Clear filters" }).click();

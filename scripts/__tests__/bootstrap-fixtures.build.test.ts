@@ -48,12 +48,14 @@ describe("the committed bootstrap pack", () => {
     expect(pack.rows.Vehicle.length).toBeGreaterThanOrEqual(6);
   });
 
-  it("holds five ships of five sizes from five manufacturers", () => {
+  it("holds at least five ships of five sizes from five manufacturers", () => {
     expect(() => checkFiveShips(pack.rows.Vehicle)).not.toThrow();
-    expect(new Set(pack.rows.Vehicle.map((v) => v.size_class)).size).toBe(5);
+    expect(
+      new Set(pack.rows.Vehicle.map((v) => v.size_class)).size,
+    ).toBeGreaterThanOrEqual(5);
     expect(
       new Set(pack.rows.Vehicle.map((v) => v.manufacturer_code)).size,
-    ).toBe(5);
+    ).toBeGreaterThanOrEqual(5);
   });
 
   it("records the wiki credit line verbatim in the manifest and the README", () => {

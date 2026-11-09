@@ -26,6 +26,14 @@ export function editionBase<T extends EditionCandidate>(
     : null;
 }
 
+/**
+ * The wiki keeps CIG's placeholder where the game files give a part no name ("<= PLACEHOLDER =>":
+ * most thrusters, intakes, armour and tanks). The site shows such a part under its class name,
+ * the one identifier it has, and leaves it out of search; the fixture keeps the API's own value.
+ */
+export const isPlaceholderName = (name: string): boolean =>
+  /^<=.*=>$/.test(name.trim());
+
 /** The vehicles listed as entries: every one that is not an edition of another. */
 export function listedVehicles<T extends EditionCandidate>(
   vehicles: readonly T[],

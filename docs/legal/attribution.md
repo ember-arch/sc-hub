@@ -12,6 +12,7 @@ Exact strings live in `packages/ui/legal.ts`. These are the required credits and
 | unp4k | About page | "Archive handling informed by unp4k." with a link |
 | Star Citizen Wiki text (starcitizen.tools) | Titles page (a line under the lead and its Sources section) and about page (ADR-017) | "Titles and how each is earned: the Star Citizen Wiki's Titles article (starcitizen.tools), by its contributors, CC BY-SA 4.0." linked to the article, with the licence linked; the titles page also links the revision copied and the article history, and states the changes made (`TITLES_TEXT_CREDIT`). This text stays under CC BY-SA 4.0 |
 | Title icons | Titles page, only while icons are built locally; never deployed until `cig-approval.md` "Title icons" is ticked (ADR-017) | "Icons: Cloud Imperium Games' art, copied from the Star Citizen Wiki's uploads for local development." (`TITLE_ICON_CREDIT`) |
+| Sycend (idea credit) | Funding page Sources section and about page (ADR-018) | "The measures follow Sycend's Star Citizen Funding Dashboard on Tableau Public, which this page is modelled on; its data is its own and not used here." with a link (`FUNDING_INSPIRATION`) |
 | Fankit | About page and image captions where a fankit image is used | "Image: CIG fankit." |
 | Fankit Agreement notice | Every footer, wherever fankit assets appear (ADR-009) | Clause 2(g) verbatim: `FANKIT_NOTICE` in `packages/ui/legal.ts` |
 | RSI ship images | Under each ship image copied from RSI's ship matrix, linked to the ship's RSI page; about page (ADR-009) | "Image: Roberts Space Industries" |

@@ -110,6 +110,7 @@ Added with the ship file (ADR-008, ADR-012 to ADR-016):
 | News feed | Source filter chips, then `FeedItem` list, infinite scroll in pages of 20, RSS and JSON links in the header. Dev tracker is a tab: author filter, `DevPost` list, thread grouping. |
 | Author page | `EntityPage` without a hero image: handle, role, first seen, post count; posts newest first. |
 | Titles | The wiki's lead and a count line with its credit; a filter form (search, group, status) as URL state; a group index (sticky rail on desktop); one section per group in its own shape: ladder tiles with the threshold as a figure, the bonus titles under their shared icon, the guide track-by-rank grid, cards with the wiki's sentence; a Sources section last. Icons on an inset well at up to 64 px and at most twice their size; no well without an icon (ADR-017). |
+| Funding | Four stat tiles (total, this year with the same-days change, last 365 days with its change, last 30 days); a Pledges/Citizens segmented control as URL state; year bars with the change on the year before; a month grid shaded by one hue (the accent's tint), one block per year on phones; this year against the last two as running totals; the trailing-year trend; the daily rate since 2012; a Sources section. One accent: earlier years in ink tokens with a dash as the second cue; every mark carries a title; a table of every month sits under the grid (ADR-018). |
 
 ## 5. Copy
 

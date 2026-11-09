@@ -5,12 +5,13 @@ import { CommandPalette, type SearchEntry } from "./command-palette";
 import { Footer } from "./footer";
 import type { ChannelVersion } from "./patch-strip";
 
-export type NavSection = "ships" | "components" | "titles" | "news";
+export type NavSection = "ships" | "components" | "titles" | "funding" | "news";
 
 const NAV: readonly { section: NavSection; label: string; href: string }[] = [
   { section: "ships", label: "Ships", href: "/ships" },
   { section: "components", label: "Components", href: "/components" },
   { section: "titles", label: "Titles", href: "/titles" },
+  { section: "funding", label: "Funding", href: "/funding" },
   { section: "news", label: "News", href: "/news" },
 ];
 
@@ -26,7 +27,7 @@ export interface PageShellProps {
   readonly wikiCredit?: boolean | undefined;
 }
 
-/** Top nav (Ships, Components, Titles, News), search button, theme follows system; footer on every page. */
+/** Top nav (Ships, Components, Titles, Funding, News), search button, theme follows system; footer on every page. */
 export function PageShell({
   children,
   searchEntries,

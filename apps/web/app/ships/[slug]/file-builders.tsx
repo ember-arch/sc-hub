@@ -1027,6 +1027,8 @@ export function packShipFile(ship: ShipView): ShipFileProps {
 
 export function conceptShipFile(concept: ConceptShip): ShipFileProps {
   const r = repo();
+  // The ship-matrix image (ADR-022) stands in where the concept has no showcase.
+  const conceptImage = media().concept(concept.slug, concept.name);
   const maker =
     r.manufacturers.find((m) => m.code === concept.manufacturer_code) ?? null;
   const show = showcaseFor(concept.slug, concept.name);
@@ -1095,16 +1097,22 @@ export function conceptShipFile(concept: ConceptShip): ShipFileProps {
     figures: show?.figures ?? {},
     visual: {
       ...holoVisual(concept.slug),
-      poster: show?.poster?.src ?? null,
+      poster: show?.poster?.src ?? conceptImage?.src ?? null,
       length: concept.length_m,
       art:
-        show?.background == null
-          ? null
-          : {
+        show?.background != null
+          ? {
               background: show.background,
               cutout: show.cutout,
               credit: artCredit(show),
-            },
+            }
+          : conceptImage === null
+            ? null
+            : {
+                background: conceptImage,
+                cutout: null,
+                credit: conceptImage.credit,
+              },
     },
     particulars: [
       {

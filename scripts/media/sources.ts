@@ -141,6 +141,11 @@ export function shipRenditionPath(className: string, width: number): string {
   return `/media/ships/${className.toLowerCase()}-${width}.webp`;
 }
 
+/** `/media/concepts/odin-1280.webp`: a concept ship's image by slug (ADR-022). */
+export function conceptRenditionPath(slug: string, width: number): string {
+  return `/media/concepts/${slug}-${width}.webp`;
+}
+
 export function logoRenditionPath(
   code: string,
   ground: "light" | "dark",
@@ -177,3 +182,9 @@ export const RsiSource = z.strictObject({
   fetched_at: z.iso.datetime({ offset: true }),
 });
 export type RsiSource = z.infer<typeof RsiSource>;
+
+/** One row of `fixtures/rsi-media/concept-sources.json`: a concept ship's copied image, by slug (ADR-022). */
+export const ConceptSource = RsiSource.omit({ class_name: true }).extend({
+  slug: z.string().min(1),
+});
+export type ConceptSource = z.infer<typeof ConceptSource>;

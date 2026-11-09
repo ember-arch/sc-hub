@@ -6,5 +6,6 @@
     "ANVL_Carrack",
     "RSI_Polaris",
     "RSI_Perseus"
-  ]
+  ],
+  "all": true
 }

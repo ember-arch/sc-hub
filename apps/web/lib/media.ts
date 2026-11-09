@@ -30,6 +30,8 @@ export interface Media {
   ship(className: string, name: string): ResponsiveImage | null;
   /** The same image for a card, whose alt is empty: the card already names the ship. */
   shipCard(className: string): ResponsiveImage | null;
+  /** A concept ship's ship-matrix image (ADR-022), described for its page or empty for a card. */
+  concept(slug: string, name: string | null): ResponsiveImage | null;
   maker(code: string, name: string): MakerMark | null;
   /** A showcase ship's media and chapters (ADR-010). */
   showcase(slug: string): Showcase | null;
@@ -46,8 +48,20 @@ export function createMedia(manifest: MediaManifest | null): Media {
   const makers = new Map(
     manifest?.makers.map((m) => [m.manufacturer_code, m]) ?? [],
   );
-  const image = (className: string, alt: string): ResponsiveImage | null => {
-    const entry = ships.get(className);
+  const concepts = new Map(manifest?.concepts.map((c) => [c.slug, c]) ?? []);
+  const pictureOf = (
+    entry:
+      | {
+          renditions: readonly {
+            src: string;
+            width: number;
+            height: number;
+          }[];
+          page_url: string;
+        }
+      | undefined,
+    alt: string,
+  ): ResponsiveImage | null => {
     const widest = entry?.renditions[0];
     if (entry === undefined || widest === undefined) return null;
     // The 1280 copy is the fallback for browsers that ignore srcset; srcset picks the rest.
@@ -61,7 +75,11 @@ export function createMedia(manifest: MediaManifest | null): Media {
       credit: { text: RSI_IMAGE_CREDIT.text, href: entry.page_url },
     };
   };
+  const image = (className: string, alt: string): ResponsiveImage | null =>
+    pictureOf(ships.get(className), alt);
   return {
+    concept: (slug, name) =>
+      pictureOf(concepts.get(slug), name === null ? "" : `The ${name}`),
     showcase: (slug) => showcases.get(slug) ?? null,
     holo: (slug) => holos.get(slug) ?? null,
     holoFigure: () => manifest?.holo_figure ?? null,

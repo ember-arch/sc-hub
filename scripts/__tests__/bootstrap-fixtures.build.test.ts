@@ -39,13 +39,13 @@ describe("the committed bootstrap pack", () => {
   const manifestText = read("manifest.json") ?? "";
   const pack = parsePack(manifestText, read);
 
-  it("stays under the criterion's 2 MB and parses as a data pack", () => {
+  it("stays under the pack's size cap and parses as a data pack", () => {
     const bytes = filesUnder(packDir).reduce(
       (sum, path) => sum + statSync(path).size,
       0,
     );
     expect(bytes).toBeLessThan(PACK_BYTE_LIMIT);
-    expect(pack.rows.Vehicle).toHaveLength(6);
+    expect(pack.rows.Vehicle.length).toBeGreaterThanOrEqual(6);
   });
 
   it("holds five ships of five sizes from five manufacturers", () => {

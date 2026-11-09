@@ -27,7 +27,7 @@ import { conceptShips, showcaseFor } from "../../lib/showcase";
 import { CompareLink, CompareToggle } from "../compare/compare-controls";
 import { PriceCredit } from "../price-credit";
 import { ShipTable } from "./ship-table";
-import { shipCardImage } from "../../lib/media";
+import { media, shipCardImage } from "../../lib/media";
 
 // The canonical is the unfiltered index: filters are views of one page, not pages of their own.
 export const metadata: Metadata = {
@@ -169,6 +169,17 @@ export default async function ShipsPage({
             <ul className="m-0 grid list-none grid-cols-2 gap-3 p-0 md:grid-cols-3 lg:grid-cols-4">
               {concepts.map((c) => {
                 const poster = showcaseFor(c.slug, c.name)?.poster ?? null;
+                const picture =
+                  poster === null
+                    ? media().concept(c.slug, null)
+                    : {
+                        ...poster,
+                        alt: "",
+                        credit: {
+                          text: "Image: Roberts Space Industries",
+                          href: c.page_url,
+                        },
+                      };
                 return (
                   <li key={c.slug}>
                     <Card
@@ -190,18 +201,7 @@ export default async function ShipsPage({
                               : crewRange(c.crew_min, c.crew_max),
                         },
                       ]}
-                      image={
-                        poster === null
-                          ? null
-                          : {
-                              ...poster,
-                              alt: "",
-                              credit: {
-                                text: "Image: Roberts Space Industries",
-                                href: c.page_url,
-                              },
-                            }
-                      }
+                      image={picture}
                     />
                   </li>
                 );

@@ -157,9 +157,13 @@ export const WikiGameVersionResponse = z.looseObject({
   }),
 });
 
-/** The five ships to fetch, by the identifier the wiki accepts (display name or slug). */
+/**
+ * The ships to fetch by game class name, or every vehicle the API lists for the build when
+ * `all` is true (ADR-022). The named list stays for a quick rebuild and the tests.
+ */
 export const ShipList = z.strictObject({
   ships: z.array(z.string().min(1)).min(5),
+  all: z.boolean().default(false),
 });
 
 /** One entry of GET /api/vehicles?filter[class_name]=...: enough to pick the exact class name and fetch by uuid. */
@@ -171,4 +175,6 @@ export const WikiVehicleListResponse = z.looseObject({
       class_name: z.string().min(1),
     }),
   ),
+  /** Present on the unfiltered, paged list. */
+  meta: z.looseObject({ last_page: z.number().int().positive() }).optional(),
 });

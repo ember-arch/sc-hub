@@ -1,6 +1,6 @@
 /**
- * Writes `fixtures/ship-matrix/ConceptShip.json`: RSI's published figures for showcase ships the
- * game does not contain yet (ADR-010). Reads a saved ship-matrix response when given one, or
+ * Writes `fixtures/ship-matrix/ConceptShip.json`: RSI's published figures for every announced
+ * ship the game does not contain yet (ADR-010, ADR-022). Reads a saved ship-matrix response when given one, or
  * fetches it once (one request).
  *
  *   pnpm --filter schema build && pnpm exec tsx scripts/media/snapshot-matrix.ts [saved.json] [fetched-at]
@@ -58,21 +58,48 @@ const fetchedAt = process.argv[3] ?? new Date().toISOString();
 const rows = z.object({ data: z.array(Row) }).parse(raw).data;
 const pack = JSON.parse(
   readFileSync(join(repoRoot, "fixtures", "bootstrap", "Vehicle.json"), "utf8"),
-) as { slug: string }[];
+) as { slug: string; name: string; manufacturer_code: string }[];
 
-const concept = SHOWCASE.filter(
-  (s) => !pack.some((v) => v.slug === s.slug),
-).map((s) => {
-  const matches = rows.filter(
-    (r) => r.name === s.name && r.manufacturer.code === s.manufacturer_code,
+// Every announced ship the game does not contain (ADR-022): any row that is not flight ready and
+// whose name and maker are not in the pack. A showcase ship keeps its curated slug; the rest take
+// the kebab-case name, prefixed by the maker where names collide, and never a slug the pack uses.
+const slugify = (name: string): string =>
+  name
+    .normalize("NFKD")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+const inPack = (r: z.infer<typeof Row>): boolean =>
+  pack.some(
+    (v) => v.name === r.name && v.manufacturer_code === r.manufacturer.code,
   );
-  if (matches.length !== 1)
-    throw new Error(`${s.name}: ${matches.length} ship-matrix rows`);
-  const r = matches[0]!;
+const candidates = rows.filter(
+  (r) => r.production_status !== "flight-ready" && !inPack(r),
+);
+const taken = new Set(pack.map((v) => v.slug));
+const nameCounts = new Map<string, number>();
+for (const r of candidates) {
+  const base = slugify(r.name);
+  nameCounts.set(base, (nameCounts.get(base) ?? 0) + 1);
+}
+const concept = candidates.map((r) => {
+  const curated = SHOWCASE.find(
+    (s) => s.name === r.name && s.manufacturer_code === r.manufacturer.code,
+  );
+  const base = slugify(r.name);
+  const slug =
+    curated?.slug ??
+    ((nameCounts.get(base) ?? 0) > 1 || taken.has(base)
+      ? `${slugify(r.manufacturer.code)}-${base}`
+      : base);
+  if (taken.has(slug) && curated === undefined) {
+    throw new Error(`${r.name}: slug ${slug} is already in use`);
+  }
+  taken.add(slug);
   return ConceptShip.parse({
-    slug: s.slug,
+    slug,
     name: r.name,
-    manufacturer_code: s.manufacturer_code,
+    manufacturer_code: r.manufacturer.code,
     focus: r.focus,
     size: r.size,
     production_status: r.production_status,
@@ -90,6 +117,7 @@ const concept = SHOWCASE.filter(
     fetched_at: fetchedAt,
   });
 });
+concept.sort((a, b) => a.slug.localeCompare(b.slug));
 mkdirSync(out, { recursive: true });
 writeFileSync(
   join(out, "ConceptShip.json"),

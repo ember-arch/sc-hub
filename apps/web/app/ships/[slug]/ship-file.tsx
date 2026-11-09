@@ -1,6 +1,13 @@
 import type { ReactNode } from "react";
 import NextLink from "next/link";
-import { Badge, type BadgeTone, type MakerMark, Mark, TextLink } from "ui";
+import {
+  Badge,
+  type BadgeTone,
+  type MakerMark,
+  Mark,
+  TextLink,
+  sentence,
+} from "ui";
 import type { Fact, ShipClaim } from "../../../lib/ship-file";
 import type { FigureView, Picture } from "../../../lib/showcase";
 import { CompareLink, CompareToggle } from "../../compare/compare-controls";
@@ -102,11 +109,8 @@ export function ShipFileOpening({
   const onPage = `${pill} bg-inset text-secondary`;
   const pills = (overArt: boolean): ReactNode => (
     <>
-      {overArt ? (
-        <span className={`${pill} bg-accent text-on-art`}>{status.label}</span>
-      ) : (
-        <Badge tone={status.tone}>{status.label}</Badge>
-      )}
+      {/* The status keeps its semantic tone on its own fill, over art or not: the accent is for links and selection, and a tinted pill fails contrast in dark. */}
+      <Badge tone={status.tone}>{status.label}</Badge>
       {maker === null ? null : (
         <NextLink
           href={maker.href}
@@ -116,7 +120,7 @@ export function ShipFileOpening({
         </NextLink>
       )}
       {role === null ? null : (
-        <span className={overArt ? onArt : onPage}>{role}</span>
+        <span className={overArt ? onArt : onPage}>{sentence(role)}</span>
       )}
     </>
   );

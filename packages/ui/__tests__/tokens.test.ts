@@ -196,6 +196,34 @@ describe("contrast", () => {
   });
 });
 
+// Text over CIG's art (ADR-021) sits on the scrim, which reaches full strength under the text; the
+// worst case is the scrim over a white image. Composite the scrim's alpha over white and black.
+describe("contrast of text.on-art on the scrim", () => {
+  const composite = (over: string): string => {
+    const m = /rgba\((\d+),(\d+),(\d+),([\d.]+)\)/.exec(color.light.scrim);
+    if (m === null) throw new Error("scrim is not rgba");
+    const alpha = Number(m[4]);
+    const channel = (i: number): string => {
+      const base = parseInt(over.slice(1 + i * 2, 3 + i * 2), 16);
+      const top = Number(m[1 + i]);
+      return Math.round(top * alpha + base * (1 - alpha))
+        .toString(16)
+        .padStart(2, "0");
+    };
+    return `#${channel(0)}${channel(1)}${channel(2)}`;
+  };
+  for (const scheme of ["light", "dark"] as const) {
+    it(`text.on-art reads at 4.5:1 or more on the scrim over white and over black, ${scheme}`, () => {
+      for (const over of ["#FFFFFF", "#000000"]) {
+        expect(
+          contrast(color[scheme]["text.on-art"], composite(over)),
+          `over ${over}`,
+        ).toBeGreaterThanOrEqual(4.5);
+      }
+    });
+  }
+});
+
 // accent.bg carries text where something is selected (the palette's active result, a pressed
 // compare toggle, the news source chip); only primary and secondary text sit on it (ADR-020:
 // muted text and the accent itself fall short on the tint, so nothing may set them there).

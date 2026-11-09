@@ -379,7 +379,8 @@ export const SHOWCASE: readonly ShowcaseShip[] = [
         "PDCs0001-0110.jpg": "poster of video-1",
         "ARMING-A-GARRISON.jpg": "poster of video-2",
         "THE-ALL-KILLING-EYE.jpg": "poster of video-4",
-        "All-Weapons-Opening0001-0240.jpg": "poster of video-5",
+        "SC_Odin_Key_Background_2.jpg":
+          "the key background the overlay sat on; the cover is the wide exterior (ADR-021)",
       },
     },
   },

@@ -182,8 +182,9 @@ async function catalogGate(): Promise<{ run: true; note?: string } | string> {
 
 /**
  * The descriptions follow the pack: they run when the catalog changed in this run, and also when
- * the file on disk is for another build than the pack's or covers fewer vehicles than it holds
- * (a rebuild that landed on a day the descriptions halted, or a pack that grew).
+ * the file on disk is missing or for another build than the pack's (a rebuild that landed on a
+ * day the descriptions halted). Coverage is not a reason: a vehicle the wiki has no text for
+ * never gets a row, and a gate on the count would fetch every description every day.
  */
 function descriptionsGate(
   outcomes: readonly Outcome[],
@@ -211,13 +212,9 @@ function descriptionsGate(
     class_name: string;
     game_version: string;
   }[];
-  const covered = new Set(
-    rows.filter((r) => r.game_version === packVersion).map((r) => r.class_name),
-  );
-  const missing = vehicles.filter((v) => !covered.has(v)).length;
-  return missing === 0
-    ? `every vehicle in the pack has its description for ${packVersion ?? "this build"}`
-    : { run: true };
+  const described = rows.filter((r) => r.game_version === packVersion);
+  if (described.length === 0 && vehicles.length > 0) return { run: true };
+  return `the descriptions are for the pack's build, ${packVersion ?? "this build"}`;
 }
 
 const STEPS: readonly Step[] = [

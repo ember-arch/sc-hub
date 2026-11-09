@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { SITE_NAME, SITE_TAGLINE } from "ui/brand";
 import { siteUrl } from "../lib/seo";
 import { fontClasses } from "./fonts";
+import { THEME_SCRIPT } from "./theme-script";
 import "./globals.css";
 
 // Canonical and Open Graph URLs resolve against the public origin (spec 02, "SEO"; ADR-006).
@@ -18,7 +19,10 @@ export default function RootLayout({
   readonly children: ReactNode;
 }) {
   return (
-    <html lang="en" className={fontClasses}>
+    <html lang="en" className={fontClasses} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
       <body className="min-h-dvh">{children}</body>
     </html>
   );

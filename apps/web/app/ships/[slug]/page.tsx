@@ -63,7 +63,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 /**
  * Every ship page is a ship file (ADR-012): the same two columns and the same ten numbered sections
  * for a concept ship and a flying one, written for acquisition, profession and battle planning.
- * Dark by default.
+ * Follows the reader's scheme (ADR-021).
  */
 export default async function ShipPage({ params }: Params) {
   const { slug } = await params;
@@ -71,7 +71,7 @@ export default async function ShipPage({ params }: Params) {
   if (concept !== undefined) {
     const file = conceptShipFile(concept);
     return (
-      <Site current="ships" theme="dark" stage={<ShipFileOpening {...file} />}>
+      <Site current="ships" stage={<ShipFileOpening {...file} />}>
         <ShipFile {...file} />
       </Site>
     );
@@ -79,7 +79,7 @@ export default async function ShipPage({ params }: Params) {
   const ship = shipFor(slug);
   const file = packShipFile(ship);
   return (
-    <Site current="ships" theme="dark" stage={<ShipFileOpening {...file} />}>
+    <Site current="ships" stage={<ShipFileOpening {...file} />}>
       <JsonLdScript data={shipJsonLd(ship, describe(ship))} />
       <ShipFile {...file} />
     </Site>

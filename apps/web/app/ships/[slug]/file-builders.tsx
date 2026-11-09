@@ -972,7 +972,7 @@ export function packShipFile(ship: ShipView): ShipFileProps {
                   peers={combatPeers(v.class_name)}
                 />
               )}
-              <details className="rounded-card border border-hairline bg-surface">
+              <details className="rounded-card bg-surface shadow-soft">
                 <summary className="cursor-pointer rounded-card px-4 py-3 text-ui text-secondary hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent">
                   Every fitted part by system
                 </summary>
@@ -980,7 +980,7 @@ export function packShipFile(ship: ShipView): ShipFileProps {
                   <LoadoutPanels groups={groups} />
                 </div>
               </details>
-              <details className="rounded-card border border-hairline bg-surface">
+              <details className="rounded-card bg-surface shadow-soft">
                 <summary className="cursor-pointer rounded-card px-4 py-3 text-ui text-secondary hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent">
                   All {ports.length} ports by game name
                 </summary>

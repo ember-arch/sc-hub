@@ -5,6 +5,11 @@ export { Badge, type BadgeProps, type BadgeTone } from "./components/badge";
 export { Card, type CardProps, type CardStat } from "./components/card";
 export { Plate, type PlatePicture, type PlateProps } from "./components/plate";
 export {
+  THEME_CHANGE_EVENT,
+  THEME_KEY,
+  ThemeToggle,
+} from "./components/theme-toggle";
+export {
   Mark,
   type ImageFile,
   type MakerMark,

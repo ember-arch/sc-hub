@@ -98,9 +98,9 @@ test("a maker logo shows one version for the page's theme", async ({
   await page.goto("/ships/gladius");
   const logos = page.getByRole("img", { name: "Aegis Dynamics logo" });
   if ((await logos.count()) === 0) test.skip(true, "no media built locally");
-  // Ship pages are dark: only the light mark is drawn, and it is the one the reader can find.
+  // One mark for the scheme in use (the test runs light, ADR-021): the dark mark, hidden otherwise.
   await expect(logos).toHaveCount(1);
-  await expect(logos).toHaveAttribute("src", /aegs-on-dark/);
+  await expect(logos).toHaveAttribute("src", /aegs-on-light/);
 });
 
 // ADR-015: with the models built, Scale lines every ship up in one holoviewer canvas.

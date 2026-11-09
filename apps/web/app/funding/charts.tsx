@@ -282,7 +282,7 @@ export function Frame({
   readonly summary: string;
 }) {
   return (
-    <figure className="m-0 flex flex-col gap-1 border border-hairline-strong bg-surface p-4">
+    <figure className="m-0 flex flex-col gap-1 rounded-card bg-surface shadow-soft p-4">
       <figcaption className="sr-only">{summary}</figcaption>
       <div className="relative ml-16 aspect-[2/1] md:aspect-[3/1]">
         {yTicks.map((t) => (

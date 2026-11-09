@@ -11,7 +11,7 @@ import { useCompareBasket } from "../../lib/compare-store";
  */
 
 const button =
-  "rounded-control border px-3 py-1 text-ui transition-colors duration-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent";
+  "rounded-pill border px-4 py-1 text-ui transition-colors duration-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent";
 
 export function CompareToggle({
   slug,

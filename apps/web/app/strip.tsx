@@ -40,9 +40,7 @@ export function FigureStrip({
   const cols =
     COLUMNS[columns ?? Math.min(figures.length, 6)] ?? "md:grid-cols-5";
   return (
-    <dl
-      className={`m-0 grid grid-cols-2 gap-x-6 gap-y-4 border-b border-t-2 border-b-hairline-strong border-t-primary py-3 md:gap-x-0 md:divide-x md:divide-hairline ${cols}`}
-    >
+    <dl className={`m-0 grid grid-cols-2 gap-x-6 gap-y-4 py-3 ${cols}`}>
       {figures.map((f, i) => {
         const value =
           f.short === undefined ? (

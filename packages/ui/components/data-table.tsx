@@ -143,7 +143,7 @@ export function DataTable<T>({
                 key={column.key}
                 scope="col"
                 aria-sort={ariaSort}
-                className={`lab sticky top-0 border-b-2 border-primary bg-page px-2 py-2 text-secondary ${cellAlign(column)} ${isPrimary(column, index) ? "" : bp.cell}`}
+                className={`lab sticky top-0 border-b border-hairline bg-page px-2 py-2 text-secondary ${cellAlign(column)} ${isPrimary(column, index) ? "" : bp.cell}`}
               >
                 {/* Header text and its unit may wrap at their spaces (labels are wide, ADR-020); the sort arrow stays attached to the last word. */}
                 {column.sortValue === undefined ? (
@@ -182,7 +182,7 @@ export function DataTable<T>({
           {secondary.length > 0 ? (
             <th
               scope="col"
-              className={`sticky top-0 border-b-2 border-primary bg-page ${bp.phone}`}
+              className={`sticky top-0 border-b border-hairline bg-page ${bp.phone}`}
             >
               <span className="sr-only">More</span>
             </th>

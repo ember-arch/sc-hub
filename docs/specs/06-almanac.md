@@ -21,6 +21,13 @@ Rebuild the site's look as an illustrated almanac (ADR-020): paper and ink, two 
 - [x] **Entry.** The ship file draws the holomodel in ink (a flat-shaded body with inked edges on the page's paper, slowly turning, in a framed plate with its length and a person for scale; renders Ink, Lines, Solid), beside the name and the particulars as a ruled table, the key art as a plate under them, and each section's figures as captioned plates; the Scale lineup is drawn the same way and the ADR-012/015 holoviewer look is withdrawn (the mockup's scale bar, chapter cards and figure strip are not carried over; ADR-020 says why).
 - [x] **Ledger, honours, parts and dispatches.** Funding as a ledger on graph paper (a running total in ink with gaps dashed, year bars, the month grid in ink tints, the daily rate); titles as stamps on slate wells with the guide table (the mockup's events-by-year list is not built: the data holds no year per event title); components and news as the almanac's parts and dispatches.
 
+## The gallery revision (ADR-021)
+
+The owner's feedback on the finished almanac: softer, more contemporary, a theme switch, the key art in the entry's header, a smoother face. Two more PRs.
+
+- [x] **Gallery foundation.** Manrope as the one face; the lighter palette; radii 10 and 20 px and pills; cards and panels by tone and soft shadow with no frames; hairlines only between rows and under section heads; labels as small sentence-case text; the shell with pill nav, pill search and a theme switch whose choice is kept and applied before the first paint; no page forces a scheme; `system.md` reads as the gallery; token, contrast and e2e tests pass.
+- [ ] **Gallery pages.** The front page as a bento of image cards with airy counters; the entry's key art as a rounded cover with the name over it, the holomodel and the particulars in rounded panels, the sections' lead figures as cards; the ledger, honours, parts and dispatches softened to match.
+
 ## Verification
 
 - `pnpm typecheck && pnpm lint && pnpm test`, then `pnpm test:e2e`.

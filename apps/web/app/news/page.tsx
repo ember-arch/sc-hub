@@ -113,7 +113,7 @@ function Chip({
     <NextLink
       href={href}
       aria-current={active ? "true" : undefined}
-      className={`lab rounded-control border px-2 py-1 no-underline ${active ? "border-accent bg-accent-bg text-primary" : "border-hairline-strong bg-surface text-secondary hover:text-primary"}`}
+      className={`rounded-pill border px-3 py-1 text-caption font-medium no-underline ${active ? "border-accent bg-accent-bg text-primary" : "border-hairline-strong bg-surface text-secondary hover:text-primary"}`}
     >
       {label}
     </NextLink>

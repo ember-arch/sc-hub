@@ -149,7 +149,7 @@ function Line({
       </div>
       <div className="flex min-w-0 flex-col gap-1">
         <span className="flex flex-wrap items-baseline gap-x-2 text-ui">
-          <span className="rounded-control border border-hairline-strong px-1 font-mono text-caption text-primary">
+          <span className="rounded-control border border-hairline px-1 font-mono text-caption text-primary">
             S{line.size}
           </span>
           <TextLink href={`/components/${line.slug}`}>{line.name}</TextLink>
@@ -203,7 +203,7 @@ export function ArmamentPlan({
         <section
           key={m.key}
           aria-label={m.title}
-          className="rounded-card border border-hairline bg-surface px-4"
+          className="rounded-card bg-surface shadow-soft px-4"
         >
           <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-hairline py-2">
             <h3 className="m-0 text-ui font-medium text-primary">

@@ -1,6 +1,6 @@
 # ADR-020: The almanac: paper and ink, serif faces, plates and ledgers
 
-- Status: accepted
+- Status: accepted; the faces, frames, labels, rules and the ship page's dark default are superseded by ADR-021 (the gallery), which keeps the pages, the palette's ink and accent, and the ink holomodel
 - Date: 2026-11-09
 - Deciders: owner ("I love that almanac style"; chose it over the dark observation deck; asked for it "slightly less editorial, better spacing and margins, graphical with images and holomodels"; then "I love this version, build it", 2026-11-09), Claude Code session 2026-11-09
 

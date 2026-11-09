@@ -74,7 +74,8 @@ Faces: Newsreader (ADR-020, replacing the Phase 0 pair) for text and interface, 
 - `PageShell` — top nav (Ships, Components, News), search button, theme follows system.
 - `CommandPalette` — ⌘K on desktop, persistent button on phone; results grouped by entity type; keyboard navigable; shows recent entities.
 - `EntityPage` — the template: `Hero` (name, manufacturer, status badge, one image or the viewer slot), `KeyFacts` (4 to 8 label/value pairs), `Section`s, `Related`.
-- `DataTable` — fixed columns, sticky header, sort, unit in header, expand-row mode below a breakpoint chosen per table (with a "Sort by" select for the hidden columns).
+- `DataTable` — fixed columns, sticky header (column heads as labels over a 2 px ink rule, ADR-020), sort, unit in header, expand-row mode below a breakpoint chosen per table (with a "Sort by" select for the hidden columns).
+- `Plate` — a picture in a printed frame with a numbered caption ("Plate I."), the name linked, the credit as a label at the right (ADR-020). Three shapes: wide 2:1, panorama 16:7, card 16:9. Without a picture the frame holds the caption alone.
 - `StatRow` — label, value, unit, optional delta (for PTU diffs) with a muted arrow, never color-only.
 - `Badge` — status only; uses semantic colors.
 - `Card` — ship card: image, name, manufacturer, role, two stats.
@@ -91,7 +92,7 @@ Added by spec 02 (ADR-006):
 Added with the design lift (ADR-019):
 
 - `Masthead` (in `apps/web`) — every index page's opening in the shell's `stage` slot: a label line of facts, the title in the display face, a one-line deck and the page's control on the right, over a rule (ADR-020; the art band of ADR-019 is gone: pictures are plates). The current nav section is set in the accent and underlined.
-- `FundingStrip` (in `apps/web`) — the home page's live counters from the funding snapshots, one link to the funding page.
+- `Counters`, `Contents`, `HeroPlates`, `RunningHead` (in `apps/web/app/front.tsx`) — the front page's parts (ADR-020): the headline figures over a 2 px ink rule (each a link), the numbered sections, the three plates, and a label-sized heading with a link at the right.
 
 Added with the ship file (ADR-008, ADR-012 to ADR-016):
 
@@ -108,8 +109,8 @@ Added with the ship file (ADR-008, ADR-012 to ADR-016):
 
 | Page | Layout |
 | --- | --- |
-| Home | The file strip and search, the featured files of the concept hero and the live example (each with its key art when built), the register of every ship as a `DataTable`, then today's feed (news and dev posts merged, 10 items); the patch strip is in the footer. Follows the reader's light or dark setting. No hero banner. |
-| Ships index | `Masthead` (ADR-020), the compare link on its right. Filter bar (manufacturer, role, size, status, kind) + card/table toggle. Cards in a 2/3/4 column grid by breakpoint, art to the card's edges and the name in `heading`, each with a Compare toggle. Table mode uses `DataTable` with a Compare column. Components, Titles, Funding and News open on a `Masthead` the same way. The register and plates of the almanac follow in their own PR (ADR-020). |
+| Home | The front page of the almanac (ADR-020): the date as a label, the title in the display face beside the numbered contents, the counters (pledged, citizens, this year, ships and parts on record, each a link), three plates (the live example wide, the concept hero and the longest other ship beside it), the first ten entries A to Z as cards with a link to the register, then six dispatches; the builds stay in the footer's patch strip (ADR-007). Follows the reader's light or dark setting. Without media the plates hold their captions alone. |
+| Ships index | "The register of ships": `Masthead` (ADR-020), the compare link on its right. Filter bar (manufacturer, role, size, status, kind) + card/table toggle. Cards in a 2/3/4 column grid by breakpoint, art to the card's edges and the name in `heading`, each with a Compare toggle. Table mode is the register: `DataTable` with each row's plate over its name in the display face (from lg; smaller at xl, where every column shows; none without media) and a Compare column. Components, Titles, Funding and News open on a `Masthead` the same way. |
 | Ship page | The ship file (ADR-012, ADR-014, ADR-015), dark by default. A full-bleed opening band of the ship's key art (with CIG's cut-out where it publishes one) under a scrim that keeps the name, a factual sentence and four headline figures legible; credited. Two columns below: on the left, sticky on wide screens, the holoviewer, the particulars and the contents; on the right the same nine numbered sections for every ship (Brief, Acquisition and status, Weapons and combat, Crew and operations, Mobility, Scale, Specifications, Hardpoints and loadout, Sources), each with its images and render loops, every game figure with its build, and related ships with the sources. |
 | Component page | `EntityPage`. Key facts: type, size, grade, class, manufacturer. Sections: stats by channel, stock on (ships that carry it by default), in the news. |
 | Manufacturer page | `EntityPage` with a 3 px brand rule (the `border.strong` token until the fankit supplies brand colors). Sections: lineup (cards), in the news. |

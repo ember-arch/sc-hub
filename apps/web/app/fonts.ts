@@ -17,6 +17,7 @@ const newsreader = Newsreader({
 const fraunces = Fraunces({
   subsets: ["latin"],
   weight: "variable",
+  style: ["normal", "italic"],
   axes: ["opsz"],
   variable: "--font-fraunces",
   display: "swap",

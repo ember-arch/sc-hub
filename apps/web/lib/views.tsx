@@ -103,9 +103,16 @@ export function componentStatRows(c: ComponentView): ChannelStatRow[] {
   return c.stats === null ? [] : channelRows(ITEM_STATS, c.stats, c.ptu);
 }
 
-/** Rows for the ships index table; sorting happens in the table from the numeric fields. */
-export function shipRows(ships: readonly ShipView[]): readonly ShipRow[] {
+/**
+ * Rows for the register; sorting happens in the table from the numeric fields. `image` is the
+ * media lookup (lib/media.ts); without one the rows have no plates.
+ */
+export function shipRows(
+  ships: readonly ShipView[],
+  image: (ship: ShipView) => ResponsiveImage | null = () => null,
+): readonly ShipRow[] {
   return ships.map((ship) => {
+    const plate = image(ship);
     const s = ship.stats;
     const prices = pricesFor(ship.vehicle.slug, ship.vehicle.class_name);
     return {
@@ -130,6 +137,7 @@ export function shipRows(ships: readonly ShipView[]): readonly ShipRow[] {
       pledgeOnSale: prices.pledge?.available ?? false,
       buy: prices.buy_auec,
       status: vehicleStatusBadge(ship.vehicle.status).label,
+      plate: plate === null ? null : { src: plate.src, srcSet: plate.srcSet },
     };
   });
 }

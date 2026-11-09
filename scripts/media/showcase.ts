@@ -239,12 +239,12 @@ export const SHOWCASE: readonly ShowcaseShip[] = [
     ],
     layout: {
       roles: {
-        // The cover shows the whole ship (owner, 2026-11-09): the wide exterior, not the key
-        // background the overlay once sat on. The overlay stays on file; nothing draws it (ADR-021).
-        background: "SC_ANVIL_Odin_Exterior-5.jpg",
+        // The cover is RSI's own composition (owner, 2026-11-09): the key background with the
+        // ship cut-out laid over it, the whole ship kept in frame (ADR-021).
+        background: "SC_Odin_Key_Background_2.jpg",
         cutout: "ODIN_SHIP_OVERLAY.png",
         topdown: "SHIP_TOPDOWN.png",
-        poster: "All-Weapons-Opening0001-0240.jpg",
+        poster: "SC_ANVIL_Odin_Exterior-5.jpg",
       },
       chapters: [
         { heading: "THE ALLFATHER OF WAR" },
@@ -379,8 +379,7 @@ export const SHOWCASE: readonly ShowcaseShip[] = [
         "PDCs0001-0110.jpg": "poster of video-1",
         "ARMING-A-GARRISON.jpg": "poster of video-2",
         "THE-ALL-KILLING-EYE.jpg": "poster of video-4",
-        "SC_Odin_Key_Background_2.jpg":
-          "the key background the overlay sat on; the cover is the wide exterior (ADR-021)",
+        "All-Weapons-Opening0001-0240.jpg": "poster of video-5",
       },
     },
   },

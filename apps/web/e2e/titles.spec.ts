@@ -22,7 +22,9 @@ test("lists every group with the wiki's text credited and the nav marking Titles
 }) => {
   const response = await page.goto("/titles");
   expect(response?.status()).toBe(200);
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Titles");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "Honours and titles",
+  );
   await expect(
     page
       .getByRole("navigation", { name: "Primary" })

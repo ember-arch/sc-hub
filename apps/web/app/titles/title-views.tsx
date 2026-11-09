@@ -5,9 +5,10 @@ import { type GuideGrid, type TitleStatus, statusOf } from "../../lib/titles";
 import type { TitleIconImage } from "../../lib/title-icons";
 
 /**
- * The titles page's pieces (ADR-017). Icons are drawn as they come, never tinted or framed with
- * effects; a title without a built icon has no icon box at all (an empty box is chrome the reader
- * could lose, ADR-006). Wiki text is rendered verbatim, its links out kept.
+ * The honours page's pieces (ADR-017, ADR-020). Icons are drawn as they come, never tinted or
+ * framed with effects, each on a slate well (the dark almanac's paper, so a badge drawn for RSI's
+ * dark pages reads in both modes); a title without a built icon has no well at all (an empty box is
+ * chrome the reader could lose, ADR-006). Wiki text is rendered verbatim, its links out kept.
  */
 
 export type IconLookup = (title: Title) => TitleIconImage | null;
@@ -124,15 +125,18 @@ export function LadderTile({
   return (
     <li
       id={title.slug}
-      className={`flex flex-col gap-3 rounded-card border border-hairline bg-surface p-3 ${anchor}`}
+      className={`flex flex-col gap-3 border border-hairline-strong bg-surface p-3 ${anchor}`}
     >
       {icon === null ? null : (
-        <div className="flex h-24 items-center justify-center rounded-control bg-inset">
+        <div
+          data-theme="dark"
+          className="flex h-24 items-center justify-center border border-hairline-strong bg-page"
+        >
           <Icon image={icon} max={64} />
         </div>
       )}
       <div className="flex flex-col gap-1">
-        <p className="m-0 text-ui font-medium text-primary">{title.name}</p>
+        <p className="m-0 text-heading text-primary">{title.name}</p>
         {req?.kind === "pledge_total" ? (
           <Figure value={`$${formatNumber(req.usd)}`} unit="pledge total" />
         ) : null}
@@ -180,16 +184,19 @@ export function TitleCard({
   return (
     <li
       id={title.slug}
-      className={`flex gap-4 rounded-card border border-hairline bg-surface p-4 ${anchor}`}
+      className={`flex gap-4 border border-hairline-strong bg-surface p-4 ${anchor}`}
     >
       {icon === null ? null : (
-        <div className="flex size-24 shrink-0 items-center justify-center rounded-control bg-inset">
+        <div
+          data-theme="dark"
+          className="flex size-24 shrink-0 items-center justify-center border border-hairline-strong bg-page"
+        >
           <Icon image={icon} max={64} />
         </div>
       )}
       <div className="flex min-w-0 flex-1 flex-col gap-2">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <p className="m-0 text-ui font-medium text-primary">{title.name}</p>
+          <p className="m-0 text-heading text-primary">{title.name}</p>
           {showStatus && status !== null ? (
             <StatusBadge status={status} />
           ) : null}
@@ -251,11 +258,14 @@ export function GuideGridView({
   );
   return (
     <div className="flex flex-col gap-2">
-      <div aria-hidden="true" className="hidden gap-2 lg:grid lg:grid-cols-7">
-        <span className="text-caption text-secondary">Track</span>
+      <div
+        aria-hidden="true"
+        className="hidden gap-2 border-b-2 border-primary pb-2 lg:grid lg:grid-cols-7"
+      >
+        <span className="lab text-secondary">Track</span>
         {grid.ranks.map((r) => (
           <span key={r.rank} className="flex flex-col text-center">
-            <span className="text-caption text-primary">{r.rank}</span>
+            <span className="lab text-primary">{r.rank}</span>
             <span className="font-mono text-caption text-secondary">
               {formatNumber(r.sessions)} sessions
             </span>
@@ -268,7 +278,7 @@ export function GuideGridView({
             key={track.track}
             className="grid grid-cols-3 gap-2 lg:grid-cols-7"
           >
-            <p className="col-span-3 m-0 text-ui font-medium text-primary lg:col-span-1 lg:self-center">
+            <p className="col-span-3 m-0 text-heading text-primary lg:col-span-1 lg:self-center">
               {track.track}
             </p>
             {track.cells.map((cell, i) => {
@@ -289,9 +299,16 @@ export function GuideGridView({
                 <div
                   key={cell.slug}
                   id={cell.slug}
-                  className={`flex flex-col items-center justify-center gap-1 rounded-card border border-hairline bg-surface p-2 text-center ${anchor}`}
+                  className={`flex flex-col items-center justify-center gap-1 border border-hairline-strong bg-surface p-2 text-center ${anchor}`}
                 >
-                  {icon === null ? null : <Icon image={icon} max={48} />}
+                  {icon === null ? null : (
+                    <span
+                      data-theme="dark"
+                      className="flex size-16 items-center justify-center bg-page"
+                    >
+                      <Icon image={icon} max={48} />
+                    </span>
+                  )}
                   <span className={`text-caption text-primary ${label}`}>
                     {rank.rank}
                     <span className="sr-only">, {track.track}</span>

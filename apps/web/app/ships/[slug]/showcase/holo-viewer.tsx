@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { TextLink } from "ui";
+import { THEME_CHANGE_EVENT, TextLink } from "ui";
 import {
   inkBody,
   inkEdges,
@@ -179,7 +179,7 @@ export function HoloViewer({
             {full ? "Exit full screen" : "Full screen"}
           </button>
         </div>
-        <fieldset className="m-0 flex flex-wrap items-center gap-1 border-0 border-x border-b border-hairline bg-surface p-2">
+        <fieldset className="m-0 flex flex-wrap items-center gap-1 border-0 bg-surface p-2">
           <legend className="sr-only">View</legend>
           {VIEWS.map((v) => (
             <button
@@ -300,6 +300,17 @@ async function start(
 
   // The ground: one line under the keel, the length of the ship and a little more.
   const groundInk = inkLine(THREE, palette.inkDim, 0.5);
+  // The switch (ADR-021) changes the tokens under the canvas; repaint from them.
+  const repaint = (): void => {
+    const next = inkPalette(THREE, el);
+    renderer.setClearColor(next.paper, 1);
+    body.color.copy(next.body);
+    ink.color.copy(next.ink);
+    personMaterials?.body.color.copy(next.bodyDim);
+    personMaterials?.ink.color.copy(next.inkDim);
+    groundInk.color.copy(next.inkDim);
+  };
+  window.addEventListener(THEME_CHANGE_EVENT, repaint);
   const ground = new THREE.Line(
     new THREE.BufferGeometry().setFromPoints([
       new THREE.Vector3(-size.x * 0.9, bounds.min.y, 0),
@@ -439,6 +450,7 @@ async function start(
     },
     setRender,
     dispose() {
+      window.removeEventListener(THEME_CHANGE_EVENT, repaint);
       cancelAnimationFrame(frame);
       onScreen.disconnect();
       resize.disconnect();

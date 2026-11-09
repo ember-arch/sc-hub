@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { TextLink } from "ui";
+import { THEME_CHANGE_EVENT, TextLink } from "ui";
 import {
   inkBody,
   inkEdges,
@@ -248,6 +248,16 @@ async function start(
   const dimBody = inkBody(THREE, palette.bodyDim);
   const fullInk = inkLine(THREE, palette.ink, 0.6);
   const dimInk = inkLine(THREE, palette.inkDim, 0.45);
+  // The switch (ADR-021) changes the tokens under the canvas; repaint from them.
+  const repaint = (): void => {
+    const next = inkPalette(THREE, el);
+    renderer.setClearColor(next.paper, 1);
+    fullBody.color.copy(next.body);
+    dimBody.color.copy(next.bodyDim);
+    fullInk.color.copy(next.ink);
+    dimInk.color.copy(next.inkDim);
+  };
+  window.addEventListener(THEME_CHANGE_EVENT, repaint);
   materials.push(fullBody, dimBody, fullInk, dimInk);
   let tallest = 0;
   let widest = 0;
@@ -472,6 +482,7 @@ async function start(
       };
     },
     dispose() {
+      window.removeEventListener(THEME_CHANGE_EVENT, repaint);
       cancelAnimationFrame(frame);
       onScreen.disconnect();
       resize.disconnect();

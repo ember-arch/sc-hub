@@ -6,8 +6,8 @@ Numbered rules are the ones the design-review prompt checks by number.
 
 ## 1. Principles
 
-1. Imagery does the mood, chrome stays quiet. Paper and ink surfaces (warm paper by day, ink on slate by night, ADR-020), one accent, no decoration.
-2. Typography-led. A serif text face, a serif display face and one mono for numbers (ADR-020). At most three sizes per page besides interface text, captions and labels, and two weights.
+1. Imagery does the mood, chrome stays quiet. A warm white wall by day and charcoal by night, cards that sit by tone and a soft shadow (ADR-021), one accent, no decoration.
+2. Typography-led. One smooth face, Manrope, for text, display and figures (ADR-021). At most three sizes per page besides interface text, captions and labels, and two weights.
 3. Light and dark are both first-class. The site follows the system until the reader uses the switch in the header, whose choice is kept (ADR-021); the dark mode is designed, not inverted. No page forces its own scheme.
 4. Search is the navigation. The command palette is reachable from every page.
 5. Every entity page uses one template: hero, key facts, body sections, related entities.

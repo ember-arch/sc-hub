@@ -2,7 +2,7 @@
 
 - Status: accepted
 - Date: 2026-11-09
-- Deciders: owner (feedback on the almanac, 2026-11-09: "light and dark mode toggle", "less hard lines and square/rectangle borders, more fluid/contemporary (more MoMA over almanac)", "ship pages like Odin/Perseus should have the key art/Plate I image integrated somehow into the header rather than being standalone (background or shadowbox perhaps)", "font needs to be smoother and more contemporary"; chose the mockup `apps/web/public/mockup/moma.html` with Manrope: "Yes, build it"), Claude Code session 2026-11-09
+- Deciders: owner (feedback on the almanac, 2026-11-09: "light and dark mode toggle", "less hard lines and square/rectangle borders, more fluid/contemporary (more MoMA over almanac)", "ship pages like Odin/Perseus should have the key art/Plate I image integrated somehow into the header rather than being standalone (background or shadowbox perhaps)", "font needs to be smoother and more contemporary"; chose a local mockup with Manrope, kept outside the repository because it carries CIG's images: "Yes, build it"), Claude Code session 2026-11-09
 
 ## Context
 
@@ -38,4 +38,7 @@ The pages' structure and copy: the front page's contents and counters, the regis
 - `tokens.ts`: colours, type weights, the label size, the faces, the radii (plus `pill`) and the shadows change; `tokens.css` is regenerated; the token, contrast and gallery tests read the new values.
 - The gradient scrim on the entry's cover is the one gradient on the site, for legibility over CIG's art (as ADR-014 once allowed); the review checklist says so.
 - ADR-020's faces, frames, labels and plate rules are superseded by this ADR; its palette principle, pages and holomodel stand. ADR-012's dark default for ship pages ends.
+- The switch is rendered off on the server and corrected on hydration, so a reader whose system is dark and who has not chosen sees the knob move once on the first paint; a cookie would avoid it, and is not worth one.
+- The ink holomodel and the Scale lineup repaint when the switch is used: they re-read the tokens on the switch's event.
+- Hairlines stay under section heads and between rows; everything else that was ruled is not.
 - Every screenshot changes.

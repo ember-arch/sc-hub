@@ -17,6 +17,7 @@ import {
   type VehicleStats,
 } from "schema";
 import { parsePack } from "schema/pack";
+import { editionBase } from "./editions";
 import type { ChannelVersion, SearchEntry } from "ui";
 import { sentence } from "ui";
 
@@ -87,6 +88,8 @@ function loadDescriptions(): VehicleDescription[] {
 
 export interface ShipView {
   readonly vehicle: Vehicle;
+  /** The base this ship is an edition of (same name and maker, ADR-022), or null for an entry. */
+  readonly editionOf: Vehicle | null;
   /** Current LIVE stats, or null when the pack has none for this ship. */
   readonly stats: VehicleStats | null;
   /** Current PTU stats, or null when no PTU build is current or it lacks this ship. */
@@ -116,7 +119,10 @@ export interface Repository {
   readonly liveVersion: string | null;
   readonly ptuVersion: string | null;
   readonly credit: string | null;
+  /** Every vehicle in the pack, editions included; slugs resolve against this list. */
   readonly ships: readonly ShipView[];
+  /** The ships listed as entries: every vehicle that is not an edition of another (ADR-022). */
+  readonly entries: readonly ShipView[];
   readonly components: readonly ComponentView[];
   readonly manufacturers: readonly Manufacturer[];
   readonly news: readonly ContentItem[];
@@ -125,6 +131,8 @@ export interface Repository {
   shipPorts(className: string): readonly PortNode[];
   /** The ship's base and its other variants (data-model: variants point at their base), never itself. */
   variantsOf(className: string): readonly ShipView[];
+  /** The editions listed under this ship, by name. */
+  editionsOf(className: string): readonly ShipView[];
   componentBySlug(slug: string): ComponentView | undefined;
   componentByClass(className: string): ComponentView | undefined;
   /** Ships that carry the item in their stock loadout. */
@@ -178,8 +186,10 @@ export function buildRepository(
     paintsByVehicle.set(paint.class_name, list);
   }
 
+  const vehicleByClass = new Map(rows.Vehicle.map((v) => [v.class_name, v]));
   const ships: ShipView[] = [...rows.Vehicle].sort(byName).map((vehicle) => ({
     vehicle,
+    editionOf: editionBase(vehicle, vehicleByClass),
     stats: vehicleStats.get(vehicle.class_name) ?? null,
     ptu: vehiclePtu.get(vehicle.class_name) ?? null,
     manufacturer: manufacturerByCode.get(vehicle.manufacturer_code) ?? null,
@@ -203,6 +213,11 @@ export function buildRepository(
       manufacturer: manufacturerByCode.get(item.manufacturer_code) ?? null,
     }));
   const shipByClass = new Map(ships.map((s) => [s.vehicle.class_name, s]));
+  const entries = ships.filter((s) => s.editionOf === null);
+  const entryByClass = new Map(entries.map((s) => [s.vehicle.class_name, s]));
+  /** The entry a ship is listed under: itself, or its base when it is an edition. */
+  const listedAs = (s: ShipView): ShipView | undefined =>
+    s.editionOf === null ? s : entryByClass.get(s.editionOf.class_name);
   const componentByClass = new Map(
     components.map((c) => [c.item.class_name, c]),
   );
@@ -269,7 +284,7 @@ export function buildRepository(
   }
 
   const searchEntries: SearchEntry[] = [
-    ...ships.map((s) => ({
+    ...entries.map((s) => ({
       type: "ship" as const,
       name: s.vehicle.name,
       href: `/ships/${s.vehicle.slug}`,
@@ -300,6 +315,7 @@ export function buildRepository(
     ptuVersion: ptu?.version ?? null,
     credit: pack.manifest.credit,
     ships,
+    entries,
     components,
     manufacturers,
     news,
@@ -310,15 +326,24 @@ export function buildRepository(
       (families.get(familyOf(className)) ?? []).filter(
         (s) => s.vehicle.class_name !== className,
       ),
+    editionsOf: (className) =>
+      ships.filter((s) => s.editionOf?.class_name === className),
     componentBySlug: (slug) => components.find((c) => c.item.slug === slug),
     componentByClass: (className) => componentByClass.get(className),
+    // Ships are named once: an edition counts for the entry it is listed under.
     stockOn: (className) =>
-      [...(stockIndex.get(className) ?? [])]
-        .map((cls) => shipByClass.get(cls))
-        .filter((s): s is ShipView => s !== undefined)
-        .sort((a, b) => byName(a.vehicle, b.vehicle)),
+      [
+        ...new Set(
+          [...(stockIndex.get(className) ?? [])]
+            .map((cls) => shipByClass.get(cls))
+            .filter((s): s is ShipView => s !== undefined)
+            .map(listedAs)
+            .filter((s): s is ShipView => s !== undefined),
+        ),
+      ].sort((a, b) => byName(a.vehicle, b.vehicle)),
     manufacturerBySlug: (slug) => manufacturers.find((m) => m.slug === slug),
-    lineup: (code) => ships.filter((s) => s.vehicle.manufacturer_code === code),
+    lineup: (code) =>
+      entries.filter((s) => s.vehicle.manufacturer_code === code),
     componentsBy: (code) =>
       components.filter((c) => c.item.manufacturer_code === code),
   };

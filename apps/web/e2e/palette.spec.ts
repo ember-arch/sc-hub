@@ -16,7 +16,7 @@ test("opens with the keyboard shortcut, navigates with arrows and enter, closes 
   const input = dialog.getByRole("combobox");
   await expect(input).toBeFocused();
 
-  await input.fill("gla");
+  await input.fill("gladius");
   const options = dialog.getByRole("option");
   await expect(options.first()).toContainText("Gladius");
   await expect(options.first()).toHaveAttribute("aria-selected", "true");

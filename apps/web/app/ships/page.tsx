@@ -58,10 +58,10 @@ export default async function ShipsPage({
 }) {
   const r = repo();
   const state = parseShipQuery(await searchParams);
-  const ships = applyShipFilters(r.ships, state.filters);
+  const ships = applyShipFilters(r.entries, state.filters);
   // Concept ships sit outside the filters: they have no game data to filter on (ADR-010).
   const concepts = hasShipFilters(state.filters) ? [] : conceptShips();
-  const options = shipFacetOptions(r.ships, {
+  const options = shipFacetOptions(r.entries, {
     status: (status) => vehicleStatusBadge(status).label,
     kind: sentence,
     size: sentence,
@@ -79,8 +79,8 @@ export default async function ShipsPage({
           eyebrow={[
             <span key="count" data-testid="ship-count">
               {filtered
-                ? `${ships.length} of ${r.ships.length} ships`
-                : `${r.ships.length} ships`}
+                ? `${ships.length} of ${r.entries.length} ships`
+                : `${r.entries.length} ships`}
             </span>,
             r.liveVersion ?? "no LIVE build",
             ...(concepts.length > 0 ? [`${concepts.length} in concept`] : []),

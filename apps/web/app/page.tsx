@@ -87,7 +87,7 @@ export default function HomePage() {
   const money = pledges === null ? null : headline(pledges);
   const people =
     series === null ? null : headline(readings(series, "citizens"));
-  const flightReady = r.ships.filter(
+  const flightReady = r.entries.filter(
     (s) => s.vehicle.status === "flight_ready",
   ).length;
   const partTypes = new Set(r.components.map((c) => c.item.type)).size;
@@ -130,7 +130,7 @@ export default function HomePage() {
         ]),
     {
       label: "Ships on record",
-      value: String(r.ships.length + concepts.length),
+      value: String(r.entries.length + concepts.length),
       note: `${flightReady} flight ready · ${concepts.length} in concept`,
       href: "/ships",
     },
@@ -150,7 +150,7 @@ export default function HomePage() {
       length: c.length_m,
       hasPicture: conceptImage(c.slug, c.name, c.page_url) !== null,
     })),
-    ...r.ships.map((s) => ({
+    ...r.entries.map((s) => ({
       slug: s.vehicle.slug,
       length: s.stats?.length_m ?? null,
       hasPicture: shipCardImage(s) !== null,
@@ -212,7 +212,7 @@ export default function HomePage() {
       ],
       image: conceptImage(c.slug, c.name, c.page_url),
     })),
-    ...r.ships.map((ship) => shipCard(ship, shipCardImage(ship))),
+    ...r.entries.map((ship) => shipCard(ship, shipCardImage(ship))),
   ].sort((a, b) => a.name.localeCompare(b.name, "en"));
   // The front shows the first entries A to Z; the register has them all (ADR-020). With a full
   // pack the home stays a front page, not a catalogue.

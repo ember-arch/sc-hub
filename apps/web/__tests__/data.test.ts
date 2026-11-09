@@ -36,10 +36,32 @@ describe("buildRepository on the fixture pack", () => {
     expect(r.shipBySlug("no-such-ship")).toBeUndefined();
   });
 
-  it("has no variants or paints until the pipeline publishes them", () => {
-    for (const ship of r.ships) {
-      expect(r.variantsOf(ship.vehicle.class_name)).toEqual([]);
-      expect(ship.paints).toEqual([]);
+  it("has no paints until the pipeline publishes them", () => {
+    for (const ship of r.ships) expect(ship.paints).toEqual([]);
+  });
+
+  it("lists an edition under its base, never as an entry (ADR-022)", () => {
+    // The pack's editions: same name and maker as their base, class name extended.
+    const editions = r.ships.filter((s) => s.editionOf !== null);
+    for (const e of editions) {
+      expect(e.editionOf?.name).toBe(e.vehicle.name);
+      expect(
+        e.vehicle.class_name.startsWith(`${e.editionOf?.class_name}_`),
+      ).toBe(true);
+      expect(r.entries).not.toContain(e);
+      expect(r.editionsOf(e.editionOf!.class_name)).toContain(e);
+      expect(
+        r.searchEntries.filter((x) => x.href === `/ships/${e.vehicle.slug}`),
+      ).toEqual([]);
+      expect(r.lineup(e.vehicle.manufacturer_code)).not.toContain(e);
+    }
+    expect(r.entries.length + editions.length).toBe(r.ships.length);
+    // Every entry name is listed once per maker.
+    const seen = new Set<string>();
+    for (const s of r.entries) {
+      const key = `${s.vehicle.manufacturer_code}|${s.vehicle.name}`;
+      expect(seen.has(key)).toBe(false);
+      seen.add(key);
     }
   });
 
@@ -64,7 +86,12 @@ function extendedPack(): {
   variant: Vehicle;
   ptuVersion: string;
 } {
-  const base = pack.rows.Vehicle[0];
+  // A plain entry: not an edition, and no edition points at it (ADR-022).
+  const base = pack.rows.Vehicle.find(
+    (v) =>
+      v.base_variant_of === null &&
+      !pack.rows.Vehicle.some((o) => o.base_variant_of === v.class_name),
+  );
   const stats = pack.rows.VehicleStats.find(
     (s) => s.class_name === base?.class_name,
   );
@@ -127,6 +154,50 @@ describe("buildRepository with PTU, variant and paint rows", () => {
     expect(ship?.stats?.channel).toBe("LIVE");
     const other = r.ships.find((s) => s.vehicle.class_name !== base.class_name);
     expect(other?.ptu).toBeNull();
+  });
+
+  it("keeps a variant with a name of its own as an entry", () => {
+    const view = r.shipBySlug(variant.slug);
+    expect(view?.editionOf).toBeNull();
+    expect(r.entries).toContain(view);
+  });
+
+  it("folds a same-name edition under its base", () => {
+    const edition = Vehicle.parse({
+      ...base,
+      class_name: `${base.class_name}_Display`,
+      slug: `${base.slug}-display`,
+      base_variant_of: base.class_name,
+    });
+    const folded = buildRepository(
+      {
+        manifest: extended.manifest,
+        rows: {
+          ...extended.rows,
+          Vehicle: [...extended.rows.Vehicle, edition],
+        },
+      },
+      [],
+    );
+    const view = folded.shipBySlug(edition.slug);
+    expect(view?.editionOf?.class_name).toBe(base.class_name);
+    expect(folded.entries.map((s) => s.vehicle.slug)).not.toContain(
+      edition.slug,
+    );
+    expect(
+      folded.editionsOf(base.class_name).map((s) => s.vehicle.class_name),
+    ).toEqual([edition.class_name]);
+    // The base and the edition count once among a component's ships.
+    const stock = folded
+      .shipPorts(base.class_name)
+      .find((p) => p.item !== null);
+    if (stock?.item != null) {
+      const names = folded
+        .stockOn(stock.item.class_name)
+        .map((s) => s.vehicle.slug);
+      expect(names).toContain(base.slug);
+      expect(names).not.toContain(edition.slug);
+    }
   });
 
   it("groups a variant with its base, excluding the ship itself", () => {

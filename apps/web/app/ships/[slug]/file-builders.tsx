@@ -106,7 +106,7 @@ function relatedTo(
       ships:
         role === null
           ? []
-          : r.ships
+          : r.entries
               .filter(
                 (o) =>
                   o.vehicle.class_name !== className && o.vehicle.role === role,
@@ -114,6 +114,41 @@ function relatedTo(
               .map(link),
     },
   ];
+}
+
+/**
+ * Editions (ADR-022): on a base ship's file, the showroom and sale editions that carry its name,
+ * each told apart by its game class name; on an edition's file, the base it is an edition of.
+ */
+function editionGroups(className: string) {
+  const r = repo();
+  const ship = r.ships.find((s) => s.vehicle.class_name === className);
+  if (ship === undefined) return [];
+  if (ship.editionOf !== null) {
+    return [
+      {
+        title: "An edition of",
+        ships: [
+          {
+            name: `${ship.editionOf.name} (${ship.editionOf.class_name})`,
+            href: `/ships/${ship.editionOf.slug}`,
+          },
+        ],
+      },
+    ];
+  }
+  const editions = r.editionsOf(className);
+  return editions.length === 0
+    ? []
+    : [
+        {
+          title: "Editions",
+          ships: editions.map((e) => ({
+            name: `${e.vehicle.name} (${e.vehicle.class_name})`,
+            href: `/ships/${e.vehicle.slug}`,
+          })),
+        },
+      ];
 }
 
 /** The holoviewer's model and the person beside it (ADR-015), with the model's credit. */
@@ -446,7 +481,7 @@ export function packShipFile(ship: ShipView): ShipFileProps {
   const ports = allPorts.filter(
     ({ node }) => node.port.port_type !== "other" || node.item !== null,
   );
-  const others = r.ships.filter((o) => o.stats !== null);
+  const others = r.entries.filter((o) => o.stats !== null);
   const variants = r.variantsOf(v.class_name);
   const image = media().ship(v.class_name, v.name);
   const acq = acquisitionFor(v.slug, v.class_name);
@@ -1015,7 +1050,10 @@ export function packShipFile(ship: ShipView): ShipFileProps {
         body: (
           <div className="flex flex-col gap-8">
             <Related
-              groups={relatedTo(v.manufacturer_code, v.class_name, v.role)}
+              groups={[
+                ...editionGroups(v.class_name),
+                ...relatedTo(v.manufacturer_code, v.class_name, v.role),
+              ]}
             />
             <Sources sources={sources} />
           </div>

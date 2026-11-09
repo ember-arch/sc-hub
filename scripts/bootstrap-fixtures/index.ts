@@ -66,6 +66,18 @@ const USER_AGENT = userAgent("bootstrap");
 
 type PackRows = Partial<Record<Entity, Record<string, unknown>[]>>;
 
+/**
+ * The slugs the pack on disk has published, whatever its build: a slug never changes after first
+ * publish (CLAUDE.md section 5), so a new build pins against them too (ADR-023, where a rebuild
+ * lands without a review).
+ */
+function publishedRows(entity: Entity): Record<string, unknown>[] {
+  const file = join(outDir, `${entity}.json`);
+  return existsSync(file)
+    ? (JSON.parse(readFileSync(file, "utf8")) as Record<string, unknown>[])
+    : [];
+}
+
 /** The pack on disk, when its manifest is for `version`; null otherwise (a new build starts clean). */
 function previousPack(version: string): PackRows | null {
   const manifestPath = join(outDir, "manifest.json");
@@ -253,7 +265,7 @@ async function main(): Promise<void> {
     };
   const vehicleSlugs = pinSlugs(
     assignSlugs(vehicleNames),
-    slugsOf(previous?.Vehicle ?? []),
+    slugsOf(previous?.Vehicle ?? publishedRows("Vehicle")),
     fallbacks(vehicleNames),
   );
 
@@ -374,7 +386,7 @@ async function main(): Promise<void> {
   }));
   const itemSlugs = pinSlugs(
     assignSlugs(itemNames),
-    slugsOf(previous?.Item ?? []),
+    slugsOf(previous?.Item ?? publishedRows("Item")),
     fallbacks(itemNames),
   );
   const itemRows: Item[] = items.map((raw) =>

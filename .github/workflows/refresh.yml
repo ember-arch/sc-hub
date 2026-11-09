@@ -1,0 +1,176 @@
+# The daily refresh (ADR-023).
+#
+# Runs scripts/refresh/index.ts: the catalog is rebuilt only when the Wiki API serves a new
+# build; the ship matrix, loaners, prices, titles and funding counters refresh every day; only
+# real changes stay (a new stamp on the same data is reverted). The refreshed fixtures then go
+# through the unit suite and a full build in this job, because a push made with the workflow
+# token does not start the CI workflow. When they pass, the changes land on main as one data
+# commit; a source that failed gets an issue with its report and, when there are changes, a
+# branch. A rebuild whose checks failed waits on a branch named for its build, and the job does
+# not fetch that build again until the branch is gone. The sources on robertsspaceindustries.com
+# need the repository variable SC_HUB_CONTACT_EMAIL (CLAUDE.md section 9); without it they are
+# skipped and an issue says so.
+name: Refresh
+
+on:
+  schedule:
+    # Every day, 06:23 UTC.
+    - cron: "23 6 * * *"
+  workflow_dispatch:
+    inputs:
+      force_rebuild:
+        description: Rebuild the catalog even if the build is unchanged or waiting on a branch
+        type: boolean
+        default: false
+
+concurrency:
+  group: refresh
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  issues: write
+
+env:
+  NEXT_TELEMETRY_DISABLED: "1"
+
+jobs:
+  refresh:
+    name: Refresh the fixtures
+    runs-on: ubuntu-latest
+    # A rebuild is some three thousand requests at the polite limit, about two hours.
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter schema build
+
+      - name: Builds fetched on a day their checks failed
+        id: waiting
+        run: |
+          builds=$(git ls-remote --heads origin 'data/refresh-build-*' | sed 's#.*refs/heads/data/refresh-build-##' | tr '\n' ' ')
+          echo "builds=$builds" >> "$GITHUB_OUTPUT"
+          [ -z "$builds" ] || echo "Waiting on a fix: $builds"
+
+      - name: Run the fetchers
+        id: fetch
+        continue-on-error: true
+        env:
+          SC_HUB_CONTACT_EMAIL: ${{ vars.SC_HUB_CONTACT_EMAIL }}
+          REFRESH_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          REFRESH_WAITING_BUILDS: ${{ steps.waiting.outputs.builds }}
+          FORCE: ${{ inputs.force_rebuild == true && '--force-rebuild' || '' }}
+        run: pnpm exec tsx scripts/refresh/index.ts $FORCE --out "$RUNNER_TEMP/refresh"
+
+      - name: Summary
+        if: always()
+        run: |
+          f="$RUNNER_TEMP/refresh/summary.md"
+          if [ -f "$f" ]; then cat "$f" >> "$GITHUB_STEP_SUMMARY"; else echo "The refresh job wrote no summary; see the log." >> "$GITHUB_STEP_SUMMARY"; fi
+          for log in "$RUNNER_TEMP"/refresh/*.log; do [ -f "$log" ] && { echo "== $(basename "$log")"; tail -n 40 "$log"; }; done || true
+
+      - name: Did anything change
+        id: changes
+        if: always()
+        run: |
+          if git diff --quiet -- fixtures && [ -z "$(git ls-files --others --exclude-standard fixtures)" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            git status --short -- fixtures
+          fi
+          build=""
+          [ -f "$RUNNER_TEMP/refresh/build.txt" ] && build=$(cat "$RUNNER_TEMP/refresh/build.txt")
+          echo "build=$build" >> "$GITHUB_OUTPUT"
+          catalog=false
+          git diff --quiet -- fixtures/bootstrap || catalog=true
+          echo "catalog=$catalog" >> "$GITHUB_OUTPUT"
+
+      - name: Check the refreshed fixtures (unit suite, full build)
+        id: check
+        if: steps.changes.outputs.changed == 'true'
+        continue-on-error: true
+        run: |
+          pnpm test
+          pnpm build
+
+      - name: Land the changes on main
+        if: steps.changes.outputs.changed == 'true' && steps.check.outcome == 'success'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A fixtures
+          git commit -F "$RUNNER_TEMP/refresh/commit.txt"
+          git pull --rebase origin "${{ github.event.repository.default_branch }}"
+          git push origin HEAD:"${{ github.event.repository.default_branch }}"
+
+      - name: Keep the changes on a branch when the checks failed
+        if: steps.changes.outputs.changed == 'true' && steps.check.outcome != 'success'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          day=$(date -u +%Y-%m-%d)
+          # A rebuild that failed its checks waits under its build's name, so the job does not
+          # fetch that build again tomorrow; anything else waits under the day.
+          if [ "${{ steps.changes.outputs.catalog }}" = "true" ] && [ -n "${{ steps.changes.outputs.build }}" ]; then
+            branch="data/refresh-build-${{ steps.changes.outputs.build }}"
+          else
+            branch="data/refresh-$day"
+          fi
+          git switch -c "$branch"
+          git add -A fixtures
+          git commit -F "$RUNNER_TEMP/refresh/commit.txt"
+          git push --force origin "$branch"
+          mkdir -p "$RUNNER_TEMP/refresh"
+          if [ ! -s "$RUNNER_TEMP/refresh/issue-title.txt" ]; then
+            echo "Refresh needs attention: the checks failed on the refreshed fixtures" > "$RUNNER_TEMP/refresh/issue-title.txt"
+            : > "$RUNNER_TEMP/refresh/issue.md"
+          fi
+          {
+            echo ""
+            echo "The refreshed fixtures of $day did not pass the unit suite or the build; they are on branch $branch and did not land (ADR-023). Open the branch in a session, find what the pages or tests assumed, fix the code, and merge the branch through a pull request; the job does not fetch a waiting build again until its branch is merged or deleted."
+            echo ""
+            echo "Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          } >> "$RUNNER_TEMP/refresh/issue.md"
+
+      - name: Open or update the issue for a failure
+        if: always() && (steps.fetch.outcome != 'success' || (steps.changes.outputs.changed == 'true' && steps.check.outcome != 'success'))
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/refresh"
+          title=""
+          [ -f "$RUNNER_TEMP/refresh/issue-title.txt" ] && title=$(cat "$RUNNER_TEMP/refresh/issue-title.txt")
+          if [ -z "$title" ]; then
+            title="Refresh needs attention"
+            echo "The daily refresh could not run; see ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" > "$RUNNER_TEMP/refresh/issue.md"
+          fi
+          existing=$(gh issue list --state open --search "in:title \"$title\"" --json number --jq '.[0].number')
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body-file "$RUNNER_TEMP/refresh/issue.md"
+          else
+            gh issue create --title "$title" --body-file "$RUNNER_TEMP/refresh/issue.md"
+          fi
+
+      - name: Ask for the contact address once
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          file="$RUNNER_TEMP/refresh/needs-contact.txt"
+          if [ ! -f "$file" ] || [ "$(cat "$file")" != "yes" ]; then exit 0; fi
+          title="Refresh: set SC_HUB_CONTACT_EMAIL so RSI's sources refresh"
+          existing=$(gh issue list --state all --search "in:title \"$title\"" --json number --jq '.[0].number')
+          if [ -n "$existing" ]; then exit 0; fi
+          gh issue create --title "$title" --body "The daily refresh skips the ship matrix, the loaner matrix and the pledge prices because the repository variable SC_HUB_CONTACT_EMAIL is not set (CLAUDE.md section 9: requests to robertsspaceindustries.com carry a contact address, ADR-005). Set it once under Settings, Secrets and variables, Actions, Variables, and the next run refreshes them."
+
+      - name: Fail the run when a source failed or the checks failed
+        if: always() && (steps.fetch.outcome != 'success' || (steps.changes.outputs.changed == 'true' && steps.check.outcome != 'success'))
+        run: exit 1

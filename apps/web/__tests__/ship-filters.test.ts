@@ -5,6 +5,7 @@ import {
   applyShipFilters,
   facetValue,
   hasShipFilters,
+  matchesSearch,
   parseShipQuery,
   rolesOf,
   shipFacetOptions,
@@ -59,6 +60,51 @@ describe("parseShipQuery", () => {
     expect(parseShipQuery({ view: "list" }).view).toBe("cards");
     expect(hasShipFilters({})).toBe(false);
     expect(hasShipFilters({ kind: "ship" })).toBe(true);
+  });
+
+  it("reads the search, trimmed, and keeps it in the URL first", () => {
+    expect(parseShipQuery({ q: "  gladius " }).filters).toEqual({
+      q: "gladius",
+    });
+    expect(parseShipQuery({ q: "   " }).filters).toEqual({});
+    expect(hasShipFilters({ q: "x" })).toBe(true);
+    expect(
+      shipIndexHref({
+        filters: { q: "gladius", size: "small" },
+        view: "table",
+      }),
+    ).toBe("/ships?q=gladius&size=small&view=table");
+  });
+});
+
+describe("the search", () => {
+  it("matches a name, a maker's name or code, or a class name, whatever the case", () => {
+    const found = applyShipFilters(ships, { q: "GLADIUS" });
+    expect(found.length).toBeGreaterThan(0);
+    for (const s of found) {
+      expect(
+        [s.vehicle.name, s.vehicle.class_name].some((f) =>
+          f.toLowerCase().includes("gladius"),
+        ),
+      ).toBe(true);
+    }
+    const byMaker = applyShipFilters(ships, { q: "aegis" });
+    expect(byMaker.length).toBeGreaterThan(0);
+    expect(
+      byMaker.every((s) => s.manufacturer?.name === "Aegis Dynamics"),
+    ).toBe(true);
+    expect(applyShipFilters(ships, { q: "AEGS" }).length).toBe(byMaker.length);
+    expect(matchesSearch("", ["anything"])).toBe(true);
+    expect(matchesSearch("san tok", ["San'tok.yāi"])).toBe(true);
+    expect(applyShipFilters(ships, { q: "no such ship anywhere" })).toEqual([]);
+  });
+
+  it("combines with the facets", () => {
+    const small = applyShipFilters(ships, { q: "aegis", size: "small" });
+    for (const s of small) {
+      expect(s.manufacturer?.name).toBe("Aegis Dynamics");
+      expect(s.vehicle.size_class).toBe("small");
+    }
   });
 });
 

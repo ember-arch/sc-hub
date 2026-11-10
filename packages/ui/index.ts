@@ -58,6 +58,8 @@ export {
   FilterBar,
   type FilterBarProps,
   type FilterOption,
+  FilterSearch,
+  type FilterSearchProps,
   FilterSelect,
   type FilterSelectProps,
   filterHref,

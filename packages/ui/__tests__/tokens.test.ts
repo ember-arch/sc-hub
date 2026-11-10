@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { renderTokensCss } from "../build/tokens-css";
@@ -237,4 +237,43 @@ describe("contrast on accent.bg", () => {
       });
     }
   }
+});
+
+// ADR-032: Spectrum's yellow is Spectrum's own colour for the staff role, read from its identify
+// answer, and it marks a developer post; it is never text, a fill or a background.
+describe("spectrum.staff", () => {
+  it("is the staff role's colour in the committed identify sample", () => {
+    const sample = JSON.parse(
+      read("../../../fixtures/spectrum/samples/identify.sample.json"),
+    ) as {
+      data: {
+        communities: { roles: { name: string; color: string }[] }[];
+      };
+    };
+    const staff = sample.data.communities[0]?.roles.find(
+      (r) => r.name === "staff",
+    );
+    expect(staff).toBeDefined();
+    for (const scheme of ["light", "dark"] as const) {
+      expect(color[scheme]["spectrum.staff"].toUpperCase()).toBe(
+        `#${staff?.color.toUpperCase()}`,
+      );
+    }
+  });
+
+  it("is never set as text, a fill or a background", () => {
+    const roots = ["../components", "../../../apps/web/app"];
+    const offenders: string[] = [];
+    for (const root of roots) {
+      const dir = fileURLToPath(new URL(root, import.meta.url));
+      for (const file of readdirSync(dir, { recursive: true })) {
+        const name = String(file);
+        if (!/\.tsx?$/.test(name)) continue;
+        const text = readFileSync(`${dir}/${name}`, "utf8");
+        if (/(text|fill|bg|stroke)-spectrum-staff/.test(text))
+          offenders.push(name);
+      }
+    }
+    expect(offenders).toEqual([]);
+  });
 });

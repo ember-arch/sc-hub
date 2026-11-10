@@ -23,6 +23,7 @@ export const colorTokens = [
   "success",
   "warning",
   "danger",
+  "spectrum.staff",
 ] as const;
 export type ColorToken = (typeof colorTokens)[number];
 
@@ -49,11 +50,13 @@ export const colorUtility: Record<ColorToken, string> = {
   success: "success",
   warning: "warning",
   danger: "danger",
+  "spectrum.staff": "spectrum-staff",
 };
 
 export const color: Record<Scheme, Record<ColorToken, string>> = {
   // The gallery (ADR-021): warm white walls and white cards by day, charcoal by night; the ink
-  // and the oxblood accent of the almanac stay. Surfaces separate by tone and shadow, not frames.
+  // of the almanac stay; the accent is periwinkle since ADR-032, and a developer post carries
+  // Spectrum's own yellow as a mark. Surfaces separate by tone and shadow, not frames.
   light: {
     "bg.page": "#F6F4EF",
     "bg.surface": "#FFFFFF",
@@ -66,11 +69,12 @@ export const color: Record<Scheme, Record<ColorToken, string>> = {
     scrim: "rgba(12,11,10,0.78)",
     "border.default": "rgba(26,25,23,0.10)",
     "border.strong": "rgba(26,25,23,0.24)",
-    accent: "#B8381F",
-    "accent.bg": "#F6E1DB",
+    accent: "#4A5AD3",
+    "accent.bg": "#E3E6FA",
     success: "#2F6B3A",
     warning: "#8A5A00",
     danger: "#B3261E",
+    "spectrum.staff": "#DEC342",
   },
   dark: {
     "bg.page": "#161513",
@@ -84,11 +88,12 @@ export const color: Record<Scheme, Record<ColorToken, string>> = {
     scrim: "rgba(12,11,10,0.78)",
     "border.default": "rgba(241,238,230,0.10)",
     "border.strong": "rgba(241,238,230,0.24)",
-    accent: "#EE7A5F",
-    "accent.bg": "#4A2A22",
+    accent: "#98A4F4",
+    "accent.bg": "#2A2E4A",
     success: "#6FBF7F",
     warning: "#E0A94A",
     danger: "#EF7A6E",
+    "spectrum.staff": "#DEC342",
   },
 };
 

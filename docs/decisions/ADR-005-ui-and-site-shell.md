@@ -57,7 +57,7 @@ CLAUDE.md section 7 and system.md principle 2 say three type sizes per page; sys
 ## Consequences
 
 - Every new visual value is a `tokens.ts` edit plus `pnpm --filter ui build:tokens`, plus an ADR.
-- A Tailwind class that produces no CSS is the first sign of a value outside the tokens; the audit can grep the diff for `[` (arbitrary values) and the four allowed exceptions (`border-t-[3px]` for the brand rule, `max-h-[60dvh]` for the palette list, `bg-page/80` for the scrim, `aspect-video`).
+- A Tailwind class that produces no CSS is the first sign of a value outside the tokens; the audit can grep the diff for `[` (arbitrary values) and the five allowed exceptions (`border-t-[3px]` for the brand rule, `border-l-[3px]` for a developer post's rule (ADR-032), `max-h-[60dvh]` for the palette list, `bg-page/80` for the scrim, `aspect-video`).
 - The gallery route exists in production builds so Playwright can screenshot it against `next start`; it is `noindex` and not linked from the navigation.
 - When Meilisearch arrives (spec 02) the palette keeps its keyboard model and swaps `matchEntries` for a fetch.
 - When the database arrives (spec 01 import job) `apps/web/lib/data.ts` becomes the query layer over `packages/db`; routes keep their props.

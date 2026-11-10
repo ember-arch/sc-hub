@@ -16,6 +16,13 @@ export interface DevPostProps {
   readonly sourceUrl: string;
 }
 
+/**
+ * A developer post (ADR-032): a card with Spectrum's own yellow as its mark, the rule down its
+ * left edge and the ring of the role tag, as Spectrum itself marks a staff post; the author's
+ * name first (a link to the author page, underlined like every link, ADR-005), the role, the
+ * thread, the time at the right; the post in full as prose; the source link last. The yellow is
+ * never text on the light wall (1.75:1); it marks.
+ */
 export function DevPost({
   author,
   thread,
@@ -25,9 +32,9 @@ export function DevPost({
   sourceUrl,
 }: DevPostProps) {
   return (
-    <article className="flex flex-col gap-3 rounded-card bg-surface shadow-soft p-4">
-      <header className="flex flex-wrap items-baseline justify-between gap-2">
-        <div className="flex flex-wrap items-baseline gap-2 text-ui">
+    <article className="flex flex-col gap-3 rounded-card border-l-[3px] border-spectrum-staff bg-surface p-4 shadow-soft md:p-6">
+      <header className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+        <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-ui">
           {author.href !== undefined ? (
             <TextLink href={author.href} className="font-medium text-primary">
               {author.name}
@@ -36,7 +43,9 @@ export function DevPost({
             <span className="font-medium text-primary">{author.name}</span>
           )}
           {author.role !== null ? (
-            <span className="text-secondary">{author.role}</span>
+            <span className="lab rounded-pill border border-spectrum-staff px-2 text-primary">
+              {author.role}
+            </span>
           ) : null}
           {thread !== null ? (
             <span className="text-secondary">in {thread}</span>

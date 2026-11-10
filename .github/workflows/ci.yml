@@ -6,23 +6,26 @@
 # ---- WHAT THIS COSTS, AND WHY IT IS SHAPED THIS WAY (10 Nov 2026) ----
 #
 # Actions bills per JOB and rounds every job UP to the minute, so a job costs a
-# minute before it does anything at all. Measured over the 30 days to 10 Nov,
-# this workflow ran 140 times at 16 billed minutes a run: roughly 2,240 minutes
-# against a 2,000-minute allowance, which is why the account kept warning that
-# minutes were running out. Three things follow, and each is a cost decision
-# rather than a matter of taste:
+# minute before it does anything at all. Over the seven days to 10 Nov this
+# workflow ran 142 times at 16 billed minutes a run, which is why the account
+# kept warning that minutes were running out. (A 30-day average says 140 runs
+# and flatters it: the repository is four days old.)
+#
+# Two things follow, and both are cost decisions rather than matters of taste:
 #
 #   1. There is NO separate "detect" job. It tested for apps/web/package.json
-#      in eleven seconds and was billed a full minute for it, 140 times a
-#      month. The surface exists now, so the question it asked is settled.
-#   2. e2e and Lighthouse run on PULL REQUESTS, not on pushes to main. The
-#      constitution frames both as PR gates: Lighthouse "fails a PR that drops
-#      performance or accessibility below 90", and a PR "has Playwright
-#      screenshots for any page it touched". A push to main is a PR that
-#      already passed them, so running again buys nothing.
-#   3. The web build happens ONCE. `check` builds it and uploads .next;
-#      Lighthouse serves that. Building twice cost two to three minutes a run
-#      to produce a byte-identical artifact.
+#      in eleven seconds and was billed a full minute for it, every run. The
+#      surface exists now, so the question it asked is settled.
+#   2. e2e and Lighthouse run on PULL REQUESTS, not on pushes to main, and not
+#      on a PR that touches only documentation. The constitution frames both as
+#      PR gates: Lighthouse "fails a PR that drops performance or accessibility
+#      below 90", and a PR "has Playwright screenshots for any page it
+#      touched". A push to main is a PR that already passed them.
+#
+# A third idea was tried and MEASURED AS A LOSS: having `check` upload .next so
+# Lighthouse could skip its own build. See the comment in the lighthouse job.
+# It is recorded here because it is the plausible-sounding change someone will
+# propose again.
 name: CI
 
 on:
@@ -105,24 +108,6 @@ jobs:
           path: packages/schema/dist/json
           if-no-files-found: error
 
-      - name: Upload the built site for Lighthouse to serve
-        if: steps.changed.outputs.app == 'true'
-        uses: actions/upload-artifact@v7
-        with:
-          # .next/cache is excluded because it is restored from the Actions
-          # cache above; shipping it through an artifact as well would pay for
-          # the same bytes twice.
-          path: |
-            apps/web/.next
-            !apps/web/.next/cache
-          name: web-build
-          if-no-files-found: error
-          retention-days: 1
-          # .next is a DOTTED directory and upload-artifact skips hidden files by
-          # default, so without this the path matches nothing and the error
-          # above fires on a build that was in fact fine.
-          include-hidden-files: true
-
   e2e:
     name: Playwright e2e and screenshots
     needs: check
@@ -183,13 +168,20 @@ jobs:
           node-version-file: .node-version
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      # lighthouserc.json starts the site with `next start`, which needs .next
-      # and not a second compile of the same source. See note 3 above.
-      - name: Download the site that check built
-        uses: actions/download-artifact@v7
+      # MEASURED on 10 Nov, and it reverses the obvious guess: sharing check's
+      # build through an artifact was SLOWER than rebuilding here. `.next` is
+      # 137 MB, and compressing, uploading, downloading and extracting that
+      # cost more than a compile does on a warm 53 MB build cache. Lighthouse
+      # builds its own copy; the cache is what makes that cheap, and
+      # lighthouserc.json then serves it with `next start`.
+      - name: Cache the Next.js build cache (next/font downloads the faces at build, ADR-020)
+        uses: actions/cache@v4
         with:
-          name: web-build
-          path: apps/web/.next
+          path: apps/web/.next/cache
+          key: next-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('apps/web/**/*.ts', 'apps/web/**/*.tsx', 'packages/**/*.ts') }}
+          restore-keys: |
+            next-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
+      - run: pnpm --filter web build
       # Budgets live in lighthouserc.json: performance and accessibility under 90 fail the PR.
       - run: pnpm exec lhci autorun
       - name: Upload Lighthouse reports

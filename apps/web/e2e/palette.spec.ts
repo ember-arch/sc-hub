@@ -73,5 +73,6 @@ test("remembers recently opened entities", async ({ page }) => {
   await expect(page).toHaveURL(/\/ships\/polaris$/);
   await open();
   await expect(dialog).toContainText("Recent ships");
-  await expect(page.getByRole("option", { name: /Polaris/ })).toBeVisible();
+  // Scoped to the dialog: the ship page's Scale picker lists a Polaris option too.
+  await expect(dialog.getByRole("option", { name: /Polaris/ })).toBeVisible();
 });

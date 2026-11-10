@@ -49,7 +49,7 @@ import { readCtm } from "./ctm.js";
 import { HOLO_FIGURE } from "./holo.js";
 import { packHoloModel } from "./holo-glb.js";
 import { mp4Size } from "./mp4.js";
-import { GallerySource, captionFromFile, composeShowcase } from "./gallery.js";
+import { GallerySource, captionFor, composeShowcase } from "./gallery.js";
 import { FILE_SECTIONS, SHOWCASE } from "./showcase.js";
 import { prepareTitleIcons } from "../titles/prepare-icons.js";
 
@@ -397,7 +397,7 @@ async function galleries(curated: ReadonlySet<string>): Promise<Showcase[]> {
       images.push({ key, renditions, has_alpha: meta.hasAlpha === true });
       composed.push({
         key,
-        caption: captionFromFile(item.file, row.name),
+        caption: captionFor(item.kind, row.name),
         kind: item.kind,
       });
     }

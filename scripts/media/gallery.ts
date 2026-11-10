@@ -122,23 +122,17 @@ export function chooseItems(
 }
 
 /**
- * The wiki's file title as a caption: "Gladius_-_Take_off.jpg" → "Take off" when the title
- * starts with the ship's name, "Gladius Hangar 3.1.png" → "Gladius hangar 3.1". Nothing is
- * written that the title does not say; sentence case throughout (CLAUDE.md section 7).
+ * A gallery picture's caption says what kind of picture it is, no more: the wiki's file titles are
+ * uploaders' shorthand ("3.2 sale stalker 11, squashed"), not CIG's labels, and a caption must not
+ * invent a description. The credit beside the cover names the source (ADR-024).
  */
-export function captionFromFile(file: string, shipName: string): string {
-  let text = file
-    .replace(/\.[a-z0-9]+$/i, "")
-    .replace(/_/g, " ")
-    .trim();
-  const prefix = new RegExp(
-    `^${shipName.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}\\s*[-–:]?\\s*`,
-    "i",
-  );
-  const stripped = text.replace(prefix, "").trim();
-  if (stripped !== "") text = stripped;
-  text = text.replace(/\s+/g, " ").replace(/\s*-\s*/g, ", ");
-  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+export function captionFor(
+  kind: GalleryItem["kind"],
+  shipName: string,
+): string {
+  return kind === "official"
+    ? `${shipName}, official art`
+    : `${shipName}, in the game`;
 }
 
 /** The ship file's sections that take a lead figure, in the order the pictures are dealt. */

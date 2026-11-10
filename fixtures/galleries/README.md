@@ -4,4 +4,4 @@ The Star Citizen Wiki's gallery of RSI's art for every ship (ADR-024), copied by
 
 Git-ignored: only this README, `sources.json` (every file's address, size and checksum, per ship) and `samples/` (the Gladius article's gallery section, which the parser's unit test reads) are committed. The art is Cloud Imperium's; it stays on the machine that copied it (ADR-009, ADR-019). The pages credit "Images: Roberts Space Industries, via the Star Citizen Wiki" and link the article.
 
-`scripts/media/prepare.ts` turns each ship's pictures into a showcase of the shape the Odin and Perseus use: the first official picture is the cover, the second the poster, the next seven lead the ship file's sections, the rest stand in the gallery.
+`scripts/media/prepare.ts` turns each ship's pictures into a showcase of the shape the Odin and Perseus use: the first official picture is the cover, the second the poster, the next seven lead the ship file's sections, the rest stand in the gallery; each caption says only whether the picture is official art or in-game.

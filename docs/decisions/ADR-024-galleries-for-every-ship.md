@@ -1,0 +1,29 @@
+# ADR-024: Every ship page at the showcase standard, from the wiki's galleries
+
+- Status: accepted
+- Date: 2026-11-10
+- Deciders: owner ("I want every page designed to the same standard (visually and with imagery) as the Perseus and Odin. Those are the templates for every ship page", 2026-11-10), Claude Code session 2026-11-10
+- Amends: ADR-010 (the showcase pair), ADR-014 (figures per section), ADR-021 (the cover)
+
+## Context
+
+The Odin and the Perseus are the templates: a cover of key art, a poster, a lead figure in each numbered section, a gallery, all from RSI's own art for the ship (ADR-010, ADR-014). Their art was curated by hand from each ship's Comm-Link (`scripts/media/showcase.ts`), which does not scale to the 260 other entries. RSI's store page for a ship carries a gallery and the holoviewer model, but as an app: the page's HTML holds neither, and reading the store's own data calls is the scraping RSI's terms forbid.
+
+The Star Citizen Wiki keeps, for most ships, a Gallery section with an "Official" tab of RSI's art and an "In-game" tab of screenshots, each thumbnail linking the original upload on the wiki's media host. Article pages and uploads are what the wiki's robots rules allow this project (ADR-017), at one request every five seconds, and the titles already come that way.
+
+## Decision
+
+| Concern | Choice | Reason |
+| --- | --- | --- |
+| Source | `scripts/media/fetch-galleries.ts` reads each entry's and each concept ship's wiki article (by its display name), parses the Gallery section (`gallery.ts`, tested on a committed sample), and copies the first eight official pictures and the first four in-game ones, skipping logos, icons and files under 600 px wide. Everything stays local and git-ignored (ADR-009, ADR-019); `fixtures/galleries/sources.json` records every file's address and checksum | The wiki's uploads are the one sanctioned, structured, complete source of RSI's art per ship; twelve pictures cover a cover, a poster, seven section figures and a gallery; about 3,400 uploads for 260 ships is a few hours once at the polite rate |
+| Composition | `prepare.ts` builds a showcase for every ship with a gallery and no curated one, with the same shape the Odin and Perseus use (`Showcase`): the first official picture is the cover (no cut-out), the second the poster, the next seven lead the sections in the order brief, combat, operations, mobility, hardpoints, specifications, acquisition, the rest stand in the gallery (`composeShowcase`, tested). Captions are the wiki's file titles with the ship's name, the extension and the underscores removed, in sentence case; nothing is written that the title does not say. An edition shows its base's gallery | The page code is the showcase pair's; only the data widens. A caption invents nothing; where a title is only the ship's name, the caption is the ship's name |
+| Credit | A showcase built this way carries `wiki_article`; the page credits "Images: Roberts Space Industries, via the Star Citizen Wiki" and links the article | The art is CIG's (ADR-019); the wiki hosted the copy, and ADR-017 credits the wiki where its work is shown |
+| What stays as it was | The Odin and the Perseus keep their curated showcases and chapters; the holoviewer model for every ship is still a further decision (ADR-022), the lineup draws envelopes meanwhile (ADR-015); RSI's ship-matrix picture (ADR-009) remains the register card and the cover of a ship whose article has no gallery | The templates are not changed, they are followed |
+| Refresh | Not part of the daily refresh (ADR-023): the pictures are local only. A new ship's gallery waits for a local run, which is resumable and skips ships already on file | Same footing as the ship-matrix pictures |
+
+## Consequences
+
+- `fixtures/galleries/` joins the git-ignored media folders, with its README, `sources.json` and the parser's sample committed; `.gitignore` says so.
+- The media manifest's `showcase` holds an entry per ship with a gallery (some 260) beside the two curated ones; `Showcase` gains `wiki_article`.
+- A ship whose article the wiki does not have under its display name, or whose article has no gallery, is recorded as such and keeps its single ship-matrix picture.
+- The next step toward the templates is the holoviewer model for every ship, which needs the addresses the store app loads; a browser-assisted pass at the polite rate is the likely path, the owner's call.

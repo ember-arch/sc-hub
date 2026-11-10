@@ -59,6 +59,8 @@ export type FigureSection = ShowcaseFigure["section"];
 export interface ShowcaseView {
   readonly slug: string;
   readonly article: Showcase["article"];
+  /** The wiki article the pictures come from (ADR-024); null for a curated showcase. */
+  readonly wikiArticle: string | null;
   readonly background: Picture | null;
   readonly cutout: Picture | null;
   readonly poster: Picture | null;
@@ -157,6 +159,7 @@ export function buildShowcase(raw: Showcase, name: string): ShowcaseView {
   return {
     slug: raw.slug,
     article: raw.article,
+    wikiArticle: raw.wiki_article,
     background: img(
       raw.roles["background"] ?? raw.roles["header"],
       `${name}, key art`,

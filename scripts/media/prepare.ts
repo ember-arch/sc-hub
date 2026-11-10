@@ -49,6 +49,7 @@ import { readCtm } from "./ctm.js";
 import { HOLO_FIGURE } from "./holo.js";
 import { packHoloModel } from "./holo-glb.js";
 import { mp4Size } from "./mp4.js";
+import { GallerySource, captionFromFile, composeShowcase } from "./gallery.js";
 import { FILE_SECTIONS, SHOWCASE } from "./showcase.js";
 import { prepareTitleIcons } from "../titles/prepare-icons.js";
 
@@ -326,6 +327,7 @@ async function showcases(): Promise<Showcase[]> {
             },
       images,
       videos,
+      wiki_article: null,
       model,
       roles,
       chapters: parsed.map((c) => {
@@ -345,6 +347,80 @@ async function showcases(): Promise<Showcase[]> {
         .filter((k): k is string => k !== null),
       schematics,
       figures,
+    });
+  }
+  return out;
+}
+
+const galleriesDir = join(repoRoot, "fixtures", "galleries");
+
+/**
+ * A showcase for every ship with a gallery and no curated one (ADR-024): the wiki's copies of
+ * RSI's art, rendered like the showcase pair's, composed by rule (`composeShowcase`): cover,
+ * poster, one figure per section, the rest in the gallery. Captions are the wiki's file titles.
+ */
+async function galleries(curated: ReadonlySet<string>): Promise<Showcase[]> {
+  const sourcesPath = join(galleriesDir, "sources.json");
+  if (!existsSync(sourcesPath)) return [];
+  const rows = z
+    .array(GallerySource)
+    .parse(JSON.parse(readFileSync(sourcesPath, "utf8")));
+  const out: Showcase[] = [];
+  for (const row of rows) {
+    if (curated.has(row.slug) || row.items.length === 0) continue;
+    const dir = join(galleriesDir, row.slug);
+    const images: Showcase["images"] = [];
+    const composed: {
+      key: string;
+      caption: string;
+      kind: "official" | "ingame";
+    }[] = [];
+    for (const item of row.items) {
+      const input = join(dir, item.file);
+      if (!existsSync(input)) continue;
+      const key = keyOf(item.file);
+      if (images.some((i) => i.key === key)) continue;
+      mkdirSync(join(mediaDir, "showcase", row.slug), { recursive: true });
+      const meta = await sharp(input).metadata();
+      const width = meta.width ?? 0;
+      const widths = SHOWCASE_WIDTHS.filter((w) => w <= width);
+      if (widths.length === 0) widths.push(width);
+      const renditions = [];
+      for (const w of widths) {
+        const src = `/media/showcase/${row.slug}/${key}-${w}.webp`;
+        const info = await sharp(input)
+          .resize({ width: w })
+          .webp({ quality: w >= 1600 ? 80 : 76, alphaQuality: 90 })
+          .toFile(fileFor(src));
+        renditions.push({ src, width: info.width, height: info.height });
+      }
+      images.push({ key, renditions, has_alpha: meta.hasAlpha === true });
+      composed.push({
+        key,
+        caption: captionFromFile(item.file, row.name),
+        kind: item.kind,
+      });
+    }
+    if (images.length === 0) continue;
+    const c = composeShowcase(composed);
+    out.push({
+      slug: row.slug,
+      article: null,
+      wiki_article: row.article_url,
+      images,
+      videos: [],
+      model: null,
+      roles: c.roles,
+      chapters: [],
+      gallery: [...c.gallery],
+      schematics: [],
+      figures: c.figures.map((f) => ({
+        section: f.section,
+        kind: "image" as const,
+        key: f.key,
+        narrow: null,
+        caption: f.caption,
+      })),
     });
   }
   return out;
@@ -409,7 +485,10 @@ async function main(): Promise<void> {
     generated_at: new Date().toISOString(),
     ships: await ships(),
     makers: await makers(),
-    showcase: await showcases(),
+    showcase: [
+      ...(await showcases()),
+      ...(await galleries(new Set(SHOWCASE.map((s) => s.slug)))),
+    ],
     holo: models.holo,
     holo_figure: models.figure,
     // Title icons (ADR-017): CIG art copied from the wiki, local only like everything here.
@@ -431,10 +510,14 @@ async function main(): Promise<void> {
       ships: manifest.ships.length,
       concepts: manifest.concepts.length,
       makers: manifest.makers.length,
-      showcase: manifest.showcase.map(
-        (x) =>
-          `${x.slug}: ${x.images.length} images, ${x.videos.length} videos, ${x.chapters.length} chapters`,
-      ),
+      showcase: manifest.showcase
+        .filter((x) => x.wiki_article === null)
+        .map(
+          (x) =>
+            `${x.slug}: ${x.images.length} images, ${x.videos.length} videos, ${x.chapters.length} chapters`,
+        ),
+      galleries: manifest.showcase.filter((x) => x.wiki_article !== null)
+        .length,
       titles: manifest.titles.length,
       holo: manifest.holo.map(
         (h) => `${h.slug}: ${(h.bytes / 1e6).toFixed(2)} MB`,

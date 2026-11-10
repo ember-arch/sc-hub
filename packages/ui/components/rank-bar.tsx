@@ -50,8 +50,10 @@ export function RankBar({
     scale === "log" ? Math.log10(Math.max(v, 1)) : v;
   const lo = Math.min(...values.map((v) => f(v.value)));
   const hi = Math.max(...values.map((v) => f(v.value)));
+  // Four decimals: the browser serialises a percentage to about six significant digits, and a
+  // longer server-rendered value would not match the client at hydration.
   const at = (v: number): number =>
-    hi === lo ? 50 : ((f(v) - lo) / (hi - lo)) * 100;
+    hi === lo ? 50 : Number((((f(v) - lo) / (hi - lo)) * 100).toFixed(4));
   const rank = rankOf(values);
   const words =
     rank === 1

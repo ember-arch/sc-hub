@@ -396,43 +396,61 @@ const scaleLineup = (
 );
 
 /**
- * The Scale section (ADR-015): every ship with an RSI holoviewer model, lined up to scale in one
- * holoviewer canvas, the page's ship lit full. Without the models built (a clone, CI, a deploy),
- * or with no other ship to stand beside, the drawn lineup stays.
+ * The Scale section (ADR-015, ADR-022): every entry on record with its dimensions, lined up to
+ * scale in one canvas, the page's ship lit full; a ship with an RSI holoviewer model is drawn as
+ * that model, the rest as their envelope. With no other ship to stand beside, or without the
+ * page's ship's dimensions, the drawn lineup stays.
  */
+/** Three dimensions on record and above zero: what the row and the envelope need. */
+function hasDimensions(
+  length: number | null,
+  beam: number | null,
+  height: number | null,
+): boolean {
+  return (
+    length !== null &&
+    beam !== null &&
+    height !== null &&
+    length > 0 &&
+    beam > 0 &&
+    height > 0
+  );
+}
+
 function scaleView(slug: string, drawn: ReactNode): ReactNode {
   const r = repo();
+  const dims = hasDimensions;
   const ships: LineupShip[] = [
-    ...r.ships.flatMap((o) => {
+    ...r.entries.flatMap((o) => {
+      const s = o.stats;
+      if (s === null || !dims(s.length_m, s.beam_m, s.height_m)) return [];
       const holo = media().holo(o.vehicle.slug);
-      // A ship with no length on record, or none above zero, cannot be scaled.
-      return holo === null || o.stats === null || !(o.stats.length_m > 0)
-        ? []
-        : [
-            {
-              slug: o.vehicle.slug,
-              name: o.vehicle.name,
-              length: o.stats.length_m,
-              src: holo.src,
-              bytes: holo.bytes,
-              current: o.vehicle.slug === slug,
-            },
-          ];
+      return [
+        {
+          slug: o.vehicle.slug,
+          name: o.vehicle.name,
+          length: s.length_m,
+          beam: s.beam_m,
+          height: s.height_m,
+          src: holo?.src ?? null,
+          current: o.vehicle.slug === slug,
+        },
+      ];
     }),
     ...conceptShips().flatMap((c) => {
+      if (!dims(c.length_m, c.beam_m, c.height_m)) return [];
       const holo = media().holo(c.slug);
-      return holo === null || c.length_m === null || !(c.length_m > 0)
-        ? []
-        : [
-            {
-              slug: c.slug,
-              name: c.name,
-              length: c.length_m,
-              src: holo.src,
-              bytes: holo.bytes,
-              current: c.slug === slug,
-            },
-          ];
+      return [
+        {
+          slug: c.slug,
+          name: c.name,
+          length: c.length_m!,
+          beam: c.beam_m!,
+          height: c.height_m!,
+          src: holo?.src ?? null,
+          current: c.slug === slug,
+        },
+      ];
     }),
   ];
   if (ships.length < 2 || !ships.some((s) => s.current)) return drawn;
@@ -960,12 +978,13 @@ export function packShipFile(ship: ShipView): ShipFileProps {
         ),
       },
       scale: {
+        // A build can carry zeroes for a ship it has no measurements for (the Javelin, the MOTH).
         aside:
-          s === null
+          s === null || !hasDimensions(s.length_m, s.beam_m, s.height_m)
             ? undefined
             : `${formatNumber(s.length_m, 2)} m nose to tail`,
         body:
-          s === null ? (
+          s === null || !hasDimensions(s.length_m, s.beam_m, s.height_m) ? (
             <Gap>No dimensions on record.</Gap>
           ) : (
             scaleView(
@@ -1336,23 +1355,27 @@ export function conceptShipFile(concept: ConceptShip): ShipFileProps {
           concept.length_m === null
             ? undefined
             : `${n0(concept.length_m)} m nose to tail`,
-        body:
-          concept.length_m === null || concept.height_m === null ? (
-            <Gap>No dimensions stated.</Gap>
-          ) : (
-            scaleView(
-              concept.slug,
-              scaleLineup(
-                concept.name,
-                {
-                  key: concept.slug,
-                  length: concept.length_m,
-                  height: concept.height_m,
-                },
-                others,
-              ),
-            )
-          ),
+        body: !hasDimensions(
+          concept.length_m,
+          concept.beam_m,
+          concept.height_m,
+        ) ? (
+          <Gap>No dimensions stated.</Gap>
+        ) : (
+          scaleView(
+            concept.slug,
+            scaleLineup(
+              concept.name,
+              {
+                key: concept.slug,
+                // Guarded by hasDimensions above.
+                length: concept.length_m!,
+                height: concept.height_m!,
+              },
+              others,
+            ),
+          )
+        ),
       },
       specifications: {
         body: (

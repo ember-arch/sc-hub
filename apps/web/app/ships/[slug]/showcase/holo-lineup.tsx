@@ -300,7 +300,7 @@ export function HoloLineup({
               : `; ${modelled} of them drawn from RSI's holoviewer model, the rest as their envelope of length, beam and height`}
           {focus === "all" || ships.length <= shown.length
             ? ""
-            : `. All ships lines up every one of the ${ships.length} on record`}
+            : `. Every one of the ${ships.length} on record stands in the full row`}
         </span>
         {modelled === 0 ? null : (
           <TextLink href={credit.href} external className="text-secondary">
@@ -328,6 +328,8 @@ function whenIdle(job: () => void): () => void {
 /** Models download a few at a time; a ship is worth its model once it is this wide on screen. */
 const MODELS_IN_FLIGHT = 3;
 const DETAIL_PX = 40;
+/** A row this short wants every ship's model whatever its width on screen. */
+const FEW_SHIPS = 8;
 
 async function start(
   el: HTMLDivElement,
@@ -385,7 +387,6 @@ async function start(
     lines: null,
     model: s.ship.src === null ? "none" : "wanted",
   }));
-  const bySlug = new Map(slots.map((s) => [s.ship.slug, s]));
 
   const materials: InstanceType<typeof THREE.Material>[] = [];
   const fullBody = inkBody(THREE, palette.body);
@@ -434,6 +435,8 @@ async function start(
     ]),
     dimInk,
   );
+  // Its points change with the row in view; a stale bounding sphere would cull it.
+  ground.frustumCulled = false;
   scene.add(ground);
 
   // The ink is drawn in idle moments, one body at a time, so frames run between.
@@ -523,7 +526,7 @@ async function start(
   // The person, when it lands, stands after the smallest ship of the row in view.
   let personMesh: InstanceType<typeof THREE.Mesh> | null = null;
   let personLines: InstanceType<typeof THREE.LineSegments> | null = null;
-  let personAt0 = fullRow.personAt ?? 0;
+  const personAt0 = fullRow.personAt ?? 0;
   let personOffset = 0;
 
   // The row in view: laid out afresh from the recorded lengths, every body moved to its place.
@@ -595,13 +598,16 @@ async function start(
     slot.centre0 = (box.min.x + box.max.x) / 2;
     slot.x = slot.centre0 + slot.offset;
     slot.top = box.max.y;
+    if (slot.shown && slot.top > inView.tallest)
+      inView = { ...inView, tallest: slot.top };
     stand(slot, g);
   };
   const pump = (): void => {
     while (inFlight < MODELS_IN_FLIGHT && queue.length > 0) {
       const slot = queue.shift()!;
       queued.delete(slot);
-      if (slot.model !== "wanted" || slot.ship.src === null) continue;
+      if (slot.model !== "wanted" || slot.ship.src === null || !slot.shown)
+        continue;
       slot.model = "loading";
       inFlight += 1;
       report();
@@ -631,11 +637,18 @@ async function start(
     const px = el.clientWidth / Math.max(span.width, 1);
     const left = centre - span.width / 2;
     const right = centre + span.width / 2;
+    // A row of a few ships is drawn whole: the quarter-size ship of the spectrum is narrower
+    // than the detail threshold at desktop width, and it still deserves its model.
+    const few = slots.filter((s) => s.shown).length <= FEW_SHIPS;
     for (const slot of slots) {
       if (!slot.shown || slot.model !== "wanted" || queued.has(slot)) continue;
       const inFrame =
         slot.x + slot.length / 2 >= left && slot.x - slot.length / 2 <= right;
-      if (slot.ship.current || (inFrame && slot.length * px >= DETAIL_PX)) {
+      if (
+        slot.ship.current ||
+        few ||
+        (inFrame && slot.length * px >= DETAIL_PX)
+      ) {
         queued.add(slot);
         wanted += 1;
         if (slot.ship.current) queue.unshift(slot);
@@ -657,7 +670,6 @@ async function start(
     InstanceType<typeof THREE.Mesh> | InstanceType<typeof THREE.LineSegments>
   )[] = [];
   if (figureSrc !== null && fullRow.personAt !== null) {
-    personAt0 = fullRow.personAt;
     loadHoloGeometry(THREE, loader, figureSrc)
       .then((person) => {
         if (disposed) {
@@ -841,7 +853,6 @@ async function start(
       for (const tag of tagEls) tag.remove();
       renderer.dispose();
       renderer.domElement.remove();
-      bySlug.clear();
     },
   };
 }

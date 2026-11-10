@@ -5,8 +5,12 @@
  * copied, every one at least 5 seconds apart through the same polite client the titles use
  * (ADR-017: article pages and uploads only, never the wiki's API), with the project User-Agent.
  * The first eight official pictures and the first four in-game ones are copied; a ship whose
- * article has no gallery, or no article, is recorded as such. A ship already on file with every
- * picture on disk is not fetched again, so a run that stops can carry on.
+ * article has no gallery, or no article, is recorded as such. A ship whose display name has no
+ * article is tried once more under the wiki's record of its ship-matrix name (the pack keeps
+ * `shipmatrix_name`; "MISC Hull C" is the wiki's "Hull C"), the same record the image fetch
+ * matches on. A ship already on file with a gallery and every picture on disk is not fetched
+ * again, so a run that stops can carry on; a ship recorded without an article or a gallery is
+ * looked at again on every run.
  *
  *   pnpm exec tsx scripts/media/fetch-galleries.ts
  */
@@ -40,6 +44,10 @@ const Vehicle = z.object({
   slug: z.string(),
   name: z.string(),
   base_variant_of: z.string().nullable(),
+});
+const StatsRow = z.object({
+  class_name: z.string(),
+  raw: z.object({ shipmatrix_name: z.string().nullable().optional() }).loose(),
 });
 const Concept = z.object({ slug: z.string(), name: z.string() });
 
@@ -86,6 +94,20 @@ async function main(): Promise<void> {
         ),
       ),
     );
+  // The wiki's record of each ship's name on RSI's ship matrix, the second name to try.
+  const matrixNames = new Map(
+    z
+      .array(StatsRow)
+      .parse(
+        JSON.parse(
+          readFileSync(
+            join(repoRoot, "fixtures", "bootstrap", "VehicleStats.json"),
+            "utf8",
+          ),
+        ),
+      )
+      .map((s) => [s.class_name, s.raw.shipmatrix_name ?? null]),
+  );
   const conceptsPath = join(
     repoRoot,
     "fixtures",
@@ -95,11 +117,18 @@ async function main(): Promise<void> {
   const concepts = existsSync(conceptsPath)
     ? z.array(Concept).parse(JSON.parse(readFileSync(conceptsPath, "utf8")))
     : [];
-  const wanted = [
+  const wanted: { slug: string; name: string; altName: string | null }[] = [
     ...vehicles
       .filter((v) => v.base_variant_of === null)
-      .map((v) => ({ slug: v.slug, name: v.name })),
-    ...concepts,
+      .map((v) => {
+        const matrix = matrixNames.get(v.class_name)?.trim() ?? "";
+        return {
+          slug: v.slug,
+          name: v.name,
+          altName: matrix === "" || matrix === v.name ? null : matrix,
+        };
+      }),
+    ...concepts.map((c) => ({ ...c, altName: null })),
   ].filter((s) => !curated.has(s.slug));
 
   let fetched = 0;
@@ -109,30 +138,38 @@ async function main(): Promise<void> {
     const known = rows.get(ship.slug);
     if (
       known !== undefined &&
+      known.status === "gallery" &&
       known.items.every((i) => existsSync(join(outDir, ship.slug, i.file)))
     ) {
       reused += 1;
       continue;
     }
-    const url = articleUrl(ship.name);
-    let html: string;
-    try {
-      html = await client.text(url);
-    } catch (error) {
-      if (error instanceof PoliteFetchError && error.status === 404) {
-        rows.set(ship.slug, {
-          slug: ship.slug,
-          name: ship.name,
-          article_url: url,
-          status: "no-article",
-          items: [],
-          fetched_at: new Date().toISOString(),
-        });
-        save();
-        log({ event: "galleries.no_article", slug: ship.slug, url });
-        continue;
+    // The display name's article; failing that, the ship-matrix name's.
+    let url = articleUrl(ship.name);
+    let html: string | null = null;
+    for (const name of [ship.name, ship.altName]) {
+      if (name === null) continue;
+      url = articleUrl(name);
+      try {
+        html = await client.text(url);
+        break;
+      } catch (error) {
+        if (error instanceof PoliteFetchError && error.status === 404) continue;
+        throw error;
       }
-      throw error;
+    }
+    if (html === null) {
+      rows.set(ship.slug, {
+        slug: ship.slug,
+        name: ship.name,
+        article_url: articleUrl(ship.name),
+        status: "no-article",
+        items: [],
+        fetched_at: new Date().toISOString(),
+      });
+      save();
+      log({ event: "galleries.no_article", slug: ship.slug, url });
+      continue;
     }
     fetched += 1;
     let chosen: GalleryItem[];

@@ -122,6 +122,8 @@ export const Showcase = z.strictObject({
       published_at: Timestamp,
     })
     .nullable(),
+  /** The wiki article whose gallery the pictures come from (ADR-024); null for a curated showcase. */
+  wiki_article: z.url().nullable().default(null),
   images: z.array(ShowcaseImage),
   videos: z.array(ShowcaseVideo),
   /** Superseded by the RSI holoviewer models in `MediaManifest.holo` (ADR-015); always null now. */

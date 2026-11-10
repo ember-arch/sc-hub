@@ -27,6 +27,12 @@ fixtures/rsi-media/*
 !fixtures/rsi-media/README.md
 !fixtures/rsi-media/sources.json
 
+# the wiki's galleries of RSI's art per ship (ADR-024): local only, never committed
+fixtures/galleries/*
+!fixtures/galleries/README.md
+!fixtures/galleries/sources.json
+!fixtures/galleries/samples/
+
 # RSI's holoviewer models (ADR-015): local only, never committed
 fixtures/holo/*
 !fixtures/holo/README.md

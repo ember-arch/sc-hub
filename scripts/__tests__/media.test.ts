@@ -59,6 +59,13 @@ describe("matchShips", () => {
     );
     expect(unmatched).toEqual([]);
     expect(matched).toHaveLength(1);
+    // Two rows that differ only by that space are two rows: no match, reported.
+    const twins = matchShips(
+      [ballista],
+      [row("Ballista", "ANVL"), row("Ballista ", "ANVL")],
+    );
+    expect(twins.matched).toEqual([]);
+    expect(twins.unmatched[0]?.reason).toMatch(/2 ship-matrix rows/);
   });
 
   it("matches on the wiki's record of the ship-matrix name when the display name differs", () => {

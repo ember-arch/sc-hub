@@ -1,31 +1,35 @@
 # CI for every PR and for pushes to main (spec 00, criterion "CI").
 #
-# The Vercel preview link on PRs comes from the Vercel GitHub app, not from this
-# file.
+# The Vercel preview link on PRs comes from the Vercel GitHub app, not from this file.
 #
-# ---- WHAT THIS COSTS, AND WHY IT IS SHAPED THIS WAY (10 Nov 2026) ----
+# ---- WHAT THIS COSTS (measured 10 Nov 2026, ADR-030) ----
 #
-# Actions bills per JOB and rounds every job UP to the minute, so a job costs a
-# minute before it does anything at all. Over the seven days to 10 Nov this
-# workflow ran 142 times at 16 billed minutes a run, which is why the account
-# kept warning that minutes were running out. (A 30-day average says 140 runs
-# and flatters it: the repository is four days old.)
+# Actions bills per JOB and rounds every job UP to the minute, so a job costs a minute
+# before it does any work. Over the seven days to 10 Nov this workflow ran 142 times at
+# 16 billed minutes a run. (A 30-day average says 140 runs and flatters it: the
+# repository is four days old.)
 #
-# Two things follow, and both are cost decisions rather than matters of taste:
+# Two changes followed, and both are cost decisions rather than matters of taste:
 #
-#   1. There is NO separate "detect" job. It tested for apps/web/package.json
-#      in eleven seconds and was billed a full minute for it, every run. The
-#      surface exists now, so the question it asked is settled.
-#   2. e2e and Lighthouse run on PULL REQUESTS, not on pushes to main, and not
-#      on a PR that touches only documentation. The constitution frames both as
-#      PR gates: Lighthouse "fails a PR that drops performance or accessibility
-#      below 90", and a PR "has Playwright screenshots for any page it
-#      touched". A push to main is a PR that already passed them.
+#   1. There is NO separate "detect" job. It tested for apps/web/package.json in eleven
+#      seconds and was billed a full minute for it, every run. apps/web exists now, so
+#      the question it asked is settled and its answer was always true. What replaced it
+#      is a STEP inside check, which runs anyway: a second job would have cost the
+#      minute it was meant to save, which is the mistake detect was making.
+#   2. e2e and Lighthouse run on PULL REQUESTS, and not on a PR that touches only
+#      documentation. The constitution frames both as PR gates: Lighthouse "fails a PR
+#      that drops performance or accessibility below 90", and a PR "has Playwright
+#      screenshots for any page it touched". A push to main is a PR that already passed
+#      them. This is where the saving is: 4 billed minutes instead of 16.
 #
-# A third idea was tried and MEASURED AS A LOSS: having `check` upload .next so
-# Lighthouse could skip its own build. See the comment in the lighthouse job.
-# It is recorded here because it is the plausible-sounding change someone will
-# propose again.
+# TWO FURTHER IDEAS WERE TRIED AND MEASURED AS LOSSES. Keep them out unless a
+# measurement says otherwise, because both sound obviously right:
+#
+#   - Having check upload .next so Lighthouse skips its build. .next is 137 MB, and
+#     moving it through artifact storage cost MORE than a compile on a warm 53 MB build
+#     cache: Lighthouse went 358s -> 392s.
+#   - Caching the Playwright browser at ~/.cache/ms-playwright. That cache is 292 MB and
+#     restoring it is slower than letting Playwright fetch chromium (~150 MB).
 name: CI
 
 on:
@@ -50,15 +54,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     outputs:
-      # Whether this change could move what the site renders. A docs or ADR
-      # commit cannot change a Lighthouse score or a screenshot, and eleven
-      # minutes is an expensive way to prove that.
+      # Whether this change could move what the site renders. A docs or ADR commit
+      # cannot change a Lighthouse score or a screenshot.
       app: ${{ steps.changed.outputs.app }}
     steps:
       - uses: actions/checkout@v7
         with:
-          # The changed-paths step below diffs against the base branch, which
-          # needs its history. The repository is days old, so this is cheap.
+          # The changed-paths step below diffs against the base branch, which needs its
+          # history. The repository is days old, so this is cheap.
           fetch-depth: 0
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v7
@@ -78,7 +81,6 @@ jobs:
       - run: pnpm lint
       - run: pnpm test
       - run: pnpm build
-
       - name: Decide whether the rendered site could have changed
         id: changed
         run: |
@@ -88,9 +90,9 @@ jobs:
             exit 0
           fi
           git fetch --no-tags origin "${{ github.base_ref }}"
-          # A DENY list on purpose. An allow list would quietly skip the gates
-          # for any new source directory nobody remembered to add to it; this
-          # way an unrecognised path costs a run, which is the safe failure.
+          # A DENY list on purpose. An allow list would quietly skip the gates for any
+          # new source directory nobody remembered to add to it; this way an
+          # unrecognised path costs a run, which is the safe failure.
           if git diff --name-only "origin/${{ github.base_ref }}...HEAD" -- . \
                ':(exclude)docs/**' \
                ':(exclude)spec/**' \
@@ -100,7 +102,6 @@ jobs:
           else
             echo "app=false" >> "$GITHUB_OUTPUT"
           fi
-
       - name: Upload the JSON Schema contract
         uses: actions/upload-artifact@v7
         with:
@@ -111,8 +112,6 @@ jobs:
   e2e:
     name: Playwright e2e and screenshots
     needs: check
-    # `app` is false on a push to main and on a docs-only PR, so this one
-    # condition covers both skips.
     if: needs.check.outputs.app == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -124,23 +123,15 @@ jobs:
           node-version-file: .node-version
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      # The browser is a ~130 MB download and its version only moves when the
-      # lockfile does, so fetch it once per lockfile rather than once per run.
-      - name: Cache the Playwright browser
-        id: browser
+      - name: Cache the Next.js build cache (next/font downloads the faces at build, ADR-020)
         uses: actions/cache@v4
         with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          path: apps/web/.next/cache
+          key: next-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('apps/web/**/*.ts', 'apps/web/**/*.tsx', 'packages/**/*.ts') }}
+          restore-keys: |
+            next-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
       # @playwright/test is a dependency of apps/web, not of the root.
-      - name: Install the browser and its OS libraries
-        if: steps.browser.outputs.cache-hit != 'true'
-        run: pnpm --filter web exec playwright install --with-deps chromium
-      # The OS libraries live outside the cached directory, so a cache hit
-      # still needs them — but install-deps alone is seconds, not a download.
-      - name: Install the browser's OS libraries
-        if: steps.browser.outputs.cache-hit == 'true'
-        run: pnpm --filter web exec playwright install-deps chromium
+      - run: pnpm --filter web exec playwright install --with-deps chromium
       - run: pnpm test:e2e
       - name: Upload Playwright report and screenshots
         if: always()
@@ -168,12 +159,6 @@ jobs:
           node-version-file: .node-version
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      # MEASURED on 10 Nov, and it reverses the obvious guess: sharing check's
-      # build through an artifact was SLOWER than rebuilding here. `.next` is
-      # 137 MB, and compressing, uploading, downloading and extracting that
-      # cost more than a compile does on a warm 53 MB build cache. Lighthouse
-      # builds its own copy; the cache is what makes that cheap, and
-      # lighthouserc.json then serves it with `next start`.
       - name: Cache the Next.js build cache (next/font downloads the faces at build, ADR-020)
         uses: actions/cache@v4
         with:
@@ -191,7 +176,6 @@ jobs:
           name: lighthouse
           path: .lighthouseci
           if-no-files-found: ignore
-          # Dotted, like .next above. This upload has been silently producing
-          # nothing: hidden files are skipped by default and if-no-files-found
-          # is `ignore`, so there was no error to notice. Pre-existing on main.
+          # Dotted, so upload-artifact skipped it: hidden files are excluded by default
+          # and if-no-files-found is `ignore`, so this produced nothing and said nothing.
           include-hidden-files: true

@@ -147,7 +147,11 @@ export function hasShieldShares(m: Mitigation): boolean {
 }
 
 /** Damage per second the hull takes at this rate of fire, on the same stage figures. */
-export function perSecondToHull(dps: number, stage: PathStage, m: Mitigation): number {
+export function perSecondToHull(
+  dps: number,
+  stage: PathStage,
+  m: Mitigation,
+): number {
   return dps * (stage.passed / stage.shot) * m.hull[stage.kind];
 }
 

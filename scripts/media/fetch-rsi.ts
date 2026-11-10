@@ -72,9 +72,26 @@ function reusable<T extends { file: string; image_url: string }>(
 async function main(): Promise<void> {
   const runId = randomUUID();
   const started = Date.now();
+  // Each ship's name on RSI's ship matrix, as the wiki records it (VehicleStats raw).
+  const matrixNames = new Map(
+    z
+      .array(
+        z.object({
+          class_name: z.string(),
+          raw: z
+            .object({ shipmatrix_name: z.string().nullable().optional() })
+            .loose(),
+        }),
+      )
+      .parse(
+        JSON.parse(readFileSync(join(packDir, "VehicleStats.json"), "utf8")),
+      )
+      .map((s) => [s.class_name, s.raw.shipmatrix_name ?? null]),
+  );
   const pack = z
     .array(PackVehicleRow)
-    .parse(JSON.parse(readFileSync(join(packDir, "Vehicle.json"), "utf8")));
+    .parse(JSON.parse(readFileSync(join(packDir, "Vehicle.json"), "utf8")))
+    .map((v) => ({ ...v, matrix_name: matrixNames.get(v.class_name) ?? null }));
   const conceptFile = join(
     repoRoot,
     "fixtures",

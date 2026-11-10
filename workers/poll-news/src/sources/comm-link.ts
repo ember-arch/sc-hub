@@ -242,6 +242,12 @@ export interface PollSummary {
   readonly revised: number;
   /** Hub entries the wiki does not have yet; tried again next run. */
   readonly waiting: readonly string[];
+  /**
+   * Items the store refused as older than the news window (ADR-031): a hub entry dated before
+   * it, or a wiki record whose time is before it (the wiki's import time stands in for RSI's on
+   * some records); such an item keeps the hub's words and time and is not asked for again.
+   */
+  readonly older: number;
 }
 
 /** One run: the hub, an item for every new entry, then the wiki for every item still without its text. */
@@ -257,6 +263,7 @@ export async function pollCommLinks(
   const known = state.read();
   const waiting: string[] = [];
   let asked = 0;
+  let older = 0;
   const before = { added: store.added, revised: store.revised };
   for (const entry of entries) {
     const at = now();
@@ -264,6 +271,10 @@ export async function pollCommLinks(
       const outcome = store.put(fromHub(entry, at), at.toISOString());
       known[entry.id] = { wiki: false, first_seen: at.toISOString() };
       log({ event: "news.comm_link.hub", id: entry.id, outcome });
+      if (outcome === "older") {
+        older += 1;
+        continue;
+      }
     }
     const status = known[entry.id] ?? {
       wiki: false,
@@ -289,6 +300,7 @@ export async function pollCommLinks(
     const outcome = store.put(fromWiki(record, entry), now().toISOString());
     known[entry.id] = { ...status, wiki: true };
     log({ event: "news.comm_link.wiki", id: entry.id, outcome });
+    if (outcome === "older") older += 1;
   }
   state.write(known);
   return {
@@ -297,6 +309,7 @@ export async function pollCommLinks(
     added: store.added - before.added,
     revised: store.revised - before.revised,
     waiting,
+    older,
   };
 }
 

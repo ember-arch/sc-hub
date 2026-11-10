@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 // The dispatches and the dev tracker over the committed news pack (spec 03, ADR-027, ADR-029).
-// The pack holds Comm-Links, roadmap changes and a year of Spectrum posts; Spectrum stays off
+// The pack holds Comm-Links, roadmap changes and the Spectrum posts since the news window (ADR-031); Spectrum stays off
 // until the approval box is ticked, so the tracker is its empty state and no author page
 // exists, and a developer post never counts as a dispatch whether the module is on or off.
 

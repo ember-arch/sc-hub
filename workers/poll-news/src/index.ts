@@ -1,10 +1,11 @@
 /**
  * The news pollers (spec 03, ADR-027): one run reads every source and writes what is new to the
  * news pack in `fixtures/news/`. Run from the news workflow every fifteen minutes until the
- * pollers move to Fly; by hand with
- * `pnpm workers:poll-news [--source comm_link|roadmap] [--backfill <pages>]`, where the backfill
- * reads that many pages of the wiki's Comm-Link list, thirty a page, newest first. Logs are JSON
- * lines on stderr; the summary line goes to stdout.
+ * pollers move to Fly; by hand with `pnpm workers:poll-news [--source comm_link|roadmap]`. Logs
+ * are JSON lines on stderr; the summary line goes to stdout. The Comm-Link archive backfill
+ * (`--backfill <pages>`, the wiki's list) is refused since ADR-031: the news window admits
+ * nothing before 14 May 2026, the hub carries everything newer, and the wiki's older records
+ * carry its import time as their date; `backfillCommLinks` stays for a later window.
  */
 import { randomUUID } from "node:crypto";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
@@ -35,6 +36,11 @@ async function main(): Promise<void> {
   const only = flag(args, "--source");
   const sources = only === undefined ? ["comm_link", "roadmap"] : [only];
   const backfillPages = Number(flag(args, "--backfill") ?? 0);
+  if (backfillPages > 0) {
+    throw new Error(
+      "--backfill is refused (ADR-031): the news window admits nothing before 2026-05-14, the hub lists everything newer, and the wiki's older records carry its import time as their date",
+    );
+  }
   const log = (event: Record<string, unknown>): void => {
     process.stderr.write(`${JSON.stringify({ run_id: runId, ...event })}\n`);
   };

@@ -180,6 +180,8 @@ export function changeItem(change: CardChange, lastUpdated: number): Incoming {
 export interface RoadmapSummary {
   readonly cards: number;
   readonly changes: number;
+  /** Changes the store refused as older than the news window (ADR-031): a stale board stamp would show here. */
+  readonly older: number;
   readonly first_run: boolean;
 }
 
@@ -189,22 +191,40 @@ export async function pollRoadmap(
   store: Store,
   state: { read(): BoardState | null; write(next: BoardState): void },
   now: () => Date,
+  options: { readonly log?: (e: Record<string, unknown>) => void } = {},
 ): Promise<RoadmapSummary> {
+  const log = options.log ?? (() => undefined);
   const board = Board.parse(await client.json(BOARD_URL));
   const next = readBoard(board);
   const prev = state.read();
   if (prev === null) {
     state.write(next);
-    return { cards: next.cards.length, changes: 0, first_run: true };
+    return { cards: next.cards.length, changes: 0, older: 0, first_run: true };
   }
   const changes = diffBoards(prev, next);
+  let older = 0;
   for (const change of changes) {
-    store.put(changeItem(change, next.last_updated), now().toISOString());
+    const outcome = store.put(
+      changeItem(change, next.last_updated),
+      now().toISOString(),
+    );
+    if (outcome === "older") {
+      // The board's stamp is before the window: RSI's board was not updated, or its stamp is
+      // stale; the change is not recorded, and the run says so rather than lose it in silence.
+      older += 1;
+      log({
+        event: "news.roadmap.older",
+        card: change.card.id,
+        kind: change.kind,
+        board_updated: new Date(next.last_updated * 1000).toISOString(),
+      });
+    }
   }
   state.write(next);
   return {
     cards: next.cards.length,
     changes: changes.length,
+    older,
     first_run: false,
   };
 }

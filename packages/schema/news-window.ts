@@ -7,7 +7,13 @@
  */
 export const NEWS_WINDOW_START = "2026-05-14T00:00:00.000Z";
 
-/** Whether a publication time falls inside the window. */
+const WINDOW_MS = Date.parse(NEWS_WINDOW_START);
+
+/**
+ * Whether a publication time falls inside the window. Compared as instants, not as text: a
+ * `Timestamp` may carry an offset ("2026-05-14T01:00:00+02:00" is 13 May, 23:00 UTC, and out).
+ */
 export function inNewsWindow(publishedAt: string): boolean {
-  return publishedAt >= NEWS_WINDOW_START;
+  const at = Date.parse(publishedAt);
+  return Number.isFinite(at) && at >= WINDOW_MS;
 }

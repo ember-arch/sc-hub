@@ -2,7 +2,8 @@ import { type Page, expect, test } from "@playwright/test";
 
 // ADR-009: images are local copies listed in a git-ignored manifest, so a fresh clone and CI have
 // none. These checks hold either way: whatever images a page draws have loaded, are sized, and a
-// ship image is credited to RSI with a link to its source. With no images they pass trivially.
+// ship image is credited to RSI with a link to its source. With no media built, the footer's
+// community badge is the one image drawn (ADR-009), so the load check still has something to see.
 
 async function drawnImages(page: Page) {
   return page.locator("img").evaluateAll((imgs) =>

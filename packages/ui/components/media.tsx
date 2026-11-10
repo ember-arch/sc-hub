@@ -19,7 +19,7 @@ export interface ResponsiveImage extends ImageFile {
   readonly credit: { readonly text: string; readonly href: string };
 }
 
-/** A maker's logo in its two official versions; null when the fankit has no light version. */
+/** A mark in its two official versions (a maker's logo, the community badge); null when the fankit has no light version. */
 export interface MakerMark {
   readonly alt: string;
   readonly onLight: ImageFile;

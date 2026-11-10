@@ -19,6 +19,7 @@ Replace every `TBD` before Phase 0 ends. Attach or link the written confirmation
 Tick only what is confirmed in writing. Quote the relevant sentence from the confirmation under each item.
 
 - [ ] **Fankit assets** — use of wallpapers, renders, logos, concept art, and fonts on the site with attribution.
+  - [x] The "Made By The Community" badge in every footer (ADR-009): covered by the Fankit Agreement the owner accepted on 2026-11-07 (clause 1, the kit's contents) and asked for by the Fankit Guidelines (page 6); the owner directed it on 2026-11-10. The rest of the box stays open.
   > quote: TBD
 
 - [ ] **RSI website images** — ship images copied from RSI's public ship matrix (ADR-009) and the Comm-Link covers copied from RSI's Comm-Link hub (ADR-029), shown on the public site with credit and a link back. Not covered by the fankit or by the Terms of Service fansite grant, which names only content RSI designates for fansite use. Local development only until ticked.

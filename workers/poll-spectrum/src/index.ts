@@ -155,7 +155,7 @@ async function main(): Promise<void> {
     .map((i) => i.published_at)
     .sort()
     .at(-1);
-  // The first run reads back to the news window (ADR-030), later runs from the newest on record.
+  // The first run reads back to the news window (ADR-031), later runs from the newest on record.
   const since = new Date(newest ?? NEWS_WINDOW_START);
   const now = new Date().toISOString();
   let posts: readonly StaffPost[];

@@ -3,6 +3,8 @@ import { dirname, join, resolve } from "node:path";
 import {
   Author as AuthorSchema,
   type Author,
+  type CargoBox,
+  CargoBoxes as CargoBoxesSchema,
   ContentItem as ContentItemSchema,
   type ContentItem,
   type DataPack,
@@ -144,6 +146,41 @@ function loadDescriptions(): VehicleDescription[] {
   return VehicleDescriptionSchema.array().parse(
     JSON.parse(readFileSync(DESCRIPTIONS_FILE, "utf8")),
   );
+}
+
+const CARGO_BOXES_FILE = join(REPO_ROOT, "fixtures", "cargo", "CargoBox.json");
+let cachedBoxes:
+  { rows: readonly CargoBox[]; version: string | null } | undefined;
+
+function loadCargoBoxes(): {
+  rows: readonly CargoBox[];
+  version: string | null;
+} {
+  if (cachedBoxes === undefined) {
+    if (existsSync(CARGO_BOXES_FILE)) {
+      const file = CargoBoxesSchema.parse(
+        JSON.parse(readFileSync(CARGO_BOXES_FILE, "utf8")),
+      );
+      cachedBoxes = { rows: file.rows, version: file.game_version };
+    } else {
+      cachedBoxes = { rows: [], version: null };
+    }
+  }
+  return cachedBoxes;
+}
+
+/**
+ * The standard cargo containers' shapes (ADR-028), read from the cargo item records by
+ * scripts/bootstrap-fixtures/cargo-boxes.ts; empty without the fixture, and the Cargo section
+ * then shows the grids without boxes.
+ */
+export function cargoBoxes(): readonly CargoBox[] {
+  return loadCargoBoxes().rows;
+}
+
+/** The build the shapes were read for, so the page can say when it is not the pack's. */
+export function cargoBoxesVersion(): string | null {
+  return loadCargoBoxes().version;
 }
 
 export interface ShipView {

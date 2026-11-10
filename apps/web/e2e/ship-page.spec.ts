@@ -18,6 +18,8 @@ interface StatsRow {
   game_version: string;
   mass_kg: number;
   length_m: number;
+  cargo_scu: number | null;
+  raw: { cargo_grids?: { scu: number }[] };
 }
 interface GameVersionRow {
   channel: string;
@@ -61,12 +63,13 @@ const shipStats = stats.find((s) => s.class_name === ship?.class_name);
 if (ship === undefined || shipStats === undefined || live === undefined)
   throw new Error("pack needs one ship with stats and a LIVE build");
 
-// ADR-012, ADR-014: every ship page is the same ship file, nine numbered sections in one order.
+// ADR-012, ADR-014, ADR-028: every ship page is the same ship file, ten numbered sections in one order.
 const SECTIONS = [
   "Brief",
   "Acquisition and status",
   "Weapons and combat",
   "Crew and operations",
+  "Cargo",
   "Mobility",
   "Scale",
   "Specifications",
@@ -403,4 +406,48 @@ test("a ship file links its related ships: the maker's others and the same role"
     "href",
     "/ships/polaris",
   );
+});
+
+// ADR-028: the Cargo section draws the record's grids and fills them with boxes of one size.
+test("Cargo draws the grids of the record and counts the boxes that stand on them", async ({
+  page,
+}) => {
+  const hauler = stats.find((s) => (s.raw.cargo_grids?.length ?? 0) > 0);
+  const haulerVehicle = vehicles.find(
+    (v) => v.class_name === hauler?.class_name,
+  );
+  if (hauler === undefined || haulerVehicle === undefined)
+    throw new Error("pack needs one ship with a cargo grid");
+  await page.goto(`/ships/${haulerVehicle.slug}`);
+  const cargo = page.locator("#cargo");
+  await expect(cargo).toContainText(`LIVE ${live.version}`);
+  const capacity = cargo.locator("dt", { hasText: "Capacity" }).locator("..");
+  await expect(capacity).toContainText("SCU");
+  await expect(capacity).toContainText(
+    hauler.raw
+      .cargo_grids!.reduce((a, g) => a + g.scu, 0)
+      .toLocaleString("en-US"),
+  );
+  const picker = cargo.getByRole("combobox", { name: "Box size" });
+  await expect(picker).toBeVisible();
+  await expect(cargo.getByRole("img").first()).toBeVisible();
+  await expect(cargo.locator("table caption")).toContainText(
+    "Boxes that stand on each grid",
+  );
+  // Choosing another size changes the count line.
+  const line = cargo.locator("figure > div > p").first();
+  const before = await line.textContent();
+  await picker.selectOption("1");
+  await expect(line).not.toHaveText(before ?? "");
+  await expect(cargo.locator("figcaption")).toContainText("Not modelled");
+
+  // A ship whose record lists no grid says so.
+  const fighter = stats.find((s) => (s.raw.cargo_grids?.length ?? 0) === 0);
+  const fighterVehicle = vehicles.find(
+    (v) => v.class_name === fighter?.class_name,
+  );
+  if (fighterVehicle === undefined)
+    throw new Error("pack needs a ship without a grid");
+  await page.goto(`/ships/${fighterVehicle.slug}`);
+  await expect(page.locator("#cargo")).toContainText("No cargo grid");
 });

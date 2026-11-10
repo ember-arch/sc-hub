@@ -8,6 +8,7 @@ export * from "./entities/vehicle-description.js";
 export * from "./entities/acquisition.js";
 export * from "./entities/ship-claim.js";
 export * from "./entities/cargo-box.js";
+export * from "./entities/ship-fit.js";
 export * from "./media.js";
 export * from "./concept.js";
 export * from "./entities/port.js";

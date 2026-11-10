@@ -37,6 +37,14 @@ export const UEX_CREDIT = {
   url: "https://uexcorp.space/",
 } as const;
 
+/** docs/legal/attribution.md, "Ship fitting list" row (ADR-028): community-tested, never a game stat. */
+export const FITTING_CREDIT = {
+  text: "Which ships fit inside which: the Star Citizen Ship Fitting List by u/Pegaxsus, tested in play by its author and the community.",
+  notice:
+    "Community-tested, not game data; a ship may fit differently after a patch.",
+  url: "https://docs.google.com/spreadsheets/d/15wiwmRnwqzBDpFF0B02ifxHH3OqNe0CLAtL8NU3hefc/edit",
+} as const;
+
 /** docs/legal/attribution.md, "RSI pledge store" row (ADR-013). No referral codes, ever. */
 export const PLEDGE_STORE_CREDIT = {
   text: "Pledge prices: the Roberts Space Industries pledge store.",

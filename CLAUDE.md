@@ -43,7 +43,7 @@ docs/
   legal/cig-approval.md, obligations.md, takedown.md, attribution.md
   decisions/ADR-NNN-*.md
   specs/0N-*.md
-  runbooks/patch-day.md, refresh.md
+  runbooks/patch-day.md, refresh.md, launch.md
 packages/
   schema/        Zod types + JSON schema export; the pipeline↔web contract
   ui/            design tokens + components (no app logic)
@@ -121,7 +121,7 @@ A spec item is done when all of these are true:
 | Fly.io | Workers, import job, Meilisearch | Postgres and R2 credentials, Spectrum credentials |
 | Vercel | `apps/web` | Postgres read, Meilisearch read |
 
-Environment variables (validated in `packages/schema/env.ts`; a missing required variable fails startup):
+Environment variables (validated in `packages/schema/env.ts`; a missing required variable fails startup for any runtime that calls `loadEnv`; the Vercel site does not yet, since it serves the committed packs without a database or search service, ADR-033):
 
 ```
 DATABASE_URL
@@ -135,7 +135,7 @@ STARBREAKER_BIN (Windows only)
 SC_HUB_CONTACT_EMAIL (dev scripts and the daily refresh; the contact address RSI requests carry, ADR-015, ADR-023; a repository variable in CI)
 ```
 
-When `DATABASE_URL` is unset, `pnpm db:migrate` and `pnpm db:seed` use an embedded PGlite database in `packages/db/.pglite/` (local development only; ADR-004). Every deployed runtime requires it.
+When `DATABASE_URL` is unset, `pnpm db:migrate` and `pnpm db:seed` use an embedded PGlite database in `packages/db/.pglite/` (local development only; ADR-004). Every deployed worker requires it; the Vercel site serves the committed packs without it until the database arrives (ADR-033).
 
 Rate limits (polite defaults; never exceed):
 

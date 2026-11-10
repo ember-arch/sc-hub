@@ -3,7 +3,9 @@
  * for staff posts since the newest on record and writes them to the news pack as content items
  * of source `spectrum`, with their authors in `fixtures/news/Author.json` (handle, display name,
  * role, first seen, post count; nothing else). With `off`, the default, it does nothing and says
- * so. `pnpm workers:poll-spectrum [--backfill <pages>]`.
+ * so. `pnpm workers:poll-spectrum [--backfill <pages>]`: a backfill reads that many pages of the
+ * last year, five minutes apart; a plain run reads the newest page of the last week. `poll` mode
+ * needs no credential: Spectrum's search answers without a sign-in (ADR-027).
  */
 import { randomUUID } from "node:crypto";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
@@ -114,16 +116,10 @@ async function main(): Promise<void> {
     JSON.parse(readFileSync(join(here, "..", "staff.json"), "utf8")),
   );
   let adapter: SpectrumAdapter;
+  const backfill = flag(args, "--backfill");
   if (mode === "poll") {
-    const cookie = process.env["SPECTRUM_SESSION_COOKIE"] || undefined;
-    const roleId = process.env["SPECTRUM_STAFF_ROLE_ID"] || undefined;
-    if (cookie === undefined || roleId === undefined) {
-      // Without the role filter the search returns the whole forum's newest posts and one
-      // page misses most staff posts; the worker refuses rather than silently read too little.
-      throw new Error(
-        "SPECTRUM_MODE=poll needs SPECTRUM_SESSION_COOKIE and SPECTRUM_STAFF_ROLE_ID",
-      );
-    }
+    // The staff role is resolved from Spectrum each run; the variable only overrides it.
+    const roleId = process.env["SPECTRUM_STAFF_ROLE_ID"] || null;
     adapter = createPollAdapter({
       post: (url, init) =>
         globalThis.fetch(url, {
@@ -131,11 +127,11 @@ async function main(): Promise<void> {
           headers: init.headers,
           body: init.body,
         }),
-      sessionCookie: cookie,
       staffRoleId: roleId,
       staff,
       userAgent: userAgent(contact),
-      pages: Number(flag(args, "--backfill") ?? 1),
+      pages: Number(backfill ?? 1),
+      range: backfill === undefined ? "week" : "year",
       log,
     });
   } else if (mode === "feed") {

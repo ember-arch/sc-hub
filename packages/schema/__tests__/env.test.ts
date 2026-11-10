@@ -14,7 +14,6 @@ const full: Record<string, string> = {
   CDN_BASE_URL: "https://cdn.example.test",
   SPECTRUM_MODE: "off",
   SPECTRUM_FEED_URL: "https://feed.example.test/staff.json",
-  SPECTRUM_SESSION_COOKIE: "cookie-for-tests",
   SPECTRUM_STAFF_ROLE_ID: "11",
   SENTRY_DSN: "https://key@sentry.example.test/1",
   SITE_URL: "https://site.example.test",
@@ -124,16 +123,16 @@ describe("role-specific rules", () => {
     expect(() => loadEnv("worker", source)).toThrow("SPECTRUM_FEED_URL");
   });
 
-  it("worker in poll mode needs SPECTRUM_SESSION_COOKIE", () => {
+  it("worker in poll mode needs no credential and no role id", () => {
     const source = {
-      ...without(["SPECTRUM_SESSION_COOKIE"]),
+      ...without(["SPECTRUM_STAFF_ROLE_ID", "SPECTRUM_FEED_URL"]),
       SPECTRUM_MODE: "poll",
     };
-    expect(() => loadEnv("worker", source)).toThrow("SPECTRUM_SESSION_COOKIE");
+    expect(loadEnv("worker", source).SPECTRUM_MODE).toBe("poll");
   });
 
   it("worker in off mode needs neither", () => {
-    const source = without(["SPECTRUM_FEED_URL", "SPECTRUM_SESSION_COOKIE"]);
+    const source = without(["SPECTRUM_FEED_URL", "SPECTRUM_STAFF_ROLE_ID"]);
     expect(loadEnv("worker", source).SPECTRUM_MODE).toBe("off");
   });
 

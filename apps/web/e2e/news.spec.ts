@@ -16,6 +16,12 @@ test("the feed pages by twenty, links every item to its source and credits the w
     as.map((a) => a.getAttribute("href")),
   )) {
     expect(href).toMatch(/^https:\/\/robertsspaceindustries\.com\//);
+    // Spectrum's posts live under /spectrum/ on the same host: none reaches the feed while the
+    // module is off, whatever the pack holds.
+    expect(href).not.toMatch(/\/spectrum\//);
+  }
+  for (const title of await page.locator("article h3").allTextContents()) {
+    expect(title).not.toMatch(/^Re: /);
   }
   await expect(
     page.getByRole("link", {

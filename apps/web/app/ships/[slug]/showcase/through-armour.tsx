@@ -6,16 +6,19 @@ import {
   DAMAGE_KIND_LABEL,
   type DpsByKind,
   type Shields,
+  afterArmour,
   armourInWords,
-  throughArmour,
+  times,
 } from "../../../../lib/armour";
 
 /**
- * Through the armour (ADR-026): pick any ship gun on record and see how much of its damage per
- * second reaches this ship's hull, kind by kind, once the armour has taken its share; the shields
- * stand in front and are named with their health and regeneration. Every figure is read from the
- * records; the only arithmetic is a product per kind and a sum (`throughArmour`). No colour but
- * the accent: the filled part of each bar is what gets through, the rest what the armour takes.
+ * After the armour (ADR-026): pick any ship gun on record and see its damage per second, kind by
+ * kind, before and after this ship's armour's damage multiplier for that kind; the shields on
+ * record are named with their health and regeneration. Every figure is read from the records;
+ * the only arithmetic is a product per kind and a sum (`afterArmour`). The records hold more
+ * about armour and shields, with no published rule for how the game applies it; none of it is
+ * applied, and the caption says so. No colour but the accent: the filled part of each bar is the
+ * damage after the multiplier, the whole bar the damage fired, bars to one scale across every gun.
  */
 
 export interface AttackingWeapon {
@@ -29,7 +32,9 @@ export interface AttackingWeapon {
 
 const n0 = (v: number): string =>
   v.toLocaleString("en-US", { maximumFractionDigits: 0 });
-const pct = (share: number): string => `${Math.round(share * 100)}%`;
+
+const UNAPPLIED =
+  "The records' other armour figures (resistance multipliers, deflection, penetration resistance, the ship's penetration multiplier) and the shields' absorption and resistance ranges have no published rule, so no shield stage and nothing beyond the multiplier is applied";
 
 export function ThroughArmour({
   shipName,
@@ -56,9 +61,9 @@ export function ThroughArmour({
   const [chosen, setChosen] = useState(first);
   const captionId = useId();
   const weapon = weapons.find((w) => w.id === chosen) ?? null;
-  const through = weapon === null ? null : throughArmour(weapon.dps, armour);
-  const widest =
-    through === null ? 1 : Math.max(1, ...through.kinds.map((k) => k.fired));
+  const result = weapon === null ? null : afterArmour(weapon.dps, armour);
+  // One scale for every gun on the list, so a heavier gun shows a longer bar.
+  const widest = Math.max(1, ...weapons.flatMap((w) => Object.values(w.dps)));
   const sizes = [...new Set(weapons.map((w) => w.size))].sort((a, b) => a - b);
 
   return (
@@ -90,16 +95,18 @@ export function ThroughArmour({
       <div className="flex flex-col gap-4 rounded-card bg-inset p-4">
         <p className="m-0 text-caption text-secondary">
           {shields === null
-            ? "No shields on record: the armour is the first thing hit"
-            : `Shields first: ${n0(shields.hp)} HP${shields.regen === null ? "" : `, regenerating ${n0(shields.regen)} HP/s`}${shields.faceType === null ? "" : ` (${shields.faceType.toLowerCase()})`}, then the armour`}
+            ? "No shields on record"
+            : `Shields on record: ${n0(shields.hp)} HP${shields.regen === null ? "" : `, regenerating ${n0(shields.regen)} HP/s`}${shields.faceType === null ? "" : ` (${shields.faceType.toLowerCase()})`}`}
+          {hullHp === null ? "" : `; hull ${n0(hullHp)} HP`}
+          {armour.hp === null ? "" : `; armour ${n0(armour.hp)} HP`}
         </p>
-        {through === null || weapon === null ? (
+        {result === null || weapon === null ? (
           <p className="m-0 text-caption text-secondary">
             No ship gun on record deals damage to show.
           </p>
         ) : (
           <dl className="m-0 flex flex-col gap-3">
-            {through.kinds.map((k) => (
+            {result.kinds.map((k) => (
               <div key={k.kind} className="flex flex-col gap-1">
                 <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
                   <dt className="text-ui text-secondary">
@@ -109,12 +116,12 @@ export function ThroughArmour({
                     <span className="font-mono">{n0(k.fired)}</span>
                     <span className="text-caption text-secondary">
                       {" "}
-                      per s fired ·{" "}
+                      per second fired ·{" "}
                     </span>
-                    <span className="font-mono">{n0(k.reaching)}</span>
+                    <span className="font-mono">{n0(k.after)}</span>
                     <span className="text-caption text-secondary">
                       {" "}
-                      reaches the hull ({pct(k.taken)})
+                      after the armour ({times(k.multiplier)})
                     </span>
                   </dd>
                 </div>
@@ -128,7 +135,7 @@ export function ThroughArmour({
                   >
                     <div
                       className="h-full rounded-pill bg-accent"
-                      style={{ width: `${k.taken * 100}%` }}
+                      style={{ width: `${Math.min(1, k.multiplier) * 100}%` }}
                     />
                   </div>
                 </div>
@@ -137,16 +144,15 @@ export function ThroughArmour({
             <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-t border-hairline pt-3">
               <dt className="text-ui text-primary">All damage</dt>
               <dd className="m-0 text-ui text-primary">
-                <span className="font-mono">{n0(through.fired)}</span>
+                <span className="font-mono">{n0(result.fired)}</span>
                 <span className="text-caption text-secondary">
                   {" "}
-                  per s fired ·{" "}
+                  per second fired ·{" "}
                 </span>
-                <span className="font-mono">{n0(through.reaching)}</span>
+                <span className="font-mono">{n0(result.after)}</span>
                 <span className="text-caption text-secondary">
                   {" "}
-                  reaches the hull
-                  {hullHp === null ? "" : ` of ${n0(hullHp)} HP`}
+                  after the armour
                 </span>
               </dd>
             </div>
@@ -154,14 +160,11 @@ export function ThroughArmour({
         )}
       </div>
       <figcaption id={captionId} className="text-caption text-secondary">
-        <span className="font-mono text-primary">{label}</span> Through the
-        armour: of a {weapon === null ? "gun" : weapon.name}&apos;s damage per
-        second, what reaches the {shipName}&apos;s hull. Its armour{" "}
-        {armourInWords(armour)}
-        {armour.hp === null ? "" : `, and has ${n0(armour.hp)} HP of its own`}.
-        Shields take the hit whole before the armour; penetration and the
-        shields&apos; resistances are in the records but their rules are not
-        published, so they are not applied
+        <span className="font-mono text-primary">{label}</span> After the
+        armour: a {weapon === null ? "gun" : weapon.name}&apos;s damage per
+        second as its record gives it, and the same times the {shipName}&apos;s
+        armour&apos;s damage multiplier for each kind. Its armour{" "}
+        {armourInWords(armour)}. {UNAPPLIED}
         {version === null ? "" : `. LIVE ${version}`}
       </figcaption>
     </figure>

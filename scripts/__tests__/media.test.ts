@@ -47,6 +47,20 @@ describe("matchShips", () => {
     ]);
   });
 
+  it("ignores the stray trailing space the matrix writes after a few names", () => {
+    const ballista = {
+      class_name: "ANVL_Ballista",
+      name: "Ballista",
+      manufacturer_code: "ANVL",
+    };
+    const { matched, unmatched } = matchShips(
+      [ballista],
+      [row("Ballista ", "ANVL")],
+    );
+    expect(unmatched).toEqual([]);
+    expect(matched).toHaveLength(1);
+  });
+
   it("matches on the wiki's record of the ship-matrix name when the display name differs", () => {
     const freelancer = {
       class_name: "MISC_Freelancer",

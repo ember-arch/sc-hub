@@ -1,0 +1,131 @@
+{
+  "data": [
+    {
+      "uuid": "3891ac68-1cdb-4181-8114-aa54ddce3649",
+      "name": "AcryliPlex Composite",
+      "class_name": "Carryable_TBO_FL_8SCU_Commodity_ProcessedGoods_ProcyonCanister_Damage",
+      "type": "Cargo",
+      "sub_type": "Cargo",
+      "version": "4.10.2-LIVE.12881860",
+      "dimension": {
+        "volume": 8,
+        "volume_converted_unit": "SCU",
+        "cargo_dimension": {
+          "width": 2.5,
+          "height": 2.5,
+          "length": 2.5
+        }
+      }
+    },
+    {
+      "uuid": "b29bfd7b-0efe-4915-bd7a-6b1216011b06",
+      "name": "AcryliPlex Composite",
+      "class_name": "Carryable_2H_FL_05x05x05_Commodity_consumer_goods_Procyon_AcryliPlex_canister_damage",
+      "type": "Cargo",
+      "sub_type": "Small",
+      "version": "4.10.2-LIVE.12881860",
+      "dimension": {
+        "volume": 0.128,
+        "volume_converted_unit": "µSCU",
+        "cargo_dimension": {
+          "width": 0.5,
+          "height": 0.5,
+          "length": 0.5
+        }
+      }
+    },
+    {
+      "uuid": "fdb8babe-470b-49be-b5b4-034ea606cc22",
+      "name": "AcryliPlex Composite",
+      "class_name": "Carryable_TBO_FL_1SCU_Commodity_ProcessedGoods_ProcyonCanister_Acryliplex_Damage",
+      "type": "Cargo",
+      "sub_type": "Cargo",
+      "version": "4.10.2-LIVE.12881860",
+      "dimension": {
+        "volume": 1,
+        "volume_converted_unit": "SCU",
+        "cargo_dimension": {
+          "width": 1.25,
+          "height": 1.25,
+          "length": 1.25
+        }
+      }
+    },
+    {
+      "uuid": "6e3ff231-4b5f-4887-9741-861d0fd8494c",
+      "name": "AcryliPlex Composite",
+      "class_name": "Carryable_TBO_FL_2SCU_Commodity_ProcessedGoods_ProcyonCanister_AcryliPlex_Damage",
+      "type": "Cargo",
+      "sub_type": "Cargo",
+      "version": "4.10.2-LIVE.12881860",
+      "dimension": {
+        "volume": 4,
+        "volume_converted_unit": "SCU",
+        "cargo_dimension": {
+          "width": 1.25,
+          "height": 1.25,
+          "length": 2.5
+        }
+      }
+    },
+    {
+      "uuid": "5cf15409-b36e-4e04-8545-fd25eec63ae0",
+      "name": "AcryliPlex Composite",
+      "class_name": "Carryable_TBO_FL_32SCU_Commodity_ProcessedGoods_ProcyonCanister_Damage",
+      "type": "Cargo",
+      "sub_type": "Cargo",
+      "version": "4.10.2-LIVE.12881860",
+      "dimension": {
+        "volume": 32,
+        "volume_converted_unit": "SCU",
+        "cargo_dimension": {
+          "width": 2.5,
+          "height": 2.5,
+          "length": 10
+        }
+      }
+    },
+    {
+      "uuid": "c7d0f71a-580c-4a5c-a3df-03a76481ba29",
+      "name": "AcryliPlex Composite",
+      "class_name": "Carryable_TBO_FL_4SCU_Commodity_ProcessedGoods_ProcyonCanister_AcryliPlex_Damage",
+      "type": "Cargo",
+      "sub_type": "Cargo",
+      "version": "4.10.2-LIVE.12881860",
+      "dimension": {
+        "volume": 8,
+        "volume_converted_unit": "SCU",
+        "cargo_dimension": {
+          "width": 2.5,
+          "height": 1.25,
+          "length": 2.5
+        }
+      }
+    },
+    {
+      "uuid": "fdb8babe-470b-49be-b5b4-034ea606cc22-old",
+      "name": "AcryliPlex Composite",
+      "class_name": "Carryable_TBO_FL_1SCU_Commodity_ProcessedGoods_ProcyonCanister_Acryliplex_Damage",
+      "type": "Cargo",
+      "sub_type": "Cargo",
+      "version": "4.10.1-LIVE.00000000",
+      "dimension": {
+        "volume": 1,
+        "volume_converted_unit": "SCU",
+        "cargo_dimension": {
+          "width": 1.25,
+          "height": 1.25,
+          "length": 1.25
+        }
+      }
+    }
+  ],
+  "meta": {
+    "current_page": 1,
+    "from": 1,
+    "last_page": 1,
+    "per_page": 7,
+    "to": 7,
+    "total": 7
+  }
+}

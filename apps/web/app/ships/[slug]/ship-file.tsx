@@ -19,7 +19,7 @@ import { HoloViewer } from "./showcase/holo-viewer";
  * The ship entry (ADR-012, ADR-014, ADR-020): one template for every ship, concept or flying. It
  * opens on the holomodel drawn in ink beside the ship's name, a factual one-line summary and the
  * particulars as a ruled table, with the key art as a plate under them. Below, the contents stay
- * in view on wide screens beside the same nine numbered sections, in the same order, for every
+ * in view on wide screens beside the same ten numbered sections, in the same order, for every
  * ship. Each section carries the images and render loops that show what it describes as captioned
  * plates, not a gallery. Where the game has no data the section says so, and CIG's stated claims
  * fill in, labelled and cited.
@@ -30,6 +30,7 @@ export const SHIP_FILE_SECTIONS = [
   { id: "acquisition", title: "Acquisition and status" },
   { id: "combat", title: "Weapons and combat" },
   { id: "operations", title: "Crew and operations" },
+  { id: "cargo", title: "Cargo" },
   { id: "mobility", title: "Mobility" },
   { id: "scale", title: "Scale" },
   { id: "specifications", title: "Specifications" },

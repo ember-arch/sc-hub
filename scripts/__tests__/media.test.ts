@@ -71,6 +71,21 @@ describe("matchShips", () => {
     ).toContain("Gladius%20Pirate%20Edition");
   });
 
+  it("falls back to the display name when the record names no row, and treats an empty record as none", () => {
+    const renamed = { ...gladius, matrix_name: "Gladius (old name)" };
+    expect(
+      matchShips([renamed], [row("Gladius", "AEGS")]).matched[0]?.vehicle,
+    ).toBe(renamed);
+    const empty = { ...gladius, matrix_name: "" };
+    expect(
+      matchShips([empty], [row("Gladius", "AEGS")]).matched[0]?.vehicle,
+    ).toBe(empty);
+    expect(
+      matchShips([renamed], [row("Gladius Valiant", "AEGS")]).unmatched[0]
+        ?.reason,
+    ).toMatch(/no ship-matrix row/);
+  });
+
   it("never matches on a near name or another maker", () => {
     const { matched, unmatched } = matchShips(
       [gladius],

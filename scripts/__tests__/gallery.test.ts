@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   DEALT_SECTIONS,
   articleUrl,
-  captionFromFile,
+  captionFor,
   chooseItems,
   composeShowcase,
   parseGallery,
@@ -85,21 +85,12 @@ describe("chooseItems", () => {
   });
 });
 
-describe("captionFromFile", () => {
-  it("drops the ship's name, the extension and the underscores, in sentence case", () => {
-    expect(captionFromFile("Gladius_-_Take_off.jpg", "Gladius")).toBe(
-      "Take off",
+describe("captionFor", () => {
+  it("says what kind of picture it is and nothing the file title might claim", () => {
+    expect(captionFor("official", "Gladius")).toBe("Gladius, official art");
+    expect(captionFor("ingame", "Avenger Stalker")).toBe(
+      "Avenger Stalker, in the game",
     );
-    expect(captionFromFile("Gladius_Hangar_3.1.png", "Gladius")).toBe(
-      "Hangar 3.1",
-    );
-    expect(captionFromFile("Gladius_in_space_-_Isometric.jpg", "Gladius")).toBe(
-      "In space, isometric",
-    );
-    expect(
-      captionFromFile("Freelancer_MAX_cargo.jpg", "MISC Freelancer MAX"),
-    ).toBe("Freelancer max cargo");
-    expect(captionFromFile("Gladius.jpg", "Gladius")).toBe("Gladius");
   });
 });
 

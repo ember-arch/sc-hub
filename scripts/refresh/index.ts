@@ -217,6 +217,27 @@ function descriptionsGate(
   return `the descriptions are for the pack's build, ${packVersion ?? "this build"}`;
 }
 
+/**
+ * The box shapes follow the pack the same way (ADR-028): after a rebuild, and when the file is
+ * missing or for another build than the pack's.
+ */
+function cargoBoxesGate(outcomes: readonly Outcome[]): { run: true } | string {
+  if (outcomes.find((o) => o.id === "catalog")?.kind === "changed")
+    return { run: true };
+  const packFile = join(repoRoot, "fixtures", "bootstrap", "GameVersion.json");
+  const file = join(repoRoot, "fixtures", "cargo", "CargoBox.json");
+  if (!existsSync(packFile)) return "no pack to read boxes for";
+  if (!existsSync(file)) return { run: true };
+  const packVersion = (
+    JSON.parse(readFileSync(packFile, "utf8")) as { version: string }[]
+  )[0]?.version;
+  const boxes = JSON.parse(readFileSync(file, "utf8")) as {
+    game_version: string;
+  };
+  if (boxes.game_version !== packVersion) return { run: true };
+  return `the box shapes are for the pack's build, ${packVersion ?? "this build"}`;
+}
+
 const STEPS: readonly Step[] = [
   {
     id: "catalog",
@@ -231,6 +252,13 @@ const STEPS: readonly Step[] = [
     files: ["fixtures/descriptions"],
     script: "scripts/bootstrap-fixtures/descriptions.ts",
     gate: descriptionsGate,
+  },
+  {
+    id: "cargo-boxes",
+    label: "cargo boxes",
+    files: ["fixtures/cargo/CargoBox.json"],
+    script: "scripts/bootstrap-fixtures/cargo-boxes.ts",
+    gate: cargoBoxesGate,
   },
   {
     id: "ship-matrix",

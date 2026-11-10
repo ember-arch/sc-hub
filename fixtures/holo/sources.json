@@ -144,6 +144,18 @@
     "fetched_at": "2026-11-10T02:46:27.655Z"
   },
   {
+    "slug": "a1-spirit",
+    "page": "https://robertsspaceindustries.com/pledge/ships/spirit/A1-Spirit",
+    "store_title": "A1 Spirit ",
+    "file": "4qv02svge2ljc.ctm",
+    "url": "https://media.robertsspaceindustries.com/4qv02svge2ljc/source.ctm",
+    "bytes": 4258745,
+    "sha256": "8cd67b7cebf051b3508953f5cabc2d743c52ecef54527bcedb91fadbb7dd65b1",
+    "vertices": 572502,
+    "triangles": 979516,
+    "fetched_at": "2026-11-10T05:42:26.554Z"
+  },
+  {
     "slug": "a2-hercules-starlifter",
     "page": "https://robertsspaceindustries.com/pledge/ships/crusader-starlifter/A2-Hercules",
     "store_title": "A2 Hercules",
@@ -346,6 +358,18 @@
     "vertices": 431597,
     "triangles": 786186,
     "fetched_at": "2026-11-10T02:46:58.320Z"
+  },
+  {
+    "slug": "ares-star-fighter-inferno",
+    "page": "https://robertsspaceindustries.com/pledge/ships/crusader-ares/Ares-Inferno",
+    "store_title": "Ares Inferno ",
+    "file": "x4brx2gnrgk5a.ctm",
+    "url": "https://media.robertsspaceindustries.com/x4brx2gnrgk5a/source.ctm",
+    "bytes": 1105896,
+    "sha256": "f765a4a6ab652e908cdc7c89f72e8e34401769a1cef68aa91159f6f2c2452b72",
+    "vertices": 140109,
+    "triangles": 263909,
+    "fetched_at": "2026-11-10T05:42:31.152Z"
   },
   {
     "slug": "ares-star-fighter-ion",
@@ -564,6 +588,18 @@
     "fetched_at": "2026-11-10T02:34:17.651Z"
   },
   {
+    "slug": "ballista",
+    "page": "https://robertsspaceindustries.com/pledge/ships/anvil-ballista/Ballista",
+    "store_title": "Ballista ",
+    "file": "uott2v11q7fki.ctm",
+    "url": "https://media.robertsspaceindustries.com/uott2v11q7fki/source.ctm",
+    "bytes": 1474186,
+    "sha256": "d91411b95fbf7f895d1a2d824080bee526ef9939d6cca78611a9088a4c13259a",
+    "vertices": 172568,
+    "triangles": 326919,
+    "fetched_at": "2026-11-10T02:36:17.592Z"
+  },
+  {
     "slug": "ballista-dunestalker",
     "page": "https://robertsspaceindustries.com/pledge/ships/anvil-ballista/Anvil-Ballista-Dunestalker",
     "store_title": "Anvil Ballista Dunestalker",
@@ -658,6 +694,18 @@
     "vertices": 69959,
     "triangles": 111566,
     "fetched_at": "2026-11-10T02:36:22.537Z"
+  },
+  {
+    "slug": "c8x-pisces-expedition",
+    "page": "https://robertsspaceindustries.com/pledge/ships/anvil-pisces/C8X-Pisces-Expedition",
+    "store_title": "C8X Pisces Expedition ",
+    "file": "i2k8f4qixapvh.ctm",
+    "url": "https://media.robertsspaceindustries.com/i2k8f4qixapvh/source.ctm",
+    "bytes": 439336,
+    "sha256": "a64086ef7d6070e1dd4143f0b7bf4a73c9968a8d107f27f6d97d69a7107d5c91",
+    "vertices": 95084,
+    "triangles": 150670,
+    "fetched_at": "2026-11-10T05:42:16.090Z"
   },
   {
     "slug": "carrack",
@@ -1114,6 +1162,18 @@
     "vertices": 506279,
     "triangles": 420540,
     "fetched_at": "2026-11-10T02:37:08.227Z"
+  },
+  {
+    "slug": "f7c-m-super-hornet-mk-ii",
+    "page": "https://robertsspaceindustries.com/pledge/ships/anvil-hornet-mkii/F7C-M-Super-Hornet-Mk-II",
+    "store_title": "F7C-M Super Hornet Mk II ",
+    "file": "ccve744c0n63o.ctm",
+    "url": "https://media.robertsspaceindustries.com/ccve744c0n63o/source.ctm",
+    "bytes": 1361874,
+    "sha256": "e823133ad15362165a841a5c6eb90155ff911b6d773635829f4cc8b9a2aa7b3b",
+    "vertices": 206477,
+    "triangles": 381957,
+    "fetched_at": "2026-11-10T05:42:21.609Z"
   },
   {
     "slug": "f7c-r-hornet-tracker-mk-i",
@@ -1654,6 +1714,18 @@
     "vertices": 1057185,
     "triangles": 2069798,
     "fetched_at": "2026-11-10T02:51:03.386Z"
+  },
+  {
+    "slug": "lynx",
+    "page": "https://robertsspaceindustries.com/pledge/ships/ursa/Lynx",
+    "store_title": "Lynx ",
+    "file": "k23zfbh7qeb8u.ctm",
+    "url": "https://media.robertsspaceindustries.com/k23zfbh7qeb8u/source.ctm",
+    "bytes": 595056,
+    "sha256": "835c2e49c387b96396950a338179da90526f9ef23fde1914f2baefe77458d612",
+    "vertices": 69137,
+    "triangles": 127308,
+    "fetched_at": "2026-11-10T05:42:36.054Z"
   },
   {
     "slug": "m2-hercules-starlifter",

@@ -52,7 +52,7 @@ test("every page kind carries a canonical URL, a title and a description", async
       new RegExp(maker.name),
     ],
     [`/compare?ships=${ship.slug}`, "/compare", /^Compare ships — /],
-    ["/news", "/news", /^News — /],
+    ["/news", "/news", /^Dispatches — /],
     ["/about", "/about", /^About — /],
   ];
   for (const [path, canonicalPath, title] of cases) {

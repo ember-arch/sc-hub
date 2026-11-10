@@ -247,6 +247,11 @@ export interface Repository {
   readonly components: readonly ComponentView[];
   readonly manufacturers: readonly Manufacturer[];
   readonly news: readonly ContentItem[];
+  /**
+   * The dispatches (ADR-029): what CIG publishes, newest first, with no developer post among
+   * them; the Spectrum items are the dev tracker's (`lib/dev-posts.ts`).
+   */
+  readonly dispatches: readonly ContentItem[];
   /** CIG staff seen on Spectrum; empty with the module off. */
   readonly authors: readonly Author[];
   readonly searchEntries: readonly SearchEntry[];
@@ -453,6 +458,7 @@ export function buildRepository(
     components,
     manufacturers,
     news,
+    dispatches: news.filter((n) => n.source !== "spectrum"),
     authors,
     searchEntries,
     shipBySlug: (slug) => ships.find((s) => s.vehicle.slug === slug),

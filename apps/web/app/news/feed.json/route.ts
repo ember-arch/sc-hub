@@ -6,8 +6,9 @@ export const dynamic = "force-static";
 
 export function GET(): Response {
   const base = siteUrl().origin;
+  // The dispatches (ADR-029): what CIG publishes; developer posts are not syndicated here.
   const items = repo()
-    .news.slice(0, 50)
+    .dispatches.slice(0, 50)
     .map((n) => ({
       id: n.id,
       url: n.url,

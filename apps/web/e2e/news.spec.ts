@@ -1,8 +1,9 @@
 import { expect, test } from "@playwright/test";
 
-// The news feed and the dev tracker over the committed news pack (spec 03, ADR-027). The pack
-// holds Comm-Links and roadmap changes; Spectrum stays off until the approval box is ticked,
-// so the tracker is its empty state and no author page exists.
+// The dispatches and the dev tracker over the committed news pack (spec 03, ADR-027, ADR-029).
+// The pack holds Comm-Links, roadmap changes and a year of Spectrum posts; Spectrum stays off
+// until the approval box is ticked, so the tracker is its empty state and no author page
+// exists, and a developer post never counts as a dispatch whether the module is on or off.
 
 test("the feed pages by twenty, links every item to its source and credits the wiki", async ({
   page,
@@ -43,6 +44,20 @@ test("the source filter keeps one source; the chips are drawn once the pack hold
   for (const text of await sources.allTextContents()) {
     expect(text).toBe("Comm-Link");
   }
+  // A developer post is never a dispatch (ADR-029): no Spectrum chip, and asking for the source
+  // by name gives the whole list, not the tracker's posts.
+  await page.goto("/news?source=spectrum");
+  await expect(page.locator("article")).toHaveCount(20);
+  for (const text of await page
+    .locator("article p.lab span.text-primary")
+    .allTextContents()) {
+    expect(text).not.toBe("Spectrum");
+  }
+  await expect(
+    page.getByRole("navigation", { name: "Sources" }).getByRole("link", {
+      name: "Spectrum",
+    }),
+  ).toHaveCount(0);
   // The pack as committed holds Comm-Links and, once the board has changed since the state on
   // file, roadmap items; the chips appear only when a second source is present.
   const nav = page.getByRole("navigation", { name: "Sources" });

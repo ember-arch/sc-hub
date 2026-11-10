@@ -179,6 +179,24 @@ export const HoloFigure = z.strictObject({
 });
 export type HoloFigure = z.infer<typeof HoloFigure>;
 
+/**
+ * A Comm-Link's cover (ADR-029): the picture RSI's Comm-Link hub shows for the transmission,
+ * copied by `scripts/media/fetch-covers.ts` and keyed by RSI's own id for the Comm-Link, the
+ * `external_id` of the content item. Local only, like every image here.
+ */
+export const CoverImage = z.strictObject({
+  external_id: z.string().min(1),
+  source: z.literal("rsi_comm_link_hub"),
+  /** The Comm-Link's own page on robertsspaceindustries.com. */
+  page_url: z.url(),
+  /** The cover as RSI serves it. */
+  image_url: z.url(),
+  fetched_at: Timestamp,
+  /** Widest first. */
+  renditions: z.array(MediaRendition).min(1),
+});
+export type CoverImage = z.infer<typeof CoverImage>;
+
 export const MediaManifest = z.strictObject({
   generated_at: Timestamp,
   ships: z.array(ShipImage),
@@ -190,5 +208,7 @@ export const MediaManifest = z.strictObject({
   titles: z.array(TitleIconMedia).default([]),
   /** Concept ships' images (ADR-022), by slug; absent in manifests built before it. */
   concepts: z.array(ConceptImage).default([]),
+  /** Comm-Link covers (ADR-029), by RSI's id for the Comm-Link; absent in manifests built before it. */
+  covers: z.array(CoverImage).default([]),
 });
 export type MediaManifest = z.infer<typeof MediaManifest>;

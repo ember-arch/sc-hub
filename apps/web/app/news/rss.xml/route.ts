@@ -13,8 +13,9 @@ const escape = (s: string): string =>
 
 export function GET(): Response {
   const base = siteUrl().origin;
+  // The dispatches (ADR-029): what CIG publishes; developer posts are not syndicated here.
   const items = repo()
-    .news.slice(0, 50)
+    .dispatches.slice(0, 50)
     .map(
       (n) => `    <item>
       <title>${escape(n.title)}</title>

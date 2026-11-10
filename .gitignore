@@ -26,6 +26,7 @@ fixtures/fankit/
 fixtures/rsi-media/*
 !fixtures/rsi-media/README.md
 !fixtures/rsi-media/sources.json
+!fixtures/rsi-media/cover-sources.json
 
 # the wiki's galleries of RSI's art per ship (ADR-024): local only, never committed
 fixtures/galleries/*

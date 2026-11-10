@@ -17,6 +17,7 @@ export const storyMeta: readonly {
   { id: "data-table", width: 1280 },
   { id: "data-table-phone", width: 390 },
   { id: "feed-item", width: 390 },
+  { id: "dispatch-card", width: 390 },
   { id: "dev-post", width: 390 },
   { id: "patch-strip", width: 390 },
   { id: "footer", width: 1280 },

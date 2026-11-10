@@ -2,16 +2,16 @@ import type { Metadata } from "next";
 import {
   Card,
   type CardProps,
+  DispatchCard,
   EmptyState,
-  FeedItem,
   type ResponsiveImage,
   TextLink,
-  sentence,
 } from "ui";
 import { SITE_NAME, SITE_TAGLINE } from "ui/brand";
 import { RSI_IMAGE_CREDIT } from "ui/legal";
 import { pricesFor } from "../lib/acquisition";
 import { repo } from "../lib/data";
+import { SOURCE_LABEL, coverOf } from "../lib/dispatches";
 import { formatFrontDate, pickPlates, signed } from "../lib/front";
 import {
   formatChange,
@@ -221,7 +221,9 @@ export default function HomePage() {
     e.stats.some((s) => s.label === "Pledge" && s.value !== null),
   );
 
-  const feed = r.news.slice(0, 6);
+  // The three newest dispatches as cards (ADR-029); developer posts are the tracker's.
+  const feed = r.dispatches.slice(0, 3);
+  const feedPictures = feed.map((item) => coverOf(item));
 
   return (
     <Site>
@@ -276,23 +278,31 @@ export default function HomePage() {
           />
           {feed.length === 0 ? (
             <EmptyState>
-              No news yet. Comm-Links and developer posts will appear here;
-              until then, browse the <TextLink href="/ships">ships</TextLink>.
+              No dispatches yet. What CIG publishes will appear here; until
+              then, browse the <TextLink href="/ships">ships</TextLink>.
             </EmptyState>
           ) : (
-            <div className="flex flex-col">
-              {feed.map((item) => (
-                <FeedItem
-                  key={item.id}
-                  source={sentence(item.source)}
-                  title={item.title}
-                  sourceUrl={item.url}
-                  publishedAt={item.published_at}
-                  now={at}
-                  excerpt={item.summary}
-                  entities={[]}
-                />
-              ))}
+            <div className="flex flex-col gap-2">
+              <ul className="m-0 grid list-none grid-cols-1 gap-4 p-0 md:grid-cols-3">
+                {feed.map((item, i) => (
+                  <li key={item.id}>
+                    <DispatchCard
+                      source={SOURCE_LABEL[item.source]}
+                      title={item.title}
+                      sourceUrl={item.url}
+                      publishedAt={item.published_at}
+                      now={at}
+                      excerpt={item.summary}
+                      picture={feedPictures[i] ?? null}
+                    />
+                  </li>
+                ))}
+              </ul>
+              {feedPictures.some((p) => p !== null) ? (
+                <p className="m-0 text-caption text-muted">
+                  {RSI_IMAGE_CREDIT.text}
+                </p>
+              ) : null}
             </div>
           )}
         </section>

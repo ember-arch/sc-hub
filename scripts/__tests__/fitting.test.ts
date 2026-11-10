@@ -87,6 +87,8 @@ describe("parseFittingSheet", () => {
   it("reads the build, the date and the legend from the sheet's own cells", () => {
     expect(parsed.build_label).toBe("PRE LIVE 4.10.3");
     expect(parsed.last_update).toBe("2026-11-09");
+    // The sheet's "UNDER CONSTRUCTION" band over this build, dated 10 October 2026.
+    expect(parsed.under_construction).toBe("2026-10-10");
     expect(parsed.legend.verdicts).toMatchObject({
       fits: "Good Fit",
       no: "Doesn't fit",

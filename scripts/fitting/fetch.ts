@@ -177,6 +177,8 @@ export function resolveLabel(
 export interface ParsedList {
   readonly build_label: string;
   readonly last_update: string;
+  /** The date of the sheet's "UNDER CONSTRUCTION" band, where it has one. */
+  readonly under_construction: string | null;
   readonly legend: Legend;
   readonly carriers: FitCarrier[];
   readonly vehicles: FitVehicle[];
@@ -214,6 +216,18 @@ export function parseFittingSheet(
   // "UNRELEASED" above the heading row marks the columns from it on.
   const above = sheet.cells[r0 - 1] ?? [];
   const unreleasedFrom = above.findIndex((c) => /unreleased/i.test(text(c)));
+
+  // The sheet's "UNDER CONSTRUCTION" band over the rows above the heading, with its date.
+  let under_construction: string | null = null;
+  for (let r = 0; r < r0; r += 1) {
+    const row = sheet.cells[r] ?? [];
+    if (!row.some((c) => /under construction/i.test(text(c)))) continue;
+    const dated = row.find((c) => /^\d+(\.\d+)?$/.test(text(c)));
+    under_construction =
+      dated === undefined ? null : serialToIsoDate(Number(text(dated)));
+    if (dated === undefined)
+      throw new Error("an UNDER CONSTRUCTION band without a date beside it");
+  }
 
   // "LAST UPDATE:" anywhere in the legend's columns, the date beside it.
   let last_update: string | null = null;
@@ -400,6 +414,7 @@ export function parseFittingSheet(
   return {
     build_label,
     last_update,
+    under_construction,
     legend,
     carriers: trim(carriers),
     vehicles: trim(vehicles),
@@ -421,6 +436,7 @@ export function toFixture(
       author: AUTHOR,
       sheet: SHEET_NAME,
       build_label: parsed.build_label,
+      under_construction: parsed.under_construction,
       last_update: parsed.last_update,
       consent,
     },

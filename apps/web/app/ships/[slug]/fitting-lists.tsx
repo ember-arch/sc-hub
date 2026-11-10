@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import type { FitVerdict } from "schema";
-import { FITTING_CREDIT, TextLink } from "ui";
+import { FITTING_CREDIT, TextLink, formatDate } from "ui";
 import { fitting, repo } from "../../../lib/data";
 import {
   type Carried,
@@ -27,14 +27,33 @@ interface Entry {
   readonly note: string | null;
 }
 
-const hrefOf = (classNames: readonly string[]): string | null => {
+/**
+ * The page a sheet label leads to and the name to show: the entry the label names (an edition
+ * stands in only for a label that names nothing else, ADR-022), with the pack's own name where
+ * the label names one entry and the sheet's label, as written, where it names several or none.
+ */
+function entryOf(
+  label: string,
+  classNames: readonly string[],
+): { readonly href: string | null; readonly label: string } {
   const r = repo();
-  for (const cn of classNames) {
-    const ship = r.ships.find((s) => s.vehicle.class_name === cn);
-    if (ship !== undefined) return `/ships/${ship.vehicle.slug}`;
-  }
-  return null;
-};
+  const ships = classNames.flatMap((cn) => {
+    const s = r.ships.find((x) => x.vehicle.class_name === cn);
+    return s === undefined ? [] : [s];
+  });
+  // A base variant first, so "Cutlass / Variants" leads to the Cutlass Black.
+  const entries = [...new Set(ships.map((s) => s.editionOf ?? s.vehicle))].sort(
+    (a, b) =>
+      Number(a.base_variant_of !== null) - Number(b.base_variant_of !== null),
+  );
+  const first =
+    entries.find((v) => ships.some((s) => s.vehicle === v)) ?? entries[0];
+  if (first === undefined) return { href: null, label };
+  return {
+    href: `/ships/${first.slug}`,
+    label: entries.length === 1 ? first.name : label,
+  };
+}
 
 const whereOf = (
   slot: "hangar" | "cargo" | "cargo_module" | null,
@@ -42,10 +61,11 @@ const whereOf = (
 ): string | null => (slot === null ? marker : SLOT_LABEL[slot]);
 
 function carriedEntry(c: Carried): Entry {
+  const entry = entryOf(c.vehicle.label, c.vehicle.class_names);
   return {
     key: `${c.vehicle.id}-${c.slot ?? ""}-${c.marker ?? ""}`,
-    label: c.vehicle.label,
-    href: hrefOf(c.vehicle.class_names),
+    label: entry.label,
+    href: entry.href,
     where: whereOf(c.slot, c.marker),
     mark: c.mark,
     note: c.note,
@@ -53,12 +73,11 @@ function carriedEntry(c: Carried): Entry {
 }
 
 function carrierEntry(c: CarriedBy): Entry {
+  const entry = entryOf(c.carrier.label, c.carrier.class_names);
   return {
     key: `${c.carrier.id}`,
-    label: c.carrier.unreleased
-      ? `${c.carrier.label} (unreleased)`
-      : c.carrier.label,
-    href: hrefOf(c.carrier.class_names),
+    label: c.carrier.unreleased ? `${entry.label} (unreleased)` : entry.label,
+    href: entry.href,
     where: whereOf(c.carrier.slot, c.carrier.marker),
     mark: c.mark,
     note: c.note,
@@ -195,14 +214,7 @@ export function FittingLists({
     ),
   ];
   const { source } = index.list;
-  const updated = new Date(
-    `${source.last_update}T00:00:00Z`,
-  ).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    timeZone: "UTC",
-  });
+  const updated = formatDate(source.last_update);
   return (
     <div className="flex flex-col gap-4">
       {isCarrier ? (
@@ -215,13 +227,17 @@ export function FittingLists({
       ) : null}
       {fabricator === null ? null : (
         <p className="m-0 text-ui text-secondary">
-          A fabricator{" "}
+          By the list, a fabricator{" "}
           {fabricator === "fits"
-            ? "fits"
+            ? "fits inside"
             : fabricator === "no"
               ? "does not fit"
-              : VERDICT_LABEL[fabricator].toLowerCase()}
-          , by the list.
+              : fabricator === "tricks"
+                ? "fits with tricks or barely"
+                : fabricator === "bugged"
+                  ? "fits but is bugged"
+                  : "has not been tested"}
+          .
         </p>
       )}
       {isCarrier && carriedBy.length === 0 ? null : (
@@ -233,11 +249,13 @@ export function FittingLists({
       )}
       <p className="m-0 text-caption text-secondary">
         <TextLink href={source.url} external className="text-secondary">
-          {source.title}
+          {FITTING_CREDIT.text}
         </TextLink>{" "}
-        by {source.author}, tested in play on {source.build_label}, last updated{" "}
-        {updated}. {FITTING_CREDIT.notice} The list&apos;s own words for each
-        verdict:{" "}
+        The list for build {source.build_label}, last updated {updated}
+        {source.under_construction === null
+          ? ""
+          : `, which the sheet marks as under construction since ${formatDate(source.under_construction)}`}
+        . {FITTING_CREDIT.notice} The list&apos;s own words for each verdict:{" "}
         {VERDICT_ORDER.map((v) => index.list.legend.verdicts[v])
           .filter((w) => w !== undefined)
           .join("; ")}

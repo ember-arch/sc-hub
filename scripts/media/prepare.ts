@@ -433,9 +433,11 @@ const HoloSource = z.object({
 });
 
 /**
- * RSI's holoviewer models (ADR-015), copied by `fetch-holo.ts` into `fixtures/holo/`: each is
- * decoded from OpenCTM and packed into a meshopt-compressed glTF in metres. The human figure RSI
- * stands beside every ship is packed the same way. Nothing on file, nothing written.
+ * RSI's holoviewer models (ADR-015, ADR-025), copied by `fetch-holo.ts` into `fixtures/holo/`:
+ * each file is decoded from OpenCTM once and packed into a meshopt-compressed glTF in metres,
+ * named by the file (RSI's media id), so the ship pages that share a model share the packed copy.
+ * The human figure RSI stands beside every ship is packed the same way. Nothing on file, nothing
+ * written.
  */
 async function holoModels(): Promise<{
   holo: HoloModel[];
@@ -447,27 +449,52 @@ async function holoModels(): Promise<{
     .array(HoloSource)
     .parse(JSON.parse(readFileSync(sourcesPath, "utf8")));
   mkdirSync(join(mediaDir, "holo"), { recursive: true });
+  const packed = new Map<
+    string,
+    {
+      src: string;
+      bytes: number;
+      size: readonly [number, number, number];
+      vertices: number;
+      triangles: number;
+    }
+  >();
+  const pack = async (file: string) => {
+    const done = packed.get(file);
+    if (done !== undefined) return done;
+    const model = await packHoloModel(
+      readCtm(readFileSync(join(holoDir, file))),
+    );
+    const src = `/media/holo/${file.replace(/.ctm$/, "").toLowerCase()}.glb`;
+    writeFileSync(fileFor(src), model.glb);
+    const entry = {
+      src,
+      bytes: model.glb.length,
+      size: model.size,
+      vertices: model.vertices,
+      triangles: model.triangles,
+    };
+    packed.set(file, entry);
+    return entry;
+  };
   const holo: HoloModel[] = [];
   let figure: HoloFigure | null = null;
   for (const row of rows) {
-    const file = join(holoDir, row.file);
-    if (!existsSync(file)) continue;
-    const packed = await packHoloModel(readCtm(readFileSync(file)));
-    const src = `/media/holo/${row.slug}.glb`;
-    writeFileSync(fileFor(src), packed.glb);
+    if (!existsSync(join(holoDir, row.file))) continue;
+    const model = await pack(row.file);
     if (row.slug === HOLO_FIGURE.slug) {
-      figure = { src, bytes: packed.glb.length, height: packed.size[1] };
+      figure = { src: model.src, bytes: model.bytes, height: model.size[1] };
       continue;
     }
     if (row.page === null) continue;
     holo.push({
       slug: row.slug,
-      src,
-      bytes: packed.glb.length,
+      src: model.src,
+      bytes: model.bytes,
       page: row.page,
-      size: [...packed.size],
-      vertices: packed.vertices,
-      triangles: packed.triangles,
+      size: [...model.size],
+      vertices: model.vertices,
+      triangles: model.triangles,
     });
   }
   return { holo, figure };
@@ -519,8 +546,14 @@ async function main(): Promise<void> {
       galleries: manifest.showcase.filter((x) => x.wiki_article !== null)
         .length,
       titles: manifest.titles.length,
-      holo: manifest.holo.map(
-        (h) => `${h.slug}: ${(h.bytes / 1e6).toFixed(2)} MB`,
+      holo: manifest.holo.length,
+      holo_files: new Set(manifest.holo.map((h) => h.src)).size,
+      holo_mb: Number(
+        (
+          [
+            ...new Map(manifest.holo.map((h) => [h.src, h.bytes])).values(),
+          ].reduce((a, b) => a + b, 0) / 1e6
+        ).toFixed(1),
       ),
       errors: 0,
       duration_ms: Date.now() - started,

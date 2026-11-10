@@ -45,7 +45,8 @@ Tick only what is confirmed in writing. Quote the relevant sentence from the con
 
 - [ ] **Spectrum developer posts** — republication of CIG staff posts in full, with author names, roles, and links back. The posts are read from Spectrum's public search without any account, two requests a run with the project's User-Agent and contact address (ADR-027), so the question is republication alone; to settle in the same conversation whether CIG would rather provide a feed.
   > quote: TBD
-  - Access method: Spectrum's public search (no account) / CIG feed or export — public search until agreed otherwise
+  - Access method: Spectrum's public search (no account) / CIG feed or export — the worker reads the public search on the owner's direction (2026-11-10, "can't you find them?"); whether CIG would rather provide a feed is to settle here — TBD
+  - Collection before approval: the worker writes what it reads into this private repository and nothing reaches the site; whether that collection itself needs CIG's word is the owner's to settle here, not assumed — TBD
   - Retention: indefinite / N months — TBD
   - Takedown: who to contact and within what time — TBD
 

@@ -15,9 +15,9 @@ interface Params {
 /** Posts per page: a developer with a year of replies gets pages, not one long scroll. */
 export const PAGE_SIZE = 20;
 
-export function generateStaticParams() {
-  return repo().authors.map((a) => ({ handle: a.handle }));
-}
+// Rendered per request, like the tracker: the page reads `?page=`, and a prerendered route that
+// reads search params answers an unknown handle with a 500 instead of the 404 the test expects.
+export const dynamic = "force-dynamic";
 
 function authorFor(handle: string) {
   const author = authorByHandle(repo().authors, decodeURIComponent(handle));

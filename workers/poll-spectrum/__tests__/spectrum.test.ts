@@ -320,23 +320,32 @@ describe("the poll adapter", () => {
     );
   });
 
-  it("halts on a search that did not succeed or an unknown shape", async () => {
-    const refused = createPollAdapter({
-      post: spectrum(async () => ({
-        ok: true,
-        status: 200,
-        text: async () =>
-          JSON.stringify({
-            success: 0,
-            code: "ErrValidationFailed",
-            msg: "Validation failed",
-            data: { type: "This field is required" },
-          }),
-      })),
-      staff: noStaff,
-      userAgent: "t",
-    });
-    await expect(refused.fetchNewStaffPosts(new Date(0))).rejects.toThrow();
+  it("halts on a search that did not succeed, naming Spectrum's code, and on an unknown shape", async () => {
+    const answering = (body: unknown) =>
+      createPollAdapter({
+        post: spectrum(async () => ({
+          ok: true,
+          status: 200,
+          text: async () => JSON.stringify(body),
+        })),
+        staff: noStaff,
+        userAgent: "t",
+      });
+    // The refusal the old body received: a 200 whose answer carries no hits.
+    await expect(
+      answering({
+        success: 0,
+        code: "ErrValidationFailed",
+        msg: "Validation failed",
+        data: { type: "This field is required" },
+      }).fetchNewStaffPosts(new Date(0)),
+    ).rejects.toThrow(/did not succeed on page 1: ErrValidationFailed/);
+    // A success without the hits the parser reads: the shape check halts.
+    await expect(
+      answering({ success: 1, data: { results: [] } }).fetchNewStaffPosts(
+        new Date(0),
+      ),
+    ).rejects.toThrow(/hits/);
   });
 });
 

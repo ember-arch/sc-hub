@@ -27,6 +27,21 @@ What the records hold, as the Wiki API serves them and the pack keeps them in `r
 | The default gun | The ship's own heaviest stock gun by damage per second, where it has one; otherwise the first gun on the list | A ship fired on by its own gun is a fair first reading; the reader picks any other |
 | Refresh | Nothing new: the fields come with the pack the daily refresh rebuilds on a new build (ADR-023) | |
 
+## Amended 2026-11-10: the damage path, on CIG's published statements
+
+The owner sent SPViewer's "Armor Deflection Calculator" as the example to follow: a table of the opponent's mitigation figures per damage kind (deflection threshold, shield resistance, shield absorption, armour durability, hull, component penetration) and, per weapon, one shot followed from alpha through shields, armour, hull and components. Every row of that table is a field in this project's records, read under the names SPViewer gives them. What was missing was a published rule for the stages. CIG's patch notes, as the Star Citizen Wiki reproduces them, give enough of one:
+
+- Alpha 4.3.1, "Armor and Ballistic Damage changes": "Shield ballistic absorption reduction damage has now been set to 45% for all shields"; the records' `shield.absorption.physical.maximum` is 0.45 on every shielded ship, energy and distortion 1. Absorption is the share of a kind the shields take while up; the rest passes to the ship.
+- Alpha 4.5.0, "Ship Weapon Systems": "Shield energy weapon resistances updated (shields take slightly more energy damage)"; `shield.resistance` is the share of absorbed damage the shields do not take.
+- Alpha 4.5.0, "Ship Armor and Shield System": "Ships now feature an armor health pool that reduces incoming damage and weapon penetration"; "Energy weapons deal more damage against armor while ballistic weapons send more damage through armor"; `armor.resistance_multiplier` (energy above 1 on every ship) is what the armour's own health takes, `armor.damage_multiplier` (physical above energy on every ship) what the hull takes.
+- Alpha 4.5.0: "Armor percentage modifies weapon penetration linearly (100% armor = no penetration, 0% = maximum)"; `penetration_multiplier.components` is the components' share of what penetrates, shown at its maximum, no armour left.
+- The record's `armor.deflection` (a per-shot damage figure per kind) has no CIG statement; SPViewer reads it as a threshold below which a shot is deflected. It is shown beside a shot that falls below it and applied to nothing.
+
+| Concern | Choice | Reason |
+| --- | --- | --- |
+| The figure | "The damage path" (`damage-path.tsx`) replaces "After the armour": the mitigation table (the six figures above, per kind, as the record gives them), then for the chosen gun one shot of each kind it deals, stage by stage: per shot, to the shields, through to the ship, what the armour takes, what the hull takes, what the components would take with no armour left; a "Shields up / down" switch; and the per-second line for the hull. `damagePath` (tested) is one product per stage of the shot and a record figure, absorption and resistance at their maximum (full shields) | The owner's example, with every stage traceable to a CIG sentence or a record field, and the one unpublished rule named and not applied |
+| What is not modelled, and said so | The armour left over a fight (penetration scales with it), the penetration cone and radius, shield faces and their reallocation, the shields' minimum values as they fall, time to kill | CLAUDE.md section 2; the caption lists them |
+
 ## Consequences
 
 - Weapons and combat gains two facts, a rank bar and a figure (`through-armour.tsx`, a client component); the compare page is unchanged for now (its shields row already sums the stock loadout's shields).

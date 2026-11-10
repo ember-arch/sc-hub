@@ -34,6 +34,7 @@ import {
   dpsByKindOf,
   shieldsOf,
 } from "../../../lib/armour";
+import { alphaByKindOf, mitigationOf } from "../../../lib/damage-path";
 import { combatPeers } from "../../../lib/combat";
 import { type ShipView, flattenPorts, repo } from "../../../lib/data";
 import { loadoutGroups } from "../../../lib/loadout";
@@ -68,7 +69,7 @@ import { LoadoutPanels } from "./loadout-panels";
 import { PortTable } from "./port-table";
 import { type SourceEntry, Sources } from "./showcase/dossier";
 import { HoloLineup, type LineupShip } from "./showcase/holo-lineup";
-import { type AttackingWeapon, ThroughArmour } from "./showcase/through-armour";
+import { type AttackingWeapon, DamagePath } from "./showcase/damage-path";
 import { Claims, Facts, Gap, Related, type ShipFileProps } from "./ship-file";
 
 /**
@@ -518,14 +519,16 @@ export function packShipFile(ship: ShipView): ShipFileProps {
         };
   });
   const editor = editorModel(r.shipPorts(v.class_name), r.components);
-  // Armour, shields and what gets through (ADR-026), from the records.
+  // Armour, shields and the damage path (ADR-026), from the records.
   const armour = s === null ? null : armourOf(s.raw);
+  const mitigation = s === null ? null : mitigationOf(s.raw);
   const shieldFigures = s === null ? null : shieldsOf(s.raw);
   const attackers: AttackingWeapon[] = r.components
     .flatMap((c) => {
       if (c.item.type !== "weapon") return [];
       const dps = dpsByKindOf(c.stats?.raw);
-      return dps === null
+      const shot = alphaByKindOf(c.stats?.raw);
+      return dps === null || shot === null
         ? []
         : [
             {
@@ -533,6 +536,7 @@ export function packShipFile(ship: ShipView): ShipFileProps {
               name: c.item.name,
               size: c.item.size,
               kind: partKind(c.item, c.stats),
+              shot,
               dps,
             },
           ];
@@ -1021,12 +1025,12 @@ export function packShipFile(ship: ShipView): ShipFileProps {
                 />
               </div>
             )}
-            {armour === null || attackers.length === 0 ? null : (
-              <ThroughArmour
+            {mitigation === null || attackers.length === 0 ? null : (
+              <DamagePath
                 key={v.slug}
                 shipName={v.name}
+                mitigation={mitigation}
                 hullHp={s?.hull_hp ?? null}
-                armour={armour}
                 shields={shieldFigures}
                 weapons={attackers}
                 defaultId={defaultAttacker}

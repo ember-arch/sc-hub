@@ -1,0 +1,290 @@
+"use client";
+
+import { useId, useState } from "react";
+import {
+  DAMAGE_KIND_LABEL,
+  type DamageKind,
+  type DpsByKind,
+  type Shields,
+  times,
+} from "../../../../lib/armour";
+import {
+  type Mitigation,
+  type PathStage,
+  damagePath,
+} from "../../../../lib/damage-path";
+
+/**
+ * The damage path (ADR-026, amended on the owner's SPViewer example): pick any ship gun on
+ * record and shields up or down, and see one shot of each kind it deals go stage by stage into
+ * this ship: what the shields take, what passes them, what the armour's own health takes, what
+ * the hull takes, and what the components would take with no armour left. Above it, the ship's
+ * mitigation figures as the record gives them. Every stage is a product of the shot and one
+ * record figure, on CIG's published statements (see `damage-path.ts`); the deflection figure is
+ * shown beside a shot that falls below it and applied to nothing.
+ */
+
+export interface AttackingWeapon {
+  readonly id: string;
+  readonly name: string;
+  readonly size: number;
+  /** "Laser repeater", in the game's words, when the record says. */
+  readonly kind: string | null;
+  /** Damage per shot by kind, and per second. */
+  readonly shot: DpsByKind;
+  readonly dps: DpsByKind;
+}
+
+const n0 = (v: number): string =>
+  v.toLocaleString("en-US", { maximumFractionDigits: 0 });
+const n1 = (v: number): string =>
+  v.toLocaleString("en-US", { maximumFractionDigits: v < 100 ? 1 : 0 });
+const pct = (share: number): string => `${Math.round(share * 100)}%`;
+
+/** The kinds the mitigation table shows: the three the game's guns deal. */
+const SHOWN_KINDS: readonly DamageKind[] = ["physical", "energy", "distortion"];
+
+export function DamagePath({
+  shipName,
+  mitigation,
+  hullHp,
+  shields,
+  weapons,
+  defaultId,
+  label,
+  version,
+}: {
+  readonly shipName: string;
+  readonly mitigation: Mitigation;
+  readonly hullHp: number | null;
+  readonly shields: Shields | null;
+  readonly weapons: readonly AttackingWeapon[];
+  readonly defaultId: string | null;
+  readonly label: string;
+  readonly version: string | null;
+}) {
+  const first =
+    weapons.find((w) => w.id === defaultId)?.id ?? weapons[0]?.id ?? "";
+  const [chosen, setChosen] = useState(first);
+  const [shieldsUp, setShieldsUp] = useState(shields !== null);
+  const captionId = useId();
+  const weapon = weapons.find((w) => w.id === chosen) ?? null;
+  const stages =
+    weapon === null ? [] : damagePath(weapon.shot, mitigation, shieldsUp);
+  const sizes = [...new Set(weapons.map((w) => w.size))].sort((a, b) => a - b);
+  const m = mitigation;
+
+  const option =
+    "rounded-pill border px-3 py-1 text-caption transition-colors duration-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent";
+  const choice = (on: boolean) =>
+    `${option} ${on ? "border-accent bg-accent-bg text-primary" : "border-hairline-strong text-secondary hover:text-primary"}`;
+
+  const cell = (value: number | null, how: (v: number) => string) =>
+    value === null ? "" : how(value);
+  const rows: {
+    label: string;
+    value: (kind: DamageKind) => string;
+  }[] = [
+    {
+      label: "Shield absorption",
+      value: (k) =>
+        m.shieldAbsorption === null ? "" : pct(m.shieldAbsorption[k].max),
+    },
+    {
+      label: "Shield resistance",
+      value: (k) =>
+        m.shieldResistance === null ? "" : pct(m.shieldResistance[k].max),
+    },
+    {
+      label: "Deflection figure, per shot",
+      value: (k) =>
+        cell(m.deflection?.[k] ?? null, (v) => (v === 0 ? "" : n0(v))),
+    },
+    {
+      label: "Armour takes",
+      value: (k) => cell(m.armourDurability?.[k] ?? null, times),
+    },
+    { label: "Hull takes", value: (k) => times(m.hull[k]) },
+    {
+      label: "Components take, no armour left",
+      value: () => cell(m.components, times),
+    },
+  ];
+
+  const stageCells = (p: PathStage) =>
+    [
+      { name: "Per shot", value: n1(p.shot) },
+      {
+        name: shieldsUp ? "To the shields" : "To the shields (down)",
+        value: n1(p.shields),
+      },
+      { name: "Through to the ship", value: n1(p.passed) },
+      { name: "Armour takes", value: p.armour === null ? "" : n1(p.armour) },
+      { name: "Hull takes", value: n1(p.hull) },
+      {
+        name: "Components, no armour left",
+        value: p.components === null ? "" : n1(p.components),
+      },
+    ].filter((c) => c.value !== "");
+
+  return (
+    <figure className="m-0 flex flex-col gap-3" aria-describedby={captionId}>
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+        <label className="flex min-w-0 max-w-full items-center gap-2 text-caption text-secondary">
+          <span className="shrink-0">Fired on by</span>
+          <select
+            aria-label="Fired on by"
+            value={chosen}
+            onChange={(event) => setChosen(event.target.value)}
+            className="min-w-0 max-w-full rounded-pill border border-hairline-strong bg-surface px-3 py-1 text-caption text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+          >
+            {sizes.map((size) => (
+              <optgroup key={size} label={`Size ${size}`}>
+                {weapons
+                  .filter((w) => w.size === size)
+                  .map((w) => (
+                    <option key={w.id} value={w.id}>
+                      {w.name}
+                      {w.kind === null ? "" : `, ${w.kind.toLowerCase()}`}
+                    </option>
+                  ))}
+              </optgroup>
+            ))}
+          </select>
+        </label>
+        {shields === null ? null : (
+          <div
+            role="group"
+            aria-label="Shields"
+            className="flex items-center gap-2"
+          >
+            <span className="text-caption text-secondary">Shields</span>
+            <button
+              type="button"
+              aria-pressed={shieldsUp}
+              className={choice(shieldsUp)}
+              onClick={() => setShieldsUp(true)}
+            >
+              Up
+            </button>
+            <button
+              type="button"
+              aria-pressed={!shieldsUp}
+              className={choice(!shieldsUp)}
+              onClick={() => setShieldsUp(false)}
+            >
+              Down
+            </button>
+          </div>
+        )}
+      </div>
+
+      <div className="flex flex-col gap-4 rounded-card bg-inset p-4">
+        <p className="m-0 text-caption text-secondary">
+          {shields === null
+            ? "No shields on record"
+            : `Shields ${n0(shields.hp)} HP${shields.regen === null ? "" : `, regenerating ${n0(shields.regen)} HP/s`}${shields.faceType === null ? "" : ` (${shields.faceType.toLowerCase()})`}`}
+          {hullHp === null ? "" : `; hull ${n0(hullHp)} HP`}
+          {m.armour.hp === null ? "" : `; armour ${n0(m.armour.hp)} HP`}
+        </p>
+
+        <table className="w-full border-collapse text-ui">
+          <caption className="sr-only">
+            The {shipName}&apos;s damage mitigation figures, from its record
+          </caption>
+          <thead>
+            <tr className="border-b border-hairline text-left text-caption text-secondary">
+              <th scope="col" className="py-1 pr-3 font-normal">
+                Figure
+              </th>
+              {SHOWN_KINDS.map((k) => (
+                <th
+                  key={k}
+                  scope="col"
+                  className="py-1 pl-3 text-right font-normal"
+                >
+                  {DAMAGE_KIND_LABEL[k]}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr key={row.label} className="border-b border-hairline">
+                <th
+                  scope="row"
+                  className="py-1 pr-3 text-left font-normal text-secondary"
+                >
+                  {row.label}
+                </th>
+                {SHOWN_KINDS.map((k) => (
+                  <td
+                    key={k}
+                    className="py-1 pl-3 text-right font-mono text-primary"
+                  >
+                    {row.value(k)}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {weapon === null || stages.length === 0 ? (
+          <p className="m-0 text-caption text-secondary">
+            No ship gun on record deals damage to show.
+          </p>
+        ) : (
+          stages.map((p) => (
+            <div key={p.kind} className="flex flex-col gap-2">
+              <p className="m-0 text-caption text-secondary">
+                One {DAMAGE_KIND_LABEL[p.kind].toLowerCase()} shot of the{" "}
+                {weapon.name}
+                {p.belowDeflection === null
+                  ? ""
+                  : `, below the record's deflection figure of ${n0(p.belowDeflection)}`}
+              </p>
+              <dl className="m-0 grid grid-cols-2 gap-x-4 gap-y-2 sm:grid-cols-3 md:grid-cols-6">
+                {stageCells(p).map((c) => (
+                  <div
+                    key={c.name}
+                    className="flex flex-col gap-1 border-t border-hairline pt-2"
+                  >
+                    <dt className="text-caption text-secondary">{c.name}</dt>
+                    <dd className="m-0 font-mono text-ui text-primary">
+                      {c.value}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+              {weapon.dps[p.kind] === undefined ? null : (
+                <p className="m-0 text-caption text-secondary">
+                  At {n0(weapon.dps[p.kind]!)} per second fired, the hull takes{" "}
+                  {n0(
+                    weapon.dps[p.kind]! * (p.passed / p.shot) * m.hull[p.kind],
+                  )}{" "}
+                  per second{shieldsUp ? " while the shields hold" : ""}
+                </p>
+              )}
+            </div>
+          ))
+        )}
+      </div>
+
+      <figcaption id={captionId} className="text-caption text-secondary">
+        <span className="font-mono text-primary">{label}</span> The damage path:
+        one shot of the chosen gun into the {shipName}, each stage the shot
+        times one figure from the ship&apos;s record, on what CIG has published:
+        shields absorb a share of each kind while up (45% of ballistic, Alpha
+        4.3.1) and resist a share of that; energy does more to the armour and
+        ballistic sends more through it; components behind the hull take a share
+        of what penetrates, most with no armour left (Alpha 4.5.0). Shown at
+        full shields. The deflection figure is in the record with no published
+        rule, so it is named beside a shot that falls below it and applied to
+        nothing; the armour left over a fight, the penetration cone and shield
+        faces are not modelled
+        {version === null ? "" : `. LIVE ${version}`}
+      </figcaption>
+    </figure>
+  );
+}

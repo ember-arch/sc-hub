@@ -93,8 +93,8 @@ test("the ship page has every section in order, each stat with its unit and vers
   }
 });
 
-// ADR-026: armour and shields in Weapons and combat, and what a chosen gun's damage does.
-test("Weapons and combat says the shields and the armour, and shows what gets through", async ({
+// ADR-026 (amended): armour and shields in Weapons and combat, and the damage path of a shot.
+test("Weapons and combat says the shields and the armour, and follows a shot through them", async ({
   page,
 }) => {
   await page.goto(`/ships/${ship.slug}`);
@@ -107,36 +107,42 @@ test("Weapons and combat says the shields and the armour, and shows what gets th
   ).toBeVisible();
   const picker = combat.getByRole("combobox", { name: "Fired on by" });
   await expect(picker).toBeVisible();
-  const figure = combat.locator("figure", { hasText: "After the armour" });
-  await expect(figure).toContainText("after the armour");
-  await expect(figure).toContainText("no shield stage");
-  // The figures are the record's: the shields' health and the armour's physical multiplier.
+  const figure = combat.locator("figure", { hasText: "The damage path" });
+  // The mitigation table carries the record's figures: shield absorption of ballistic is 45%.
   const raw = (shipStats as unknown as { raw: unknown }).raw as {
-    shield?: { hp?: number };
+    shield?: { hp?: number; absorption?: { physical?: { maximum?: number } } };
     armor?: { damage_multiplier?: { physical?: number } };
   };
-  const shieldHp = raw.shield?.hp;
-  if (typeof shieldHp === "number" && shieldHp > 0) {
-    await expect(figure).toContainText(
-      `${shieldHp.toLocaleString("en-US")} HP`,
+  const absorption = raw.shield?.absorption?.physical?.maximum;
+  if (typeof absorption === "number" && (raw.shield?.hp ?? 0) > 0) {
+    await expect(
+      figure.locator("tr", { hasText: "Shield absorption" }),
+    ).toContainText(`${Math.round(absorption * 100)}%`);
+    // Shields down: nothing goes to the shields.
+    await figure.getByRole("button", { name: "Down" }).click();
+    await expect(figure.getByRole("button", { name: "Down" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
     );
+    await expect(figure).toContainText("To the shields (down)");
   }
   const physical = raw.armor?.damage_multiplier?.physical;
   if (typeof physical === "number" && physical !== 1) {
-    // The armour fact leads with the physical multiplier when it is not 1.
     await expect(
       combat.locator("dd", { hasText: `Physical ×${physical}` }),
     ).toHaveCount(1);
+    await expect(figure.locator("tr", { hasText: "Hull takes" })).toContainText(
+      `×${physical}`,
+    );
   }
-  // Choosing another gun changes the caption's weapon.
-  const caption = (await figure.locator("figcaption").textContent()) ?? "";
+  await expect(figure).toContainText("applied to nothing");
+  // Choosing another gun changes the shot's caption.
   const options = await picker.locator("option").allTextContents();
-  const other = options.find((o) => !caption.includes(o.split(",")[0]!));
+  const current = (await figure.textContent()) ?? "";
+  const other = options.find((o) => !current.includes(o.split(",")[0]!));
   if (other !== undefined) {
     await picker.selectOption({ label: other });
-    await expect(figure.locator("figcaption")).toContainText(
-      other.split(",")[0]!,
-    );
+    await expect(figure).toContainText(other.split(",")[0]!);
   }
 });
 

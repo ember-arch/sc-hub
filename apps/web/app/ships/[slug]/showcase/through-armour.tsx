@@ -18,7 +18,8 @@ import {
  * the only arithmetic is a product per kind and a sum (`afterArmour`). The records hold more
  * about armour and shields, with no published rule for how the game applies it; none of it is
  * applied, and the caption says so. No colour but the accent: the filled part of each bar is the
- * damage after the multiplier, the whole bar the damage fired, bars to one scale across every gun.
+ * damage after the multiplier, the whole bar the damage fired, to one scale across the guns of
+ * the chosen gun's size.
  */
 
 export interface AttackingWeapon {
@@ -62,8 +63,14 @@ export function ThroughArmour({
   const captionId = useId();
   const weapon = weapons.find((w) => w.id === chosen) ?? null;
   const result = weapon === null ? null : afterArmour(weapon.dps, armour);
-  // One scale for every gun on the list, so a heavier gun shows a longer bar.
-  const widest = Math.max(1, ...weapons.flatMap((w) => Object.values(w.dps)));
+  // One scale across the guns of the chosen gun's size, so a heavier gun of that size shows a
+  // longer bar; against every size at once a fighter's gun would be a sliver beside a capital's.
+  const widest = Math.max(
+    1,
+    ...weapons
+      .filter((w) => weapon === null || w.size === weapon.size)
+      .flatMap((w) => Object.values(w.dps)),
+  );
   const sizes = [...new Set(weapons.map((w) => w.size))].sort((a, b) => a - b);
 
   return (

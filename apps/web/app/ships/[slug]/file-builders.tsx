@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { ConceptShip, HoloModel } from "schema";
+import type { ConceptShip, HoloModel, VehicleStats } from "schema";
 import {
   RankBar,
   ScaleLineup,
@@ -36,7 +36,13 @@ import {
 } from "../../../lib/armour";
 import { alphaByKindOf, mitigationOf } from "../../../lib/damage-path";
 import { combatPeers } from "../../../lib/combat";
-import { type ShipView, flattenPorts, repo } from "../../../lib/data";
+import { cargoGridsOf, groupGrids, largestBox } from "../../../lib/cargo";
+import {
+  type ShipView,
+  cargoBoxes,
+  flattenPorts,
+  repo,
+} from "../../../lib/data";
 import { loadoutGroups } from "../../../lib/loadout";
 import {
   editorModel,
@@ -70,6 +76,7 @@ import { PortTable } from "./port-table";
 import { type SourceEntry, Sources } from "./showcase/dossier";
 import { HoloLineup, type LineupShip } from "./showcase/holo-lineup";
 import { type AttackingWeapon, DamagePath } from "./showcase/damage-path";
+import { CargoGrids } from "./showcase/cargo-grids";
 import { Claims, Facts, Gap, Related, type ShipFileProps } from "./ship-file";
 
 /**
@@ -435,6 +442,93 @@ function hasDimensions(
     beam > 0 &&
     height > 0
   );
+}
+
+/**
+ * The Cargo section (ADR-028): the grids of the vehicle's record as facts, and the figure that
+ * fills them with boxes of one standard size. A ship whose record lists no grid says so; a record
+ * without a grid list at all says that instead.
+ */
+function cargoSection(
+  name: string,
+  s: VehicleStats | null,
+  version: string | null,
+): { aside?: string | undefined; body: ReactNode } {
+  const grids = s === null ? null : cargoGridsOf(s.raw);
+  if (grids === null) {
+    return { body: <Gap>No cargo grids on record.</Gap> };
+  }
+  const aside = version === null ? undefined : `LIVE ${version}`;
+  if (grids.length === 0) {
+    return {
+      aside,
+      body: (
+        <Gap>
+          No cargo grid: the record lists none for the {name}
+          {s !== null && s.cargo_scu !== null && s.cargo_scu > 0
+            ? `, though it states ${n0(s.cargo_scu)} SCU of cargo`
+            : ""}
+          .
+        </Gap>
+      ),
+    };
+  }
+  const groups = groupGrids(grids);
+  const total = grids.reduce((sum, g) => sum + g.scu, 0);
+  const external = grids.filter((g) => g.external).length;
+  const largest = largestBox(grids);
+  const boxes = cargoBoxes();
+  const facts: Fact[] = [
+    { label: "Capacity", value: n0(total), unit: "SCU", numeric: true },
+    {
+      label: "Grids",
+      value: groups
+        .map(
+          (g) =>
+            `${g.count > 1 ? `${g.count} × ` : ""}${n0(g.grid.scu)} SCU (${formatNumber(g.grid.width, 2)} × ${formatNumber(g.grid.length, 2)} × ${formatNumber(g.grid.height, 2)} m)`,
+        )
+        .join(", "),
+    },
+    ...(largest === null
+      ? []
+      : [{ label: "Largest box", value: `${n0(largest)} SCU` }]),
+    {
+      label: "Open to space",
+      value:
+        external === 0
+          ? "None"
+          : external === grids.length
+            ? "Every grid"
+            : `${external} of ${grids.length} grids`,
+    },
+  ];
+  const takenSizes = boxes.filter((b) =>
+    groups.some((g) => g.grid.maxBox === null || b.scu <= g.grid.maxBox),
+  );
+  const defaultScu =
+    largest !== null && takenSizes.some((b) => b.scu === largest)
+      ? largest
+      : (takenSizes.at(-1)?.scu ?? boxes[0]?.scu ?? 1);
+  return {
+    aside,
+    body: (
+      <div className="flex flex-col gap-6">
+        <Facts facts={facts} />
+        {boxes.length === 0 ? (
+          <Gap>The standard boxes&apos; shapes are not on record.</Gap>
+        ) : (
+          <CargoGrids
+            shipName={name}
+            groups={groups}
+            boxes={boxes}
+            defaultScu={defaultScu}
+            label="Fig. D"
+            version={version}
+          />
+        )}
+      </div>
+    ),
+  };
 }
 
 function scaleView(slug: string, drawn: ReactNode): ReactNode {
@@ -997,6 +1091,7 @@ export function packShipFile(ship: ShipView): ShipFileProps {
           </div>
         ),
       },
+      cargo: cargoSection(v.name, s, version),
       combat: {
         aside:
           version === null ? "Stock loadout" : `Stock loadout, LIVE ${version}`,
@@ -1419,6 +1514,17 @@ export function conceptShipFile(concept: ConceptShip): ShipFileProps {
             </Gap>
             {claimsBlock(claims, ["combat"], sources)}
           </div>
+        ),
+      },
+      cargo: {
+        body: (
+          <Gap>
+            Not in the game data yet: no cargo grid on record
+            {concept.cargo_scu === null
+              ? ""
+              : `; RSI's ship matrix states ${n0(concept.cargo_scu)} SCU`}
+            .
+          </Gap>
         ),
       },
       mobility: {

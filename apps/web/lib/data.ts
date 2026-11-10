@@ -3,6 +3,8 @@ import { dirname, join, resolve } from "node:path";
 import {
   Author as AuthorSchema,
   type Author,
+  type CargoBox,
+  CargoBoxes as CargoBoxesSchema,
   ContentItem as ContentItemSchema,
   type ContentItem,
   type DataPack,
@@ -144,6 +146,25 @@ function loadDescriptions(): VehicleDescription[] {
   return VehicleDescriptionSchema.array().parse(
     JSON.parse(readFileSync(DESCRIPTIONS_FILE, "utf8")),
   );
+}
+
+const CARGO_BOXES_FILE = join(REPO_ROOT, "fixtures", "cargo", "CargoBox.json");
+let cachedBoxes: readonly CargoBox[] | undefined;
+
+/**
+ * The standard cargo containers' shapes (ADR-028), read from the cargo item records by
+ * scripts/bootstrap-fixtures/cargo-boxes.ts; empty without the fixture, and the Cargo section
+ * then shows the grids without boxes.
+ */
+export function cargoBoxes(): readonly CargoBox[] {
+  if (cachedBoxes === undefined) {
+    cachedBoxes = existsSync(CARGO_BOXES_FILE)
+      ? CargoBoxesSchema.parse(
+          JSON.parse(readFileSync(CARGO_BOXES_FILE, "utf8")),
+        ).rows
+      : [];
+  }
+  return cachedBoxes;
 }
 
 export interface ShipView {

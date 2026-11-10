@@ -1,0 +1,65 @@
+{
+  "channel": "LIVE",
+  "game_version": "4.10.2-LIVE.12881860",
+  "fetched_at": "2026-11-10T17:30:37.048Z",
+  "source_url": "https://api.star-citizen.wiki/api/items?filter[type]=Cargo",
+  "via": "star_citizen_wiki_api",
+  "rows": [
+    {
+      "scu": 1,
+      "width_m": 1.25,
+      "height_m": 1.25,
+      "length_m": 1.25,
+      "example_class_name": "Carryable_TBO_FL_1SCU_Commodity_ProcessedGoods_ProcyonCanister_Acryliplex_Damage",
+      "records": 196
+    },
+    {
+      "scu": 2,
+      "width_m": 1.25,
+      "height_m": 1.25,
+      "length_m": 2.5,
+      "example_class_name": "Carryable_TBO_FL_2SCU_Commodity_ProcessedGoods_ProcyonCanister_AcryliPlex_Damage",
+      "records": 184
+    },
+    {
+      "scu": 4,
+      "width_m": 2.5,
+      "height_m": 1.25,
+      "length_m": 2.5,
+      "example_class_name": "Carryable_TBO_FL_4SCU_Commodity_ProcessedGoods_ProcyonCanister_AcryliPlex_Damage",
+      "records": 183
+    },
+    {
+      "scu": 8,
+      "width_m": 2.5,
+      "height_m": 2.5,
+      "length_m": 2.5,
+      "example_class_name": "Carryable_TBO_FL_8SCU_Commodity_ProcessedGoods_ProcyonCanister_Damage",
+      "records": 186
+    },
+    {
+      "scu": 16,
+      "width_m": 2.5,
+      "height_m": 2.5,
+      "length_m": 5,
+      "example_class_name": "Carryable_TBO_FL_16SCU_Commodity_Metal_Agricium",
+      "records": 180
+    },
+    {
+      "scu": 24,
+      "width_m": 2.5,
+      "height_m": 2.5,
+      "length_m": 7.5,
+      "example_class_name": "Carryable_TBO_FL_24SCU_Commodity_Metal_Agricium",
+      "records": 181
+    },
+    {
+      "scu": 32,
+      "width_m": 2.5,
+      "height_m": 2.5,
+      "length_m": 10,
+      "example_class_name": "Carryable_TBO_FL_32SCU_Commodity_ProcessedGoods_ProcyonCanister_Damage",
+      "records": 184
+    }
+  ]
+}

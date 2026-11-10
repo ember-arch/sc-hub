@@ -34,9 +34,10 @@ All tokens live in `packages/ui/tokens.ts`. Tailwind config is generated from th
 | `scrim` | `rgba(12,11,10,0.78)` | `rgba(12,11,10,0.78)` | The gradient under text over art (`.art-scrim`), the same in both schemes |
 | `border.default` | `rgba(26,25,23,0.10)` | `rgba(241,238,230,0.10)` | Hairlines, the only dividers |
 | `border.strong` | `rgba(26,25,23,0.24)` | `rgba(241,238,230,0.24)` | A firmer hairline where a table or a field needs one |
-| `accent` | `#B8381F` | `#EE7A5F` | Links, focus, selected, primary action: oxblood |
-| `accent.bg` | `#F6E1DB` | `#4A2A22` | Accent tint |
+| `accent` | `#4A5AD3` | `#98A4F4` | Links, focus, selected, primary action: periwinkle, on the blue side (ADR-032) |
+| `accent.bg` | `#E3E6FA` | `#2A2E4A` | Accent tint |
 | `success` / `warning` / `danger` | `#2F6B3A` / `#8A5A00` / `#B3261E` | `#6FBF7F` / `#E0A94A` / `#EF7A6E` | Status only |
+| `spectrum.staff` | `#DEC342` | `#DEC342` | Spectrum's own yellow for a staff post (ADR-032): the rule and the role tag on a developer post, never text on the light wall |
 
 Rules: one accent. Manufacturer brand colors may appear only as a 3 px rule on the manufacturer page hero, never as fills. Semantic colors are for status (flight-ready, concept, PTU-only), never decoration.
 
@@ -84,7 +85,7 @@ Faces: Manrope (ADR-021, replacing the almanac's serifs) for everything: text, i
 - `Card` — ship card: image, name, manufacturer, role, two stats.
 - `FeedItem` — source chip, title, time, excerpt, linked entities as chips.
 - `DispatchCard` (ADR-029) — a dispatch as a card: its cover at 16:9 to the card's edges when the local media has one, the label line (source, time), the title, the excerpt cut to three lines (four on the lead) and the source link always visible; no credit on the card, no scrim.
-- `DevPost` — author, role, thread, time, body with quotes preserved, source link always visible.
+- `DevPost` — a developer post with Spectrum's yellow as its mark (ADR-032): a 3 px rule down the left edge and the ring of the role tag; author, role, thread, time, body with quotes preserved, source link always visible.
 - `PatchStrip` — LIVE and PTU versions, shown in the footer of every page, home included.
 - `Footer` — disclaimer (verbatim, see legal), attribution lines, legal links.
 

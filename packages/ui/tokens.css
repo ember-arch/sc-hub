@@ -13,11 +13,12 @@
   --scrim: rgba(12,11,10,0.78);
   --border-default: rgba(26,25,23,0.10);
   --border-strong: rgba(26,25,23,0.24);
-  --accent: #B8381F;
-  --accent-bg: #F6E1DB;
+  --accent: #4A5AD3;
+  --accent-bg: #E3E6FA;
   --success: #2F6B3A;
   --warning: #8A5A00;
   --danger: #B3261E;
+  --spectrum-staff: #DEC342;
   color-scheme: light;
 }
 
@@ -34,11 +35,12 @@
     --scrim: rgba(12,11,10,0.78);
     --border-default: rgba(241,238,230,0.10);
     --border-strong: rgba(241,238,230,0.24);
-    --accent: #EE7A5F;
-    --accent-bg: #4A2A22;
+    --accent: #98A4F4;
+    --accent-bg: #2A2E4A;
     --success: #6FBF7F;
     --warning: #E0A94A;
     --danger: #EF7A6E;
+    --spectrum-staff: #DEC342;
     color-scheme: dark;
   }
 }
@@ -55,11 +57,12 @@
   --scrim: rgba(12,11,10,0.78);
   --border-default: rgba(241,238,230,0.10);
   --border-strong: rgba(241,238,230,0.24);
-  --accent: #EE7A5F;
-  --accent-bg: #4A2A22;
+  --accent: #98A4F4;
+  --accent-bg: #2A2E4A;
   --success: #6FBF7F;
   --warning: #E0A94A;
   --danger: #EF7A6E;
+  --spectrum-staff: #DEC342;
   color-scheme: dark;
 }
 
@@ -81,6 +84,7 @@
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-danger: var(--danger);
+  --color-spectrum-staff: var(--spectrum-staff);
 
   --font-*: initial;
   --font-sans: var(--font-manrope), system-ui, -apple-system, 'Segoe UI', sans-serif;

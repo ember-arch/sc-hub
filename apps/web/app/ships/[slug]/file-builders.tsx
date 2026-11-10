@@ -10,7 +10,12 @@ import {
   sentence,
   vehicleStatusBadge,
 } from "ui";
-import { PLEDGE_STORE_CREDIT, UEX_CREDIT, WIKI_CREDIT } from "ui/legal";
+import {
+  PLEDGE_STORE_CREDIT,
+  UEX_CREDIT,
+  WIKI_CREDIT,
+  WIKI_GALLERY_CREDIT,
+} from "ui/legal";
 import {
   type Acquisition,
   OFFER_KIND,
@@ -72,6 +77,13 @@ const n0 = (v: number): string => formatNumber(v);
 
 /** The opening band's credit: the Comm-Link the key art comes from (ADR-010). */
 function artCredit(show: ShowcaseView): { text: string; href: string } {
+  // Pictures copied from the wiki's gallery credit both (ADR-017, ADR-024).
+  if (show.wikiArticle !== null) {
+    return {
+      text: WIKI_GALLERY_CREDIT.text,
+      href: show.wikiArticle,
+    };
+  }
   return show.article === null
     ? {
         text: "Art: Roberts Space Industries",
@@ -475,7 +487,10 @@ export function packShipFile(ship: ShipView): ShipFileProps {
   const v = ship.vehicle;
   const s = ship.stats;
   const status = vehicleStatusBadge(v.status);
-  const show = showcaseFor(v.slug, v.name);
+  // An edition shows its base's gallery (ADR-024).
+  const show =
+    showcaseFor(v.slug, v.name) ??
+    (ship.editionOf === null ? null : showcaseFor(ship.editionOf.slug, v.name));
   // CIG's stated claims stand in only where the game has no data (ADR-012): none for a pack ship.
   const claims: readonly ShipClaim[] = [];
   const maker = ship.manufacturer;

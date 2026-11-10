@@ -49,6 +49,7 @@ import { readCtm } from "./ctm.js";
 import { HOLO_FIGURE } from "./holo.js";
 import { packHoloModel } from "./holo-glb.js";
 import { mp4Size } from "./mp4.js";
+import { GallerySource, captionFor, composeShowcase } from "./gallery.js";
 import { FILE_SECTIONS, SHOWCASE } from "./showcase.js";
 import { prepareTitleIcons } from "../titles/prepare-icons.js";
 
@@ -326,6 +327,7 @@ async function showcases(): Promise<Showcase[]> {
             },
       images,
       videos,
+      wiki_article: null,
       model,
       roles,
       chapters: parsed.map((c) => {
@@ -350,6 +352,81 @@ async function showcases(): Promise<Showcase[]> {
   return out;
 }
 
+const galleriesDir = join(repoRoot, "fixtures", "galleries");
+
+/**
+ * A showcase for every ship with a gallery and no curated one (ADR-024): the wiki's copies of
+ * RSI's art, rendered like the showcase pair's, composed by rule (`composeShowcase`): cover,
+ * poster, one figure per section, the rest in the gallery. A caption says only what kind of
+ * picture it is.
+ */
+async function galleries(curated: ReadonlySet<string>): Promise<Showcase[]> {
+  const sourcesPath = join(galleriesDir, "sources.json");
+  if (!existsSync(sourcesPath)) return [];
+  const rows = z
+    .array(GallerySource)
+    .parse(JSON.parse(readFileSync(sourcesPath, "utf8")));
+  const out: Showcase[] = [];
+  for (const row of rows) {
+    if (curated.has(row.slug) || row.items.length === 0) continue;
+    const dir = join(galleriesDir, row.slug);
+    const images: Showcase["images"] = [];
+    const composed: {
+      key: string;
+      caption: string;
+      kind: "official" | "ingame";
+    }[] = [];
+    for (const item of row.items) {
+      const input = join(dir, item.file);
+      if (!existsSync(input)) continue;
+      const key = keyOf(item.file);
+      if (images.some((i) => i.key === key)) continue;
+      mkdirSync(join(mediaDir, "showcase", row.slug), { recursive: true });
+      const meta = await sharp(input).metadata();
+      const width = meta.width ?? 0;
+      const widths = SHOWCASE_WIDTHS.filter((w) => w <= width);
+      if (widths.length === 0) widths.push(width);
+      const renditions = [];
+      for (const w of widths) {
+        const src = `/media/showcase/${row.slug}/${key}-${w}.webp`;
+        const info = await sharp(input)
+          .resize({ width: w })
+          .webp({ quality: w >= 1600 ? 80 : 76, alphaQuality: 90 })
+          .toFile(fileFor(src));
+        renditions.push({ src, width: info.width, height: info.height });
+      }
+      images.push({ key, renditions, has_alpha: meta.hasAlpha === true });
+      composed.push({
+        key,
+        caption: captionFor(item.kind, row.name),
+        kind: item.kind,
+      });
+    }
+    if (images.length === 0) continue;
+    const c = composeShowcase(composed);
+    out.push({
+      slug: row.slug,
+      article: null,
+      wiki_article: row.article_url,
+      images,
+      videos: [],
+      model: null,
+      roles: c.roles,
+      chapters: [],
+      gallery: [...c.gallery],
+      schematics: [],
+      figures: c.figures.map((f) => ({
+        section: f.section,
+        kind: "image" as const,
+        key: f.key,
+        narrow: null,
+        caption: f.caption,
+      })),
+    });
+  }
+  return out;
+}
+
 const HoloSource = z.object({
   slug: z.string(),
   file: z.string(),
@@ -357,9 +434,11 @@ const HoloSource = z.object({
 });
 
 /**
- * RSI's holoviewer models (ADR-015), copied by `fetch-holo.ts` into `fixtures/holo/`: each is
- * decoded from OpenCTM and packed into a meshopt-compressed glTF in metres. The human figure RSI
- * stands beside every ship is packed the same way. Nothing on file, nothing written.
+ * RSI's holoviewer models (ADR-015, ADR-025), copied by `fetch-holo.ts` into `fixtures/holo/`:
+ * each file is decoded from OpenCTM once and packed into a meshopt-compressed glTF in metres,
+ * named by the file (RSI's media id), so the ship pages that share a model share the packed copy.
+ * The human figure RSI stands beside every ship is packed the same way. Nothing on file, nothing
+ * written.
  */
 async function holoModels(): Promise<{
   holo: HoloModel[];
@@ -371,27 +450,52 @@ async function holoModels(): Promise<{
     .array(HoloSource)
     .parse(JSON.parse(readFileSync(sourcesPath, "utf8")));
   mkdirSync(join(mediaDir, "holo"), { recursive: true });
+  const packed = new Map<
+    string,
+    {
+      src: string;
+      bytes: number;
+      size: readonly [number, number, number];
+      vertices: number;
+      triangles: number;
+    }
+  >();
+  const pack = async (file: string) => {
+    const done = packed.get(file);
+    if (done !== undefined) return done;
+    const model = await packHoloModel(
+      readCtm(readFileSync(join(holoDir, file))),
+    );
+    const src = `/media/holo/${file.replace(/.ctm$/, "").toLowerCase()}.glb`;
+    writeFileSync(fileFor(src), model.glb);
+    const entry = {
+      src,
+      bytes: model.glb.length,
+      size: model.size,
+      vertices: model.vertices,
+      triangles: model.triangles,
+    };
+    packed.set(file, entry);
+    return entry;
+  };
   const holo: HoloModel[] = [];
   let figure: HoloFigure | null = null;
   for (const row of rows) {
-    const file = join(holoDir, row.file);
-    if (!existsSync(file)) continue;
-    const packed = await packHoloModel(readCtm(readFileSync(file)));
-    const src = `/media/holo/${row.slug}.glb`;
-    writeFileSync(fileFor(src), packed.glb);
+    if (!existsSync(join(holoDir, row.file))) continue;
+    const model = await pack(row.file);
     if (row.slug === HOLO_FIGURE.slug) {
-      figure = { src, bytes: packed.glb.length, height: packed.size[1] };
+      figure = { src: model.src, bytes: model.bytes, height: model.size[1] };
       continue;
     }
     if (row.page === null) continue;
     holo.push({
       slug: row.slug,
-      src,
-      bytes: packed.glb.length,
+      src: model.src,
+      bytes: model.bytes,
       page: row.page,
-      size: [...packed.size],
-      vertices: packed.vertices,
-      triangles: packed.triangles,
+      size: [...model.size],
+      vertices: model.vertices,
+      triangles: model.triangles,
     });
   }
   return { holo, figure };
@@ -409,7 +513,10 @@ async function main(): Promise<void> {
     generated_at: new Date().toISOString(),
     ships: await ships(),
     makers: await makers(),
-    showcase: await showcases(),
+    showcase: [
+      ...(await showcases()),
+      ...(await galleries(new Set(SHOWCASE.map((s) => s.slug)))),
+    ],
     holo: models.holo,
     holo_figure: models.figure,
     // Title icons (ADR-017): CIG art copied from the wiki, local only like everything here.
@@ -431,13 +538,23 @@ async function main(): Promise<void> {
       ships: manifest.ships.length,
       concepts: manifest.concepts.length,
       makers: manifest.makers.length,
-      showcase: manifest.showcase.map(
-        (x) =>
-          `${x.slug}: ${x.images.length} images, ${x.videos.length} videos, ${x.chapters.length} chapters`,
-      ),
+      showcase: manifest.showcase
+        .filter((x) => x.wiki_article === null)
+        .map(
+          (x) =>
+            `${x.slug}: ${x.images.length} images, ${x.videos.length} videos, ${x.chapters.length} chapters`,
+        ),
+      galleries: manifest.showcase.filter((x) => x.wiki_article !== null)
+        .length,
       titles: manifest.titles.length,
-      holo: manifest.holo.map(
-        (h) => `${h.slug}: ${(h.bytes / 1e6).toFixed(2)} MB`,
+      holo: manifest.holo.length,
+      holo_files: new Set(manifest.holo.map((h) => h.src)).size,
+      holo_mb: Number(
+        (
+          [
+            ...new Map(manifest.holo.map((h) => [h.src, h.bytes])).values(),
+          ].reduce((a, b) => a + b, 0) / 1e6
+        ).toFixed(1),
       ),
       errors: 0,
       duration_ms: Date.now() - started,

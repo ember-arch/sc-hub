@@ -10,7 +10,7 @@ Turn a working preview into a public site that survives a Reddit front page and 
 
 ## Acceptance criteria
 
-- [ ] **Name and domain.** Name decided (`CLAUDE.md` section 12), domain live at Cloudflare, `SITE_NAME` set, CIG has seen the name (approval record box).
+- [ ] **Name and domain.** Name decided (`CLAUDE.md` section 12), domain live at Cloudflare, `SITE_NAME` set, CIG has seen the name (approval record box). (The site is live at coppercork.com since 2026-11-10 with the DNS at the registrar pointing at Vercel, ADR-033; the name and the CIG part are still open.)
 - [ ] **License.** Decided and recorded; `LICENSE` file added with the asset and data exclusion stated at the top; about page states it.
 - [ ] **Performance pass.** Lighthouse performance ≥ 90 and accessibility ≥ 90 on home, ships index, a hero ship page, a non-hero ship page, a component page, news feed, dev tracker, author page, at throttled 4G, in CI.
 - [ ] **Caching.** Entity pages cached at the edge with revalidation on import; feed pages revalidate every 5 minutes; models and images immutable with versioned paths; a cache-bust is part of the import job.

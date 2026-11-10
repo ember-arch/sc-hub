@@ -134,6 +134,14 @@ async function main(): Promise<void> {
   }
 
   const { matched, unmatched, unused } = matchModels(catalogPages(), store);
+  // A listing read short (a page size RSI changed, a filter the store now applies) would match a
+  // fraction of the catalog and, since the record is rebuilt each run, shrink it. Halt instead.
+  const before = previous.filter((r) => r.page !== null).length;
+  if (before > 0 && matched.length < before / 2) {
+    throw new Error(
+      `the store listed ${store.length} ships and ${matched.length} matched, against ${before} on record: a partial listing, so nothing is written`,
+    );
+  }
   for (const miss of unmatched) log({ event: "holo.unmatched", ...miss });
   for (const ship of unused) {
     log({ event: "holo.unused", title: ship.title, url: ship.url });

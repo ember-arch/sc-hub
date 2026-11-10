@@ -88,6 +88,9 @@ describe("pagePath, modelUrl and modelFile", () => {
       ),
     ).toBe("mhwmpvt2e8h0w.ctm");
     expect(() => modelFile("/static/ctm/man.ctm")).toThrow(StoreShapeError);
+    expect(() =>
+      modelFile("https://media.robertsspaceindustries.com/source.ctm"),
+    ).toThrow(StoreShapeError);
   });
 });
 

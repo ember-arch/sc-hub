@@ -3,7 +3,7 @@
 - Status: accepted
 - Date: 2026-11-10
 - Deciders: owner ("we need the holoviewer models, that's part of what makes the Perseus and Odin pages so great, the one at the top and the comparisons; we need to source all the holoviewer files", 2026-11-10), Claude Code session 2026-11-10
-- Amends: ADR-015 (the holoviewer models), ADR-022 (which deferred them), ADR-024 (which left them as the next step)
+- Amends: ADR-009 (whose models row ruled out the store's data calls), ADR-015 (the holoviewer models), ADR-022 (which deferred them), ADR-024 (which left them as the next step)
 
 ## Context
 
@@ -28,4 +28,5 @@ The pledge store is an app. A ship page's HTML holds no model address; the page 
 - `fixtures/holo/sources.json` grows from eight rows to one per ship page with a model; the seven earlier files are copied again under their media ids and the old copies can be deleted.
 - A store ship no catalog page claims (a ship the matrix does not list under that page) is logged as unused; a catalog ship the store lists without a model (the 85X, the Merchantman, the PTV, the Pulse, the Ursa Fortuna, the P-72 Emerald in November 2026) keeps its envelope.
 - ADR-022's deferral and ADR-024's "next step" are closed; spec 07 gains the criterion.
-- Showing the models on the public site is still the standing question of `docs/legal/cig-approval.md`; the owner's instruction to proceed as if approved (ADR-019) stands.
+- Showing the models on the public site is still the standing question of `docs/legal/cig-approval.md` ("RSI holoviewer models"); the owner's instruction to proceed as if approved (ADR-019) stands.
+- A listing read short would shrink the record, since it is rebuilt each run: the fetcher halts when fewer than half the ship pages on record match, and writes nothing.

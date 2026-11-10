@@ -210,9 +210,14 @@ async function main(): Promise<void> {
   );
 }
 
-main().catch((error: unknown) => {
-  process.stderr.write(
-    `${JSON.stringify({ job: "media:fetch-galleries", error: String(error) })}\n`,
-  );
-  process.exit(1);
-});
+if (
+  process.argv[1] !== undefined &&
+  fileURLToPath(import.meta.url) === process.argv[1]
+) {
+  main().catch((error: unknown) => {
+    process.stderr.write(
+      `${JSON.stringify({ job: "media:fetch-galleries", error: String(error) })}\n`,
+    );
+    process.exit(1);
+  });
+}

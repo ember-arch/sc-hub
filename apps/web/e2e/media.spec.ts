@@ -53,6 +53,10 @@ for (const route of [
   });
 }
 
+// The band shows the wiki's gallery cover when one is on file (ADR-024), credited to RSI via
+// the wiki and linked to the article, and RSI's ship-matrix picture otherwise (ADR-009), credited
+// to RSI and linked to the pledge page. Either way the picture is described and the credit links
+// its source.
 test("a ship image is described and credited to RSI with a link to its source", async ({
   page,
 }) => {
@@ -60,15 +64,24 @@ test("a ship image is described and credited to RSI with a link to its source", 
   const stage = page.locator("section[aria-labelledby='ship-name']");
   const image = stage.locator("img").first();
   if ((await image.count()) === 0) test.skip(true, "no media built locally");
-  await expect(image).toHaveAttribute("alt", "The Gladius");
+  await expect(image).toHaveAttribute("alt", /Gladius/);
   await expect(image).not.toHaveAttribute("loading", "lazy");
   const credit = stage.getByRole("link", {
-    name: "Image: Roberts Space Industries",
+    name: /^Images?: Roberts Space Industries/,
   });
-  await expect(credit).toHaveAttribute(
-    "href",
-    /^https:\/\/robertsspaceindustries\.com\/pledge\/ships\//,
-  );
+  const href = await credit.getAttribute("href");
+  const name = await credit.textContent();
+  if (name?.includes("via the Star Citizen Wiki")) {
+    expect(href).toMatch(/^https:\/\/starcitizen\.tools\//);
+    expect(name).toBe(
+      "Images: Roberts Space Industries, via the Star Citizen Wiki; in-game shots by the wiki's contributors",
+    );
+  } else {
+    expect(name).toBe("Image: Roberts Space Industries");
+    expect(href).toMatch(
+      /^https:\/\/robertsspaceindustries\.com\/pledge\/ships\//,
+    );
+  }
 });
 
 test("the Odin's images and render loops sit in the sections they show (ADR-014)", async ({

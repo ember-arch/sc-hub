@@ -10,7 +10,12 @@ import {
   sentence,
   vehicleStatusBadge,
 } from "ui";
-import { PLEDGE_STORE_CREDIT, UEX_CREDIT, WIKI_CREDIT } from "ui/legal";
+import {
+  PLEDGE_STORE_CREDIT,
+  UEX_CREDIT,
+  WIKI_CREDIT,
+  WIKI_GALLERY_CREDIT,
+} from "ui/legal";
 import {
   type Acquisition,
   OFFER_KIND,
@@ -75,7 +80,7 @@ function artCredit(show: ShowcaseView): { text: string; href: string } {
   // Pictures copied from the wiki's gallery credit both (ADR-017, ADR-024).
   if (show.wikiArticle !== null) {
     return {
-      text: "Images: Roberts Space Industries, via the Star Citizen Wiki",
+      text: WIKI_GALLERY_CREDIT.text,
       href: show.wikiArticle,
     };
   }

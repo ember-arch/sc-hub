@@ -93,6 +93,37 @@ test("the ship page has every section in order, each stat with its unit and vers
   }
 });
 
+// ADR-026: armour and shields in Weapons and combat, and what a chosen gun's damage does.
+test("Weapons and combat says the shields and the armour, and shows what gets through", async ({
+  page,
+}) => {
+  await page.goto(`/ships/${ship.slug}`);
+  const combat = page.locator("#combat");
+  await expect(
+    combat.locator("dt", { hasText: "Shield strength" }),
+  ).toHaveCount(1);
+  await expect(
+    combat.locator("dt", { hasText: "Armour" }).first(),
+  ).toBeVisible();
+  const picker = combat.getByRole("combobox", { name: "Fired on by" });
+  await expect(picker).toBeVisible();
+  const figure = combat.locator("figure", { hasText: "Through the armour" });
+  await expect(figure).toContainText("reaches the hull");
+  await expect(figure).toContainText(
+    "Shields take the hit whole before the armour",
+  );
+  // Choosing another gun changes the caption's weapon.
+  const caption = (await figure.locator("figcaption").textContent()) ?? "";
+  const options = await picker.locator("option").allTextContents();
+  const other = options.find((o) => !caption.includes(o.split(",")[0]!));
+  if (other !== undefined) {
+    await picker.selectOption({ label: other });
+    await expect(figure.locator("figcaption")).toContainText(
+      other.split(",")[0]!,
+    );
+  }
+});
+
 test("the PTU toggle shows only when a PTU build differs; otherwise the page says why", async ({
   page,
 }) => {

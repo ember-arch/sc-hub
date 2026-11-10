@@ -59,6 +59,18 @@ const rows = z.object({ data: z.array(Row) }).parse(raw).data;
 const pack = JSON.parse(
   readFileSync(join(repoRoot, "fixtures", "bootstrap", "Vehicle.json"), "utf8"),
 ) as { slug: string; name: string; manufacturer_code: string }[];
+// The wiki's record of each pack ship's ship-matrix name (VehicleStats raw), so a ship the
+// wiki displays under another name ("MISC Fortune" for "Fortune") is never also a concept.
+const matrixNames = new Map<string, string>();
+for (const s of JSON.parse(
+  readFileSync(
+    join(repoRoot, "fixtures", "bootstrap", "VehicleStats.json"),
+    "utf8",
+  ),
+) as { class_name: string; raw?: { shipmatrix_name?: string | null } }[]) {
+  const name = s.raw?.shipmatrix_name?.trim();
+  if (name !== undefined && name !== "") matrixNames.set(s.class_name, name);
+}
 
 // Every announced ship the game does not contain (ADR-022): any row that is not flight ready and
 // whose name and maker are not in the pack. A showcase ship keeps its curated slug; the rest take
@@ -71,7 +83,9 @@ const slugify = (name: string): string =>
     .replace(/^-+|-+$/g, "");
 const inPack = (r: z.infer<typeof Row>): boolean =>
   pack.some(
-    (v) => v.name === r.name && v.manufacturer_code === r.manufacturer.code,
+    (v) =>
+      v.manufacturer_code === r.manufacturer.code &&
+      (v.name === r.name || [...matrixNames.values()].includes(r.name)),
   );
 const candidates = rows.filter(
   (r) => r.production_status !== "flight-ready" && !inPack(r),

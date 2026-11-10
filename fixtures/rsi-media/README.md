@@ -11,4 +11,4 @@ pnpm exec tsx scripts/media/fetch-rsi.ts
 pnpm --filter schema build && pnpm exec tsx scripts/media/prepare.ts
 ```
 
-The fetch makes one request for the ship matrix and one per ship, at least 5 seconds apart, with no cookies or signed-in session. It is limited to the pack's ships on purpose: RSI's terms forbid scraping and harvesting. Showing these images on the public site is not yet decided (ADR-009, "Not decided").
+The fetch makes one request for the ship matrix and one per ship, at least 5 seconds apart, with no cookies or signed-in session. It fetches one image per pack ship and per concept ship, nothing else (ADR-022): RSI's terms forbid scraping and harvesting, and one picture per entry at the polite rate is the whole of it. Showing these images on the public site is not yet decided (ADR-009, "Not decided").

@@ -70,6 +70,8 @@ export interface PackVehicle {
   readonly class_name: string;
   readonly name: string;
   readonly manufacturer_code: string;
+  /** The wiki's record of the ship's name on RSI's ship matrix, when it has one. */
+  readonly matrix_name?: string | null;
 }
 
 /** The fields of one ship-matrix row this project reads. */
@@ -96,8 +98,11 @@ export interface MatchResult {
 
 /**
  * A pack vehicle matches a ship-matrix row only when the name and the manufacturer code are both
- * identical and exactly one row has them. Anything looser is a guess (CLAUDE.md section 2: entity
- * links below the confidence threshold stay hidden), so it is reported, not matched.
+ * identical and exactly one row has them. The name tried is the wiki's own record of the ship's
+ * ship-matrix name (`shipmatrix_name`, kept in the pack), which is how the wiki says "Freelancer"
+ * for the ship it displays as "MISC Freelancer"; without that record, the display name. Anything
+ * looser is a guess (CLAUDE.md section 2: entity links below the confidence threshold stay
+ * hidden), so it is reported, not matched.
  */
 export function matchShips(
   pack: readonly PackVehicle[],
@@ -106,11 +111,16 @@ export function matchShips(
   const matched: ShipMatch[] = [];
   const unmatched: { vehicle: PackVehicle; reason: string }[] = [];
   for (const vehicle of pack) {
-    const rows = matrix.filter(
-      (row) =>
-        row.name === vehicle.name &&
-        row.manufacturer.code === vehicle.manufacturer_code,
-    );
+    const rowsNamed = (name: string) =>
+      matrix.filter(
+        (row) =>
+          row.name === name &&
+          row.manufacturer.code === vehicle.manufacturer_code,
+      );
+    const record = vehicle.matrix_name?.trim() ?? "";
+    // The record first; the display name when the record names no row (a renamed row).
+    const byRecord = record === "" ? [] : rowsNamed(record);
+    const rows = byRecord.length > 0 ? byRecord : rowsNamed(vehicle.name);
     if (rows.length !== 1) {
       unmatched.push({
         vehicle,

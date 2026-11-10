@@ -72,6 +72,11 @@ const Hit = z.object({
 });
 export type Hit = z.infer<typeof Hit>;
 
+/** The flag every Spectrum answer carries, read before its shape: a refusal has no hits. */
+export const SearchFlag = z
+  .object({ success: z.number(), code: z.string().optional() })
+  .loose();
+
 export const SearchAnswer = z.object({
   success: z.number(),
   data: z.object({
@@ -247,16 +252,20 @@ export function createPollAdapter(options: PollOptions): SpectrumAdapter {
       for (let page = 1; page <= pages; page += 1) {
         // One request every five minutes to the search endpoint (CLAUDE.md section 9).
         if (page > 1) await sleep(POLL_SPACING_MS);
-        const answer = SearchAnswer.parse(
-          await call(
-            SEARCH_URL,
-            searchBody({ page, staffRoleId: role.id, range: options.range }),
-            page,
-          ),
+        const raw = await call(
+          SEARCH_URL,
+          searchBody({ page, staffRoleId: role.id, range: options.range }),
+          page,
         );
-        if (answer.success !== 1) {
-          throw new Error(`Spectrum's search did not succeed on page ${page}`);
+        // A refusal ("ErrValidationFailed") carries no hits, so its success flag is read before
+        // the answer's shape is checked; an unknown shape with success halts in the parse.
+        const flag = SearchFlag.parse(raw);
+        if (flag.success !== 1) {
+          throw new Error(
+            `Spectrum's search did not succeed on page ${page}: ${flag.code ?? "no code"}`,
+          );
         }
+        const answer = SearchAnswer.parse(raw);
         const hits = answer.data.hits.hits;
         let older = false;
         for (const hit of hits) {

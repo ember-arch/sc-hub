@@ -124,18 +124,26 @@ export interface PollOptions {
   readonly staffRoleId: string | null;
   readonly staff: StaffList;
   readonly userAgent: string;
-  /** How many pages of the newest posts one call reads; a backfill asks for more. */
+  /** How many pages of the newest posts one call reads; a backfill asks for more, five minutes apart. */
   readonly pages?: number;
+  /** Waits between pages; injected so tests need not. */
+  readonly sleep?: (ms: number) => Promise<void>;
   readonly log?: (event: Record<string, unknown>) => void;
 }
 
 export function createPollAdapter(options: PollOptions): SpectrumAdapter {
   const log = options.log ?? (() => undefined);
+  const sleep =
+    options.sleep ??
+    ((ms: number) => new Promise<void>((done) => setTimeout(done, ms)));
   return {
     async fetchNewStaffPosts(since) {
       const posts: StaffPost[] = [];
+      const seen = new Set<string>();
       const pages = options.pages ?? 1;
       for (let page = 1; page <= pages; page += 1) {
+        // One request every five minutes to the endpoint (CLAUDE.md section 9).
+        if (page > 1) await sleep(POLL_SPACING_MS);
         const response = await options.post(SEARCH_URL, {
           headers: {
             "User-Agent": options.userAgent,
@@ -153,7 +161,8 @@ export function createPollAdapter(options: PollOptions): SpectrumAdapter {
         for (const hit of answer.data.hits.hits) {
           if (hit._source.is_erased === true) continue;
           const post = postFromHit(hit, options.staff);
-          if (post === null) continue;
+          if (post === null || seen.has(post.id)) continue;
+          seen.add(post.id);
           const stamp = new Date(post.edited_at ?? post.published_at);
           if (stamp <= since) {
             older = true;

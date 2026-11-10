@@ -14,7 +14,6 @@
             "body": "Since the Galaxy has been introduced, I have noticed there is a bit of frustration from Polaris owners. Being someone who has pledged a Polaris since its concept I can understand the viewpoints of power creep and misaligned ship philosophy (no pilot weapons for bigger ships), and I began pondering how it all fits together because the design choices retrospectively do seem odd for the Polaris.\n\nThe Polaris struggles in its current role (hit-and-run torpedo boat) because the torpedoes (and missiles) are unreliable to the point they basically don't work, resulting in weak performance in PvP combat.",
             "time_created": "2026-11-10T06:01:17Z",
             "time_modified": "2026-11-10T06:01:17Z",
-            "votes": 1,
             "community_id": "1",
             "channel_id": "3",
             "label_id": "6",
@@ -23,7 +22,9 @@
             "highlight_role_id": "",
             "is_erased": false
           },
-          "sort": [1794290477000],
+          "sort": [
+            1794290477000
+          ],
           "details": {
             "community": {
               "id": "1",
@@ -66,8 +67,6 @@
               "id": "18009",
               "displayname": "Costfanatic06",
               "nickname": "Costfanatic06",
-              "avatar": "https://robertsspaceindustries.com/media/hwbpjhtva10hgr/heap_infobox/StarCitizenArtScreen.jpg?v=1487454441",
-              "signature": "",
               "meta": {
                 "badges": [
                   {
@@ -80,9 +79,7 @@
                     "url": "https://robertsspaceindustries.com/orgs/SCA"
                   }
                 ]
-              },
-              "isGM": false,
-              "spoken_languages": ["en"]
+              }
             }
           }
         },
@@ -102,7 +99,9 @@
             "highlight_role_id": null,
             "is_erased": false
           },
-          "sort": [1794242599000],
+          "sort": [
+            1794242599000
+          ],
           "details": {
             "community": {
               "id": "1",
@@ -145,8 +144,6 @@
               "id": "4299725",
               "displayname": "Lujayn",
               "nickname": "Lujayn",
-              "avatar": "https://squadron42.com/media/podytokr6nyk7r/heap_infobox/7fcd104c-F41b-4d2a-92c1-757dbbef9130.jpg?v=1733533645",
-              "signature": "",
               "meta": {
                 "badges": [
                   {
@@ -154,9 +151,7 @@
                     "icon": "https://media.robertsspaceindustries.com/h3alojif1lznt/heap_thumb.png"
                   }
                 ]
-              },
-              "isGM": false,
-              "spoken_languages": ["en"]
+              }
             }
           }
         }

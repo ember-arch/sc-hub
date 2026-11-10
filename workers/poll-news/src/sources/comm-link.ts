@@ -154,7 +154,19 @@ export type WikiCommLink = z.infer<typeof WikiCommLink>;
 
 /** An upload's file name the wiki writes into the text where a video or picture stood: one word, either long with an underscore in it, or three or more capitalised parts joined by hyphens or run together; prose has no such words. */
 const ASSET_NAME =
-  /^(?:(?=.*_)[A-Za-z0-9_-]{12,}|(?:[A-Z][A-Za-z0-9]*-){2,}[A-Z][A-Za-z0-9]*|(?:[A-Z][a-z0-9]+){3,})(?:.[a-z0-9]{2,4})?$/;
+  /^(?:(?=.*_)[A-Za-z0-9_-]{12,}|(?:[A-Z][A-Za-z0-9]*-){2,}[A-Z][A-Za-z0-9]*|(?:[A-Z][a-z0-9]+){3,})(?:\.[a-z0-9]{2,4})?$/;
+
+/** A CSS fragment the wiki writes where a styled banner stood ("linear-gradient(to bottom, #000000 0%, ...)"). */
+const CSS_FUNCTION = /\b[a-z-]*(?:gradient|url)\([^)]*\)\s*/g;
+
+/** Filler the wiki's record carries when nobody has transcribed the Comm-Link yet. */
+const PLACEHOLDER =
+  /lorem ipsum|nemo enim ipsam|duis aute irure|consectetur adipisc|sed ut perspiciatis|ut enim ad minim/i;
+
+/** True when the text is the wiki's filler rather than the Comm-Link; the hub's blurb stands instead. */
+export function isPlaceholderText(text: string): boolean {
+  return PLACEHOLDER.test(text);
+}
 
 /**
  * The wiki's text with its flattening undone where it can be: it writes a heading's level as a
@@ -166,33 +178,45 @@ const ASSET_NAME =
 export function cleanWikiText(text: string, title: string): string {
   const lines = text
     .replace(/\r\n?/g, "\n")
+    .replace(CSS_FUNCTION, "")
     .split("\n")
-    .map((line) => {
-      let rest = line.replace(/^(?:h[1-6]\s+)+/, "");
-      for (;;) {
-        const first = /^(\S+)\s*/.exec(rest);
-        if (first === null || !ASSET_NAME.test(first[1]!)) break;
-        rest = rest.slice(first[0].length);
-      }
-      return rest.replace(/^(?:h[1-6]\s+)+/, "");
-    });
+    .map(cleanLineStart);
   let body = lines.join("\n").trim();
   if (body.startsWith(title)) {
-    body = body.slice(title.length).replace(/^[\s:.!–-]+/, "");
+    // The title and the banner's file name often share the first line; clean its start again.
+    body = cleanLineStart(body.slice(title.length).replace(/^[\s:.!–-]+/, ""));
   }
   return body;
 }
 
+/** Heading tokens and upload names at the start of a line, however many. */
+function cleanLineStart(line: string): string {
+  let rest = line.replace(/^(?:h[1-6]\s+)+/, "");
+  for (;;) {
+    const first = /^(\S+)\s*/.exec(rest);
+    if (first === null || !ASSET_NAME.test(first[1]!)) break;
+    rest = rest.slice(first[0].length);
+  }
+  return rest.replace(/^(?:h[1-6]\s+)+/, "");
+}
+
 /** The item with the wiki's text as paragraphs, its first paragraph, and the wiki's exact time. */
 export function fromWiki(record: WikiCommLink, entry: HubEntry): Incoming {
-  const body = cleanWikiText(record.data.translations.en_EN, record.data.title);
+  const text = cleanWikiText(record.data.translations.en_EN, record.data.title);
+  // Filler in place of the text: the item keeps the hub's blurb, as fromHub wrote it.
+  const body = isPlaceholderText(text) ? "" : text;
   return {
     source: "comm_link",
     external_id: String(record.data.id),
     url: `${RSI_ORIGIN}${entry.path}`,
     title: entry.title,
     summary: firstParagraph(body) ?? entry.blurb,
-    body_html: paragraphsHtml(body),
+    body_html:
+      body === ""
+        ? entry.blurb === null
+          ? ""
+          : `<p>${escapeHtml(entry.blurb)}</p>`
+        : paragraphsHtml(body),
     published_at: new Date(record.data.created_at).toISOString(),
     author_id: null,
     thread_id: null,

@@ -9,7 +9,7 @@ import { randomUUID } from "node:crypto";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { escapeHtml, paragraphsHtml, firstParagraph } from "poll-news/html";
+import { paragraphsHtml, firstParagraph } from "poll-news/html";
 import { openStore, stableId } from "poll-news/store";
 import { Author } from "schema";
 import { z } from "zod";
@@ -35,7 +35,10 @@ export function userAgent(contact: string | null): string {
 /** The authors file: every CIG staff member seen, by handle. */
 export function openAuthors(path: string): {
   readonly rows: Author[];
+  /** The author row for a post, made on first sight; the count is not touched. */
   upsert(post: StaffPost, now: string): Author;
+  /** One more post on record for this author. */
+  count(id: string): void;
   save(): void;
 } {
   const rows: Author[] = existsSync(path)
@@ -52,7 +55,6 @@ export function openAuthors(path: string): {
           ...found,
           display_name: post.author.display_name,
           role: post.author.role ?? found.role,
-          post_count: found.post_count + 1,
         };
         rows[rows.indexOf(found)] = next;
         return next;
@@ -63,11 +65,17 @@ export function openAuthors(path: string): {
         display_name: post.author.display_name,
         role: post.author.role,
         first_seen: post.published_at < now ? post.published_at : now,
-        post_count: 1,
+        post_count: 0,
         takedown: false,
       });
       rows.push(author);
       return author;
+    },
+    count(id) {
+      const at = rows.findIndex((a) => a.id === id);
+      const row = rows[at];
+      if (row !== undefined)
+        rows[at] = { ...row, post_count: row.post_count + 1 };
     },
     save() {
       writeFileSync(path, `${JSON.stringify(rows, null, 2)}\n`);
@@ -82,7 +90,8 @@ async function main(): Promise<void> {
   const log = (event: Record<string, unknown>): void => {
     process.stderr.write(`${JSON.stringify({ run_id: runId, ...event })}\n`);
   };
-  const mode = process.env["SPECTRUM_MODE"] ?? "off";
+  // An unset repository variable reaches a workflow step as the empty string: that is off too.
+  const mode = process.env["SPECTRUM_MODE"] || "off";
   const contact = process.env["SC_HUB_CONTACT_EMAIL"]?.trim() || null;
   if (mode === "off") {
     console.log(
@@ -106,9 +115,14 @@ async function main(): Promise<void> {
   );
   let adapter: SpectrumAdapter;
   if (mode === "poll") {
-    const cookie = process.env["SPECTRUM_SESSION_COOKIE"];
-    if (cookie === undefined || cookie === "") {
-      throw new Error("SPECTRUM_MODE=poll needs SPECTRUM_SESSION_COOKIE");
+    const cookie = process.env["SPECTRUM_SESSION_COOKIE"] || undefined;
+    const roleId = process.env["SPECTRUM_STAFF_ROLE_ID"] || undefined;
+    if (cookie === undefined || roleId === undefined) {
+      // Without the role filter the search returns the whole forum's newest posts and one
+      // page misses most staff posts; the worker refuses rather than silently read too little.
+      throw new Error(
+        "SPECTRUM_MODE=poll needs SPECTRUM_SESSION_COOKIE and SPECTRUM_STAFF_ROLE_ID",
+      );
     }
     adapter = createPollAdapter({
       post: (url, init) =>
@@ -118,14 +132,14 @@ async function main(): Promise<void> {
           body: init.body,
         }),
       sessionCookie: cookie,
-      staffRoleId: process.env["SPECTRUM_STAFF_ROLE_ID"] ?? null,
+      staffRoleId: roleId,
       staff,
       userAgent: userAgent(contact),
       pages: Number(flag(args, "--backfill") ?? 1),
       log,
     });
   } else if (mode === "feed") {
-    const url = process.env["SPECTRUM_FEED_URL"];
+    const url = process.env["SPECTRUM_FEED_URL"] || undefined;
     if (url === undefined)
       throw new Error("SPECTRUM_MODE=feed needs SPECTRUM_FEED_URL");
     adapter = createFeedAdapter({
@@ -158,7 +172,7 @@ async function main(): Promise<void> {
   }
   for (const post of posts) {
     const author = authors.upsert(post, now);
-    store.put(
+    const outcome = store.put(
       {
         source: "spectrum",
         external_id: post.id,
@@ -170,11 +184,12 @@ async function main(): Promise<void> {
         published_at: post.published_at,
         author_id: author.id,
         thread_id: post.thread_id,
-        thread_title: escapeHtml(post.thread_title),
+        thread_title: post.thread_title,
         forum: post.forum,
       },
       now,
     );
+    if (outcome === "new") authors.count(author.id);
   }
   const written = store.save();
   if (written) authors.save();

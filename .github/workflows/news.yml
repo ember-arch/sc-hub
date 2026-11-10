@@ -1,6 +1,6 @@
 # The news pollers (ADR-027, spec 03).
 #
-# Every fifteen minutes workers/poll-news reads RSI's Comm-Link hub (and the Star Citizen Wiki
+# Every thirty minutes workers/poll-news reads RSI's Comm-Link hub (and the Star Citizen Wiki
 # API's record of each new Comm-Link) and RSI's roadmap board, and appends what is new to the
 # news pack in fixtures/news. When anything changed, the change lands on main as one data commit;
 # when nothing did, the run ends with no commit. The unit suite guards the parsers; a source that
@@ -13,8 +13,10 @@ name: News
 
 on:
   schedule:
-    # Every fifteen minutes.
-    - cron: "*/15 * * * *"
+    # Every thirty minutes: GitHub's schedule is best-effort and often late, and ninety-six runs a
+    # day would spend more Actions minutes than a private repository has (ADR-027). Spec 03's
+    # fifteen-minute gate holds once the pollers run on Fly.
+    - cron: "*/30 * * * *"
   workflow_dispatch:
 
 concurrency:
@@ -49,6 +51,7 @@ jobs:
           SC_HUB_CONTACT_EMAIL: ${{ vars.SC_HUB_CONTACT_EMAIL }}
         run: pnpm workers:poll-news
       - name: Poll Spectrum (off until SPECTRUM_MODE is set)
+        continue-on-error: true
         env:
           SC_HUB_CONTACT_EMAIL: ${{ vars.SC_HUB_CONTACT_EMAIL }}
           SPECTRUM_MODE: ${{ vars.SPECTRUM_MODE }}

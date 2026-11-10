@@ -47,6 +47,45 @@ describe("matchShips", () => {
     ]);
   });
 
+  it("matches on the wiki's record of the ship-matrix name when the display name differs", () => {
+    const freelancer = {
+      class_name: "MISC_Freelancer",
+      name: "MISC Freelancer",
+      manufacturer_code: "MISC",
+      matrix_name: "Freelancer",
+    };
+    const { matched, unmatched } = matchShips(
+      [freelancer],
+      [row("Freelancer", "MISC"), row("MISC Freelancer", "MISC")],
+    );
+    expect(unmatched).toEqual([]);
+    expect(matched[0]?.pageUrl).toBe(
+      "https://robertsspaceindustries.com/pledge/ships/freelancer/Freelancer",
+    );
+    // The record wins even where the display name would also match a row.
+    expect(
+      matchShips(
+        [{ ...gladius, matrix_name: "Gladius Pirate Edition" }],
+        [row("Gladius", "AEGS"), row("Gladius Pirate Edition", "AEGS")],
+      ).matched[0]?.pageUrl,
+    ).toContain("Gladius%20Pirate%20Edition");
+  });
+
+  it("falls back to the display name when the record names no row, and treats an empty record as none", () => {
+    const renamed = { ...gladius, matrix_name: "Gladius (old name)" };
+    expect(
+      matchShips([renamed], [row("Gladius", "AEGS")]).matched[0]?.vehicle,
+    ).toBe(renamed);
+    const empty = { ...gladius, matrix_name: "" };
+    expect(
+      matchShips([empty], [row("Gladius", "AEGS")]).matched[0]?.vehicle,
+    ).toBe(empty);
+    expect(
+      matchShips([renamed], [row("Gladius Valiant", "AEGS")]).unmatched[0]
+        ?.reason,
+    ).toMatch(/no ship-matrix row/);
+  });
+
   it("never matches on a near name or another maker", () => {
     const { matched, unmatched } = matchShips(
       [gladius],

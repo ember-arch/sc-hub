@@ -72,9 +72,26 @@ function reusable<T extends { file: string; image_url: string }>(
 async function main(): Promise<void> {
   const runId = randomUUID();
   const started = Date.now();
+  // Each ship's name on RSI's ship matrix, as the wiki records it (VehicleStats raw).
+  const matrixNames = new Map(
+    z
+      .array(
+        z.object({
+          class_name: z.string(),
+          raw: z
+            .object({ shipmatrix_name: z.string().nullable().optional() })
+            .loose(),
+        }),
+      )
+      .parse(
+        JSON.parse(readFileSync(join(packDir, "VehicleStats.json"), "utf8")),
+      )
+      .map((s) => [s.class_name, s.raw.shipmatrix_name ?? null]),
+  );
   const pack = z
     .array(PackVehicleRow)
-    .parse(JSON.parse(readFileSync(join(packDir, "Vehicle.json"), "utf8")));
+    .parse(JSON.parse(readFileSync(join(packDir, "Vehicle.json"), "utf8")))
+    .map((v) => ({ ...v, matrix_name: matrixNames.get(v.class_name) ?? null }));
   const conceptFile = join(
     repoRoot,
     "fixtures",
@@ -154,7 +171,8 @@ async function main(): Promise<void> {
       reusable(previous, match.imageUrl) ??
       reusable(previous, originalOf(match.imageUrl));
     if (kept !== undefined) {
-      rows.push(kept);
+      // The file is shared (an edition and its base match the same row); the row is this ship's.
+      rows.push({ ...kept, class_name: match.vehicle.class_name });
       reused += 1;
       continue;
     }
@@ -200,7 +218,7 @@ async function main(): Promise<void> {
       reusable(previousConcepts, imageUrl) ??
       reusable(previousConcepts, originalOf(imageUrl));
     if (kept !== undefined) {
-      conceptRows.push(kept);
+      conceptRows.push({ ...kept, slug: concept.slug });
       reused += 1;
       continue;
     }

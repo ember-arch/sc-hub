@@ -69,6 +69,8 @@ test("remembers recently opened entities", async ({ page }) => {
   await page.goto("/");
   await open();
   await dialog.getByRole("combobox").fill("polaris");
+  // The index is fetched on first open; a reader presses Enter once a result shows.
+  await expect(dialog.getByRole("option").first()).toContainText("Polaris");
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/\/ships\/polaris$/);
   await open();

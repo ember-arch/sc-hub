@@ -1,24 +1,36 @@
 /**
  * The `poll` implementation (spec 03): Spectrum's own search, the call its web app makes for its
- * search page, asked for the newest original posts and replies by members of a staff role, with
- * a sanctioned account's session cookie, once every five minutes, backing off to thirty on any
- * answer that is not a 200. The answer's shape is checked against what the app receives
- * (`fixtures/spectrum/samples/`); anything else halts. The role id that names staff differs per
- * community and is read from Spectrum once signed in (`SPECTRUM_STAFF_ROLE_ID`); a post whose
- * author is on `staff.json` counts even when the role filter is not set.
+ * search page, asked for the newest original posts and replies highlighted with the community's
+ * staff role, read without a sign-in. Every run is two requests to two endpoints: the identify
+ * call, which lists the community's roles, and the search; the pages of a backfill are five
+ * minutes apart, and any answer that is not a 200 ends the run so the caller backs off to thirty
+ * minutes. Both answers are checked against what the app receives (`fixtures/spectrum/samples/`);
+ * anything else halts.
+ *
+ * The staff role is the one Spectrum names "staff" and tracks (id "2", "CIG Staff", the yellow
+ * posts); it is resolved each run from the identify answer, and `SPECTRUM_STAFF_ROLE_ID` may
+ * override it. A post is a developer post when it carries that highlight: only a holder of a
+ * role can highlight with it, so the highlight is the signal, the Wowhead blue post. A staff
+ * badge or a handle on `staff.json` counts as well, for a post made without the highlight.
  */
 import { z } from "zod";
 import type { SpectrumAdapter, StaffPost } from "../adapter.js";
 import { type StaffList, isStaff } from "./staff.js";
 
 export const SPECTRUM_ORIGIN = "https://robertsspaceindustries.com";
+export const IDENTIFY_URL = `${SPECTRUM_ORIGIN}/api/spectrum/auth/identify`;
 export const SEARCH_URL = `${SPECTRUM_ORIGIN}/api/spectrum/search/content/extended`;
 export const COMMUNITY_ID = "1";
-/** One request every five minutes; thirty after any non-200 (CLAUDE.md section 9). */
+/** One request every five minutes to an endpoint; thirty after any non-200 (CLAUDE.md section 9). */
 export const POLL_SPACING_MS = 5 * 60_000;
 export const BACKOFF_MS = 30 * 60_000;
+/** The search page's own page size. */
+export const PAGE_SIZE = 25;
 
 const str = z.string();
+/** The highlight role id: a number on a thread's opening post, a string on a reply. */
+const roleId = z.union([z.number(), z.string()]).nullable().optional();
+
 const Hit = z.object({
   _index: z.string(),
   _id: str,
@@ -29,6 +41,7 @@ const Hit = z.object({
     time_modified: str.nullable().optional(),
     member_id: str,
     thread_id: str,
+    highlight_role_id: roleId,
     is_erased: z.boolean().optional(),
   }),
   details: z.object({
@@ -37,6 +50,7 @@ const Hit = z.object({
       slug: str,
       subject: str,
       channel_id: str,
+      tracked_post_role_id: roleId,
     }),
     channel: z.object({ id: str, name: str }),
     member: z.object({
@@ -58,36 +72,101 @@ const Hit = z.object({
 });
 export type Hit = z.infer<typeof Hit>;
 
+/** The flag every Spectrum answer carries, read before its shape: a refusal has no hits. */
+export const SearchFlag = z
+  .object({ success: z.number(), code: z.string().optional() })
+  .loose();
+
 export const SearchAnswer = z.object({
   success: z.number(),
-  data: z.object({ hits: z.object({ hits: z.array(Hit) }) }),
+  data: z.object({
+    hits: z.object({ hits: z.array(Hit), total: z.number().optional() }),
+  }),
 });
 
-/** The request the search page sends, as its address spells the filters. */
+const Role = z
+  .object({
+    id: str,
+    name: str,
+    description: str.nullable().optional(),
+    tracked: z.boolean().optional(),
+  })
+  .loose();
+
+export const IdentifyAnswer = z.object({
+  success: z.number(),
+  data: z.object({
+    communities: z.array(
+      z.object({ id: str, slug: str, roles: z.array(Role) }).loose(),
+    ),
+  }),
+});
+
+export interface StaffRole {
+  readonly id: string;
+  /** The label shown as the author's role: the role's description ("CIG Staff"), or its name. */
+  readonly label: string;
+}
+
+/**
+ * The community's staff role from the identify answer: the one role named "staff" that Spectrum
+ * tracks. Any other count halts, so a renamed role is noticed rather than polled past.
+ */
+export function staffRoleOf(answer: unknown): StaffRole {
+  const parsed = IdentifyAnswer.parse(answer);
+  const community = parsed.data.communities.find((c) => c.id === COMMUNITY_ID);
+  if (community === undefined) {
+    throw new Error(
+      `Spectrum's identify answer has no community ${COMMUNITY_ID}`,
+    );
+  }
+  const staff = community.roles.filter(
+    (r) => r.name.toLowerCase() === "staff" && r.tracked === true,
+  );
+  if (staff.length !== 1) {
+    throw new Error(
+      `Spectrum names ${staff.length} tracked roles "staff" in community ${community.slug}; expected one`,
+    );
+  }
+  const role = staff[0]!;
+  return { id: role.id, label: role.description?.trim() || role.name };
+}
+
+export type SearchRange = "day" | "week" | "month" | "year" | "all";
+
+/** The request the search page sends, with the fields its query class names. */
 export function searchBody(options: {
   readonly page: number;
-  readonly roleId: string | null;
-  readonly sinceRange?: "day" | "week" | "month" | "year" | "all";
+  readonly staffRoleId: string;
+  readonly range?: SearchRange | undefined;
 }): string {
   return JSON.stringify({
+    community_id: COMMUNITY_ID,
+    type: ["op", "reply"],
     text: "",
     page: options.page,
     sort: "latest",
-    range: options.sinceRange ?? "week",
-    scopes: ["op", "reply"],
-    community_id: COMMUNITY_ID,
-    role_id: options.roleId,
-    member_id: null,
+    range: options.range ?? "week",
+    highlight_role_id: Number(options.staffRoleId),
     visibility: "nonerased",
   });
 }
 
-/** A hit as a staff post, or null when its author is not staff. */
-export function postFromHit(hit: Hit, staff: StaffList): StaffPost | null {
+/** A hit as a staff post, or null when it is neither highlighted as staff nor by a known member. */
+export function postFromHit(
+  hit: Hit,
+  staff: StaffList,
+  role: StaffRole,
+): StaffPost | null {
   const member = hit.details.member;
+  const highlight = hit._source.highlight_role_id;
+  const highlighted =
+    highlight !== null &&
+    highlight !== undefined &&
+    String(highlight) === role.id;
   const badges = (member.meta?.badges ?? []).map((b) => b.name);
   const who = isStaff({ handle: member.nickname, badges }, staff);
-  if (!who.staff) return null;
+  if (!highlighted && !who.staff) return null;
   const kind = hit._index.endsWith("_op") ? "op" : "reply";
   const thread = hit.details.thread;
   const base = `${SPECTRUM_ORIGIN}/spectrum/community/SC/forum/${thread.channel_id}/thread/${thread.slug}`;
@@ -108,7 +187,7 @@ export function postFromHit(hit: Hit, staff: StaffList): StaffPost | null {
     author: {
       handle: member.nickname,
       display_name: member.displayname,
-      role: who.role,
+      role: highlighted ? role.label : who.role,
     },
   };
 }
@@ -120,12 +199,14 @@ export type PostLike = (
 
 export interface PollOptions {
   readonly post: PostLike;
-  readonly sessionCookie: string;
-  readonly staffRoleId: string | null;
+  /** Overrides the role resolved from the identify answer (`SPECTRUM_STAFF_ROLE_ID`). */
+  readonly staffRoleId?: string | null;
   readonly staff: StaffList;
   readonly userAgent: string;
   /** How many pages of the newest posts one call reads; a backfill asks for more, five minutes apart. */
   readonly pages?: number;
+  /** How far back the search looks; a backfill asks for the year. */
+  readonly range?: SearchRange;
   /** Waits between pages; injected so tests need not. */
   readonly sleep?: (ms: number) => Promise<void>;
   readonly log?: (event: Record<string, unknown>) => void;
@@ -136,31 +217,60 @@ export function createPollAdapter(options: PollOptions): SpectrumAdapter {
   const sleep =
     options.sleep ??
     ((ms: number) => new Promise<void>((done) => setTimeout(done, ms)));
+  const headers = {
+    "User-Agent": options.userAgent,
+    "Content-Type": "application/json",
+    // What the web app sends with every call; without a sign-in the token is empty.
+    "X-Requested-With": "XMLHttpRequest",
+    "X-Rsi-Token": "",
+  };
+  const call = async (url: string, body: string, page?: number) => {
+    const response = await options.post(url, { headers, body });
+    if (!response.ok) {
+      log({
+        event: "spectrum.poll.status",
+        status: response.status,
+        url,
+        page,
+      });
+      throw new SpectrumStatusError(response.status);
+    }
+    return JSON.parse(await response.text()) as unknown;
+  };
   return {
     async fetchNewStaffPosts(since) {
+      // One request to the identify endpoint: the community's roles, and the staff role among them.
+      const resolved = staffRoleOf(await call(IDENTIFY_URL, "{}"));
+      const role: StaffRole =
+        options.staffRoleId === undefined || options.staffRoleId === null
+          ? resolved
+          : { id: options.staffRoleId, label: resolved.label };
+      log({ event: "spectrum.poll.role", id: role.id, label: role.label });
       const posts: StaffPost[] = [];
       const seen = new Set<string>();
       const pages = options.pages ?? 1;
       for (let page = 1; page <= pages; page += 1) {
-        // One request every five minutes to the endpoint (CLAUDE.md section 9).
+        // One request every five minutes to the search endpoint (CLAUDE.md section 9).
         if (page > 1) await sleep(POLL_SPACING_MS);
-        const response = await options.post(SEARCH_URL, {
-          headers: {
-            "User-Agent": options.userAgent,
-            "Content-Type": "application/json",
-            Cookie: options.sessionCookie,
-          },
-          body: searchBody({ page, roleId: options.staffRoleId }),
-        });
-        if (!response.ok) {
-          log({ event: "spectrum.poll.status", status: response.status, page });
-          throw new SpectrumStatusError(response.status);
+        const raw = await call(
+          SEARCH_URL,
+          searchBody({ page, staffRoleId: role.id, range: options.range }),
+          page,
+        );
+        // A refusal ("ErrValidationFailed") carries no hits, so its success flag is read before
+        // the answer's shape is checked; an unknown shape with success halts in the parse.
+        const flag = SearchFlag.parse(raw);
+        if (flag.success !== 1) {
+          throw new Error(
+            `Spectrum's search did not succeed on page ${page}: ${flag.code ?? "no code"}`,
+          );
         }
-        const answer = SearchAnswer.parse(JSON.parse(await response.text()));
+        const answer = SearchAnswer.parse(raw);
+        const hits = answer.data.hits.hits;
         let older = false;
-        for (const hit of answer.data.hits.hits) {
+        for (const hit of hits) {
           if (hit._source.is_erased === true) continue;
-          const post = postFromHit(hit, options.staff);
+          const post = postFromHit(hit, options.staff, role);
           if (post === null || seen.has(post.id)) continue;
           seen.add(post.id);
           const stamp = new Date(post.edited_at ?? post.published_at);
@@ -170,7 +280,10 @@ export function createPollAdapter(options: PollOptions): SpectrumAdapter {
           }
           posts.push(post);
         }
-        if (older || answer.data.hits.hits.length === 0) break;
+        const total = answer.data.hits.total;
+        log({ event: "spectrum.poll.page", page, hits: hits.length, total });
+        if (older || hits.length === 0) break;
+        if (total !== undefined && page * PAGE_SIZE >= total) break;
       }
       return posts.sort((a, b) => a.published_at.localeCompare(b.published_at));
     },

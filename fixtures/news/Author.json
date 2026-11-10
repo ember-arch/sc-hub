@@ -1,0 +1,407 @@
+[
+  {
+    "id": "65e6eb0f-acba-5d3e-b77b-040c68cd10b2",
+    "handle": "cbeckford-cig",
+    "display_name": "Chris Beckford",
+    "role": "CIG Staff",
+    "first_seen": "2025-11-10T08:10:34.000Z",
+    "post_count": 11,
+    "takedown": false
+  },
+  {
+    "id": "accb560c-7f1f-5e36-b6ee-085a7a1ddeb7",
+    "handle": "Nicou-CIG",
+    "display_name": "Nicou-CIG",
+    "role": "CIG Staff",
+    "first_seen": "2025-11-10T14:18:07.000Z",
+    "post_count": 168,
+    "takedown": false
+  },
+  {
+    "id": "e33198e8-8125-5f63-b94a-b88dcdcf31ac",
+    "handle": "Wakapedia-CIG",
+    "display_name": "Wakapedia-CIG",
+    "role": "CIG Staff",
+    "first_seen": "2025-11-10T20:13:22.000Z",
+    "post_count": 135,
+    "takedown": false
+  },
+  {
+    "id": "ad457137-7fe7-5e22-b410-98ced990a3b6",
+    "handle": "Freyja-CIG",
+    "display_name": "Freyja Vanadis",
+    "role": "CIG Staff",
+    "first_seen": "2025-11-10T21:59:49.000Z",
+    "post_count": 55,
+    "takedown": false
+  },
+  {
+    "id": "c28190f4-3e8a-5f22-bf06-060be15db07d",
+    "handle": "ZacPreece_CIG",
+    "display_name": "ZacPreece_CIG",
+    "role": "CIG Staff",
+    "first_seen": "2025-11-11T10:26:34.000Z",
+    "post_count": 38,
+    "takedown": false
+  },
+  {
+    "id": "7318787d-cbb2-5ef3-b135-ea545c860a64",
+    "handle": "YogiKlatt-CIG",
+    "display_name": "YogiKlatt_CIG",
+    "role": "CIG Staff",
+    "first_seen": "2025-11-11T23:24:42.000Z",
+    "post_count": 77,
+    "takedown": false
+  },
+  {
+    "id": "a7eedb1e-3b7e-5824-8e9d-eb4f940bfc34",
+    "handle": "bparry-cig",
+    "display_name": "Ben Parry",
+    "role": "CIG Staff",
+    "first_seen": "2025-11-13T13:54:09.000Z",
+    "post_count": 37,
+    "takedown": false
+  },
+  {
+    "id": "fd0a6579-020b-5b92-b5de-6453e22f1bce",
+    "handle": "EmaltbyCIG",
+    "display_name": "KoakuCIG",
+    "role": "CIG Staff",
+    "first_seen": "2025-11-13T15:43:01.000Z",
+    "post_count": 10,
+    "takedown": false
+  },
+  {
+    "id": "8257004f-aa2a-5d07-aa8f-f3b43d88e5b4",
+    "handle": "Skelting-CIG",
+    "display_name": "Ulf-CIG",
+    "role": "CIG Staff",
+    "first_seen": "2025-11-13T16:08:53.000Z",
+    "post_count": 8,
+    "takedown": false
+  },
+  {
+    "id": "ff655623-35b8-556e-be60-65006379cf42",
+    "handle": "LoujoD",
+    "display_name": "LoujoD_CIG",
+    "role": "CIG Staff",
+    "first_seen": "2025-11-14T14:13:14.000Z",
+    "post_count": 37,
+    "takedown": false
+  },
+  {
+    "id": "9d8d89be-7c29-5947-a73b-d669bb5cfd48",
+    "handle": "ABrown_CIG",
+    "display_name": "ABrown.CIG",
+    "role": "CIG Staff",
+    "first_seen": "2025-11-16T14:01:09.000Z",
+    "post_count": 46,
+    "takedown": false
+  },
+  {
+    "id": "9acba397-1461-581a-9acf-173389cb3e73",
+    "handle": "Savrals-CIG",
+    "display_name": "Savrals-CIG",
+    "role": "CIG Staff",
+    "first_seen": "2025-11-17T10:31:40.000Z",
+    "post_count": 12,
+    "takedown": false
+  },
+  {
+    "id": "2063c6ec-f755-5c5a-a4fa-756896d58002",
+    "handle": "Highlander-CIG",
+    "display_name": "Highlander-CIG",
+    "role": "CIG Staff",
+    "first_seen": "2025-11-17T15:17:57.000Z",
+    "post_count": 24,
+    "takedown": false
+  },
+  {
+    "id": "32122406-5673-5199-9e26-515da9335ccf",
+    "handle": "discolando",
+    "display_name": "Disco Lando | CIG",
+    "role": "CIG Staff",
+    "first_seen": "2025-11-18T16:11:56.000Z",
+    "post_count": 1,
+    "takedown": false
+  },
+  {
+    "id": "b639c31d-7e55-5f77-956c-2fc82bd3f431",
+    "handle": "Shark-CIG",
+    "display_name": "Shark-CIG",
+    "role": "CIG Staff",
+    "first_seen": "2025-11-19T20:00:00.000Z",
+    "post_count": 128,
+    "takedown": false
+  },
+  {
+    "id": "ded3504e-4e49-5984-9374-c4adeb6a920a",
+    "handle": "Bearded-CIG",
+    "display_name": "Bearded-CIG",
+    "role": "CIG Staff",
+    "first_seen": "2025-11-21T14:51:54.000Z",
+    "post_count": 24,
+    "takedown": false
+  },
+  {
+    "id": "b54dc8e4-3159-516e-bfb8-31a50d306aa4",
+    "handle": "Soulcrusher-CIG",
+    "display_name": "Will \"Soulcrusher\" Leverett",
+    "role": "CIG Staff",
+    "first_seen": "2025-11-22T00:24:51.000Z",
+    "post_count": 1,
+    "takedown": false
+  },
+  {
+    "id": "7c68f2cf-b66b-5a67-8f1b-ffc3ec7b81c5",
+    "handle": "Stamp-CIG",
+    "display_name": "Stamp-CIG",
+    "role": "CIG Staff",
+    "first_seen": "2025-12-10T15:50:00.000Z",
+    "post_count": 25,
+    "takedown": false
+  },
+  {
+    "id": "66b850ae-ec8d-584e-9ed1-91fcdf9e9d76",
+    "handle": "Silvan-CIG",
+    "display_name": "Silvan-CIG",
+    "role": "CIG Staff",
+    "first_seen": "2025-12-11T14:17:58.000Z",
+    "post_count": 127,
+    "takedown": false
+  },
+  {
+    "id": "94cc3a23-a61f-5a64-968f-b75ea59c5e28",
+    "handle": "Proxus-CIG",
+    "display_name": "Proxus-CIG",
+    "role": "CIG Staff",
+    "first_seen": "2025-12-11T18:00:00.000Z",
+    "post_count": 4,
+    "takedown": false
+  },
+  {
+    "id": "c6249b39-41f7-5417-968f-93069635784a",
+    "handle": "CIG-SeanT",
+    "display_name": "Sean \"Criminal\" Tracy",
+    "role": "CIG Staff",
+    "first_seen": "2025-12-12T06:18:33.000Z",
+    "post_count": 4,
+    "takedown": false
+  },
+  {
+    "id": "4a4a3db2-538c-58fe-9602-781a0fa79168",
+    "handle": "Synthwave-CIG",
+    "display_name": "Synthwave-CIG",
+    "role": "CIG Staff",
+    "first_seen": "2025-12-16T16:44:54.000Z",
+    "post_count": 15,
+    "takedown": false
+  },
+  {
+    "id": "a01dc4be-c7fb-5dd1-8f89-aec12d960d80",
+    "handle": "Baior-CIG",
+    "display_name": "Baior Of Red",
+    "role": "CIG Staff",
+    "first_seen": "2025-12-18T01:11:04.000Z",
+    "post_count": 1,
+    "takedown": false
+  },
+  {
+    "id": "01db23e4-1f6b-5974-ad45-fdd2b34c025a",
+    "handle": "CIG_Tiki_Bartender",
+    "display_name": "CIG Tiki Bartender",
+    "role": "CIG Staff",
+    "first_seen": "2026-01-16T14:56:41.000Z",
+    "post_count": 7,
+    "takedown": false
+  },
+  {
+    "id": "94dd055b-217f-560f-be7a-990b0ba8d1f8",
+    "handle": "nschiro",
+    "display_name": "Nick | Spectrum",
+    "role": "CIG Staff",
+    "first_seen": "2026-02-06T15:00:31.000Z",
+    "post_count": 19,
+    "takedown": false
+  },
+  {
+    "id": "8957a983-3d5b-5d39-8976-8a678a62feac",
+    "handle": "XLB-CIG",
+    "display_name": "XLB-CIG",
+    "role": "CIG Staff",
+    "first_seen": "2026-02-16T19:32:57.000Z",
+    "post_count": 3,
+    "takedown": false
+  },
+  {
+    "id": "854915b2-39c4-561c-a3c5-7637eda3ee51",
+    "handle": "Decker-CIG",
+    "display_name": "Decker | CIG",
+    "role": "CIG Staff",
+    "first_seen": "2026-02-18T15:37:29.000Z",
+    "post_count": 2,
+    "takedown": false
+  },
+  {
+    "id": "206a0d66-7b53-5c46-a344-dd04a3b49526",
+    "handle": "Zippy-CIG",
+    "display_name": "Zippy-CIG",
+    "role": "CIG Staff",
+    "first_seen": "2026-03-12T13:14:45.000Z",
+    "post_count": 4,
+    "takedown": false
+  },
+  {
+    "id": "042b766e-1a52-52d9-9f89-2eb13287b8da",
+    "handle": "JCrewe_CIG",
+    "display_name": "JCrewe CIG",
+    "role": "CIG Staff",
+    "first_seen": "2026-03-16T15:27:53.000Z",
+    "post_count": 1,
+    "takedown": false
+  },
+  {
+    "id": "6a3e513c-bc7c-5022-b1db-26089042e160",
+    "handle": "SeaDaddy-CIG",
+    "display_name": "SeaDaddy-CIG",
+    "role": "CIG Staff",
+    "first_seen": "2026-03-18T00:20:31.000Z",
+    "post_count": 1,
+    "takedown": false
+  },
+  {
+    "id": "e6347220-4522-5837-bbf3-82d767bea43f",
+    "handle": "Nightrider-CIG",
+    "display_name": "Nightrider-CIG",
+    "role": "CIG Staff",
+    "first_seen": "2026-03-18T03:07:03.000Z",
+    "post_count": 2,
+    "takedown": false
+  },
+  {
+    "id": "bd967f27-d52f-5336-b0bd-b09792baa911",
+    "handle": "DecH-CIG",
+    "display_name": "DecH-CIG",
+    "role": "CIG Staff",
+    "first_seen": "2026-03-26T13:45:39.000Z",
+    "post_count": 1,
+    "takedown": false
+  },
+  {
+    "id": "2c480d2f-1e0d-5cb7-8f20-2a52494ebd3a",
+    "handle": "Wiaz-CIG",
+    "display_name": "Wiaz-CIG",
+    "role": "CIG Staff",
+    "first_seen": "2026-04-01T19:36:57.000Z",
+    "post_count": 20,
+    "takedown": false
+  },
+  {
+    "id": "2e2336e3-0c28-50aa-9668-0b1f3f5b2b97",
+    "handle": "Zyloh-CIG",
+    "display_name": "Zyloh-CIG",
+    "role": "CIG Staff",
+    "first_seen": "2026-04-09T21:03:51.000Z",
+    "post_count": 11,
+    "takedown": false
+  },
+  {
+    "id": "8992a9db-9d08-59c0-a404-a303936c9885",
+    "handle": "Hyperion-Turb",
+    "display_name": "Hyperion | Turbulent",
+    "role": "CIG Staff",
+    "first_seen": "2026-04-15T15:09:16.000Z",
+    "post_count": 14,
+    "takedown": false
+  },
+  {
+    "id": "befdb05f-036b-5140-b97f-2f522ed6cc6d",
+    "handle": "Bault",
+    "display_name": "Bault-CIG",
+    "role": "CIG Staff",
+    "first_seen": "2026-05-08T20:39:47.000Z",
+    "post_count": 2,
+    "takedown": false
+  },
+  {
+    "id": "bfa724b8-bb8a-5b51-9c3a-ef9a1c6a01f1",
+    "handle": "BigTO-CIG",
+    "display_name": "Big T-O",
+    "role": "CIG Staff",
+    "first_seen": "2026-05-11T18:12:00.000Z",
+    "post_count": 18,
+    "takedown": false
+  },
+  {
+    "id": "07046656-4bc3-5063-ab53-747ab9d5645a",
+    "handle": "Montic-CIG",
+    "display_name": "Montic-CIG",
+    "role": "CIG Staff",
+    "first_seen": "2026-05-14T12:28:41.000Z",
+    "post_count": 8,
+    "takedown": false
+  },
+  {
+    "id": "b9dcf819-1f85-5a59-b3fb-6ecf4666aa30",
+    "handle": "Raven-CIG",
+    "display_name": "Raven-CIG",
+    "role": "CIG Staff",
+    "first_seen": "2026-05-14T13:56:20.000Z",
+    "post_count": 1,
+    "takedown": false
+  },
+  {
+    "id": "bc6ab1c2-7049-5284-b3fd-74ef010c7f0b",
+    "handle": "500servererror-CIG",
+    "display_name": "500ServerError-CIG",
+    "role": "CIG Staff",
+    "first_seen": "2026-06-03T13:38:33.000Z",
+    "post_count": 55,
+    "takedown": false
+  },
+  {
+    "id": "bffa5919-cb8b-5aef-958d-5129048dbe30",
+    "handle": "Liryn-CIG",
+    "display_name": "Liryn-CIG",
+    "role": "CIG Staff",
+    "first_seen": "2026-06-04T21:18:29.000Z",
+    "post_count": 2,
+    "takedown": false
+  },
+  {
+    "id": "13e4219a-11ee-5147-9563-774c1a1e8666",
+    "handle": "Fil-CIG",
+    "display_name": "Fil-CIG",
+    "role": "CIG Staff",
+    "first_seen": "2026-06-24T23:14:29.000Z",
+    "post_count": 8,
+    "takedown": false
+  },
+  {
+    "id": "42b11629-0cf5-51c5-bafa-4ded5c63e9c5",
+    "handle": "TheDJBuntin-CIG",
+    "display_name": "TheDJBuntin-CIG",
+    "role": "CIG Staff",
+    "first_seen": "2026-07-20T18:46:12.000Z",
+    "post_count": 5,
+    "takedown": false
+  },
+  {
+    "id": "64fd3b21-f47d-50b1-9fec-119de79b74d5",
+    "handle": "Taqwakore",
+    "display_name": "Taqwakore | CIG",
+    "role": "CIG Staff",
+    "first_seen": "2026-08-03T20:42:48.000Z",
+    "post_count": 1,
+    "takedown": false
+  },
+  {
+    "id": "10faa503-2487-57d7-b86f-b38b7a8d5569",
+    "handle": "mkale-CIG",
+    "display_name": "mkale-CIG",
+    "role": "CIG Staff",
+    "first_seen": "2026-10-06T15:23:01.000Z",
+    "post_count": 9,
+    "takedown": false
+  }
+]

@@ -73,7 +73,7 @@ describe("visibleNews", () => {
 });
 
 describe("the news window", () => {
-  it("hides anything published before DefenseCon 2956 opened, whatever the pack holds (ADR-030)", () => {
+  it("hides anything published before DefenseCon 2956 opened, whatever the pack holds (ADR-031)", () => {
     const older = [
       item(1, { published_at: "2026-05-13T23:00:00.000Z" }),
       item(2, { published_at: "2026-05-14T00:00:00.000Z" }),

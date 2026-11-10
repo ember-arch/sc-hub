@@ -39,7 +39,7 @@ export interface Store {
   /**
    * Records an item: nothing when the latest revision says the same; a first row when the item
    * is new; the next revision when the source changed its title, summary, body, url or time.
-   * An item published before the news window (ADR-030) is not recorded and answers "older".
+   * An item published before the news window (ADR-031) is not recorded and answers "older".
    */
   put(
     incoming: Incoming,

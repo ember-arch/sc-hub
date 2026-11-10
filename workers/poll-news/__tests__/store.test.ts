@@ -51,7 +51,7 @@ describe("the news store", () => {
     expect(reopened.save()).toBe(false);
   });
 
-  it("records nothing published before the news window, and answers older (ADR-030)", () => {
+  it("records nothing published before the news window, and answers older (ADR-031)", () => {
     const dir = mkdtempSync(join(tmpdir(), "news-"));
     const store = openStore(join(dir, "ContentItem.json"));
     expect(

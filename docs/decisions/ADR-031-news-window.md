@@ -1,4 +1,4 @@
-# ADR-030: The news window opens with DefenseCon 2956
+# ADR-031: The news window opens with DefenseCon 2956
 
 - Status: accepted
 - Date: 2026-11-10

@@ -118,6 +118,10 @@ jobs:
           name: web-build
           if-no-files-found: error
           retention-days: 1
+          # .next is a DOTTED directory and upload-artifact skips hidden files by
+          # default, so without this the path matches nothing and the error
+          # above fires on a build that was in fact fine.
+          include-hidden-files: true
 
   e2e:
     name: Playwright e2e and screenshots
@@ -195,3 +199,7 @@ jobs:
           name: lighthouse
           path: .lighthouseci
           if-no-files-found: ignore
+          # Dotted, like .next above. This upload has been silently producing
+          # nothing: hidden files are skipped by default and if-no-files-found
+          # is `ignore`, so there was no error to notice. Pre-existing on main.
+          include-hidden-files: true

@@ -64,13 +64,13 @@ export function ThroughArmour({
   return (
     <figure className="m-0 flex flex-col gap-3" aria-describedby={captionId}>
       <div className="flex flex-wrap items-center gap-2">
-        <label className="flex items-center gap-2 text-caption text-secondary">
-          <span>Fired on by</span>
+        <label className="flex min-w-0 max-w-full items-center gap-2 text-caption text-secondary">
+          <span className="shrink-0">Fired on by</span>
           <select
             aria-label="Fired on by"
             value={chosen}
             onChange={(event) => setChosen(event.target.value)}
-            className="rounded-pill border border-hairline-strong bg-surface px-3 py-1 text-caption text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+            className="min-w-0 max-w-full rounded-pill border border-hairline-strong bg-surface px-3 py-1 text-caption text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
           >
             {sizes.map((size) => (
               <optgroup key={size} label={`Size ${size}`}>

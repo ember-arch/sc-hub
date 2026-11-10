@@ -24,6 +24,8 @@ export const envSchema = z.object({
   SPECTRUM_MODE: SpectrumMode.default("off"),
   SPECTRUM_FEED_URL: url.optional(),
   SPECTRUM_SESSION_COOKIE: nonEmpty.optional(),
+  /** The role id Spectrum's search filters staff posts by; read once signed in (ADR-027). */
+  SPECTRUM_STAFF_ROLE_ID: nonEmpty.optional(),
   SENTRY_DSN: url.optional(),
   /** The public origin for canonical URLs, the sitemap and Open Graph (spec 02, "SEO"). */
   SITE_URL: url.optional(),

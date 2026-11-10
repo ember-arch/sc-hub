@@ -24,8 +24,8 @@
     "pipeline:publish": "node scripts/not-implemented.mjs pipeline:publish",
     "pipeline:all": "node scripts/not-implemented.mjs pipeline:all",
     "workers:import": "node scripts/not-implemented.mjs workers:import",
-    "workers:poll-news": "node scripts/not-implemented.mjs workers:poll-news",
-    "workers:poll-spectrum": "node scripts/not-implemented.mjs workers:poll-spectrum",
+    "workers:poll-news": "pnpm --filter poll-news poll",
+    "workers:poll-spectrum": "pnpm --filter poll-spectrum poll",
     "workers:link": "node scripts/not-implemented.mjs workers:link"
   },
   "devDependencies": {

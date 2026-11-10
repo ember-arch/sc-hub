@@ -15,6 +15,7 @@ const full: Record<string, string> = {
   SPECTRUM_MODE: "off",
   SPECTRUM_FEED_URL: "https://feed.example.test/staff.json",
   SPECTRUM_SESSION_COOKIE: "cookie-for-tests",
+  SPECTRUM_STAFF_ROLE_ID: "11",
   SENTRY_DSN: "https://key@sentry.example.test/1",
   SITE_URL: "https://site.example.test",
   SC_INSTALL_ROOT: "C:\\Games\\StarCitizen",

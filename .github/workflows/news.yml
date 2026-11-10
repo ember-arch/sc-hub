@@ -1,0 +1,73 @@
+# The news pollers (ADR-027, spec 03).
+#
+# Every thirty minutes workers/poll-news reads RSI's Comm-Link hub (and the Star Citizen Wiki
+# API's record of each new Comm-Link) and RSI's roadmap board, and appends what is new to the
+# news pack in fixtures/news. When anything changed, the change lands on main as one data commit;
+# when nothing did, the run ends with no commit. The unit suite guards the parsers; a source that
+# answers with a shape the parsers do not know fails the run and writes nothing. The RSI requests
+# need the repository variable SC_HUB_CONTACT_EMAIL (CLAUDE.md section 9). The Spectrum worker
+# runs in the same job and does nothing until the repository variable SPECTRUM_MODE is poll (with
+# the secrets SPECTRUM_SESSION_COOKIE and SPECTRUM_STAFF_ROLE_ID) or feed (with SPECTRUM_FEED_URL),
+# which the owner sets once docs/legal/cig-approval.md ticks the Spectrum box.
+name: News
+
+on:
+  schedule:
+    # Every thirty minutes: GitHub's schedule is best-effort and often late, and ninety-six runs a
+    # day would spend more Actions minutes than a private repository has (ADR-027). Spec 03's
+    # fifteen-minute gate holds once the pollers run on Fly.
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: news
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+env:
+  NEXT_TELEMETRY_DISABLED: "1"
+
+jobs:
+  poll:
+    name: Poll the news sources
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Build the schema
+        run: pnpm --filter schema build
+      - name: Poll
+        env:
+          SC_HUB_CONTACT_EMAIL: ${{ vars.SC_HUB_CONTACT_EMAIL }}
+        run: pnpm workers:poll-news
+      - name: Poll Spectrum (off until SPECTRUM_MODE is set)
+        continue-on-error: true
+        env:
+          SC_HUB_CONTACT_EMAIL: ${{ vars.SC_HUB_CONTACT_EMAIL }}
+          SPECTRUM_MODE: ${{ vars.SPECTRUM_MODE }}
+          SPECTRUM_FEED_URL: ${{ vars.SPECTRUM_FEED_URL }}
+          SPECTRUM_SESSION_COOKIE: ${{ secrets.SPECTRUM_SESSION_COOKIE }}
+          SPECTRUM_STAFF_ROLE_ID: ${{ secrets.SPECTRUM_STAFF_ROLE_ID }}
+        run: pnpm workers:poll-spectrum
+      - name: Commit what changed
+        run: |
+          git add fixtures/news
+          if git diff --cached --quiet; then
+            echo "Nothing new."
+            exit 0
+          fi
+          git config user.name "sc-hub news"
+          git config user.email "news@users.noreply.github.com"
+          git commit -m "data: news pack, $(date -u +%Y-%m-%dT%H:%MZ) (ADR-027)"
+          git pull --rebase origin main
+          git push origin HEAD:main

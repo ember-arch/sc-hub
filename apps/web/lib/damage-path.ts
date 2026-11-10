@@ -28,7 +28,12 @@ import {
  *
  * Every stage is one product of the shot and a record figure; the stages are not chained beyond
  * what the statements above say (the hull's share is of what passed the shields). Absorption and
- * resistance are taken at their maximum, full shields.
+ * resistance are taken at their maximum, full shields. Which record field each sentence names
+ * is SPViewer's reading, consistent with the data (the armour-pool multiplier is above 1 for
+ * energy on every ship, the hull multiplier above for physical); CIG names no field.
+ *
+ * Fifteen shielded ground vehicles (720 HP shields) carry no absorption or resistance figures in
+ * their record: for them the shields stand aside and the path starts at the armour, said so.
  */
 
 export interface Range {
@@ -134,6 +139,16 @@ export interface PathStage {
   readonly components: number | null;
   /** The record's deflection figure for the kind, when the shot falls below it; else null. */
   readonly belowDeflection: number | null;
+}
+
+/** Whether the record gives the shields a share of each kind to absorb. */
+export function hasShieldShares(m: Mitigation): boolean {
+  return m.shieldAbsorption !== null;
+}
+
+/** Damage per second the hull takes at this rate of fire, on the same stage figures. */
+export function perSecondToHull(dps: number, stage: PathStage, m: Mitigation): number {
+  return dps * (stage.passed / stage.shot) * m.hull[stage.kind];
 }
 
 /** One shot of each kind the weapon deals, stage by stage. */

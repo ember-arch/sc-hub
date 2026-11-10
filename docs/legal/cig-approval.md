@@ -43,9 +43,9 @@ Tick only what is confirmed in writing. Quote the relevant sentence from the con
   > quote: TBD
   - PTU data publication explicitly covered — yes / no — TBD
 
-- [ ] **Spectrum developer posts** — republication of CIG staff posts in full, with author names, roles, and links back. To settle in the same conversation: whether the poll may run under the owner's own Spectrum session or needs an account CIG sanctions, or whether CIG would rather provide a feed (ADR-027).
+- [ ] **Spectrum developer posts** — republication of CIG staff posts in full, with author names, roles, and links back. The posts are read from Spectrum's public search without any account, two requests a run with the project's User-Agent and contact address (ADR-027), so the question is republication alone; to settle in the same conversation whether CIG would rather provide a feed.
   > quote: TBD
-  - Access method: CIG feed or export / sanctioned service account / not yet agreed — TBD
+  - Access method: Spectrum's public search (no account) / CIG feed or export — public search until agreed otherwise
   - Retention: indefinite / N months — TBD
   - Takedown: who to contact and within what time — TBD
 

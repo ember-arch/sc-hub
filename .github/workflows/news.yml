@@ -6,9 +6,10 @@
 # when nothing did, the run ends with no commit. The unit suite guards the parsers; a source that
 # answers with a shape the parsers do not know fails the run and writes nothing. The RSI requests
 # need the repository variable SC_HUB_CONTACT_EMAIL (CLAUDE.md section 9). The Spectrum worker
-# runs in the same job and does nothing until the repository variable SPECTRUM_MODE is poll (with
-# the secrets SPECTRUM_SESSION_COOKIE and SPECTRUM_STAFF_ROLE_ID) or feed (with SPECTRUM_FEED_URL),
-# which the owner sets once docs/legal/cig-approval.md ticks the Spectrum box.
+# runs in the same job and does nothing until the repository variable SPECTRUM_MODE is poll (no
+# credential: Spectrum's search answers without a sign-in) or feed (with SPECTRUM_FEED_URL).
+# Collecting into this private repository is not republication; the site shows nothing from
+# Spectrum until its own SPECTRUM_MODE is set, once docs/legal/cig-approval.md ticks the box.
 name: News
 
 on:
@@ -56,8 +57,6 @@ jobs:
           SC_HUB_CONTACT_EMAIL: ${{ vars.SC_HUB_CONTACT_EMAIL }}
           SPECTRUM_MODE: ${{ vars.SPECTRUM_MODE }}
           SPECTRUM_FEED_URL: ${{ vars.SPECTRUM_FEED_URL }}
-          SPECTRUM_SESSION_COOKIE: ${{ secrets.SPECTRUM_SESSION_COOKIE }}
-          SPECTRUM_STAFF_ROLE_ID: ${{ secrets.SPECTRUM_STAFF_ROLE_ID }}
         run: pnpm workers:poll-spectrum
       - name: Commit what changed
         run: |

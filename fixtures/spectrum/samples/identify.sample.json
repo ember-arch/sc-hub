@@ -1,0 +1,205 @@
+{
+  "success": 1,
+  "data": {
+    "communities": [
+      {
+        "id": "1",
+        "slug": "SC",
+        "name": "Star Citizen",
+        "roles": [
+          {
+            "id": "2",
+            "name": "staff",
+            "description": "CIG Staff",
+            "tracked": true,
+            "highlightable": true,
+            "visible": true,
+            "color": "DEC342"
+          },
+          {
+            "id": "755998",
+            "name": "PTU Participant",
+            "description": "Users who participated in PTU",
+            "tracked": false,
+            "highlightable": false,
+            "visible": false,
+            "color": "757575"
+          },
+          {
+            "id": "3",
+            "name": "mod",
+            "description": "Spectrum public moderator",
+            "tracked": false,
+            "highlightable": true,
+            "visible": true,
+            "color": "7D67E9"
+          },
+          {
+            "id": "4",
+            "name": "backer",
+            "description": "Star Citizen project backers",
+            "tracked": false,
+            "highlightable": false,
+            "visible": true,
+            "color": "4DA1E3"
+          },
+          {
+            "id": "5",
+            "name": "subscriber",
+            "description": "Community subscribers",
+            "tracked": false,
+            "highlightable": false,
+            "visible": false,
+            "color": "cf8207"
+          },
+          {
+            "id": "6",
+            "name": "concierge",
+            "description": "Concierge level backers",
+            "tracked": false,
+            "highlightable": false,
+            "visible": false,
+            "color": "43edf8"
+          },
+          {
+            "id": "137732",
+            "name": "mmhc",
+            "description": "Million Mile High Club",
+            "tracked": false,
+            "highlightable": false,
+            "visible": false,
+            "color": "4DA1E3"
+          },
+          {
+            "id": "7",
+            "name": "evocati",
+            "description": "Evocati test flight",
+            "tracked": false,
+            "highlightable": false,
+            "visible": false,
+            "color": "7a69b5"
+          },
+          {
+            "id": "375266",
+            "name": "guide",
+            "description": "Guide",
+            "tracked": false,
+            "highlightable": false,
+            "visible": false,
+            "color": "7a69b5"
+          },
+          {
+            "id": "694611",
+            "name": "New Citizen 2953",
+            "description": "Users that have enlisted in the last 30 Days",
+            "tracked": false,
+            "highlightable": false,
+            "visible": false,
+            "color": "53C6C2"
+          },
+          {
+            "id": "1",
+            "name": "admin",
+            "description": "Spectrum Administrator",
+            "tracked": false,
+            "highlightable": true,
+            "visible": false,
+            "color": "FF6262"
+          },
+          {
+            "id": "823949",
+            "name": "probated-civilian",
+            "description": "Probated civilians",
+            "tracked": false,
+            "highlightable": false,
+            "visible": false,
+            "color": "ED6262"
+          },
+          {
+            "id": "8",
+            "name": "probated-backer",
+            "description": "Probated backers",
+            "tracked": false,
+            "highlightable": false,
+            "visible": false,
+            "color": "ED6262"
+          },
+          {
+            "id": "9",
+            "name": "probated-subscriber",
+            "description": "Probated subscribers",
+            "tracked": false,
+            "highlightable": false,
+            "visible": false,
+            "color": "ED6262"
+          },
+          {
+            "id": "375267",
+            "name": "probated-guide",
+            "description": "Probated guide",
+            "tracked": false,
+            "highlightable": false,
+            "visible": false,
+            "color": "ED6262"
+          },
+          {
+            "id": "10",
+            "name": "probated-concierge",
+            "description": "Probated concierge",
+            "tracked": false,
+            "highlightable": false,
+            "visible": false,
+            "color": "ED6262"
+          },
+          {
+            "id": "11",
+            "name": "civilian",
+            "description": "SC Community member",
+            "tracked": false,
+            "highlightable": false,
+            "visible": true,
+            "color": "D6E3EB"
+          },
+          {
+            "id": "285269",
+            "name": "high_jacket",
+            "description": "High Jacket",
+            "tracked": false,
+            "highlightable": false,
+            "visible": true,
+            "color": "4DA1E3"
+          },
+          {
+            "id": "285270",
+            "name": "bug_skipper",
+            "description": "Bug Skipper",
+            "tracked": false,
+            "highlightable": false,
+            "visible": true,
+            "color": "4DA1E3"
+          },
+          {
+            "id": "12",
+            "name": "default",
+            "description": "Default role for all members",
+            "tracked": false,
+            "highlightable": false,
+            "visible": false,
+            "color": "757575"
+          },
+          {
+            "id": "13",
+            "name": "anonymous",
+            "description": "Role for anonymous users",
+            "tracked": false,
+            "highlightable": false,
+            "visible": false,
+            "color": "757575"
+          }
+        ]
+      }
+    ]
+  },
+  "code": "OK",
+  "msg": "OK"
+}

@@ -3,8 +3,9 @@
  * method, CIG staff posts arrive here as `StaffPost`s: the post, its thread and its author as
  * Spectrum shows them, nothing more (no avatars, no personal details beyond the post itself).
  * Two implementations stand behind it: `feed` (a CIG-provided export, format to be agreed; the
- * stub validates the documented JSON shape) and `poll` (Spectrum's own search, with a sanctioned
- * account's session). `SPECTRUM_MODE` picks one; `off` disables the module and the site's tab.
+ * stub validates the documented JSON shape) and `poll` (Spectrum's own search, filtered to the
+ * staff highlight, read without a sign-in). `SPECTRUM_MODE` picks one; `off` disables the module
+ * and the site's tab.
  */
 
 export interface StaffPost {

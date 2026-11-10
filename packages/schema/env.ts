@@ -23,8 +23,10 @@ export const envSchema = z.object({
   CDN_BASE_URL: url.optional(),
   SPECTRUM_MODE: SpectrumMode.default("off"),
   SPECTRUM_FEED_URL: url.optional(),
-  SPECTRUM_SESSION_COOKIE: nonEmpty.optional(),
-  /** The role id Spectrum's search filters staff posts by; read once signed in (ADR-027). */
+  /**
+   * Overrides the staff role id the Spectrum worker resolves each run from Spectrum's own role
+   * list (ADR-027); unset in every deployment so far.
+   */
   SPECTRUM_STAFF_ROLE_ID: nonEmpty.optional(),
   SENTRY_DSN: url.optional(),
   /** The public origin for canonical URLs, the sitemap and Open Graph (spec 02, "SEO"). */
@@ -109,12 +111,7 @@ export function loadEnv(
     if (env.SPECTRUM_MODE === "feed" && env.SPECTRUM_FEED_URL === undefined) {
       missing.push("SPECTRUM_FEED_URL");
     }
-    if (
-      env.SPECTRUM_MODE === "poll" &&
-      env.SPECTRUM_SESSION_COOKIE === undefined
-    ) {
-      missing.push("SPECTRUM_SESSION_COOKIE");
-    }
+    // `poll` mode needs nothing more: Spectrum's search answers without a sign-in (ADR-027).
   }
   if (missing.length > 0) {
     throw new EnvError(

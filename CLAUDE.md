@@ -127,7 +127,7 @@ Environment variables (validated in `packages/schema/env.ts`; a missing required
 DATABASE_URL
 MEILI_HOST, MEILI_MASTER_KEY, MEILI_SEARCH_KEY
 R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET, CDN_BASE_URL
-SPECTRUM_MODE (feed | poll | off), SPECTRUM_FEED_URL, SPECTRUM_SESSION_COOKIE, SPECTRUM_STAFF_ROLE_ID (poll mode; the staff role id as Spectrum names it once signed in, ADR-027)
+SPECTRUM_MODE (feed | poll | off), SPECTRUM_FEED_URL (feed mode), SPECTRUM_STAFF_ROLE_ID (optional; poll mode resolves the staff role from Spectrum's own role list each run and needs no sign-in, ADR-027)
 SENTRY_DSN
 SITE_URL (the public origin; canonical URLs, sitemap.xml and Open Graph resolve against it)
 SC_INSTALL_ROOT (Windows only, for example C:\Program Files\Roberts Space Industries\StarCitizen)

@@ -1,55 +1,115 @@
 {
   "success": 1,
-  "code": "OK",
-  "msg": "OK",
   "data": {
     "hits": {
       "hits": [
         {
           "_index": "tavern_forum_thread_op",
-          "_id": "576637",
-          "_score": 27.691471,
+          "_id": "576588",
+          "_score": 2,
           "_source": {
-            "subject": "The Polaris, The Galaxy and The Perseus (Oh My)",
-            "body": "Since the Galaxy has been introduced, I have noticed there is a bit of frustration from Polaris owners. Being someone who has pledged a Polaris since its concept I can understand the viewpoints of power creep and misaligned ship philosophy (no pilot weapons for bigger ships), and I began pondering how it all fits together because the design choices retrospectively do seem odd for the Polaris.\n\nThe Polaris struggles in its current role (hit-and-run torpedo boat) because the torpedoes (and missiles) are unreliable to the point they basically don't work, resulting in weak performance in PvP combat.",
-            "time_created": "2026-11-10T06:01:17Z",
-            "time_modified": "2026-11-10T06:01:17Z",
+            "subject": "[All Waves] Star Citizen Alpha 4.10.3 PTU Patch Notes 13145606",
+            "body": "Alpha Patch 4.10.3 has been released and is now available to test on the PTU environment! Patch should now show: VERSION 4.10.3-PTU.13145606\n    Audience: All Waves\n    Server Info: PTU Channel - US Only\n    Long Term Persistence: Enabled\nTesting/Feedback Focus\n    Stability, Bugfixes, LTP between PTU releases\n    New Missions: Vanduul Incursion\n    New FPS Weapon: LBCO Skarnov Rifle\n    IAE (On accelerated schedule)\n\n\nBugfixes & Technical\nTonight's build focuses on further performance and polish for IAE and Vanduul Incursion.\nPotential Fix: Counter is stuck at 0% after eliminating all hostiles on board the \"Blinding Hope\" Battaglia mission\nPotential Fix: Accepting a mission card at Wikelo's causes random missions to be accepted\nPotential Fix: There's a chance that the hostile AI ship will not shoot back at the Player during Bounty Hunter / Mercenary missions",
+            "time_created": "2026-11-09T22:24:26Z",
+            "time_modified": "2026-11-09T22:48:37Z",
             "community_id": "1",
-            "channel_id": "3",
-            "label_id": "6",
-            "member_id": "18009",
-            "thread_id": "576637",
-            "highlight_role_id": "",
+            "channel_id": "190048",
+            "label_id": "",
+            "member_id": "429390",
+            "thread_id": "576588",
+            "highlight_role_id": 2,
             "is_erased": false
           },
           "sort": [
-            1794290477000
+            1794263066000
           ],
           "details": {
-            "community": {
-              "id": "1",
-              "type": "public",
-              "slug": "SC",
-              "name": "Star Citizen"
-            },
             "thread": {
-              "id": "576637",
-              "time_created": 1794290477,
-              "time_modified": 1794290477,
-              "member_id": "18009",
-              "channel_id": "3",
-              "label_id": "6",
+              "id": "576588",
+              "time_created": 1794263066,
+              "time_modified": 1794324794,
+              "member_id": "429390",
+              "channel_id": "190048",
+              "label_id": "",
               "type": "discussion",
-              "slug": "the-polaris-the-galaxy-and-the-perseus-oh-my",
-              "subject": "The Polaris, The Galaxy and The Perseus (Oh My)",
+              "slug": "star-citizen-alpha-4-10-3-ptu-patch-notes-5",
+              "subject": "[All Waves] Star Citizen Alpha 4.10.3 PTU Patch Notes 13145606",
               "is_locked": false,
               "is_reply_nesting_disabled": false,
               "is_pinned": false,
               "is_sinked": false,
               "is_erased": false,
               "erased_by": null,
-              "tracked_post_role_id": "",
-              "content_reply_id": "9220984",
+              "tracked_post_role_id": "2",
+              "content_reply_id": "9220249",
+              "annotation_plaintext": null
+            },
+            "channel": {
+              "id": "190048",
+              "community_id": "1",
+              "group_id": "63927",
+              "order": 0,
+              "name": "Patch Notes",
+              "description": "",
+              "color": "E9B45B",
+              "sort_filter": null,
+              "label_required": false
+            },
+            "member": {
+              "id": "429390",
+              "displayname": "Wakapedia-CIG",
+              "nickname": "Wakapedia-CIG",
+              "meta": {
+                "badges": [
+                  {
+                    "name": "Developer"
+                  },
+                  {
+                    "name": "Evocati - NDA"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "_index": "tavern_forum_thread_reply",
+          "_id": "9221842",
+          "_score": 1,
+          "_source": {
+            "body": "Thank you for reporting this issue. Our teams are aware and working on resolving this unintended change :+1:",
+            "time_created": "2026-11-10T14:53:13Z",
+            "time_modified": "2026-11-10T14:53:13Z",
+            "community_id": "1",
+            "channel_id": "3",
+            "label_id": "2380",
+            "member_id": "4713987",
+            "thread_id": "576192",
+            "highlight_role_id": "2",
+            "is_erased": false
+          },
+          "sort": [
+            1794322393000
+          ],
+          "details": {
+            "thread": {
+              "id": "576192",
+              "time_created": 1793973425,
+              "time_modified": 1794325286,
+              "member_id": "285477",
+              "channel_id": "3",
+              "label_id": "2380",
+              "type": "discussion",
+              "slug": "gdc-armor-change-in-ptu-5-0-unacceptable",
+              "subject": "GDC armor change in PTU 5.0 unacceptable",
+              "is_locked": false,
+              "is_reply_nesting_disabled": false,
+              "is_pinned": false,
+              "is_sinked": false,
+              "is_erased": false,
+              "erased_by": null,
+              "tracked_post_role_id": "2",
+              "content_reply_id": "9214671",
               "annotation_plaintext": null
             },
             "channel": {
@@ -64,19 +124,16 @@
               "label_required": false
             },
             "member": {
-              "id": "18009",
-              "displayname": "Costfanatic06",
-              "nickname": "Costfanatic06",
+              "id": "4713987",
+              "displayname": "Nicou-CIG",
+              "nickname": "Nicou-CIG",
               "meta": {
                 "badges": [
                   {
-                    "name": "Subscriber",
-                    "icon": "https://robertsspaceindustries.com/media/ls27iyxog62nnr/heap_thumb/Subscriber.png"
+                    "name": "Developer"
                   },
                   {
-                    "name": "Southern Cross Alliance",
-                    "icon": "/media/d9xc56l8r6w28r/heap_note/SCA-Thumbnail.png",
-                    "url": "https://robertsspaceindustries.com/orgs/SCA"
+                    "name": "Evocati - NDA"
                   }
                 ]
               }
@@ -85,77 +142,144 @@
         },
         {
           "_index": "tavern_forum_thread_reply",
-          "_id": "9219158",
-          "_score": 10.049869,
+          "_id": "9219033",
+          "_score": 1,
           "_source": {
-            "body": "The Polaris has been a capital ship at every stage of its stats.  It was only ever a bad ship if people refused to crew it.  Balance is a constant change, do not expect those numbers to be final either.  \n\nIt was already virtually immune to most guns.  How much more is needed?",
-            "time_created": "2026-11-09T16:43:19Z",
-            "time_modified": "2026-11-09T16:43:19Z",
+            "body": "Hello everyone! \nWe are updating the Launcher from 2.19.1 to 2.19.2 today for a small backend QOL fix. There is no major update in content from 2.19.1\nThank you",
+            "time_created": "2026-11-09T15:43:55Z",
+            "time_modified": "2026-11-09T15:43:55Z",
             "community_id": "1",
-            "channel_id": "65300",
-            "label_id": "3248",
-            "member_id": "4299725",
-            "thread_id": "576489",
-            "highlight_role_id": null,
+            "channel_id": "1",
+            "label_id": "",
+            "member_id": "3615334",
+            "thread_id": "575799",
+            "highlight_role_id": "2",
             "is_erased": false
           },
           "sort": [
-            1794242599000
+            1794239035000
           ],
           "details": {
-            "community": {
-              "id": "1",
-              "type": "public",
-              "slug": "SC",
-              "name": "Star Citizen"
-            },
             "thread": {
-              "id": "576489",
-              "time_created": 1794221905,
-              "time_modified": 1794246784,
-              "member_id": "218143",
-              "channel_id": "65300",
-              "label_id": "3248",
+              "id": "575799",
+              "time_created": 1793718000,
+              "time_modified": 1794291152,
+              "member_id": "3615334",
+              "channel_id": "1",
+              "label_id": "",
               "type": "discussion",
-              "slug": "changes-for-the-polaris-coming-with-4-10-3-and-5-0",
-              "subject": "Changes for the Polaris coming with 4.10.3 and 5.0",
+              "slug": "rsi-launcher-2-19-1-release-notes",
+              "subject": "RSI Launcher 2.19.2 Release Notes",
               "is_locked": false,
               "is_reply_nesting_disabled": false,
-              "is_pinned": false,
+              "is_pinned": true,
               "is_sinked": false,
               "is_erased": false,
               "erased_by": null,
-              "tracked_post_role_id": "",
-              "content_reply_id": "9218734",
+              "tracked_post_role_id": "2",
+              "content_reply_id": "9209843",
               "annotation_plaintext": null
             },
             "channel": {
-              "id": "65300",
+              "id": "1",
               "community_id": "1",
-              "group_id": "22015",
-              "order": 9,
-              "name": "Roberts Space Industries",
-              "description": "RSI discussion group",
-              "color": "919191",
-              "sort_filter": null,
-              "label_required": true
+              "group_id": "1",
+              "order": 0,
+              "name": "Announcements",
+              "description": "Official Star Citizen announcements.",
+              "color": "e05248",
+              "sort_filter": "time-created",
+              "label_required": false
             },
             "member": {
-              "id": "4299725",
-              "displayname": "Lujayn",
-              "nickname": "Lujayn",
+              "id": "3615334",
+              "displayname": "LoujoD_CIG",
+              "nickname": "LoujoD",
               "meta": {
                 "badges": [
                   {
-                    "name": "Space Marshal",
-                    "icon": "https://media.robertsspaceindustries.com/h3alojif1lznt/heap_thumb.png"
+                    "name": "Civilian"
+                  },
+                  {
+                    "name": "Aurel-Sean Disciples"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "_index": "tavern_forum_thread_reply",
+          "_id": "9211526",
+          "_score": 1,
+          "_source": {
+            "body": "Hmm odd, all the menue etc are rendered on a separate Layer which is handed to OpenXR for compositing with the Real Scene. Possibly SteamVR changed something there. We would need more repro steps from other people before coming to a certain conclusion. Could also be simply something on your PC incompatible with the new SteamVR update.",
+            "time_created": "2026-11-04T10:00:57Z",
+            "time_modified": "2026-11-04T10:00:57Z",
+            "community_id": "1",
+            "channel_id": "3",
+            "label_id": "",
+            "member_id": "581144",
+            "thread_id": "549514",
+            "highlight_role_id": "2",
+            "is_erased": false
+          },
+          "sort": [
+            1793786457000
+          ],
+          "details": {
+            "thread": {
+              "id": "549514",
+              "time_created": 1778590200,
+              "time_modified": 1794176413,
+              "member_id": "581144",
+              "channel_id": "3",
+              "label_id": "",
+              "type": "discussion",
+              "slug": "star-citizen-vr-support-experimental-release-alpha",
+              "subject": "Star Citizen VR Support - Experimental Release (Alpha 4.8/4.9/4.10)",
+              "is_locked": false,
+              "is_reply_nesting_disabled": false,
+              "is_pinned": true,
+              "is_sinked": false,
+              "is_erased": false,
+              "erased_by": null,
+              "tracked_post_role_id": "2",
+              "content_reply_id": "8839503",
+              "annotation_plaintext": null
+            },
+            "channel": {
+              "id": "3",
+              "community_id": "1",
+              "group_id": "2",
+              "order": 0,
+              "name": "General",
+              "description": "Main discussion channel for all things SC.",
+              "color": "4aa3c9",
+              "sort_filter": null,
+              "label_required": false
+            },
+            "member": {
+              "id": "581144",
+              "displayname": "Silvan-CIG",
+              "nickname": "Silvan-CIG",
+              "meta": {
+                "badges": [
+                  {
+                    "name": "Developer"
+                  },
+                  {
+                    "name": "Stanton Police Department"
                   }
                 ]
               }
             }
           }
         }
-      ]
+      ],
+      "total": 4
     }
-  }
+  },
+  "code": "OK",
+  "msg": "OK"
 }

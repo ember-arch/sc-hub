@@ -22,4 +22,4 @@ pnpm exec tsx scripts/media/fetch-covers.ts
 pnpm --filter schema build && pnpm exec tsx scripts/media/prepare.ts
 ```
 
-The fetch reads the hub's pages (`?page=N`, ten transmissions a page) and then each cover not yet on disk, one request every 5 seconds, with the project User-Agent and the contact address and no session. It stops when every Comm-Link on record has its cover, when two pages in a row add nothing, or at `--pages <n>` (80 by default).
+The fetch reads the hub's pages (`?page=N`, ten transmissions a page) and then each cover not yet on disk, one request every 5 seconds, with the project User-Agent and the contact address and no session. It stops when every Comm-Link on record has its cover, when six pages in a row add nothing (the hub's pages are not in date order), or at `--pages <n>` (80 by default).

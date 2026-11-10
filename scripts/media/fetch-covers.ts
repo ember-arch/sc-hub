@@ -7,7 +7,7 @@
  * (CLAUDE.md section 9), with the project User-Agent and the contact address, without cookies or
  * a signed-in session. Only the Comm-Links in the news pack are fetched; a cover already copied
  * from the same address is kept. The hub is read until every Comm-Link on record has a cover,
- * two pages in a row add nothing, a page lists nothing, or `--pages <n>` (default 80) is reached.
+ * six pages in a row add nothing, a page lists nothing, or `--pages <n>` (default 80) is reached.
  *
  *   pnpm exec tsx scripts/media/fetch-covers.ts [--pages <n>]
  */
@@ -120,7 +120,8 @@ async function main(): Promise<void> {
       added += 1;
     }
     quiet = added === 0 ? quiet + 1 : 0;
-    if (quiet >= 2) break;
+    // The hub's pages are not in date order: a quiet page is not the end, so six in a row are.
+    if (quiet >= 6) break;
   }
 
   // Each cover once, at the polite rate; a copy from the same address is kept.

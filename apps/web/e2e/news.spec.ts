@@ -78,11 +78,20 @@ test("the RSS and JSON feeds answer with the newest items", async ({
   const xml = await rss.text();
   expect(xml).toContain('<rss version="2.0"');
   expect((xml.match(/<item>/g) ?? []).length).toBe(50);
+  // The feeds syndicate the dispatches (ADR-029): no Spectrum post, whatever the pack holds.
+  expect(xml).not.toContain("/spectrum/");
   const json = await request.get("/news/feed.json");
   expect(json.status()).toBe(200);
-  const feed = (await json.json()) as { version: string; items: unknown[] };
+  const feed = (await json.json()) as {
+    version: string;
+    items: { url: string; tags: string[] }[];
+  };
   expect(feed.version).toBe("https://jsonfeed.org/version/1.1");
   expect(feed.items).toHaveLength(50);
+  for (const item of feed.items) {
+    expect(item.url).not.toMatch(/\/spectrum\//);
+    expect(item.tags).not.toContain("spectrum");
+  }
 });
 
 test("the dev tracker is empty while Spectrum is off, and no author page exists", async ({

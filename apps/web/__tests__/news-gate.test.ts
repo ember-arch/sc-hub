@@ -1,6 +1,7 @@
 import { ContentItem } from "schema";
 import { describe, expect, it } from "vitest";
-import { visibleNews } from "../lib/data";
+import { buildRepository, visibleNews } from "../lib/data";
+import { bootstrapPack } from "./pack";
 
 // The one mechanism the Spectrum approval depends on (ADR-027): with the module off, no Spectrum
 // item reaches a page whatever the pack holds; a taken-down author's posts stay hidden either way.
@@ -68,5 +69,19 @@ describe("visibleNews", () => {
       hiddenAuthors: new Set([AUTHOR]),
     });
     expect(hidden.map((r) => r.external_id)).toEqual(["3", "1"]);
+  });
+});
+
+describe("the dispatches", () => {
+  it("never count a Spectrum item, with the module on or off (ADR-029)", () => {
+    const on = visibleNews(rows, { spectrum: true, hiddenAuthors: new Set() });
+    const r = buildRepository(bootstrapPack(), on);
+    expect(r.news.map((n) => n.external_id)).toEqual(["3", "2", "1"]);
+    expect(r.dispatches.map((n) => n.external_id)).toEqual(["1"]);
+    const off = buildRepository(
+      bootstrapPack(),
+      visibleNews(rows, { spectrum: false, hiddenAuthors: new Set() }),
+    );
+    expect(off.dispatches.map((n) => n.external_id)).toEqual(["1"]);
   });
 });

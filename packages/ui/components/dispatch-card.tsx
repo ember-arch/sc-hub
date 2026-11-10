@@ -30,7 +30,8 @@ export interface DispatchCardProps {
 
 /**
  * A dispatch as a card (ADR-029): the cover at 16:9 to the card's edges, then the dispatch line
- * (source, time), the title, the excerpt cut to three lines and the source link. The same
+ * (source, time), the title, the excerpt cut to three lines (four on the lead, which has the
+ * height of its cover beside it) and the source link. The same
  * grammar as the register's cards (ADR-021): a rounded card by tone and a soft shadow, the
  * words in their own block, no scrim.
  */
@@ -79,7 +80,7 @@ export function DispatchCard({
     );
   return (
     <article
-      className={`overflow-hidden rounded-card bg-surface ${lead ? "shadow-lift md:grid md:grid-cols-12" : "flex h-full flex-col shadow-soft"}`}
+      className={`overflow-hidden rounded-card bg-surface shadow-soft ${lead ? "md:grid md:grid-cols-12" : "flex h-full flex-col"}`}
     >
       {image === null ? null : (
         <div className={lead ? "md:col-span-7" : ""}>{image}</div>

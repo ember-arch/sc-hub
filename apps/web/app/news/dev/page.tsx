@@ -15,7 +15,7 @@ import { Chip } from "../chip";
 import { NewsTabs } from "../tabs";
 
 export const metadata: Metadata = {
-  title: "Dev tracker",
+  title: "Developer posts",
   alternates: { canonical: "/news/dev" },
 };
 

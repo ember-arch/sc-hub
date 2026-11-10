@@ -112,7 +112,16 @@ async function main(): Promise<void> {
       page === 1 ? COMM_LINK_HUB_URL : `${COMM_LINK_HUB_URL}?page=${page}`;
     const found = coversFromHub(await (await get(url)).text());
     read += 1;
-    if (found.length === 0) break;
+    if (found.length === 0) {
+      // The first page always lists transmissions; none means the page's shape changed or the
+      // hub is down, and the run halts rather than record nothing (CLAUDE.md section 5).
+      if (page === 1) {
+        throw new Error(
+          "comm-link hub: no transmission block with a cover on the first page",
+        );
+      }
+      break;
+    }
     let added = 0;
     for (const { id, cover } of found) {
       if (!wanted.has(id) || covers.has(id)) continue;
@@ -163,16 +172,33 @@ async function main(): Promise<void> {
       }),
     );
   }
-  writeFileSync(sourcesPath, `${JSON.stringify(rows, null, 2)}\n`);
+  // The record never shrinks: a cover the hub did not list this time (its pages are not in date
+  // order, and a run may stop early) keeps its row, and a row stands until its Comm-Link leaves
+  // the pack. A new copy replaces the row for the same Comm-Link.
+  const merged = new Map(
+    previous
+      .filter((r) => wanted.has(r.external_id))
+      .map((r) => [r.external_id, r] as const),
+  );
+  for (const row of rows) merged.set(row.external_id, row);
+  const record = [...merged.values()].sort(
+    (a, b) => Number(b.external_id) - Number(a.external_id),
+  );
+  writeFileSync(sourcesPath, `${JSON.stringify(record, null, 2)}\n`);
+  const withoutCover = [...wanted.keys()]
+    .filter((id) => !merged.has(id))
+    .sort((a, b) => Number(b) - Number(a));
   console.log(
     JSON.stringify({
       run_id: runId,
       job: "media:fetch-covers",
       on_record: wanted.size,
       hub_pages: read,
-      covered: rows.length,
+      seen_this_run: rows.length,
       reused,
-      without_cover: [...wanted.keys()].filter((id) => !covers.has(id)).length,
+      covered: record.length,
+      without_cover: withoutCover.length,
+      without_cover_ids: withoutCover,
       errors: 0,
       duration_ms: Date.now() - started,
     }),

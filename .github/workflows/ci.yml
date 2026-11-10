@@ -1,8 +1,28 @@
 # CI for every PR and for pushes to main (spec 00, criterion "CI").
 #
-# `check` runs now. `e2e` and `lighthouse` are written but skip until apps/web exists
-# (spec 00, criterion "Site shell"), so they start running without another workflow change.
-# The Vercel preview link on PRs comes from the Vercel GitHub app, not from this file.
+# The Vercel preview link on PRs comes from the Vercel GitHub app, not from this
+# file.
+#
+# ---- WHAT THIS COSTS, AND WHY IT IS SHAPED THIS WAY (10 Nov 2026) ----
+#
+# Actions bills per JOB and rounds every job UP to the minute, so a job costs a
+# minute before it does anything at all. Measured over the 30 days to 10 Nov,
+# this workflow ran 140 times at 16 billed minutes a run: roughly 2,240 minutes
+# against a 2,000-minute allowance, which is why the account kept warning that
+# minutes were running out. Three things follow, and each is a cost decision
+# rather than a matter of taste:
+#
+#   1. There is NO separate "detect" job. It tested for apps/web/package.json
+#      in eleven seconds and was billed a full minute for it, 140 times a
+#      month. The surface exists now, so the question it asked is settled.
+#   2. e2e and Lighthouse run on PULL REQUESTS, not on pushes to main. The
+#      constitution frames both as PR gates: Lighthouse "fails a PR that drops
+#      performance or accessibility below 90", and a PR "has Playwright
+#      screenshots for any page it touched". A push to main is a PR that
+#      already passed them, so running again buys nothing.
+#   3. The web build happens ONCE. `check` builds it and uploads .next;
+#      Lighthouse serves that. Building twice cost two to three minutes a run
+#      to produce a byte-identical artifact.
 name: CI
 
 on:
@@ -26,8 +46,17 @@ jobs:
     name: Typecheck, lint, unit tests, build
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    outputs:
+      # Whether this change could move what the site renders. A docs or ADR
+      # commit cannot change a Lighthouse score or a screenshot, and eleven
+      # minutes is an expensive way to prove that.
+      app: ${{ steps.changed.outputs.app }}
     steps:
       - uses: actions/checkout@v7
+        with:
+          # The changed-paths step below diffs against the base branch, which
+          # needs its history. The repository is days old, so this is cheap.
+          fetch-depth: 0
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v7
         with:
@@ -46,6 +75,29 @@ jobs:
       - run: pnpm lint
       - run: pnpm test
       - run: pnpm build
+
+      - name: Decide whether the rendered site could have changed
+        id: changed
+        run: |
+          if [ "${{ github.event_name }}" != "pull_request" ]; then
+            # A push to main has already been through a PR. See note 2 above.
+            echo "app=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git fetch --no-tags origin "${{ github.base_ref }}"
+          # A DENY list on purpose. An allow list would quietly skip the gates
+          # for any new source directory nobody remembered to add to it; this
+          # way an unrecognised path costs a run, which is the safe failure.
+          if git diff --name-only "origin/${{ github.base_ref }}...HEAD" -- . \
+               ':(exclude)docs/**' \
+               ':(exclude)spec/**' \
+               ':(exclude)**/*.md' \
+             | grep -q .; then
+            echo "app=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "app=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Upload the JSON Schema contract
         uses: actions/upload-artifact@v7
         with:
@@ -53,25 +105,26 @@ jobs:
           path: packages/schema/dist/json
           if-no-files-found: error
 
-  detect:
-    name: Detect which surfaces exist
-    runs-on: ubuntu-latest
-    outputs:
-      web: ${{ steps.web.outputs.exists }}
-    steps:
-      - uses: actions/checkout@v7
-      - id: web
-        run: |
-          if [ -f apps/web/package.json ]; then
-            echo "exists=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "exists=false" >> "$GITHUB_OUTPUT"
-          fi
+      - name: Upload the built site for Lighthouse to serve
+        if: steps.changed.outputs.app == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          # .next/cache is excluded because it is restored from the Actions
+          # cache above; shipping it through an artifact as well would pay for
+          # the same bytes twice.
+          path: |
+            apps/web/.next
+            !apps/web/.next/cache
+          name: web-build
+          if-no-files-found: error
+          retention-days: 1
 
   e2e:
     name: Playwright e2e and screenshots
-    needs: [check, detect]
-    if: needs.detect.outputs.web == 'true'
+    needs: check
+    # `app` is false on a push to main and on a docs-only PR, so this one
+    # condition covers both skips.
+    if: needs.check.outputs.app == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -82,15 +135,23 @@ jobs:
           node-version-file: .node-version
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - name: Cache the Next.js build cache (next/font downloads the faces at build, ADR-020)
+      # The browser is a ~130 MB download and its version only moves when the
+      # lockfile does, so fetch it once per lockfile rather than once per run.
+      - name: Cache the Playwright browser
+        id: browser
         uses: actions/cache@v4
         with:
-          path: apps/web/.next/cache
-          key: next-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('apps/web/**/*.ts', 'apps/web/**/*.tsx', 'packages/**/*.ts') }}
-          restore-keys: |
-            next-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
       # @playwright/test is a dependency of apps/web, not of the root.
-      - run: pnpm --filter web exec playwright install --with-deps chromium
+      - name: Install the browser and its OS libraries
+        if: steps.browser.outputs.cache-hit != 'true'
+        run: pnpm --filter web exec playwright install --with-deps chromium
+      # The OS libraries live outside the cached directory, so a cache hit
+      # still needs them — but install-deps alone is seconds, not a download.
+      - name: Install the browser's OS libraries
+        if: steps.browser.outputs.cache-hit == 'true'
+        run: pnpm --filter web exec playwright install-deps chromium
       - run: pnpm test:e2e
       - name: Upload Playwright report and screenshots
         if: always()
@@ -106,8 +167,8 @@ jobs:
 
   lighthouse:
     name: Lighthouse CI budgets
-    needs: [check, detect]
-    if: needs.detect.outputs.web == 'true'
+    needs: check
+    if: needs.check.outputs.app == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -118,14 +179,13 @@ jobs:
           node-version-file: .node-version
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - name: Cache the Next.js build cache (next/font downloads the faces at build, ADR-020)
-        uses: actions/cache@v4
+      # lighthouserc.json starts the site with `next start`, which needs .next
+      # and not a second compile of the same source. See note 3 above.
+      - name: Download the site that check built
+        uses: actions/download-artifact@v7
         with:
-          path: apps/web/.next/cache
-          key: next-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('apps/web/**/*.ts', 'apps/web/**/*.tsx', 'packages/**/*.ts') }}
-          restore-keys: |
-            next-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
-      - run: pnpm --filter web build
+          name: web-build
+          path: apps/web/.next
       # Budgets live in lighthouserc.json: performance and accessibility under 90 fail the PR.
       - run: pnpm exec lhci autorun
       - name: Upload Lighthouse reports

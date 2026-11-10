@@ -798,7 +798,7 @@ export function packShipFile(ship: ShipView): ShipFileProps {
       : [
           {
             label: "Shield strength",
-            value: `${n0(shieldFigures.hp)} HP${shieldFigures.regen === null ? "" : `, ${n0(shieldFigures.regen)} HP/s back`}`,
+            value: `${n0(shieldFigures.hp)} HP${shieldFigures.regen === null ? "" : `, regenerating ${n0(shieldFigures.regen)} HP/s`}`,
             numeric: true,
           },
         ]),
@@ -1023,6 +1023,7 @@ export function packShipFile(ship: ShipView): ShipFileProps {
             )}
             {armour === null || attackers.length === 0 ? null : (
               <ThroughArmour
+                key={v.slug}
                 shipName={v.name}
                 hullHp={s?.hull_hp ?? null}
                 armour={armour}

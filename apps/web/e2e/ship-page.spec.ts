@@ -107,11 +107,26 @@ test("Weapons and combat says the shields and the armour, and shows what gets th
   ).toBeVisible();
   const picker = combat.getByRole("combobox", { name: "Fired on by" });
   await expect(picker).toBeVisible();
-  const figure = combat.locator("figure", { hasText: "Through the armour" });
-  await expect(figure).toContainText("reaches the hull");
-  await expect(figure).toContainText(
-    "Shields take the hit whole before the armour",
-  );
+  const figure = combat.locator("figure", { hasText: "After the armour" });
+  await expect(figure).toContainText("after the armour");
+  await expect(figure).toContainText("no shield stage");
+  // The figures are the record's: the shields' health and the armour's physical multiplier.
+  const raw = (shipStats as unknown as { raw: unknown }).raw as {
+    shield?: { hp?: number };
+    armor?: { damage_multiplier?: { physical?: number } };
+  };
+  const shieldHp = raw.shield?.hp;
+  if (typeof shieldHp === "number" && shieldHp > 0) {
+    await expect(figure).toContainText(
+      `${shieldHp.toLocaleString("en-US")} HP`,
+    );
+  }
+  const physical = raw.armor?.damage_multiplier?.physical;
+  if (typeof physical === "number" && physical !== 1) {
+    await expect(combat.locator("dd", { hasText: "×" }).first()).toContainText(
+      `×${physical}`,
+    );
+  }
   // Choosing another gun changes the caption's weapon.
   const caption = (await figure.locator("figcaption").textContent()) ?? "";
   const options = await picker.locator("option").allTextContents();

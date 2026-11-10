@@ -204,3 +204,45 @@ export const ConceptSource = RsiSource.omit({ class_name: true }).extend({
   slug: z.string().min(1),
 });
 export type ConceptSource = z.infer<typeof ConceptSource>;
+
+/** RSI's Comm-Link hub (ADR-029): the newest transmissions, each with its cover; `?page=N` pages it, ten a page. */
+export const COMM_LINK_HUB_URL = `${RSI_ORIGIN}/en/comm-link`;
+
+/**
+ * Web copies of each Comm-Link cover, widest first; never upscaled. 1920 serves the lead card
+ * on wide and high-density screens, 480 the grid on phones.
+ */
+export const COVER_WIDTHS: readonly number[] = [1920, 1280, 960, 640, 480];
+
+/** `/media/covers/21445-1280.webp`: a Comm-Link's cover by RSI's id for it. */
+export function coverRenditionPath(externalId: string, width: number): string {
+  return `/media/covers/${externalId}-${width}.webp`;
+}
+
+/**
+ * The covers on a hub page: each transmission block's id (the number that starts its path) and
+ * the picture in its background style. A block without both is skipped; a page without blocks
+ * gives an empty list, which the fetch reads as the end of the hub.
+ */
+export function coversFromHub(
+  html: string,
+): { readonly id: string; readonly cover: string }[] {
+  const blocks =
+    html.match(/<a class="content-block2 hub-block[\s\S]*?<\/a>/g) ?? [];
+  const out: { id: string; cover: string }[] = [];
+  for (const block of blocks) {
+    const id = /href="\/comm-link\/transmission\/(\d+)-/.exec(block)?.[1];
+    const cover = /background-image:\s*url\('([^']+)'\)/.exec(block)?.[1];
+    if (id === undefined || cover === undefined) continue;
+    if (!cover.startsWith("https://")) continue;
+    out.push({ id, cover });
+  }
+  return out;
+}
+
+/** One row of `fixtures/rsi-media/cover-sources.json`: where a copied Comm-Link cover came from (ADR-029). */
+export const CoverSource = RsiSource.omit({ class_name: true }).extend({
+  /** RSI's id for the Comm-Link, the content item's `external_id`. */
+  external_id: z.string().min(1),
+});
+export type CoverSource = z.infer<typeof CoverSource>;

@@ -1,13 +1,78 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
+  COVER_WIDTHS,
+  CoverSource,
   FANKIT_LOGOS,
   type MatrixShip,
   RSI_IMAGE_SIZE,
+  coverRenditionPath,
+  coversFromHub,
   createSpacer,
   logoRenditionPath,
   matchShips,
   shipRenditionPath,
 } from "../media/sources.js";
+
+// ADR-029: a Comm-Link's cover is the one RSI's hub shows for it, read from the committed hub
+// sample; no network here.
+describe("coversFromHub", () => {
+  const hub = readFileSync(
+    new URL(
+      "../../fixtures/news/samples/comm-link-hub.sample.html",
+      import.meta.url,
+    ),
+    "utf8",
+  );
+
+  it("reads each transmission's id and cover from the hub page", () => {
+    const covers = coversFromHub(hub);
+    expect(covers.length).toBeGreaterThanOrEqual(8);
+    expect(covers[0]).toEqual({
+      id: "21445",
+      cover:
+        "https://media.robertsspaceindustries.com/47458res1wwdv/channel_item_full.jpg",
+    });
+    for (const { id, cover } of covers) {
+      expect(id).toMatch(/^\d+$/);
+      expect(cover).toMatch(
+        /^https:\/\/media\.robertsspaceindustries\.com\/[a-z0-9]+\/channel_item_full\.(?:jpg|png)$/,
+      );
+    }
+    expect(new Set(covers.map((c) => c.id)).size).toBe(covers.length);
+  });
+
+  it("gives nothing for a page without transmission blocks, the end of the hub", () => {
+    expect(coversFromHub("<html><body>maintenance</body></html>")).toEqual([]);
+  });
+
+  it("names a cover's web copies by RSI's id and the width, widest first and never over 1920", () => {
+    expect(coverRenditionPath("21445", 1280)).toBe(
+      "/media/covers/21445-1280.webp",
+    );
+    expect(COVER_WIDTHS[0]).toBe(1920);
+    expect([...COVER_WIDTHS].sort((a, b) => b - a)).toEqual(COVER_WIDTHS);
+  });
+
+  it("records a copied cover by the Comm-Link's id, not a class name", () => {
+    const row = CoverSource.parse({
+      external_id: "21445",
+      file: "21445.jpg",
+      page_url:
+        "https://robertsspaceindustries.com/comm-link/transmission/21445-This-Week-In-Star-Citizen",
+      image_url:
+        "https://media.robertsspaceindustries.com/47458res1wwdv/channel_item_full.jpg",
+      content_type: "image/jpeg",
+      bytes: 1,
+      sha256: "a".repeat(64),
+      fetched_at: "2026-11-10T20:00:00.000Z",
+    });
+    expect(row.external_id).toBe("21445");
+    expect(() =>
+      CoverSource.parse({ ...row, class_name: "AEGS_Gladius" }),
+    ).toThrow();
+  });
+});
 
 // ADR-009: a ship gets RSI's image only on an exact name and maker match. No network here.
 

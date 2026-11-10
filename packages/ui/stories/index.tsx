@@ -21,6 +21,7 @@ import {
   KeyFacts,
   Section,
 } from "../components/entity-page";
+import { DispatchCard } from "../components/dispatch-card";
 import { FeedItem } from "../components/feed-item";
 import { FilterBar, FilterSelect } from "../components/filter-bar";
 import { Footer } from "../components/footer";
@@ -278,6 +279,24 @@ const renderers: Record<string, { title: string; render: Story["render"] }> = {
           entities={[
             { name: s.vehicle.name, href: `/ships/${s.vehicle.slug}` },
           ]}
+        />
+      );
+    },
+  },
+  "dispatch-card": {
+    title: "DispatchCard",
+    // Without media (CI, a deployment) the card is its words alone, as the page shows it there.
+    render: (s) => {
+      const item = s.news.find((n) => n.source !== "spectrum") ?? s.devPost;
+      return (
+        <DispatchCard
+          source={sentence(item.source)}
+          title={item.title}
+          sourceUrl={item.url}
+          publishedAt={item.published_at}
+          now={new Date(s.now)}
+          excerpt={item.summary}
+          picture={null}
         />
       );
     },

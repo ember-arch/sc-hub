@@ -55,6 +55,11 @@ export {
   type FeedItemProps,
 } from "./components/feed-item";
 export {
+  DispatchCard,
+  type DispatchCardProps,
+  type DispatchPicture,
+} from "./components/dispatch-card";
+export {
   FilterBar,
   type FilterBarProps,
   type FilterOption,

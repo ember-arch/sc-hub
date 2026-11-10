@@ -1,0 +1,43 @@
+# ADR-027: The news feed from the pack, polled from CI, until Fly
+
+- Status: accepted
+- Date: 2026-11-10
+- Deciders: owner ("after we get this all done let's build the news feed and the spectrum tracker of yellow CIG posts, like how Wowhead tracks blue posts", 2026-11-10), Claude Code session 2026-11-10
+- Amends: ADR-004 (the fixtures as the site's data until Phase 1), ADR-023 (CI as the host of the refresh)
+
+## Context
+
+Spec 03 puts the pollers on Fly writing Postgres, with Vercel reading the database. Neither Fly nor Neon exists yet; every page the site serves today reads the committed pack (ADR-004, ADR-022), and the daily refresh keeps that pack current from CI (ADR-023). The owner wants the news feed and the developer-post tracker now, and the site already reads `fixtures/news/ContentItem.json` when it exists.
+
+The sources, as found on 2026-11-10:
+
+- **Comm-Links.** RSI's transmission pages are an app shell with no text in their HTML, and RSI publishes no feed (`/comm-link/rss` redirects to the hub page). The hub page (`/en/comm-link`) is server-rendered with the newest transmissions: id, path, kind (post or video), a blurb and a relative time. The Star Citizen Wiki API carries every Comm-Link by RSI's own id with its title, text, images, channel and exact publication time (`api/v2/comm-links/{id}`), under the credit line CLAUDE.md section 9 requires, and lists them for backfill.
+- **Roadmap.** RSI's Release View is a public JSON board (`/api/roadmap/v1/boards/1`): forty releases, some 840 cards with status, category and modification stamps. No sign-in, no app.
+- **Video.** The YouTube channel page names an RSS feed for the channel, and that address answers 404 in a browser as well as to the project's User-Agent on 2026-11-10. The YouTube Data API needs a key, which is the owner's to create.
+- **Patch notes.** Published on Spectrum, under the same access as developer posts.
+- **Spectrum.** Spectrum's web app reads an internal API; its search can filter posts by member role, but the role filter is disabled until signed in. Spec 03's `poll` adapter already assumes a sanctioned account; the role ids and the response for staff can only be read with one. Anonymous search answers do show the shape: each hit carries the member's badges and the thread's `tracked_post_role_id`.
+
+## Decision
+
+| Concern | Choice | Reason |
+| --- | --- | --- |
+| Where news lives | The news pack: `fixtures/news/ContentItem.json`, append-only with revisions (CLAUDE.md section 5), ids derived from source, external id and revision so every machine makes the same rows; `roadmap-state.json` beside it, the board as last seen. The site reads the latest revision of each item and hides takedowns. Postgres gets the same rows when Fly and Neon exist; the Drizzle table already matches | The pack is the site's data today; the schema is unchanged |
+| Who polls | `workers/poll-news`, the first worker package: one polite client for every host (RSI 5 s apart with the contact address, the wiki 2 s), injected `fetch`, fixture tests on the real responses of 2026-11-10 (`fixtures/news/samples/`). It runs from `.github/workflows/news.yml` every thirty minutes and commits what changed; nothing new, no commit. On Fly later it runs on an interval instead | The host ADR-023 already uses; each run is a handful of requests. Thirty minutes rather than spec 03's fifteen: GitHub's schedule is best-effort and often five to twenty minutes late, and ninety-six runs a day of install and poll would spend some five thousand Actions minutes a month against a private repository's two thousand; the fifteen-minute gate holds once the pollers run on Fly |
+| Comm-Links | The hub for discovery, one request a run; the wiki's record for the item, one request per new id (`WikiCommLink` halts on any other shape). The wiki's text becomes paragraphs of escaped HTML; the summary is its first paragraph; the publication time is the wiki's; the link is RSI's own page. A Comm-Link the wiki has not got yet waits for the next run. Backfill reads the wiki's list the same way | RSI's page holds no text to copy; the wiki's copy is the sanctioned one and is credited; nothing is written that neither source says |
+| Roadmap | The board's cards against the state on file: a card added, moved between releases, changed in status, renamed or removed becomes one item in the board's own words, dated by the card's modification stamp; the first run records the state and emits nothing | The feed should carry changes, not 840 cards at once |
+| Video and patch notes | Deferred: the video poller until the owner creates a YouTube Data API key (the feed address is gone), patch notes to the Spectrum adapter, where they are published | Neither has a source this project can read today without a credential |
+| Spectrum | `workers/poll-spectrum`: the adapter interface of spec 03 (`fetchNewStaffPosts(since)`), a `feed` stub that validates the documented JSON shape, and a `poll` implementation against Spectrum's search with a role filter, under `SPECTRUM_SESSION_COOKIE`; staff identification by badge or `staff.json`. It runs only when `SPECTRUM_MODE` is `poll` or `feed`; the site shows Spectrum items only then (`off` is the deployed default until `docs/legal/cig-approval.md`'s box is ticked, spec 03's blocking dependency). The owner's session cookie is the credential it waits for | Spec 03's design, behind the gate it names |
+| Credit | Feed items from the wiki's text carry the Star Citizen Wiki API credit (`WIKI_CREDIT`) on the feed page; every item links its original on the source site (obligations.md) | CLAUDE.md section 9 |
+
+## Consequences
+
+- `fixtures/news/` holds `ContentItem.json`, `roadmap-state.json`, `comm-link-state.json`, a README and `samples/`; all committed (they are small text).
+- A run with an error writes nothing: the pack and the state files beside it are held until every source has finished (CLAUDE.md section 5). The run exits non-zero and the next run redoes the work; the hub items are put again from the hub.
+- The wiki's record is sometimes filler (lorem ipsum, seventeen of four hundred on 2026-11-10) or opens with a CSS gradient and banner file names; filler leaves the item with the hub's blurb, and CSS functions and upload names are cleaned. Headings the wiki flattened come through as plain lines; the wiki's images are not carried (the body is escaped text, not the wiki's HTML; `sanitizeHtml` waits for a source that hands over markup).
+- Spectrum, what waits for Fly or a signed-in run: the five-minute spacing holds between the pages of one run (`POLL_SPACING_MS`), and a non-200 ends the run with the backoff logged, but no state file carries the backoff to the next scheduled run, which is thirty minutes later anyway; `poll` mode requires the staff role id, since without the filter one page of the whole forum misses most staff posts; the search is asked for the last week, so `--backfill` reaches a week back and the twelve-month backfill criterion stays open; the staff badge names in `STAFF_BADGES` have not been seen on a real staff hit yet and `staff.json` is the fallback; `post_count` counts items the store added, never a revision. Whether the poll runs under the owner's own account or a service account CIG sanctions is a question for the approval conversation, noted in `docs/legal/cig-approval.md`.
+- On a patch day the roadmap board moves many cards at once and each becomes an item dated by the card's own modification stamp; grouping a run's changes by release is a follow-up.
+- `pnpm workers:poll-news` runs the pollers; `scripts/not-implemented.mjs` no longer stands in for it.
+- The feed page pages by twenty, carries the wiki credit, and serves `/news/rss.xml` and `/news/feed.json`.
+- `workers/poll-spectrum` holds the adapter, both implementations and `pnpm workers:poll-spectrum`, which writes Spectrum items to the same pack and their authors to `fixtures/news/Author.json` (handle, display name, role, first seen, post count; nothing else). `/news/dev` and `/news/dev/[handle]` read them. With `SPECTRUM_MODE=off` the site filters Spectrum items out, loads no authors and draws no tabs, so nothing from Spectrum can reach a page by accident, whatever the pack holds. The workflow runs the Spectrum worker after the news pollers; it does nothing until the owner sets `SPECTRUM_MODE` as a repository variable and the cookie and role id as secrets.
+- Entity linking (`workers/link-entities`) and the "In the news" sections follow in their own PR.
+- When Fly and Neon exist, the same workers run there and write Postgres; the import job reads the pack's news for the backfill.

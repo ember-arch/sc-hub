@@ -1,0 +1,19 @@
+{
+  "name": "poll-spectrum",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The Spectrum adapter (spec 03, ADR-027): CIG staff posts from Spectrum, by a feed CIG provides or by polling with a sanctioned account, written to the news pack with their authors; off by default.",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "poll": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "poll-news": "workspace:*",
+    "schema": "workspace:*",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "tsx": "^4.23.15"
+  }
+}

@@ -5,12 +5,19 @@ const TABS = [
   { href: "/news/dev", label: "Dev tracker" },
 ] as const;
 
-/** The news feed and the dev tracker are tabs of one section (system.md section 4). */
+/**
+ * The news feed and the dev tracker are tabs of one section (system.md section 4). With the
+ * Spectrum module off (`SPECTRUM_MODE=off`, spec 03) the tracker has nothing to show and the
+ * tabs are not drawn.
+ */
 export function NewsTabs({
   current,
+  devOn,
 }: {
   readonly current: "/news" | "/news/dev";
+  readonly devOn: boolean;
 }) {
+  if (!devOn) return null;
   return (
     <nav aria-label="News sections" className="flex gap-4 text-ui">
       {TABS.map((tab) => (

@@ -1,0 +1,23 @@
+{
+  "name": "poll-news",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The news pollers (spec 03, ADR-027): Comm-Links from RSI's hub with their text from the Star Citizen Wiki API, and roadmap changes from RSI's public board, written to the news pack in fixtures/news.",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "poll": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "schema": "workspace:*",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "tsx": "^4.23.15"
+  },
+  "exports": {
+    "./store": "./src/store.ts",
+    "./client": "./src/client.ts",
+    "./html": "./src/html.ts"
+  }
+}

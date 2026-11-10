@@ -16,6 +16,7 @@ import {
   TITLES_TEXT_CREDIT,
   TRADEMARK_LINE,
   UEX_CREDIT,
+  FITTING_CREDIT,
   UNP4K_CREDIT,
   WIKI_CREDIT,
 } from "ui/legal";
@@ -89,6 +90,12 @@ export default function AboutPage() {
                 {UEX_CREDIT.text}
               </TextLink>{" "}
               {UEX_CREDIT.notice}
+            </li>
+            <li>
+              <TextLink href={FITTING_CREDIT.url} external>
+                {FITTING_CREDIT.text}
+              </TextLink>{" "}
+              {FITTING_CREDIT.notice}
             </li>
             <li>
               <TextLink href={PLEDGE_STORE_CREDIT.url} external>

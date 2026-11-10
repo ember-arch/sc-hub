@@ -451,3 +451,56 @@ test("Cargo draws the grids of the record and counts the boxes that stand on the
   await page.goto(`/ships/${fighterVehicle.slug}`);
   await expect(page.locator("#cargo")).toContainText("No cargo grid");
 });
+
+// ADR-028: the fitting list's "Carries" and "Fits in", credited to its author, build and date.
+interface FitList {
+  source: { author: string; build_label: string };
+  carriers: { id: number; label: string; class_names: string[] }[];
+  vehicles: { id: number; label: string; class_names: string[] }[];
+  fits: { carrier: number; vehicle: number; verdict: string }[];
+}
+const fitList = JSON.parse(
+  readFileSync(
+    fileURLToPath(
+      new URL("../../../fixtures/fitting/ShipFit.json", import.meta.url),
+    ),
+    "utf8",
+  ),
+) as FitList;
+
+test("Cargo lists what the fitting list says a carrier carries, and what carries a vehicle", async ({
+  page,
+}) => {
+  const carrier = fitList.carriers.find((c) => c.class_names.length > 0)!;
+  const fit = fitList.fits.find(
+    (f) =>
+      f.carrier === carrier.id &&
+      f.verdict === "fits" &&
+      fitList.vehicles[f.vehicle]!.class_names.length > 0,
+  )!;
+  const vehicle = fitList.vehicles[fit.vehicle]!;
+  const carrierSlug = vehicles.find(
+    (v) => v.class_name === carrier.class_names[0],
+  )!.slug;
+  const vehicleSlug = vehicles.find(
+    (v) => v.class_name === vehicle.class_names[0],
+  )!.slug;
+
+  await page.goto(`/ships/${carrierSlug}`);
+  const cargo = page.locator("#cargo");
+  await expect(cargo.getByRole("heading", { name: "Carries" })).toBeVisible();
+  await expect(
+    cargo.getByRole("link", { name: vehicle.label }).first(),
+  ).toHaveAttribute("href", `/ships/${vehicleSlug}`);
+  await expect(cargo).toContainText(fitList.source.author);
+  await expect(cargo).toContainText(fitList.source.build_label);
+  await expect(cargo).toContainText("not game data");
+  await expect(page.locator("#sources")).toContainText(fitList.source.author);
+
+  await page.goto(`/ships/${vehicleSlug}`);
+  const fitsIn = page.locator("#cargo");
+  await expect(fitsIn.getByRole("heading", { name: "Fits in" })).toBeVisible();
+  await expect(
+    fitsIn.getByRole("link", { name: carrier.label, exact: true }).first(),
+  ).toHaveAttribute("href", `/ships/${carrierSlug}`);
+});

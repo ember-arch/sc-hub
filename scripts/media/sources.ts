@@ -66,6 +66,11 @@ export const FANKIT_LOGOS: Readonly<
   RSI: { onLight: "RSI_BLACK.png", onDark: "RSI_WHITE.png" },
 };
 
+/** Two names are the same when they differ only in the whitespace around them. */
+export function sameName(a: string, b: string): boolean {
+  return a.trim() === b.trim();
+}
+
 export interface PackVehicle {
   readonly class_name: string;
   readonly name: string;
@@ -98,7 +103,8 @@ export interface MatchResult {
 
 /**
  * A pack vehicle matches a ship-matrix row only when the name and the manufacturer code are both
- * identical and exactly one row has them. The name tried is the wiki's own record of the ship's
+ * identical (the matrix writes a stray trailing space after a few names, "Ballista ", which is
+ * not a difference) and exactly one row has them. The name tried is the wiki's own record of the ship's
  * ship-matrix name (`shipmatrix_name`, kept in the pack), which is how the wiki says "Freelancer"
  * for the ship it displays as "MISC Freelancer"; without that record, the display name. Anything
  * looser is a guess (CLAUDE.md section 2: entity links below the confidence threshold stay
@@ -114,7 +120,7 @@ export function matchShips(
     const rowsNamed = (name: string) =>
       matrix.filter(
         (row) =>
-          row.name === name &&
+          sameName(row.name, name) &&
           row.manufacturer.code === vehicle.manufacturer_code,
       );
     const record = vehicle.matrix_name?.trim() ?? "";

@@ -104,7 +104,7 @@ const concept = candidates.map((r) => {
     (s) =>
       sameName(s.name, r.name) && s.manufacturer_code === r.manufacturer.code,
   );
-  const base = slugify(r.name);
+  const base = slugify(r.name.trim());
   const slug =
     curated?.slug ??
     ((nameCounts.get(base) ?? 0) > 1 || taken.has(base)

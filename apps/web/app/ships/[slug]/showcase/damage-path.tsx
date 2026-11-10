@@ -119,7 +119,7 @@ export function DamagePath({
     [
       { name: "Per shot", value: n1(p.shot) },
       {
-        name: shieldsUp ? "To the shields" : "To the shields (down)",
+        name: shieldsUp || !shares ? "To the shields" : "To the shields (down)",
         value: n1(p.shields),
       },
       { name: "Through to the ship", value: n1(p.passed) },
@@ -287,11 +287,11 @@ export function DamagePath({
         4.3.1) and resist a share of that; energy does more to the armour and
         ballistic sends more through it; components behind the hull take a share
         of what penetrates, most with no armour left (Alpha 4.5.0). Shown at
-        full shields. Which record field each sentence means is
-        SPViewer&apos;s reading, consistent with the records; CIG names none.
-        The deflection figure has no published rule, so it is named beside a
-        shot that falls below it and applied to nothing; the armour left over
-        a fight, the penetration cone and shield faces are not modelled
+        full shields. Which record field each sentence means is SPViewer&apos;s
+        reading, consistent with the records; CIG names none. The deflection
+        figure has no published rule, so it is named beside a shot that falls
+        below it and applied to nothing; the armour left over a fight, the
+        penetration cone and shield faces are not modelled
         {version === null ? "" : `. LIVE ${version}`}
       </figcaption>
     </figure>

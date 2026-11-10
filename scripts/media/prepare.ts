@@ -357,7 +357,8 @@ const galleriesDir = join(repoRoot, "fixtures", "galleries");
 /**
  * A showcase for every ship with a gallery and no curated one (ADR-024): the wiki's copies of
  * RSI's art, rendered like the showcase pair's, composed by rule (`composeShowcase`): cover,
- * poster, one figure per section, the rest in the gallery. Captions are the wiki's file titles.
+ * poster, one figure per section, the rest in the gallery. A caption says only what kind of
+ * picture it is.
  */
 async function galleries(curated: ReadonlySet<string>): Promise<Showcase[]> {
   const sourcesPath = join(galleriesDir, "sources.json");

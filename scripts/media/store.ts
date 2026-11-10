@@ -126,7 +126,7 @@ export function modelFile(ctm: string): string {
     path.hostname === "media.robertsspaceindustries.com"
       ? path.pathname.split("/")[1]
       : path.pathname.match(/^\/media\/([a-z0-9]+)\//)?.[1];
-  if (id === undefined || id === "") {
+  if (id === undefined || !/^[a-z0-9]+$/.test(id)) {
     throw new StoreShapeError(`model address of an unknown form: ${ctm}`);
   }
   return `${id}.ctm`;

@@ -21,6 +21,15 @@ The Star Citizen Wiki keeps, for most ships, a Gallery section with an "Official
 | What stays as it was | The Odin and the Perseus keep their curated showcases and chapters; the holoviewer model for every ship is ADR-025, the lineup draws envelopes where a ship has none (ADR-015); RSI's ship-matrix picture (ADR-009) remains the register card and the cover of a ship whose article has no gallery | The templates are not changed, they are followed |
 | Refresh | Not part of the daily refresh (ADR-023): the pictures are local only. A new ship's gallery waits for a local run, which is resumable and skips ships already on file | Same footing as the ship-matrix pictures |
 
+## Deferred (audit of PR 27, 2026-11-10)
+
+- The article is found by the ship's display name and nothing checks the page is about that ship; the wiki redirects a renamed article, and the record keeps the requested address. A heading check is the fix if a wrong gallery ever shows; none has.
+- A `no-article` or `no-gallery` row is never fetched again, so a transient 404 or a markup change is permanent until the row is removed by hand; a re-check age is the fix.
+- A Gallery section without the tabber markup yields an empty gallery, recorded as `no-gallery`, not a halt.
+- The wiki cover's alt text says "key art" whatever the first official upload is.
+- The ship file's source list has no entry for the article; the band's credit is the only one.
+- The fetch sends the titles' User-Agent name; the two shape errors and the edition fallback have no test.
+
 ## Consequences
 
 - `fixtures/galleries/` joins the git-ignored media folders, with its README, `sources.json` and the parser's sample committed; `.gitignore` says so.

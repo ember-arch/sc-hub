@@ -16,6 +16,7 @@ Exact strings live in `packages/ui/legal.ts`. These are the required credits and
 | Fankit | About page and image captions where a fankit image is used | "Image: CIG fankit." |
 | Fankit Agreement notice | Every footer, wherever fankit assets appear (ADR-009) | Clause 2(g) verbatim: `FANKIT_NOTICE` in `packages/ui/legal.ts` |
 | RSI ship images | Under each ship image copied from RSI's ship matrix, linked to the ship's RSI page; about page (ADR-009) | "Image: Roberts Space Industries" |
+| Wiki gallery pictures | The opening band of every ship file whose showcase is the wiki's gallery, linked to the article (ADR-024); local only, as every RSI picture is (ADR-009) | "Images: Roberts Space Industries, via the Star Citizen Wiki; in-game shots by the wiki's contributors" (`WIKI_GALLERY_CREDIT`). The "Official" tab's pictures are CIG's art; the "In-game" tab's are screenshots by the wiki's contributors, and a caption says which kind each picture is |
 | RSI holoviewer models | Under each holoviewer, linked to the ship's RSI pledge page; in every ship file's source list; about page (ADR-015) | "Model: RSI holoviewer"; on the about page "3D models: Roberts Space Industries' holoviewer, from each ship's pledge page." |
 | RSI loaner ship matrix | In the source list of every ship file, with RSI's last update; about page (ADR-015) | "RSI loaner ship matrix"; on the about page "Loaners: the Roberts Space Industries loaner ship matrix, checked weekly." |
 | Open-source libraries | `/licenses` route generated at build from package metadata | Auto-generated |

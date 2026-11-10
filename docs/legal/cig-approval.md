@@ -30,6 +30,12 @@ Tick only what is confirmed in writing. Quote the relevant sentence from the con
   - Interiors: included / exteriors only — TBD
   - Resolution ceiling, if any — TBD
 
+- [ ] **RSI holoviewer models** — the OpenCTM model each ship's pledge page loads into its holoviewer, copied for every ship from the addresses the store's listing gives (ADR-015, ADR-025), packed and shown on the public site in the ship file and the Scale lineup with credit and a link back. Not covered by the fankit or by the Terms of Service fansite grant. Local development only until ticked; the owner directed the work to proceed as if approved (ADR-019).
+  > quote: TBD
+
+- [ ] **Wiki gallery pictures** — CIG's art for each ship, copied from the Star Citizen Wiki's gallery uploads, shown on the public ship pages with credit (ADR-024). Same footing as the RSI website images above. Local development only until ticked.
+  > quote: TBD
+
 - [ ] **Title icons** — CIG's title (badge) icons, copied from the Star Citizen Wiki's uploads because RSI publishes no list of them, shown on the public titles page with credit (ADR-017). The wiki labels them "Cloud Imperium IP"; neither the fankit nor the Terms of Service fansite grant covers them. Local development only until ticked; the owner allowed the local copy on 2026-11-08.
   > quote: TBD
 

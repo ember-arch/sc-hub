@@ -40,7 +40,7 @@ ADR-029 adds a second committed record beside `sources.json`, `cover-sources.jso
 - **Publishing these images.** RSI's fansite permission covers only content it designates for fansite use, which is the fankit. Showing RSI's ship images on the public site relies on the FAQ's "generally exempt" wording and on common fan-site practice, not on an express grant. `docs/legal/cig-approval.md` has no box for it and its "Fankit assets" box is unticked. Until the owner decides, and records it there, the images stay local.
 - **Fetching beyond the pack.** The fetch script is limited to the pack's ships. Running it for every ship is closer to the harvesting RSI's terms forbid; widening it is the owner's call.
 - **Giving CIG the site URL** (Fankit Agreement 2(k)) once the site has one.
-- **The "Made By The Community" logo.** The guidelines ask for it on fankit images. The site shows no fankit image yet (logos are marks, not artwork), so nothing carries it; the first fankit wallpaper or render that appears needs it.
+- **The "Made By The Community" logo.** Decided by the owner on 2026-11-10 ("make sure to use the made by the community logo in the footer"): the badge stands in the footer of every page, the dark version on light pages and the light one on dark pages (`MADE_BY_THE_COMMUNITY` in `packages/ui/legal.ts`, `Footer`). The two files, resized from the fankit's 03_LOGOS and otherwise untouched, are committed under `apps/web/public/`, the one fankit content in the repository, since the badge must ship with the site and the fankit designates it for fan projects; the "no CIG image enters git" rule above stays for everything else. A fankit wallpaper or render, if one ever appears, still needs the badge in its corner.
 
 ## Alternatives considered
 

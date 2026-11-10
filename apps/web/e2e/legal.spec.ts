@@ -35,6 +35,13 @@ for (const route of ROUTES) {
     await expect(footer.getByTestId("disclaimer")).toHaveText(DISCLAIMER);
     await expect(footer).toContainText(TRADEMARK_LINE);
     await expect(footer.getByTestId("fankit-notice")).toHaveText(FANKIT_NOTICE);
+    // The fankit's "Made By The Community" badge, on the owner's direction (ADR-009).
+    const badges = footer.getByRole("img", { name: "Made by the community" });
+    expect(await badges.count()).toBe(2);
+    await expect(badges.first()).toHaveAttribute(
+      "src",
+      //made-by-the-community-(black|white).webp$/,
+    );
     await expect(footer).toContainText(WIKI_CREDIT.text);
     await expect(
       footer.getByRole("link", { name: "robertsspaceindustries.com" }),

@@ -98,6 +98,25 @@ export const FANKIT_NOTICE_SOURCE = {
   copiedOn: "2026-11-07",
 } as const;
 
+/**
+ * The "Made By The Community" badge from the fankit (03_LOGOS, kit 2025_11_19), the mark CIG
+ * gives fan projects to carry, in the footer of every page on the owner's direction of 2026-11-10
+ * (ADR-009). The dark badge on light pages, the light one on dark pages; the two files are the
+ * one fankit content committed to the repository, since the badge must ship with the site.
+ * Resized only, never recoloured or altered (fankit guidelines, section 3).
+ */
+export const MADE_BY_THE_COMMUNITY = {
+  alt: "Made by the community",
+  onLight: {
+    src: "/made-by-the-community-black.webp",
+    width: 240,
+    height: 240,
+  },
+  onDark: { src: "/made-by-the-community-white.webp", width: 240, height: 240 },
+  source:
+    "Fankit 2025_11_19, 03_LOGOS/MadeByTheCommunity_Black.png and _White.png",
+} as const;
+
 /** Under every ship image copied from RSI's ship matrix, linked to the ship's RSI page (ADR-009). */
 export const RSI_IMAGE_CREDIT = {
   text: "Image: Roberts Space Industries",

@@ -36,8 +36,12 @@ for (const route of ROUTES) {
     await expect(footer).toContainText(TRADEMARK_LINE);
     await expect(footer.getByTestId("fankit-notice")).toHaveText(FANKIT_NOTICE);
     // The fankit's "Made By The Community" badge, on the owner's direction (ADR-009).
-    const badges = footer.getByRole("img", { name: "Made by the community" });
+    // Both versions are in the markup and the theme shows one, so the accessibility tree holds one.
+    const badges = footer.locator('img[alt="Made by the community"]');
     expect(await badges.count()).toBe(2);
+    await expect(
+      footer.getByRole("img", { name: "Made by the community" }),
+    ).toHaveCount(1);
     await expect(badges.first()).toHaveAttribute(
       "src",
       //made-by-the-community-(black|white).webp$/,

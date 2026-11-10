@@ -6,10 +6,12 @@ import {
 } from "schema";
 
 /**
- * The ships index's URL state (spec 02, "Ship index"): five filters and a view, parsed from the
- * query string and applied to the ship list. Pure, so it is unit-tested against the fixture pack.
- * Facet values are derived from the data (never typed in): manufacturer slugs, kebab-cased roles,
- * the size classes, statuses and kinds the ships actually have.
+ * The ships index's URL state (spec 02, "Ship index"): five filters, a search and a view, parsed
+ * from the query string and applied to the ship list. Pure, so it is unit-tested against the
+ * fixture pack. Facet values are derived from the data (never typed in): manufacturer slugs,
+ * kebab-cased roles, the size classes, statuses and kinds the ships actually have. The search
+ * (`q`, owner 2026-11-10) matches a ship's name, its maker's name or code, or its class name,
+ * without regard to case.
  */
 
 export interface IndexShip {
@@ -27,7 +29,9 @@ export const SHIP_FACETS = [
 ] as const;
 export type ShipFacet = (typeof SHIP_FACETS)[number];
 
-export type ShipFilters = Readonly<Partial<Record<ShipFacet, string>>>;
+export type ShipFilters = Readonly<
+  Partial<Record<ShipFacet, string>> & { readonly q?: string }
+>;
 
 export const SHIP_VIEWS = ["cards", "table"] as const;
 export type ShipView = (typeof SHIP_VIEWS)[number];
@@ -74,11 +78,32 @@ export function parseShipQuery(query: Query): ShipIndexState {
     const value = first(query[facet])?.trim();
     if (value !== undefined && value !== "") filters[facet] = value;
   }
+  const q = first(query["q"])?.trim();
   const view = first(query["view"]);
   return {
-    filters,
+    filters: q === undefined || q === "" ? filters : { ...filters, q },
     view: view === "table" ? "table" : "cards",
   };
+}
+
+/** Lower case, accents folded, runs of anything but letters and digits as one space. */
+export function searchKey(text: string): string {
+  return text
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+/** Whether a search matches a name, a maker's name or code, or a class name. */
+export function matchesSearch(
+  q: string,
+  fields: readonly (string | null | undefined)[],
+): boolean {
+  const needle = searchKey(q);
+  if (needle === "") return true;
+  return fields.some((f) => f != null && searchKey(f).includes(needle));
 }
 
 export function matchesShipFilters(
@@ -104,6 +129,17 @@ export function matchesShipFilters(
     return false;
   }
   if (filters.kind !== undefined && ship.vehicle.kind !== filters.kind) {
+    return false;
+  }
+  if (
+    filters.q !== undefined &&
+    !matchesSearch(filters.q, [
+      ship.vehicle.name,
+      ship.vehicle.class_name,
+      ship.manufacturer?.name,
+      ship.vehicle.manufacturer_code,
+    ])
+  ) {
     return false;
   }
   return true;
@@ -172,12 +208,16 @@ export function shipFacetOptions(
 }
 
 export function hasShipFilters(filters: ShipFilters): boolean {
-  return SHIP_FACETS.some((facet) => filters[facet] !== undefined);
+  return (
+    filters.q !== undefined ||
+    SHIP_FACETS.some((facet) => filters[facet] !== undefined)
+  );
 }
 
 /** `/ships?...` for a state; the default view and empty filters leave no trace in the URL. */
 export function shipIndexHref(state: ShipIndexState): string {
   const params = new URLSearchParams();
+  if (state.filters.q !== undefined) params.set("q", state.filters.q);
   for (const facet of SHIP_FACETS) {
     const value = state.filters[facet];
     if (value !== undefined) params.set(facet, value);

@@ -24,6 +24,7 @@ import {
   createSpacer,
   matchShips,
   originalOf,
+  sameName,
 } from "./sources.js";
 import { rsiUserAgent } from "../user-agent.js";
 
@@ -195,7 +196,7 @@ async function main(): Promise<void> {
   for (const concept of concepts) {
     const candidates = matrix.filter(
       (row) =>
-        row.name === concept.name &&
+        sameName(row.name, concept.name) &&
         row.manufacturer.code === concept.manufacturer_code,
     );
     const row = candidates.length === 1 ? candidates[0] : undefined;

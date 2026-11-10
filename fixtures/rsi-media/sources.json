@@ -330,6 +330,16 @@
     "fetched_at": "2026-11-10T00:14:01.787Z"
   },
   {
+    "class_name": "ANVL_Ballista",
+    "file": "ANVL_Ballista.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/anvil-ballista/Ballista",
+    "image_url": "https://media.robertsspaceindustries.com/fgwmyqm1gd658/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 1898950,
+    "sha256": "618aeb1deaa5f1919f365fc9d280f4d19bffe6ca25bf619cdaf678ed48f4e341",
+    "fetched_at": "2026-11-10T05:41:03.577Z"
+  },
+  {
     "class_name": "ANVL_Ballista_Dunestalker",
     "file": "ANVL_Ballista_Dunestalker.jpg",
     "page_url": "https://robertsspaceindustries.com/pledge/ships/anvil-ballista/Anvil-Ballista-Dunestalker",
@@ -368,6 +378,16 @@
     "bytes": 1337873,
     "sha256": "c4fff08a6069591a69e8e60a2973a6d5bb0947ef905f304294e422350855915c",
     "fetched_at": "2026-11-10T00:38:10.377Z"
+  },
+  {
+    "class_name": "ANVL_C8X_Pisces_Expedition",
+    "file": "ANVL_C8X_Pisces_Expedition.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/anvil-pisces/C8X-Pisces-Expedition",
+    "image_url": "https://media.robertsspaceindustries.com/kj7oh12zn2f1l/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 805446,
+    "sha256": "812c545058ec54f9ea5de1e1ee303c6feea87be3ef18642c42d1a0e9e9c3174a",
+    "fetched_at": "2026-11-10T05:41:08.509Z"
   },
   {
     "class_name": "ANVL_Carrack",
@@ -498,6 +518,16 @@
     "bytes": 554450,
     "sha256": "aa9e99bd418571c2bacd97ac6f12cb8bb289179e3cf0bb95a30bb0532e50f44c",
     "fetched_at": "2026-11-10T00:38:15.141Z"
+  },
+  {
+    "class_name": "ANVL_Hornet_F7CM_Mk2",
+    "file": "ANVL_Hornet_F7CM_Mk2.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/anvil-hornet-mkii/F7C-M-Super-Hornet-Mk-II",
+    "image_url": "https://media.robertsspaceindustries.com/5aqjv141a62is/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 2403483,
+    "sha256": "b2368f2bc59444e3a45270a0ea6df31ba565732733b62f7eb389928966ee1f83",
+    "fetched_at": "2026-11-10T05:41:13.766Z"
   },
   {
     "class_name": "ANVL_Hornet_F7CM_Mk2_Heartseeker",
@@ -880,6 +910,16 @@
     "fetched_at": "2026-11-10T00:17:42.071Z"
   },
   {
+    "class_name": "CRUS_Spirit_A1",
+    "file": "CRUS_Spirit_A1.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/spirit/A1-Spirit",
+    "image_url": "https://media.robertsspaceindustries.com/nsqe4f3nl1mqn/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 3649652,
+    "sha256": "b43cb8a11ce45542e127f6583602810704ba68c089027d05e499405175fb46e7",
+    "fetched_at": "2026-11-10T05:41:19.396Z"
+  },
+  {
     "class_name": "CRUS_Spirit_C1",
     "file": "CRUS_Spirit_C1.jpg",
     "page_url": "https://robertsspaceindustries.com/pledge/ships/spirit/C1-Spirit",
@@ -898,6 +938,16 @@
     "bytes": 767357,
     "sha256": "e904b9ed2ee4b6f7480ea7aedc9d31ed8a10162ad732b685014e5a589eef28c9",
     "fetched_at": "2026-11-10T00:38:29.482Z"
+  },
+  {
+    "class_name": "CRUS_Starfighter_Inferno",
+    "file": "CRUS_Starfighter_Inferno.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/crusader-ares/Ares-Inferno",
+    "image_url": "https://media.robertsspaceindustries.com/txyuxxqtu8otc/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 994929,
+    "sha256": "4d8af2ecc92f69e7bb2c40b6c8d0aadf4f8f4e62be282c63f9859797743de73f",
+    "fetched_at": "2026-11-10T05:41:22.863Z"
   },
   {
     "class_name": "CRUS_Starfighter_Ion",
@@ -2068,6 +2118,16 @@
     "bytes": 4508156,
     "sha256": "bf9a85382626685bbf409abcc9113c793a82549424205c1c5b8917cb7ccc080a",
     "fetched_at": "2026-11-10T00:25:21.217Z"
+  },
+  {
+    "class_name": "RSI_Lynx",
+    "file": "RSI_Lynx.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/ursa/Lynx",
+    "image_url": "https://media.robertsspaceindustries.com/m6ikrk16sokre/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 4764701,
+    "sha256": "cd78f86f4d053c194425254def1278193e3e4bd85e3e2797c1df2824e1332cbe",
+    "fetched_at": "2026-11-10T05:41:30.385Z"
   },
   {
     "class_name": "RSI_Mantis",

@@ -7,7 +7,7 @@ import {
   type Showcase,
 } from "schema";
 import type { MakerMark, ResponsiveImage } from "ui";
-import { RSI_IMAGE_CREDIT } from "ui/legal";
+import { RSI_IMAGE_CREDIT, WIKI_GALLERY_CREDIT } from "ui/legal";
 import { REPO_ROOT, type ShipView } from "./data";
 
 /**
@@ -35,6 +35,12 @@ export interface Media {
   maker(code: string, name: string): MakerMark | null;
   /** A showcase ship's media and chapters (ADR-010). */
   showcase(slug: string): Showcase | null;
+  /**
+   * A card picture from the ship's showcase (ADR-024): the cover, the picture the ship's own page
+   * opens on, or the poster where a showcase has no cover; for a ship the ship matrix has no
+   * picture of, credited to the wiki's article or RSI's own.
+   */
+  showcaseCard(slug: string): ResponsiveImage | null;
   /** The ship's RSI holoviewer model (ADR-015). */
   holo(slug: string): HoloModel | null;
   /** The human figure the holoviewer stands beside the ship. */
@@ -81,6 +87,33 @@ export function createMedia(manifest: MediaManifest | null): Media {
     concept: (slug, name) =>
       pictureOf(concepts.get(slug), name === null ? "" : `The ${name}`),
     showcase: (slug) => showcases.get(slug) ?? null,
+    showcaseCard(slug) {
+      const show = showcases.get(slug);
+      if (show === undefined) return null;
+      const key = show.roles["background"] ?? show.roles["poster"];
+      const picture = show.images.find((i) => i.key === key);
+      const widest = picture?.renditions[0];
+      if (picture === undefined || widest === undefined) return null;
+      const fallback =
+        picture.renditions.find((r) => r.width === 1280) ?? widest;
+      const credit =
+        show.wiki_article !== null
+          ? { text: WIKI_GALLERY_CREDIT.text, href: show.wiki_article }
+          : show.article !== null
+            ? { text: RSI_IMAGE_CREDIT.text, href: show.article.url }
+            : null;
+      if (credit === null) return null;
+      return {
+        src: fallback.src,
+        width: widest.width,
+        height: widest.height,
+        srcSet: picture.renditions
+          .map((r) => `${r.src} ${r.width}w`)
+          .join(", "),
+        alt: "",
+        credit,
+      };
+    },
     holo: (slug) => holos.get(slug) ?? null,
     holoFigure: () => manifest?.holo_figure ?? null,
     ship: (className, name) => image(className, `The ${name}`),
@@ -119,7 +152,13 @@ export function media(): Media {
   return cached;
 }
 
-/** A ship card's image, for pages that list ships. */
+/**
+ * A ship card's image, for pages that list ships: RSI's ship-matrix picture (ADR-009), or, where
+ * the matrix has none for the ship, the poster of its showcase (ADR-024).
+ */
 export function shipCardImage(ship: ShipView): ResponsiveImage | null {
-  return media().shipCard(ship.vehicle.class_name);
+  return (
+    media().shipCard(ship.vehicle.class_name) ??
+    media().showcaseCard(ship.vehicle.slug)
+  );
 }

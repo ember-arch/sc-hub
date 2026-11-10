@@ -1,5 +1,6 @@
 import { MediaManifest } from "schema";
 import { describe, expect, it } from "vitest";
+import { WIKI_GALLERY_CREDIT } from "ui/legal";
 import { createMedia, parseMediaManifest } from "../lib/media";
 
 // ADR-009: the site only shows images the manifest lists, credited to their source.
@@ -43,7 +44,62 @@ const manifest: MediaManifest = {
       on_dark: null,
     },
   ],
-  showcase: [],
+  showcase: [
+    {
+      slug: "basher",
+      article: null,
+      wiki_article: "https://starcitizen.tools/Basher",
+      images: [
+        {
+          key: "cover",
+          renditions: [
+            {
+              src: "/media/showcase/basher/cover-1600.webp",
+              width: 1600,
+              height: 900,
+            },
+            {
+              src: "/media/showcase/basher/cover-1280.webp",
+              width: 1280,
+              height: 720,
+            },
+          ],
+          has_alpha: false,
+        },
+        {
+          key: "second",
+          renditions: [
+            {
+              src: "/media/showcase/basher/second-1600.webp",
+              width: 1600,
+              height: 1000,
+            },
+          ],
+          has_alpha: false,
+        },
+      ],
+      videos: [],
+      model: null,
+      roles: { background: "cover", poster: "second" },
+      chapters: [],
+      gallery: [],
+      schematics: [],
+      figures: [],
+    },
+    {
+      slug: "nowhere",
+      article: null,
+      wiki_article: null,
+      images: [],
+      videos: [],
+      model: null,
+      roles: {},
+      chapters: [],
+      gallery: [],
+      schematics: [],
+      figures: [],
+    },
+  ],
   holo: [],
   holo_figure: null,
   titles: [],
@@ -150,5 +206,30 @@ describe("parseMediaManifest", () => {
         ],
       }),
     ).toThrow();
+  });
+});
+
+describe("showcaseCard", () => {
+  const media = createMedia(MediaManifest.parse(manifest));
+
+  it("gives a card the showcase's cover, the 1280 copy as fallback, credited to the wiki's article", () => {
+    const card = media.showcaseCard("basher");
+    expect(card).toEqual({
+      src: "/media/showcase/basher/cover-1280.webp",
+      width: 1600,
+      height: 900,
+      srcSet:
+        "/media/showcase/basher/cover-1600.webp 1600w, /media/showcase/basher/cover-1280.webp 1280w",
+      alt: "",
+      credit: {
+        text: WIKI_GALLERY_CREDIT.text,
+        href: "https://starcitizen.tools/Basher",
+      },
+    });
+  });
+
+  it("gives nothing for a showcase without a cover or a source, and for a slug it does not know", () => {
+    expect(media.showcaseCard("nowhere")).toBeNull();
+    expect(media.showcaseCard("odin")).toBeNull();
   });
 });

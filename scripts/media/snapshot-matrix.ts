@@ -11,7 +11,7 @@ import { fileURLToPath } from "node:url";
 import { ConceptShip } from "schema";
 import { z } from "zod";
 import { SHOWCASE } from "./showcase.js";
-import { RSI_ORIGIN, SHIP_MATRIX_URL } from "./sources.js";
+import { RSI_ORIGIN, SHIP_MATRIX_URL, sameName } from "./sources.js";
 import { rsiUserAgent } from "../user-agent.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -85,7 +85,10 @@ const inPack = (r: z.infer<typeof Row>): boolean =>
   pack.some(
     (v) =>
       v.manufacturer_code === r.manufacturer.code &&
-      (v.name === r.name || [...matrixNames.values()].includes(r.name)),
+      (sameName(v.name, r.name) ||
+        [...matrixNames.values()].some(
+          (m) => m !== null && sameName(m, r.name),
+        )),
   );
 const candidates = rows.filter(
   (r) => r.production_status !== "flight-ready" && !inPack(r),
@@ -93,14 +96,15 @@ const candidates = rows.filter(
 const taken = new Set(pack.map((v) => v.slug));
 const nameCounts = new Map<string, number>();
 for (const r of candidates) {
-  const base = slugify(r.name);
+  const base = slugify(r.name.trim());
   nameCounts.set(base, (nameCounts.get(base) ?? 0) + 1);
 }
 const concept = candidates.map((r) => {
   const curated = SHOWCASE.find(
-    (s) => s.name === r.name && s.manufacturer_code === r.manufacturer.code,
+    (s) =>
+      sameName(s.name, r.name) && s.manufacturer_code === r.manufacturer.code,
   );
-  const base = slugify(r.name);
+  const base = slugify(r.name.trim());
   const slug =
     curated?.slug ??
     ((nameCounts.get(base) ?? 0) > 1 || taken.has(base)
@@ -112,7 +116,7 @@ const concept = candidates.map((r) => {
   taken.add(slug);
   return ConceptShip.parse({
     slug,
-    name: r.name,
+    name: r.name.trim(),
     manufacturer_code: r.manufacturer.code,
     focus: r.focus,
     size: r.size,

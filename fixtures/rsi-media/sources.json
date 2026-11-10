@@ -10,14 +10,14 @@
     "fetched_at": "2026-11-10T00:11:35.649Z"
   },
   {
-    "class_name": "AEGS_Avenger_Stalker_Display",
-    "file": "AEGS_Avenger_Stalker_Display.jpg",
+    "class_name": "AEGS_Avenger_Stalker",
+    "file": "AEGS_Avenger_Stalker.jpg",
     "page_url": "https://robertsspaceindustries.com/pledge/ships/aegis-avenger/Avenger-Stalker",
     "image_url": "https://media.robertsspaceindustries.com/3ure04l99yf61/source.jpg",
     "content_type": "image/jpeg",
     "bytes": 2220306,
     "sha256": "b4258d5ca50e29ebea324190ab920e68df19b1ccec02c8275befaa2012f2aa52",
-    "fetched_at": "2026-11-10T00:11:30.615Z"
+    "fetched_at": "2026-11-10T00:11:35.649Z"
   },
   {
     "class_name": "AEGS_Avenger_Titan",
@@ -60,14 +60,14 @@
     "fetched_at": "2026-11-10T00:12:00.701Z"
   },
   {
-    "class_name": "AEGS_Eclipse_BIS2950",
-    "file": "AEGS_Eclipse_BIS2950.jpg",
+    "class_name": "AEGS_Eclipse",
+    "file": "AEGS_Eclipse.jpg",
     "page_url": "https://robertsspaceindustries.com/pledge/ships/eclipse/Eclipse",
     "image_url": "https://media.robertsspaceindustries.com/ej552bji5plg4/source.jpg",
     "content_type": "image/jpeg",
     "bytes": 2376563,
     "sha256": "d48c875af502bf17123f3bc85409c3b019b6c381eea98da9a97eb640791f1fcf",
-    "fetched_at": "2026-11-10T00:11:55.680Z"
+    "fetched_at": "2026-11-10T00:12:00.701Z"
   },
   {
     "class_name": "AEGS_Gladius",
@@ -78,6 +78,16 @@
     "bytes": 1222424,
     "sha256": "0997c6cbb5f79e8175fb7c7c6e9d8d7b8c99f71e58e03f6b146d264c5b0cfc52",
     "fetched_at": "2026-11-08T21:56:50.977Z"
+  },
+  {
+    "class_name": "AEGS_Gladius_PIR",
+    "file": "AEGS_Gladius_PIR.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/gladius/Gladius-Pirate-Edition",
+    "image_url": "https://media.robertsspaceindustries.com/9cwz2utclixvt/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 611708,
+    "sha256": "da6fe587b5690c26873c9afcf9d55ba8f1985f0ef2d359745e458524e0863bda",
+    "fetched_at": "2026-11-10T00:37:55.192Z"
   },
   {
     "class_name": "AEGS_Gladius_Valiant",
@@ -100,14 +110,14 @@
     "fetched_at": "2026-11-10T00:12:15.505Z"
   },
   {
-    "class_name": "AEGS_Hammerhead_GS",
-    "file": "AEGS_Hammerhead_GS.jpg",
+    "class_name": "AEGS_Hammerhead",
+    "file": "AEGS_Hammerhead.jpg",
     "page_url": "https://robertsspaceindustries.com/pledge/ships/hammerhead/Hammerhead",
     "image_url": "https://media.robertsspaceindustries.com/zuxffe2ckazbk/source.jpg",
     "content_type": "image/jpeg",
     "bytes": 1572714,
     "sha256": "6a8bc847641721c5e77d224e86ccd6c2222d0800b1cd01d052eb199de3d766a7",
-    "fetched_at": "2026-11-10T00:12:11.126Z"
+    "fetched_at": "2026-11-10T00:12:15.505Z"
   },
   {
     "class_name": "AEGS_Idris_M",
@@ -130,24 +140,24 @@
     "fetched_at": "2026-11-10T00:12:35.498Z"
   },
   {
-    "class_name": "AEGS_Idris_P_FW_25",
-    "file": "AEGS_Idris_P_FW_25.jpg",
+    "class_name": "AEGS_Idris_P",
+    "file": "AEGS_Idris_P.jpg",
     "page_url": "https://robertsspaceindustries.com/pledge/ships/aegis-idris/Idris-P",
     "image_url": "https://media.robertsspaceindustries.com/yfj9hnf0hrali/source.jpg",
     "content_type": "image/jpeg",
     "bytes": 2343885,
     "sha256": "78233627df74626ea88ecead7f4e2d85ade7106ed2dcea34ef225b44d32cc197",
-    "fetched_at": "2026-11-10T00:12:26.586Z"
+    "fetched_at": "2026-11-10T00:12:35.498Z"
   },
   {
-    "class_name": "AEGS_Idris_P_TSG",
-    "file": "AEGS_Idris_P_TSG.jpg",
+    "class_name": "AEGS_Idris_P",
+    "file": "AEGS_Idris_P.jpg",
     "page_url": "https://robertsspaceindustries.com/pledge/ships/aegis-idris/Idris-P",
     "image_url": "https://media.robertsspaceindustries.com/yfj9hnf0hrali/source.jpg",
     "content_type": "image/jpeg",
     "bytes": 2343885,
     "sha256": "78233627df74626ea88ecead7f4e2d85ade7106ed2dcea34ef225b44d32cc197",
-    "fetched_at": "2026-11-10T00:12:30.429Z"
+    "fetched_at": "2026-11-10T00:12:35.498Z"
   },
   {
     "class_name": "AEGS_Javelin",
@@ -178,16 +188,6 @@
     "bytes": 399301,
     "sha256": "c277519cec7cbc3d0079931a30fe43c9f341d11960de00ed34877a445d885c62",
     "fetched_at": "2026-11-10T00:12:51.121Z"
-  },
-  {
-    "class_name": "AEGS_Retaliator",
-    "file": "AEGS_Retaliator.jpg",
-    "page_url": "https://robertsspaceindustries.com/pledge/ships/aegis-retaliator/Retaliator",
-    "image_url": "https://media.robertsspaceindustries.com/iebuyqgm1pca4/source.jpg",
-    "content_type": "image/jpeg",
-    "bytes": 1628081,
-    "sha256": "3578cbce57e9bb355776df36be2452e4562ebaf5404886bb2233c877a3f008eb",
-    "fetched_at": "2026-11-10T00:12:56.348Z"
   },
   {
     "class_name": "AEGS_Sabre",
@@ -320,6 +320,26 @@
     "fetched_at": "2026-11-10T00:14:01.787Z"
   },
   {
+    "class_name": "ANVL_Ballista_Dunestalker",
+    "file": "ANVL_Ballista_Dunestalker.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/anvil-ballista/Anvil-Ballista-Dunestalker",
+    "image_url": "https://media.robertsspaceindustries.com/7lh198t7qfugb/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 926486,
+    "sha256": "589ed3a3f5fbcefd3fc6dc01ba93d67143e14122138219dda628f3f1cdd44ad8",
+    "fetched_at": "2026-11-10T00:38:00.076Z"
+  },
+  {
+    "class_name": "ANVL_Ballista_Snowblind",
+    "file": "ANVL_Ballista_Snowblind.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/anvil-ballista/Anvil-Ballista-Snowblind",
+    "image_url": "https://media.robertsspaceindustries.com/8anej6j9umet3/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 988338,
+    "sha256": "8d4ce6b8a2e5736ead96a997e3e26f4a6ae65fcd4c2f8c5c1e6416c8fc3088aa",
+    "fetched_at": "2026-11-10T00:38:04.526Z"
+  },
+  {
     "class_name": "ANVL_C8_Pisces",
     "file": "ANVL_C8_Pisces.jpg",
     "page_url": "https://robertsspaceindustries.com/pledge/ships/anvil-pisces/C8-Pisces",
@@ -328,6 +348,16 @@
     "bytes": 760250,
     "sha256": "a73cfc69ed22ca7e66b28a7eb1ae5f14d124c97da75ea369688c98113e201063",
     "fetched_at": "2026-11-10T00:14:05.417Z"
+  },
+  {
+    "class_name": "ANVL_C8R_Pisces",
+    "file": "ANVL_C8R_Pisces.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/anvil-pisces/C8R-Pisces",
+    "image_url": "https://media.robertsspaceindustries.com/k4znei4d8qkrt/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 1337873,
+    "sha256": "c4fff08a6069591a69e8e60a2973a6d5bb0947ef905f304294e422350855915c",
+    "fetched_at": "2026-11-10T00:38:10.377Z"
   },
   {
     "class_name": "ANVL_Carrack",
@@ -450,6 +480,26 @@
     "fetched_at": "2026-11-10T00:14:55.459Z"
   },
   {
+    "class_name": "ANVL_Hornet_F7CM_Heartseeker",
+    "file": "ANVL_Hornet_F7CM_Heartseeker.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/anvil-hornet/F7C-M-Super-Hornet-Heartseeker-Mk-I",
+    "image_url": "https://media.robertsspaceindustries.com/6ewzke6o3llh6/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 554450,
+    "sha256": "aa9e99bd418571c2bacd97ac6f12cb8bb289179e3cf0bb95a30bb0532e50f44c",
+    "fetched_at": "2026-11-10T00:38:15.141Z"
+  },
+  {
+    "class_name": "ANVL_Hornet_F7CM_Mk2_Heartseeker",
+    "file": "ANVL_Hornet_F7CM_Mk2_Heartseeker.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/anvil-hornet/F7C-M-Super-Hornet-Heartseeker-Mk-I",
+    "image_url": "https://media.robertsspaceindustries.com/6ewzke6o3llh6/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 554450,
+    "sha256": "aa9e99bd418571c2bacd97ac6f12cb8bb289179e3cf0bb95a30bb0532e50f44c",
+    "fetched_at": "2026-11-10T00:38:20.140Z"
+  },
+  {
     "class_name": "ANVL_Hornet_F7CR",
     "file": "ANVL_Hornet_F7CR.jpg",
     "page_url": "https://robertsspaceindustries.com/pledge/ships/anvil-hornet/F7C-R-Hornet-Tracker-Mk-I",
@@ -510,6 +560,26 @@
     "fetched_at": "2026-11-10T00:15:36.173Z"
   },
   {
+    "class_name": "ANVL_Lightning_F8C",
+    "file": "ANVL_Lightning_F8C.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/lightning/F8C-Lightning",
+    "image_url": "https://media.robertsspaceindustries.com/j6rvfrkux5nrm/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 14535112,
+    "sha256": "bc9d45c76d8c207bd7d840906fb73008d2c11464fadeb9cdfe5e1d6c27fecd84",
+    "fetched_at": "2026-11-10T00:15:36.173Z"
+  },
+  {
+    "class_name": "ANVL_Lightning_F8C",
+    "file": "ANVL_Lightning_F8C.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/lightning/F8C-Lightning",
+    "image_url": "https://media.robertsspaceindustries.com/j6rvfrkux5nrm/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 14535112,
+    "sha256": "bc9d45c76d8c207bd7d840906fb73008d2c11464fadeb9cdfe5e1d6c27fecd84",
+    "fetched_at": "2026-11-10T00:15:36.173Z"
+  },
+  {
     "class_name": "ANVL_Lightning_F8C_Exec",
     "file": "ANVL_Lightning_F8C_Exec.jpg",
     "page_url": "https://robertsspaceindustries.com/pledge/ships/lightning/F8C-Lightning-Executive-Edition",
@@ -518,16 +588,6 @@
     "bytes": 2658142,
     "sha256": "46c5de6e266823dc7f3478799c113dcff0e79a508a8cfa10a75acb8028193c32",
     "fetched_at": "2026-11-10T00:15:25.612Z"
-  },
-  {
-    "class_name": "ANVL_Lightning_F8C_Plat",
-    "file": "ANVL_Lightning_F8C_Plat.jpg",
-    "page_url": "https://robertsspaceindustries.com/pledge/ships/lightning/F8C-Lightning",
-    "image_url": "https://media.robertsspaceindustries.com/j6rvfrkux5nrm/source.jpg",
-    "content_type": "image/jpeg",
-    "bytes": 14535112,
-    "sha256": "bc9d45c76d8c207bd7d840906fb73008d2c11464fadeb9cdfe5e1d6c27fecd84",
-    "fetched_at": "2026-11-10T00:15:34.360Z"
   },
   {
     "class_name": "ANVL_Paladin",
@@ -580,14 +640,34 @@
     "fetched_at": "2026-11-10T00:16:05.491Z"
   },
   {
-    "class_name": "ANVL_Valkyrie_BIS2950",
-    "file": "ANVL_Valkyrie_BIS2950.jpg",
+    "class_name": "ANVL_Valkyrie",
+    "file": "ANVL_Valkyrie.jpg",
     "page_url": "https://robertsspaceindustries.com/pledge/ships/anvil-valkyrie/Valkyrie",
     "image_url": "https://media.robertsspaceindustries.com/yjh17ca5zprfr/source.jpg",
     "content_type": "image/jpeg",
     "bytes": 831536,
     "sha256": "21732653bfe34e93aaca7f636b50baff63bdae7b9aa14f50afe3a3c5c5f182bb",
-    "fetched_at": "2026-11-10T00:16:01.167Z"
+    "fetched_at": "2026-11-10T00:16:05.491Z"
+  },
+  {
+    "class_name": "ARGO_ATLS",
+    "file": "ARGO_ATLS.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/atls/ATLS",
+    "image_url": "https://media.robertsspaceindustries.com/99ljbpzzczrae/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 12019812,
+    "sha256": "49d6cd23039f15d25b2b5c1cc1c8e0c09f81e47910612365e207e75c8776c3a3",
+    "fetched_at": "2026-11-10T00:16:16.337Z"
+  },
+  {
+    "class_name": "ARGO_ATLS",
+    "file": "ARGO_ATLS.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/atls/ATLS",
+    "image_url": "https://media.robertsspaceindustries.com/99ljbpzzczrae/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 12019812,
+    "sha256": "49d6cd23039f15d25b2b5c1cc1c8e0c09f81e47910612365e207e75c8776c3a3",
+    "fetched_at": "2026-11-10T00:16:16.337Z"
   },
   {
     "class_name": "ARGO_ATLS",
@@ -720,6 +800,16 @@
     "fetched_at": "2026-11-10T00:17:11.608Z"
   },
   {
+    "class_name": "CNOU_Mustang_Alpha_CitizenCon2018",
+    "file": "CNOU_Mustang_Alpha_CitizenCon2018.png",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/mustang/Mustang-Alpha-Vindicator",
+    "image_url": "https://media.robertsspaceindustries.com/iohmvf24h4rsz/source.png",
+    "content_type": "image/png",
+    "bytes": 7027397,
+    "sha256": "700809a8e70481ad15287267a21b20c4c2b4c1d6e49a79873d83eefd87075c65",
+    "fetched_at": "2026-11-10T00:38:24.822Z"
+  },
+  {
     "class_name": "CNOU_Mustang_Beta",
     "file": "CNOU_Mustang_Beta.jpg",
     "page_url": "https://robertsspaceindustries.com/pledge/ships/mustang/Mustang-Beta",
@@ -788,6 +878,56 @@
     "bytes": 9345475,
     "sha256": "7fc8ebc01774f0250c4bfebe899ab9f8323bc86e95df486158bc6df10a31ac10",
     "fetched_at": "2026-11-10T00:17:45.684Z"
+  },
+  {
+    "class_name": "CRUS_Star_Runner",
+    "file": "CRUS_Star_Runner.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/crusader-mercury-star-runner/Mercury",
+    "image_url": "https://media.robertsspaceindustries.com/219rro1mjtov6/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 767357,
+    "sha256": "e904b9ed2ee4b6f7480ea7aedc9d31ed8a10162ad732b685014e5a589eef28c9",
+    "fetched_at": "2026-11-10T00:38:29.482Z"
+  },
+  {
+    "class_name": "CRUS_Starfighter_Ion",
+    "file": "CRUS_Starfighter_Ion.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/crusader-ares/Ares-Ion",
+    "image_url": "https://media.robertsspaceindustries.com/a2g2ta0lq0uq5/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 1036863,
+    "sha256": "bc0c9c2f2f57a4c1198585e4d2310f36dccb2c2486450d2a934b777a8c28d39c",
+    "fetched_at": "2026-11-10T00:38:35.179Z"
+  },
+  {
+    "class_name": "CRUS_Starlifter_A2",
+    "file": "CRUS_Starlifter_A2.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/crusader-starlifter/A2-Hercules",
+    "image_url": "https://media.robertsspaceindustries.com/a14ekvttpyy6w/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 16773673,
+    "sha256": "a84a6976d154393a9a14a80cca4d3f3582a379e1ef0865f3c159548281079db9",
+    "fetched_at": "2026-11-10T00:38:40.472Z"
+  },
+  {
+    "class_name": "CRUS_Starlifter_C2",
+    "file": "CRUS_Starlifter_C2.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/crusader-starlifter/C2-Hercules",
+    "image_url": "https://media.robertsspaceindustries.com/y9nxh2pyic772/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 15138279,
+    "sha256": "b006fd2c0042f17e3af61b017107e997218649fcbbf6481f36b729c2a047f478",
+    "fetched_at": "2026-11-10T00:38:47.712Z"
+  },
+  {
+    "class_name": "CRUS_Starlifter_M2",
+    "file": "CRUS_Starlifter_M2.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/crusader-starlifter/M2-Hercules",
+    "image_url": "https://media.robertsspaceindustries.com/3s79isis6qti3/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 19722168,
+    "sha256": "101110d6c1616cb0d10a0482b1f051201ea467d526ecca651adfc5c4107480ac",
+    "fetched_at": "2026-11-10T00:38:58.726Z"
   },
   {
     "class_name": "DRAK_Buccaneer",
@@ -860,14 +1000,14 @@
     "fetched_at": "2026-11-10T00:18:15.528Z"
   },
   {
-    "class_name": "DRAK_Cutlass_Blue_BIS2950",
-    "file": "DRAK_Cutlass_Blue_BIS2950.jpg",
+    "class_name": "DRAK_Cutlass_Blue",
+    "file": "DRAK_Cutlass_Blue.jpg",
     "page_url": "https://robertsspaceindustries.com/pledge/ships/drake-cutlass/Cutlass-Blue",
     "image_url": "https://media.robertsspaceindustries.com/2hllaegtpmzyy/source.jpg",
     "content_type": "image/jpeg",
     "bytes": 5011339,
     "sha256": "d7dbb4e9e62b4d9d37eebac8153c2cb7d35e89420e12701780086fb072c5d9fc",
-    "fetched_at": "2026-11-10T00:18:12.999Z"
+    "fetched_at": "2026-11-10T00:18:15.528Z"
   },
   {
     "class_name": "DRAK_Cutlass_Red",
@@ -880,14 +1020,14 @@
     "fetched_at": "2026-11-10T00:18:25.500Z"
   },
   {
-    "class_name": "DRAK_Cutlass_Red_BIS2950",
-    "file": "DRAK_Cutlass_Red_BIS2950.jpg",
+    "class_name": "DRAK_Cutlass_Red",
+    "file": "DRAK_Cutlass_Red.jpg",
     "page_url": "https://robertsspaceindustries.com/pledge/ships/drake-cutlass/Cutlass-Red",
     "image_url": "https://media.robertsspaceindustries.com/wqa6lfco4amc0/source.jpg",
     "content_type": "image/jpeg",
     "bytes": 2812744,
     "sha256": "ca693e4029dab1f81ccca4dd4c98813cecc1476af2d02321d8d633ac5cdf12b9",
-    "fetched_at": "2026-11-10T00:18:21.584Z"
+    "fetched_at": "2026-11-10T00:18:25.500Z"
   },
   {
     "class_name": "DRAK_Cutlass_Steel",
@@ -928,6 +1068,16 @@
     "bytes": 3480624,
     "sha256": "1f73eb2c979160e5bcd9ffd8783f62f4980749df3c2ebeeacdcf964c7503b923",
     "fetched_at": "2026-11-10T00:18:41.061Z"
+  },
+  {
+    "class_name": "DRAK_Dragonfly",
+    "file": "DRAK_Dragonfly.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/drake-dragonfly/Dragonfly-Black",
+    "image_url": "https://media.robertsspaceindustries.com/ts98rchnhox11/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 3710855,
+    "sha256": "6606bef1ef9a341a2e947850667c272f59fd0d6179178eda69e0d026f7d06ece",
+    "fetched_at": "2026-11-10T00:38:59.952Z"
   },
   {
     "class_name": "DRAK_Dragonfly_Yellow",
@@ -1220,14 +1370,64 @@
     "fetched_at": "2026-11-10T00:21:35.428Z"
   },
   {
-    "class_name": "KRIG_S65_Stingray_BALLISTIC",
-    "file": "KRIG_S65_Stingray_BALLISTIC.jpg",
+    "class_name": "KRIG_S65_Stingray",
+    "file": "KRIG_S65_Stingray.jpg",
     "page_url": "https://robertsspaceindustries.com/pledge/ships/s-65-stingray/S-65-Stingray",
     "image_url": "https://media.robertsspaceindustries.com/0qo64m8r93b1h/source.jpg",
     "content_type": "image/jpeg",
     "bytes": 4677472,
     "sha256": "2f9258a5c01d83b6bb691f122af74967823e9ba93ac1df6abdec23ff8293c7b0",
-    "fetched_at": "2026-11-10T00:21:28.966Z"
+    "fetched_at": "2026-11-10T00:21:35.428Z"
+  },
+  {
+    "class_name": "MISC_Fortune",
+    "file": "MISC_Fortune.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/fortune/Fortune",
+    "image_url": "https://media.robertsspaceindustries.com/y7rppq3nl8o1e/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 4258377,
+    "sha256": "c7be09637eb6988600fcd127803d4e97364abe57d82b89f9224f182fc2d7cb84",
+    "fetched_at": "2026-11-10T00:39:05.067Z"
+  },
+  {
+    "class_name": "MISC_Freelancer",
+    "file": "MISC_Freelancer.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/misc-freelancer/Freelancer",
+    "image_url": "https://media.robertsspaceindustries.com/z3mllk6zi0x7r/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 2070501,
+    "sha256": "3c96f4d8c95fc32fbec167599cbe53cdabdcc4c48d3a5e827d6b097dead0af5f",
+    "fetched_at": "2026-11-10T00:39:23.903Z"
+  },
+  {
+    "class_name": "MISC_Freelancer_DUR",
+    "file": "MISC_Freelancer_DUR.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/misc-freelancer/Freelancer-DUR",
+    "image_url": "https://media.robertsspaceindustries.com/hjhbs9pvw36jc/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 1158649,
+    "sha256": "252da44154dd209e6a836bed6069c0b44609e7ac933f18fdb2098a0d0890b151",
+    "fetched_at": "2026-11-10T00:39:09.724Z"
+  },
+  {
+    "class_name": "MISC_Freelancer_MAX",
+    "file": "MISC_Freelancer_MAX.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/misc-freelancer/Freelancer-MAX",
+    "image_url": "https://media.robertsspaceindustries.com/myp4kfzlh11jb/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 2906432,
+    "sha256": "a79f0f63f34fec62791ea13e31a90ed64b3dc6a148063ff5a6ce0da8b31c0f85",
+    "fetched_at": "2026-11-10T00:39:15.435Z"
+  },
+  {
+    "class_name": "MISC_Freelancer_MIS",
+    "file": "MISC_Freelancer_MIS.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/misc-freelancer/Freelancer-MIS",
+    "image_url": "https://media.robertsspaceindustries.com/ybkygputhkx0g/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 762670,
+    "sha256": "2b7651b4638e6cabe024b5336736a3f7cb73361e9cb635b1f6cb8278baa09847",
+    "fetched_at": "2026-11-10T00:39:18.799Z"
   },
   {
     "class_name": "MISC_Fury",
@@ -1260,6 +1460,46 @@
     "fetched_at": "2026-11-10T00:21:44.921Z"
   },
   {
+    "class_name": "MISC_Hull_A",
+    "file": "MISC_Hull_A.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/hull/Hull-A",
+    "image_url": "https://media.robertsspaceindustries.com/3u3x96w5ixj37/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 2905209,
+    "sha256": "2c502ba9cb90efb2b996b5d21f3160bb7944700b10b931dd3c5d53fda48d081a",
+    "fetched_at": "2026-11-10T00:39:29.920Z"
+  },
+  {
+    "class_name": "MISC_Hull_B",
+    "file": "MISC_Hull_B.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/hull/Hull-B",
+    "image_url": "https://media.robertsspaceindustries.com/k65brbo8a8wtc/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 5402992,
+    "sha256": "8bce1371ba961c072ea4d22ba2b14e3b0ea64d051b498d1a40b3ad8fe76e756f",
+    "fetched_at": "2026-11-10T00:39:36.516Z"
+  },
+  {
+    "class_name": "MISC_Hull_C",
+    "file": "MISC_Hull_C.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/hull/Hull-C",
+    "image_url": "https://media.robertsspaceindustries.com/0qokljtlegt4r/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 1659635,
+    "sha256": "e3dd6a6f17025b6569d851fb6f06b61c99b9e52c1f11743b417687621ee62382",
+    "fetched_at": "2026-11-10T00:39:39.936Z"
+  },
+  {
+    "class_name": "MISC_Prospector",
+    "file": "MISC_Prospector.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/misc-prospector/Prospector",
+    "image_url": "https://media.robertsspaceindustries.com/7rfmcpg9qcpmm/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 1455125,
+    "sha256": "07abda8616a258e18c87a377b0835bcf163aa687ea92cc29ae7aa38a3d0c6ad3",
+    "fetched_at": "2026-11-10T00:39:44.431Z"
+  },
+  {
     "class_name": "MISC_Razor",
     "file": "MISC_Razor.jpg",
     "page_url": "https://robertsspaceindustries.com/pledge/ships/razor/Razor",
@@ -1288,6 +1528,96 @@
     "bytes": 2825778,
     "sha256": "9ce2646d67062107b17120ab88d34e91a9e956a3005612c59c39b8a295df309b",
     "fetched_at": "2026-11-10T00:21:54.934Z"
+  },
+  {
+    "class_name": "MISC_Reliant",
+    "file": "MISC_Reliant.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/reliant/Reliant-Kore",
+    "image_url": "https://media.robertsspaceindustries.com/0ofjqpjk23gqz/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 1094948,
+    "sha256": "005e29077571997d2c82abc23bef0b39ead93fc5244d8ab80965d7b8cc7ca448",
+    "fetched_at": "2026-11-10T00:40:04.295Z"
+  },
+  {
+    "class_name": "MISC_Reliant_Mako",
+    "file": "MISC_Reliant_Mako.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/reliant/Reliant-Mako",
+    "image_url": "https://media.robertsspaceindustries.com/4f25lfzd4vaqr/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 4672664,
+    "sha256": "9d9c5eb74f1531d29b5ce4cbcce59fcc73cc605694671e4e030ed750a274b511",
+    "fetched_at": "2026-11-10T00:39:50.526Z"
+  },
+  {
+    "class_name": "MISC_Reliant_Sen",
+    "file": "MISC_Reliant_Sen.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/reliant/Reliant-Sen",
+    "image_url": "https://media.robertsspaceindustries.com/dhvoh5wvqe5wi/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 4605751,
+    "sha256": "fed1044c6984431518683d52a13aa68f6229c7458a17fb701eda109d3c74e14d",
+    "fetched_at": "2026-11-10T00:39:55.814Z"
+  },
+  {
+    "class_name": "MISC_Reliant_Tana",
+    "file": "MISC_Reliant_Tana.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/reliant/Reliant-Tana",
+    "image_url": "https://media.robertsspaceindustries.com/z0qh46jnljtuf/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 5275884,
+    "sha256": "9c1e3e387603c000f2bf1b40f3280556fa400830a208f79a46ca99bbb0d06f24",
+    "fetched_at": "2026-11-10T00:40:00.045Z"
+  },
+  {
+    "class_name": "MISC_Starfarer",
+    "file": "MISC_Starfarer.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/misc-starfarer/Starfarer",
+    "image_url": "https://media.robertsspaceindustries.com/wcxbs18v57gxv/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 1004337,
+    "sha256": "861f9f8da9e9f1cb21dfbcc66864224822cf8443626da0b5ae5b6df75038f592",
+    "fetched_at": "2026-11-10T00:40:14.968Z"
+  },
+  {
+    "class_name": "MISC_Starfarer_Gemini",
+    "file": "MISC_Starfarer_Gemini.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/misc-starfarer/Starfarer-Gemini",
+    "image_url": "https://media.robertsspaceindustries.com/c6423etmvm52z/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 1015776,
+    "sha256": "11377dda46c2a6179e81718de6ebd9461ba142ddef964a7bd0328825053d285c",
+    "fetched_at": "2026-11-10T00:40:08.909Z"
+  },
+  {
+    "class_name": "MISC_Starlancer_Max",
+    "file": "MISC_Starlancer_Max.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/starlancer/Starlancer-MAX",
+    "image_url": "https://media.robertsspaceindustries.com/c59t62rz5xud9/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 1309278,
+    "sha256": "094ec4427ab358d244c47d148557212deb28beed5b84bd1b143810e6ec9cb4d2",
+    "fetched_at": "2026-11-10T00:40:18.831Z"
+  },
+  {
+    "class_name": "MISC_Starlancer_TAC",
+    "file": "MISC_Starlancer_TAC.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/starlancer/Starlancer-TAC",
+    "image_url": "https://media.robertsspaceindustries.com/emx6dhzo9kbox/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 2951610,
+    "sha256": "828b4872755c0ff6ff59950554f770f62911854eced30232d4f8ea17f55e07ef",
+    "fetched_at": "2026-11-10T00:40:24.821Z"
+  },
+  {
+    "class_name": "MISC_Starlite",
+    "file": "MISC_Starlite.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/starlite/Starlite",
+    "image_url": "https://media.robertsspaceindustries.com/6cdv5u7nvigrn/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 13396095,
+    "sha256": "f8a59e8f536f971ba53852eda3df024142b9035399815218f5169a533a24373d",
+    "fetched_at": "2026-11-10T00:40:29.660Z"
   },
   {
     "class_name": "MRAI_Guardian",
@@ -1420,6 +1750,26 @@
     "fetched_at": "2026-11-10T00:23:04.292Z"
   },
   {
+    "class_name": "ORIG_600i",
+    "file": "ORIG_600i.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/600i/600i-Explorer",
+    "image_url": "https://media.robertsspaceindustries.com/nsl0zel8gmfxl/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 4995439,
+    "sha256": "b2b7c92b1e59376cb15bd1e860a31c2b6464611b0623783974b0847f8996fd6c",
+    "fetched_at": "2026-11-10T00:40:38.889Z"
+  },
+  {
+    "class_name": "ORIG_600i_BIS2951",
+    "file": "ORIG_600i_BIS2951.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/600i/600i-Explorer",
+    "image_url": "https://media.robertsspaceindustries.com/nsl0zel8gmfxl/source.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 4995439,
+    "sha256": "b2b7c92b1e59376cb15bd1e860a31c2b6464611b0623783974b0847f8996fd6c",
+    "fetched_at": "2026-11-10T00:40:34.439Z"
+  },
+  {
     "class_name": "ORIG_600i_Touring",
     "file": "ORIG_600i_Touring.jpg",
     "page_url": "https://robertsspaceindustries.com/pledge/ships/600i/600i-Touring",
@@ -1430,6 +1780,16 @@
     "fetched_at": "2026-11-10T00:23:10.460Z"
   },
   {
+    "class_name": "ORIG_85X",
+    "file": "ORIG_85X.png",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/85x/85X",
+    "image_url": "https://media.robertsspaceindustries.com/sm8ti6o025fm3/source.png",
+    "content_type": "image/png",
+    "bytes": 2985496,
+    "sha256": "e339a9cbb037923e8dfa2d12d06b52739a1b8a6d8be91c7abca47a681654626a",
+    "fetched_at": "2026-11-10T00:40:44.185Z"
+  },
+  {
     "class_name": "ORIG_890Jump",
     "file": "ORIG_890Jump.jpg",
     "page_url": "https://robertsspaceindustries.com/pledge/ships/890-jump/890-Jump",
@@ -1438,6 +1798,16 @@
     "bytes": 335699,
     "sha256": "5ab0dcf0a9ecb5745369581c3c9febbb7d29e6038206313153fb57734b7ecd14",
     "fetched_at": "2026-11-10T00:23:14.506Z"
+  },
+  {
+    "class_name": "ORIG_m50",
+    "file": "ORIG_m50.jpg",
+    "page_url": "https://robertsspaceindustries.com/pledge/ships/origin-m50/M50",
+    "image_url": "https://media.robertsspaceindustries.com/l7p21pakfkth2/source.png",
+    "content_type": "image/jpeg",
+    "bytes": 2915592,
+    "sha256": "2307247c9f828407bbc6498c156d677df57ca58b96927ad5ac0cc4d2c37eb526",
+    "fetched_at": "2026-11-10T00:40:48.903Z"
   },
   {
     "class_name": "ORIG_m80",
@@ -1580,24 +1950,24 @@
     "fetched_at": "2026-11-10T00:24:34.060Z"
   },
   {
-    "class_name": "RSI_Constellation_Andromeda_GS",
-    "file": "RSI_Constellation_Andromeda_GS.jpg",
+    "class_name": "RSI_Constellation_Andromeda",
+    "file": "RSI_Constellation_Andromeda.jpg",
     "page_url": "https://robertsspaceindustries.com/pledge/ships/rsi-constellation/Constellation-Mk-IV-Andromeda",
     "image_url": "https://media.robertsspaceindustries.com/x1aflxx72d3xs/source.jpg",
     "content_type": "image/jpeg",
     "bytes": 3344447,
     "sha256": "12494321b59a78e4debce6d0bba7d9176db2b6b14560e56b8b04a8695a554227",
-    "fetched_at": "2026-11-10T00:24:30.522Z"
+    "fetched_at": "2026-11-10T00:24:34.060Z"
   },
   {
-    "class_name": "RSI_Constellation_Andromeda_GS_Display",
-    "file": "RSI_Constellation_Andromeda_GS_Display.jpg",
+    "class_name": "RSI_Constellation_Andromeda",
+    "file": "RSI_Constellation_Andromeda.jpg",
     "page_url": "https://robertsspaceindustries.com/pledge/ships/rsi-constellation/Constellation-Mk-IV-Andromeda",
     "image_url": "https://media.robertsspaceindustries.com/x1aflxx72d3xs/source.jpg",
     "content_type": "image/jpeg",
     "bytes": 3344447,
     "sha256": "12494321b59a78e4debce6d0bba7d9176db2b6b14560e56b8b04a8695a554227",
-    "fetched_at": "2026-11-10T00:24:24.248Z"
+    "fetched_at": "2026-11-10T00:24:34.060Z"
   },
   {
     "class_name": "RSI_Constellation_Aquila",
@@ -1610,14 +1980,14 @@
     "fetched_at": "2026-11-10T00:24:44.103Z"
   },
   {
-    "class_name": "RSI_Constellation_Aquila_GS",
-    "file": "RSI_Constellation_Aquila_GS.jpg",
+    "class_name": "RSI_Constellation_Aquila",
+    "file": "RSI_Constellation_Aquila.jpg",
     "page_url": "https://robertsspaceindustries.com/pledge/ships/rsi-constellation/Constellation-Mk-IV-Aquila",
     "image_url": "https://media.robertsspaceindustries.com/u1qyvf0i8m0gv/source.jpg",
     "content_type": "image/jpeg",
     "bytes": 2388063,
     "sha256": "ce78aa2892ee48e9c5262992bb8e1829e1fc6ff736fc30df60131965a6a74e19",
-    "fetched_at": "2026-11-10T00:24:39.879Z"
+    "fetched_at": "2026-11-10T00:24:44.103Z"
   },
   {
     "class_name": "RSI_Constellation_Mk5_Centaurus",
@@ -1630,14 +2000,14 @@
     "fetched_at": "2026-11-10T00:24:54.064Z"
   },
   {
-    "class_name": "RSI_Constellation_Mk5_Centaurus_Display",
-    "file": "RSI_Constellation_Mk5_Centaurus_Display.jpg",
+    "class_name": "RSI_Constellation_Mk5_Centaurus",
+    "file": "RSI_Constellation_Mk5_Centaurus.jpg",
     "page_url": "https://robertsspaceindustries.com/pledge/ships/constellation-mk-v/Constellation-Mk-V-Centaurus",
     "image_url": "https://media.robertsspaceindustries.com/2vugvo1bdkvxl/source.jpg",
     "content_type": "image/jpeg",
     "bytes": 3545950,
     "sha256": "6d098bdf0c03a4a1a683e27379b581e14b1434ea5fb3737da86e38085965415f",
-    "fetched_at": "2026-11-10T00:24:50.448Z"
+    "fetched_at": "2026-11-10T00:24:54.064Z"
   },
   {
     "class_name": "RSI_Constellation_Phoenix",
@@ -1650,14 +2020,14 @@
     "fetched_at": "2026-11-10T00:25:04.010Z"
   },
   {
-    "class_name": "RSI_Constellation_Phoenix_GS",
-    "file": "RSI_Constellation_Phoenix_GS.jpg",
+    "class_name": "RSI_Constellation_Phoenix",
+    "file": "RSI_Constellation_Phoenix.jpg",
     "page_url": "https://robertsspaceindustries.com/pledge/ships/rsi-constellation/Constellation-Mk-IV-Phoenix",
     "image_url": "https://media.robertsspaceindustries.com/jkyny550a90um/source.jpg",
     "content_type": "image/jpeg",
     "bytes": 926248,
     "sha256": "d68f74ffcaeb4bdb1d31ae450cd7457178706381c60988173cce3683ce6b90e0",
-    "fetched_at": "2026-11-10T00:25:00.090Z"
+    "fetched_at": "2026-11-10T00:25:04.010Z"
   },
   {
     "class_name": "RSI_Constellation_Taurus",
@@ -1670,14 +2040,14 @@
     "fetched_at": "2026-11-10T00:25:14.216Z"
   },
   {
-    "class_name": "RSI_Constellation_Taurus_GS",
-    "file": "RSI_Constellation_Taurus_GS.jpg",
+    "class_name": "RSI_Constellation_Taurus",
+    "file": "RSI_Constellation_Taurus.jpg",
     "page_url": "https://robertsspaceindustries.com/pledge/ships/rsi-constellation/Constellation-Mk-IV-Taurus",
     "image_url": "https://media.robertsspaceindustries.com/mw5k52yzgo7fd/source.jpg",
     "content_type": "image/jpeg",
     "bytes": 5688428,
     "sha256": "71788510510a887b6a79b4da39243787dd13a092bfb4bdee81ae82ee8f7d290c",
-    "fetched_at": "2026-11-10T00:25:09.783Z"
+    "fetched_at": "2026-11-10T00:25:14.216Z"
   },
   {
     "class_name": "RSI_Hermes",
@@ -1780,14 +2150,14 @@
     "fetched_at": "2026-11-10T00:26:01.989Z"
   },
   {
-    "class_name": "RSI_Skylark_Display",
-    "file": "RSI_Skylark_Display.jpg",
+    "class_name": "RSI_Skylark",
+    "file": "RSI_Skylark.jpg",
     "page_url": "https://robertsspaceindustries.com/pledge/ships/skylark/Skylark",
     "image_url": "https://media.robertsspaceindustries.com/nxwjwdxucmknm/source.jpg",
     "content_type": "image/jpeg",
     "bytes": 3363387,
     "sha256": "5f8f4273d1fd9d44cf9d171298ab5fb1dc6c7520dd2fce5f9681c3f8986d489b",
-    "fetched_at": "2026-11-10T00:25:58.323Z"
+    "fetched_at": "2026-11-10T00:26:01.989Z"
   },
   {
     "class_name": "RSI_Ursa_Medivac",
@@ -1830,14 +2200,14 @@
     "fetched_at": "2026-11-10T00:26:27.031Z"
   },
   {
-    "class_name": "RSI_Zeus_CL_Collector_Indust",
-    "file": "RSI_Zeus_CL_Collector_Indust.jpg",
+    "class_name": "RSI_Zeus_CL",
+    "file": "RSI_Zeus_CL.jpg",
     "page_url": "https://robertsspaceindustries.com/pledge/ships/zeus-mk-ii/Zeus-Mk-II-CL",
     "image_url": "https://media.robertsspaceindustries.com/bkvyglm2hgmzd/source.jpg",
     "content_type": "image/jpeg",
     "bytes": 4649626,
     "sha256": "33d5d1ef8418495aed9d2ae593ee7924a2dc198c934938c2e85a48d08fd586a1",
-    "fetched_at": "2026-11-10T00:26:24.099Z"
+    "fetched_at": "2026-11-10T00:26:27.031Z"
   },
   {
     "class_name": "RSI_Zeus_ES",

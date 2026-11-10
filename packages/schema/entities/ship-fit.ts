@@ -66,6 +66,8 @@ export const ShipFitList = z.strictObject({
     sheet: z.string().min(1),
     /** The sheet's own build heading, for example "PRE LIVE 4.10.3". */
     build_label: z.string().min(1),
+    /** The date of the sheet's "UNDER CONSTRUCTION" band over this build's list, where it has one. */
+    under_construction: z.iso.date().nullable(),
     /** The sheet's "LAST UPDATE" date. */
     last_update: z.iso.date(),
     /** The author's answer on reuse, the owner's to record (ADR-028). */

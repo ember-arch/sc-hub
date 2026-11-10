@@ -123,9 +123,10 @@ test("Weapons and combat says the shields and the armour, and shows what gets th
   }
   const physical = raw.armor?.damage_multiplier?.physical;
   if (typeof physical === "number" && physical !== 1) {
-    await expect(combat.locator("dd", { hasText: "×" }).first()).toContainText(
-      `×${physical}`,
-    );
+    // The armour fact leads with the physical multiplier when it is not 1.
+    await expect(
+      combat.locator("dd", { hasText: `Physical ×${physical}` }),
+    ).toHaveCount(1);
   }
   // Choosing another gun changes the caption's weapon.
   const caption = (await figure.locator("figcaption").textContent()) ?? "";

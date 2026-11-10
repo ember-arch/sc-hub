@@ -44,7 +44,11 @@ for (const route of ROUTES) {
     ).toHaveCount(1);
     await expect(badges.first()).toHaveAttribute(
       "src",
-      //made-by-the-community-(black|white).webp$/,
+      //made-by-the-community-black.webp$/,
+    );
+    await expect(badges.last()).toHaveAttribute(
+      "src",
+      //made-by-the-community-white.webp$/,
     );
     await expect(footer).toContainText(WIKI_CREDIT.text);
     await expect(

@@ -115,6 +115,11 @@ export const MADE_BY_THE_COMMUNITY = {
   onDark: { src: "/made-by-the-community-white.webp", width: 240, height: 240 },
   source:
     "Fankit 2025_11_19, 03_LOGOS/MadeByTheCommunity_Black.png and _White.png",
+  /** SHA-256 of the two originals in the kit, so a redrawn badge in a later kit shows as drift. */
+  originals: {
+    black: "cdf1b50182a1702388d65950a970008b148f9c2d241aa80d28b1cf05e7167607",
+    white: "1a146fa257b648baa58840fe17149b7cce06c446d8861586a4749d813372a50b",
+  },
 } as const;
 
 /** Under every ship image copied from RSI's ship matrix, linked to the ship's RSI page (ADR-009). */

@@ -60,3 +60,35 @@ export function layoutRow<T extends { readonly length: number }>(
     shift,
   };
 }
+
+/** The ratios of the page ship's length the spectrum reaches for: a quarter, half, twice, four times. */
+export const SPECTRUM_RATIOS: readonly number[] = [0.25, 0.5, 2, 4];
+
+/**
+ * Four ships across the range of sizes about the page's ship (owner, 2026-11-10: "a dynamic
+ * spectrum of 4 ships + the one on the page"): for each ratio in turn, the ship not yet chosen
+ * whose length is nearest, in proportion, to that multiple of the page ship's length. Where the
+ * catalog runs out on one side (the largest ship has nothing twice its size) the nearest ships
+ * that are left stand in. Fewer than four other ships: all of them. Largest first.
+ */
+export function spectrumAround<
+  T extends { readonly slug: string; readonly length: number },
+>(ships: readonly T[], current: T, ratios = SPECTRUM_RATIOS): T[] {
+  const others = ships.filter((s) => s.slug !== current.slug && s.length > 0);
+  const chosen: T[] = [];
+  for (const ratio of ratios) {
+    const target = Math.log(current.length * ratio);
+    let best: T | undefined;
+    let bestGap = Number.POSITIVE_INFINITY;
+    for (const ship of others) {
+      if (chosen.includes(ship)) continue;
+      const gap = Math.abs(Math.log(ship.length) - target);
+      if (gap < bestGap) {
+        best = ship;
+        bestGap = gap;
+      }
+    }
+    if (best !== undefined) chosen.push(best);
+  }
+  return chosen.sort((a, b) => b.length - a.length);
+}

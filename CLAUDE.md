@@ -21,7 +21,7 @@ The full scope and plan live in `docs/scope.md`. Phase specs live in `docs/specs
 - Never call an external source above the rate limits in section 9. Default to the polite limit when unsure.
 - Never route models, textures, thumbnails, or other large assets through the app server. They are served from object storage behind the CDN.
 - Never mutate a published data version. A fix is a new version.
-- Never hand-enter game data. Every stat comes from the pipeline; if the pipeline cannot produce it, the field stays empty.
+- Never hand-enter game data. Every stat comes from the pipeline; if the pipeline cannot produce it, the field stays empty. The one standing exception, the owner's decision of 2026-11-10 (ADR-028): which ships fit inside which is copied by script from Pegaxsus's community-tested fitting list and shown as that, with author, build, date and link, never as a game stat.
 - Never add a color, type size, spacing value, or radius outside `packages/ui` tokens without an ADR.
 - Never use emoji, glow, scanlines, hex grids, bevels, neon-on-black, or sci-fi display fonts anywhere in the UI. This is a reference product, not a game HUD. The 3D canvases (the holomodel and the Scale lineup) draw the models in ink on the page's own paper (ADR-020): a flat-shaded body with inked edges, a ground line, slowly turning; no glow, scan bands, grid or backdrop there either (the CIG-holoviewer look of ADR-012 and ADR-015 was withdrawn on 2026-11-09).
 - Never infer a game stat, a dev post's meaning, or an entity link with less than the confidence thresholds in `docs/data-model.md`.

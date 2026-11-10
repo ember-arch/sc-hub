@@ -41,6 +41,7 @@ import {
   type ShipView,
   cargoBoxes,
   cargoBoxesVersion,
+  fitting,
   flattenPorts,
   repo,
 } from "../../../lib/data";
@@ -78,6 +79,7 @@ import { type SourceEntry, Sources } from "./showcase/dossier";
 import { HoloLineup, type LineupShip } from "./showcase/holo-lineup";
 import { type AttackingWeapon, DamagePath } from "./showcase/damage-path";
 import { CargoGrids } from "./showcase/cargo-grids";
+import { FittingLists } from "./fitting-lists";
 import { Claims, Facts, Gap, Related, type ShipFileProps } from "./ship-file";
 
 /**
@@ -452,25 +454,38 @@ function hasDimensions(
  */
 function cargoSection(
   name: string,
+  className: string,
   s: VehicleStats | null,
   version: string | null,
 ): { aside?: string | undefined; body: ReactNode } {
   const grids = s === null ? null : cargoGridsOf(s.raw);
+  // What fits inside this ship, and what carries it, by the fitting list (ADR-028).
+  const lists = <FittingLists className={className} />;
   if (grids === null) {
-    return { body: <Gap>No cargo grids on record.</Gap> };
+    return {
+      body: (
+        <div className="flex flex-col gap-6">
+          <Gap>No cargo grids on record.</Gap>
+          {lists}
+        </div>
+      ),
+    };
   }
   const aside = version === null ? undefined : `LIVE ${version}`;
   if (grids.length === 0) {
     return {
       aside,
       body: (
-        <Gap>
-          No cargo grid: the record lists none for the {name}
-          {s !== null && s.cargo_scu !== null && s.cargo_scu > 0
-            ? `, though it states ${n0(s.cargo_scu)} SCU of cargo`
-            : ""}
-          .
-        </Gap>
+        <div className="flex flex-col gap-6">
+          <Gap>
+            No cargo grid: the record lists none for the {name}
+            {s !== null && s.cargo_scu !== null && s.cargo_scu > 0
+              ? `, though it states ${n0(s.cargo_scu)} SCU of cargo`
+              : ""}
+            .
+          </Gap>
+          {lists}
+        </div>
       ),
     };
   }
@@ -541,6 +556,7 @@ function cargoSection(
             boxesVersion={boxesVersion}
           />
         )}
+        {lists}
       </div>
     ),
   };
@@ -707,9 +723,21 @@ export function packShipFile(ship: ShipView): ShipFileProps {
           ];
     });
 
+  const fit = fitting();
+  const fitSource: SourceEntry[] =
+    fit === null || !fit.knows(v.class_name)
+      ? []
+      : [
+          {
+            text: `${fit.list.source.author}, ${fit.list.source.title}, ${fit.list.source.build_label}, last updated ${fit.list.source.last_update}`,
+            href: fit.list.source.url,
+            note: "Which ships fit inside which; community-tested, not game data (ADR-028)",
+          },
+        ];
   const sources = sourceList(
     show,
     [
+      ...fitSource,
       {
         text: WIKI_CREDIT.text.replace(/\.$/, ""),
         href: WIKI_CREDIT.url,
@@ -1106,7 +1134,7 @@ export function packShipFile(ship: ShipView): ShipFileProps {
           </div>
         ),
       },
-      cargo: cargoSection(v.name, s, version),
+      cargo: cargoSection(v.name, v.class_name, s, version),
       combat: {
         aside:
           version === null ? "Stock loadout" : `Stock loadout, LIVE ${version}`,

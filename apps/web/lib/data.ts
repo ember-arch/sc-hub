@@ -16,6 +16,7 @@ import {
   type Paint,
   SpectrumMode,
   type Port,
+  ShipFitList as ShipFitListSchema,
   type Vehicle,
   VehicleDescription as VehicleDescriptionSchema,
   type VehicleDescription,
@@ -23,6 +24,7 @@ import {
 } from "schema";
 import { parsePack } from "schema/pack";
 import { editionBase, isPlaceholderName } from "./editions";
+import { type FittingIndex, buildFittingIndex } from "./fitting";
 import type { ChannelVersion, SearchEntry } from "ui";
 import { sentence } from "ui";
 
@@ -181,6 +183,26 @@ export function cargoBoxes(): readonly CargoBox[] {
 /** The build the shapes were read for, so the page can say when it is not the pack's. */
 export function cargoBoxesVersion(): string | null {
   return loadCargoBoxes().version;
+}
+
+const FITTING_FILE = join(REPO_ROOT, "fixtures", "fitting", "ShipFit.json");
+let cachedFitting: FittingIndex | null | undefined;
+
+/**
+ * The ship fitting list (ADR-028), community-tested and copied by scripts/fitting/fetch.ts;
+ * null without the fixture, and the ship file then shows no "Carries" or "Fits in" lists.
+ */
+export function fitting(): FittingIndex | null {
+  if (cachedFitting === undefined) {
+    cachedFitting = existsSync(FITTING_FILE)
+      ? buildFittingIndex(
+          ShipFitListSchema.parse(
+            JSON.parse(readFileSync(FITTING_FILE, "utf8")),
+          ),
+        )
+      : null;
+  }
+  return cachedFitting;
 }
 
 export interface ShipView {

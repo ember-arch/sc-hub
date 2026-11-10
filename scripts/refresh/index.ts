@@ -291,6 +291,12 @@ const STEPS: readonly Step[] = [
     script: "scripts/titles/fetch.ts",
   },
   {
+    id: "fitting",
+    label: "fitting list",
+    files: ["fixtures/fitting/ShipFit.json"],
+    script: "scripts/fitting/fetch.ts",
+  },
+  {
     id: "funding",
     label: "funding",
     files: ["fixtures/funding"],

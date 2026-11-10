@@ -116,6 +116,21 @@ const manifest: MediaManifest = {
       ],
     },
   ],
+  covers: [
+    {
+      external_id: "21445",
+      source: "rsi_comm_link_hub",
+      page_url:
+        "https://robertsspaceindustries.com/comm-link/transmission/21445-This-Week-In-Star-Citizen",
+      image_url:
+        "https://media.robertsspaceindustries.com/47458res1wwdv/channel_item_full.jpg",
+      fetched_at: "2026-11-10T20:00:00.000Z",
+      renditions: [
+        { src: "/media/covers/21445-1280.webp", width: 1280, height: 720 },
+        { src: "/media/covers/21445-640.webp", width: 640, height: 360 },
+      ],
+    },
+  ],
 };
 
 describe("createMedia", () => {
@@ -138,6 +153,29 @@ describe("createMedia", () => {
 
   it("gives a card's image an empty alt, since the card names the ship", () => {
     expect(media.shipCard("AEGS_Gladius")?.alt).toBe("");
+  });
+
+  it("gives a dispatch card its Comm-Link's cover by RSI's id, with an empty alt and RSI's credit on the Comm-Link's page (ADR-029)", () => {
+    const cover = media.cover("21445");
+    expect(cover).toEqual({
+      src: "/media/covers/21445-1280.webp",
+      width: 1280,
+      height: 720,
+      srcSet:
+        "/media/covers/21445-1280.webp 1280w, /media/covers/21445-640.webp 640w",
+      alt: "",
+      credit: {
+        text: "Image: Roberts Space Industries",
+        href: "https://robertsspaceindustries.com/comm-link/transmission/21445-This-Week-In-Star-Citizen",
+      },
+    });
+    expect(media.cover("1")).toBeNull();
+    // A manifest built before covers existed parses with none.
+    const older = { ...manifest } as Record<string, unknown>;
+    delete older["covers"];
+    expect(
+      createMedia(parseMediaManifest(JSON.stringify(older))).cover("21445"),
+    ).toBeNull();
   });
 
   it("describes a concept ship's image by slug, credited to its RSI page (ADR-022)", () => {

@@ -12,6 +12,8 @@ import {
   type Mitigation,
   type PathStage,
   damagePath,
+  hasShieldShares,
+  perSecondToHull,
 } from "../../../../lib/damage-path";
 
 /**
@@ -66,7 +68,9 @@ export function DamagePath({
   const first =
     weapons.find((w) => w.id === defaultId)?.id ?? weapons[0]?.id ?? "";
   const [chosen, setChosen] = useState(first);
-  const [shieldsUp, setShieldsUp] = useState(shields !== null);
+  // The switch exists only where the record gives the shields a share to absorb.
+  const shares = shields !== null && hasShieldShares(mitigation);
+  const [shieldsUp, setShieldsUp] = useState(shares);
   const captionId = useId();
   const weapon = weapons.find((w) => w.id === chosen) ?? null;
   const stages =
@@ -101,7 +105,7 @@ export function DamagePath({
         cell(m.deflection?.[k] ?? null, (v) => (v === 0 ? "" : n0(v))),
     },
     {
-      label: "Armour takes",
+      label: "Armour pool takes",
       value: (k) => cell(m.armourDurability?.[k] ?? null, times),
     },
     { label: "Hull takes", value: (k) => times(m.hull[k]) },
@@ -119,7 +123,10 @@ export function DamagePath({
         value: n1(p.shields),
       },
       { name: "Through to the ship", value: n1(p.passed) },
-      { name: "Armour takes", value: p.armour === null ? "" : n1(p.armour) },
+      {
+        name: "Armour pool takes",
+        value: p.armour === null ? "" : n1(p.armour),
+      },
       { name: "Hull takes", value: n1(p.hull) },
       {
         name: "Components, no armour left",
@@ -152,7 +159,7 @@ export function DamagePath({
             ))}
           </select>
         </label>
-        {shields === null ? null : (
+        {!shares ? null : (
           <div
             role="group"
             aria-label="Shields"
@@ -186,6 +193,9 @@ export function DamagePath({
             : `Shields ${n0(shields.hp)} HP${shields.regen === null ? "" : `, regenerating ${n0(shields.regen)} HP/s`}${shields.faceType === null ? "" : ` (${shields.faceType.toLowerCase()})`}`}
           {hullHp === null ? "" : `; hull ${n0(hullHp)} HP`}
           {m.armour.hp === null ? "" : `; armour ${n0(m.armour.hp)} HP`}
+          {shields !== null && !shares
+            ? ". Its record gives the shields no share of any kind to absorb, so the path starts at the armour"
+            : ""}
         </p>
 
         <table className="w-full border-collapse text-ui">
@@ -260,10 +270,8 @@ export function DamagePath({
               {weapon.dps[p.kind] === undefined ? null : (
                 <p className="m-0 text-caption text-secondary">
                   At {n0(weapon.dps[p.kind]!)} per second fired, the hull takes{" "}
-                  {n0(
-                    weapon.dps[p.kind]! * (p.passed / p.shot) * m.hull[p.kind],
-                  )}{" "}
-                  per second{shieldsUp ? " while the shields hold" : ""}
+                  {n0(perSecondToHull(weapon.dps[p.kind]!, p, m))} per second
+                  {shieldsUp ? " while the shields hold" : ""}
                 </p>
               )}
             </div>
@@ -279,10 +287,11 @@ export function DamagePath({
         4.3.1) and resist a share of that; energy does more to the armour and
         ballistic sends more through it; components behind the hull take a share
         of what penetrates, most with no armour left (Alpha 4.5.0). Shown at
-        full shields. The deflection figure is in the record with no published
-        rule, so it is named beside a shot that falls below it and applied to
-        nothing; the armour left over a fight, the penetration cone and shield
-        faces are not modelled
+        full shields. Which record field each sentence means is
+        SPViewer&apos;s reading, consistent with the records; CIG names none.
+        The deflection figure has no published rule, so it is named beside a
+        shot that falls below it and applied to nothing; the armour left over
+        a fight, the penetration cone and shield faces are not modelled
         {version === null ? "" : `. LIVE ${version}`}
       </figcaption>
     </figure>

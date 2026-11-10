@@ -5,11 +5,10 @@
  * Both are in the vehicle's record as the Wiki API serves it, kept in `VehicleStats.raw` like
  * the insurance terms and the loadout editor's figures (ADR-013, ADR-016). A gun's record
  * carries its damage per second by kind. Nothing here is computed beyond one product per kind
- * and their sum: the damage fired, times the armour's multiplier for that kind. The records hold
- * more (the armour's resistance multipliers, deflection and penetration resistance, the ship's
- * penetration multiplier, the shields' absorption and resistance ranges) with no published rule
- * for how the game applies them, so none of it is applied and nothing is said about the hull's
- * fate beyond the multiplier (CLAUDE.md section 2).
+ * and their sum: the damage fired, times the armour's multiplier for that kind. The records'
+ * other figures (the shields' absorption and resistance ranges, the armour's own multiplier,
+ * deflection, the components' share) are read by `damage-path.ts`, each on the CIG statement it
+ * rests on; penetration resistance has none and stays unread (CLAUDE.md section 2).
  */
 
 export const DAMAGE_KINDS = [

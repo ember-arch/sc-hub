@@ -527,8 +527,15 @@ export function packShipFile(ship: ShipView): ShipFileProps {
     .flatMap((c) => {
       if (c.item.type !== "weapon") return [];
       const dps = dpsByKindOf(c.stats?.raw);
-      const shot = alphaByKindOf(c.stats?.raw);
-      return dps === null || shot === null
+      const alpha = alphaByKindOf(c.stats?.raw);
+      // A shot's kinds are the kinds the gun's per-second figure has: a 0.001 trace is not one.
+      const shot =
+        alpha === null
+          ? null
+          : Object.fromEntries(
+              Object.entries(alpha).filter(([k]) => k in dps!),
+            );
+      return dps === null || shot === null || Object.keys(shot).length === 0
         ? []
         : [
             {

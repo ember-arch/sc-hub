@@ -1,7 +1,14 @@
 import { readFileSync } from "node:fs";
 import type { ItemStats, VehicleStats } from "schema";
 import { describe, expect, it } from "vitest";
-import { alphaByKindOf, damagePath, mitigationOf } from "../lib/damage-path";
+import { shieldsOf } from "../lib/armour";
+import {
+  alphaByKindOf,
+  damagePath,
+  hasShieldShares,
+  mitigationOf,
+  perSecondToHull,
+} from "../lib/damage-path";
 
 const packDir = new URL("../../../fixtures/bootstrap/", import.meta.url);
 const read = <T>(name: string): T[] =>
@@ -34,24 +41,29 @@ describe("mitigationOf", () => {
     expect(mitigationOf(atls.raw)).toBeNull();
   });
 
-  it("every ship with shields has the same shield shares CIG published (ballistic absorption 45%)", () => {
-    const withShields = vehicleStats
-      .map((s) => mitigationOf(s.raw))
-      .filter((m) => m !== null && m.shieldAbsorption !== null);
-    expect(withShields.length).toBeGreaterThan(200);
-    for (const m of withShields) {
+  it("every shielded ship with shield shares has the ones CIG published (ballistic absorption 45%); fifteen ground vehicles have none", () => {
+    const shielded = vehicleStats
+      .map((s) => ({ s, m: mitigationOf(s.raw) }))
+      .filter(({ s, m }) => m !== null && shieldsOf(s.raw) !== null);
+    const withShares = shielded.filter(({ m }) => hasShieldShares(m!));
+    const without = shielded.filter(({ m }) => !hasShieldShares(m!));
+    expect(withShares.length).toBeGreaterThan(200);
+    expect(without.length).toBe(15);
+    for (const { m } of withShares) {
       expect(m!.shieldAbsorption!.physical.max).toBeCloseTo(0.45);
       expect(m!.shieldAbsorption!.energy.max).toBe(1);
     }
+    expect(without.map(({ s }) => s.class_name)).toContain("RSI_Lynx");
   });
 });
 
 describe("alphaByKindOf", () => {
-  it("reads a gun's damage per shot by kind", () => {
+  it("reads a gun's damage per shot by kind, and nothing for a part without one", () => {
     const gatling = itemStats.find(
       (s) => s.class_name === "GATS_BallisticGatling_S3",
     )!;
     expect(alphaByKindOf(gatling.raw)).toEqual({ physical: 32 });
+    expect(alphaByKindOf({})).toBeNull();
   });
 });
 
@@ -80,6 +92,28 @@ describe("damagePath", () => {
     expect(down!.passed).toBe(200);
     expect(down!.armour).toBeCloseTo(242);
     expect(down!.hull).toBeCloseTo(120);
+  });
+
+  it("with shields down, physical passes whole and the shields take nothing", () => {
+    const [p] = damagePath({ physical: 100 }, m, false);
+    expect(p!.shields).toBe(0);
+    expect(p!.passed).toBe(100);
+    expect(p!.hull).toBeCloseTo(75);
+  });
+
+  it("gives a ship with shields but no shares a path that starts at the armour", () => {
+    const lynx = vehicleStats.find((s) => s.class_name === "RSI_Lynx")!;
+    const lm = mitigationOf(lynx.raw)!;
+    expect(hasShieldShares(lm)).toBe(false);
+    const [p] = damagePath({ physical: 100 }, lm, true);
+    expect(p!.shields).toBe(0);
+    expect(p!.passed).toBe(100);
+  });
+
+  it("gives the hull's damage per second at the rate of fire, on the same figures", () => {
+    const [p] = damagePath({ physical: 32 }, m, true);
+    // 853 per second × 55% passing × 0.75 to the hull.
+    expect(perSecondToHull(853, p!, m)).toBeCloseTo(853 * 0.55 * 0.75);
   });
 
   it("names the deflection figure beside a shot that falls below it, and applies it to nothing", () => {

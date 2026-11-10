@@ -29,6 +29,8 @@ export interface CargoGridsProps {
   readonly defaultScu: number;
   readonly label: string;
   readonly version: string | null;
+  /** The build the box shapes were read for; named in the caption when it is not the pack's. */
+  readonly boxesVersion: string | null;
 }
 
 const n0 = (v: number): string =>
@@ -186,15 +188,6 @@ function GridDrawing({
           <path d={edge(0, 3)} />
           <path d={edge(3, 2)} />
         </g>
-        <path d={edge(0, 1)} />
-        <path d={edge(1, 2)} />
-        <path d={edge(0, 4)} />
-        <path d={edge(1, 5)} />
-        <path d={edge(2, 6)} />
-        <path d={edge(4, 5)} />
-        <path d={edge(5, 6)} />
-        <path d={edge(6, 7)} />
-        <path d={edge(7, 4)} />
       </g>
       <g
         className="text-primary"
@@ -223,6 +216,25 @@ function GridDrawing({
           );
         })}
       </g>
+      {/* The near edges of the wire box, painted last: a box that leaves a remainder of the
+          grid's width or length stands in front of nothing, and the grid's edge stays in view. */}
+      <g
+        className="text-primary"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={stroke}
+        strokeLinejoin="round"
+      >
+        <path d={edge(0, 1)} />
+        <path d={edge(1, 2)} />
+        <path d={edge(0, 4)} />
+        <path d={edge(1, 5)} />
+        <path d={edge(2, 6)} />
+        <path d={edge(4, 5)} />
+        <path d={edge(5, 6)} />
+        <path d={edge(6, 7)} />
+        <path d={edge(7, 4)} />
+      </g>
     </svg>
   );
 }
@@ -234,6 +246,7 @@ export function CargoGrids({
   defaultScu,
   label,
   version,
+  boxesVersion,
 }: CargoGridsProps) {
   const [scu, setScu] = useState(defaultScu);
   const captionId = useId();
@@ -282,15 +295,15 @@ export function CargoGrids({
           const name = `Grid ${i + 1}${g.count > 1 ? `, ×${g.count}` : ""}`;
           const dims = `${n2(g.grid.width)} × ${n2(g.grid.length)} × ${n2(g.grid.height)} m`;
           const takes =
-            g.grid.minBox === null && g.grid.maxBox === null
-              ? ""
-              : `, takes ${g.grid.minBox === null ? "up to" : `${g.grid.minBox} to`} ${g.grid.maxBox === null ? "any" : g.grid.maxBox} SCU boxes`;
+            g.grid.maxBox === null
+              ? `, largest box not stated${g.grid.minBox === null ? "" : `, ${g.grid.minBox} SCU the smallest`}`
+              : `, takes ${g.grid.minBox === null ? "up to" : `${g.grid.minBox} to`} ${g.grid.maxBox} SCU boxes`;
           const holds = gridTakes(g.grid, box)
             ? fit.count === 0
               ? `; no ${box.scu} SCU box fits its ${dims}`
               : `; holds ${fit.count} ${plural(fit.count, "box", "boxes")}, ${fit.across} across, ${fit.along} along${fit.layers > 1 ? `, ${fit.layers} high` : ""}${fit.turned ? ", turned" : ""}`
             : `; does not take a ${box.scu} SCU box`;
-          const title = `${name}: ${n0(g.grid.scu)} SCU, ${dims}${g.grid.external ? ", open to space" : ""}${takes}${holds}`;
+          const title = `${name}: ${n0(g.grid.scu)} SCU, ${dims}${g.grid.external === true ? ", open to space" : ""}${takes}${holds}`;
           return (
             <div key={i} className="flex min-w-0 flex-col gap-2">
               <GridDrawing
@@ -303,7 +316,7 @@ export function CargoGrids({
               <p className="m-0 text-caption text-secondary tabular-nums">
                 <span className="text-primary">{name}</span> {n0(g.grid.scu)}{" "}
                 SCU, {dims}
-                {g.grid.external ? ", open to space" : ""}
+                {g.grid.external === true ? ", open to space" : ""}
                 {takes}
                 {holds}
               </p>
@@ -365,11 +378,14 @@ export function CargoGrids({
         seen from a corner, holding boxes of one standard size: as many as stand
         upright in rows across and along the grid, turned a quarter where that
         fits more, in as many layers as the height takes, within the smallest
-        and largest box the record says the grid takes. The boxes&apos; shapes
-        come from the game&apos;s cargo container records. Not modelled: the
-        game&apos;s own placement, mixed loads, doors and loading access, and
-        anything tested in play
+        and largest box the record names for the grid, or any size where it
+        names none. The boxes&apos; shapes come from the game&apos;s cargo
+        container records. Not modelled: the game&apos;s own placement, mixed
+        loads, doors and loading access, and anything tested in play
         {version === null ? "" : `. LIVE ${version}`}
+        {boxesVersion === null || boxesVersion === version
+          ? ""
+          : `; the box shapes from ${boxesVersion}`}
       </figcaption>
     </figure>
   );

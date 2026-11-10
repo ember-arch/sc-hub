@@ -35,7 +35,7 @@ export function GET(): Response {
     <title>SC Hub news</title>
     <link>${escape(`${base}/news`)}</link>
     <atom:link href="${escape(`${base}/news/rss.xml`)}" rel="self" type="application/rss+xml" />
-    <description>Comm-Links and roadmap changes, each linked to its original on the source site. An unofficial fan site, not affiliated with Cloud Imperium.</description>
+    <description>Comm-Links and roadmap changes, each linked to its original on the source site. Comm-Link text via the Star Citizen Wiki API (api.star-citizen.wiki). An unofficial fan site, not affiliated with Cloud Imperium.</description>
     <language>en</language>
 ${items}
   </channel>

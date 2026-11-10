@@ -62,11 +62,15 @@ export default async function NewsPage({ searchParams }: Props) {
       stage={
         <Masthead
           eyebrow={[
-            all.length === 0 ? "Feed not yet connected" : `${all.length} items`,
-            "Comm-Links, patch notes, roadmap, video, Spectrum",
+            r.news.length === 0
+              ? "Feed not yet connected"
+              : `${all.length} ${all.length === 1 ? "item" : "items"}`,
+            present.length === 0
+              ? "Comm-Links, patch notes, roadmap, video, Spectrum"
+              : present.map((s) => SOURCE_LABEL[s]).join(", "),
           ]}
           title="Dispatches"
-          lede="What CIG publishes and what its developers say, in one feed, each item linked to its source and to the ships and parts it mentions."
+          lede="What CIG publishes and what its developers say, in one feed, each item linked to its original on the source site."
         />
       }
     >

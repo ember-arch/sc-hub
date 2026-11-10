@@ -73,10 +73,27 @@ export function loadPack(dir: string): DataPack {
  */
 function loadNews(hiddenAuthors: ReadonlySet<string>): ContentItem[] {
   if (!existsSync(NEWS_FILE)) return [];
-  const dev = spectrumOn();
-  const rows = ContentItemSchema.array().parse(
-    JSON.parse(readFileSync(NEWS_FILE, "utf8")),
+  return visibleNews(
+    ContentItemSchema.array().parse(
+      JSON.parse(readFileSync(NEWS_FILE, "utf8")),
+    ),
+    { spectrum: spectrumOn(), hiddenAuthors },
   );
+}
+
+/**
+ * What the site shows of the pack's rows: the latest revision of each item, no takedown, no
+ * Spectrum item unless the module is on, none by an author under takedown; newest first.
+ */
+export function visibleNews(
+  rows: readonly ContentItem[],
+  options: {
+    readonly spectrum: boolean;
+    readonly hiddenAuthors: ReadonlySet<string>;
+  },
+): ContentItem[] {
+  const dev = options.spectrum;
+  const hiddenAuthors = options.hiddenAuthors;
   const latest = new Map<string, ContentItem>();
   for (const row of rows) {
     const key = `${row.source}:${row.external_id}`;

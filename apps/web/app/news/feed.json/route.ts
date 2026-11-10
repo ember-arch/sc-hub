@@ -24,7 +24,7 @@ export function GET(): Response {
       home_page_url: `${base}/news`,
       feed_url: `${base}/news/feed.json`,
       description:
-        "Comm-Links and roadmap changes, each linked to its original on the source site. An unofficial fan site, not affiliated with Cloud Imperium.",
+        "Comm-Links and roadmap changes, each linked to its original on the source site. Comm-Link text via the Star Citizen Wiki API (api.star-citizen.wiki). An unofficial fan site, not affiliated with Cloud Imperium.",
       items,
     },
     {

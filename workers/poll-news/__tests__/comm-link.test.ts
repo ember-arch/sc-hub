@@ -14,6 +14,7 @@ import {
   WikiCommLink,
   fromHub,
   fromWiki,
+  isPlaceholderText,
   parseHub,
   pollCommLinks,
   timeFromAgo,
@@ -260,6 +261,61 @@ describe("backfillCommLinks", () => {
           "https://robertsspaceindustries.com/en/comm-link/transmission/1-X",
       }).path,
     ).toBe("/comm-link/transmission/1-X");
+  });
+});
+
+describe("placeholder and styled text from the wiki", () => {
+  it("drops a CSS fragment and the banner names after it", () => {
+    expect(
+      cleanWikiText(
+        "linear-gradient(to bottom, #000000 0%, #000814 40%, #001f33 100%) SC_Patch-4-10_SOO_Banner_16-9 CHAOS IN CRUSADER",
+        "X",
+      ),
+    ).toBe("CHAOS IN CRUSADER");
+  });
+
+  it("cleans a banner name that follows the title on the first line", () => {
+    expect(
+      cleanWikiText(
+        "This Week in Star Citizen Nini_StarDust_EverBloom Happy Monday, everyone.",
+        "This Week in Star Citizen",
+      ),
+    ).toBe("Happy Monday, everyone.");
+  });
+
+  it("keeps the hub blurb when the wiki record is lorem ipsum", () => {
+    expect(isPlaceholderText("Nemo enim ipsam voluptatem quia voluptas")).toBe(
+      true,
+    );
+    expect(isPlaceholderText("The Polaris has been a capital ship")).toBe(
+      false,
+    );
+    const entry = {
+      id: "21353",
+      path: "/comm-link/transmission/21353-X",
+      title: "X",
+      kind: "post",
+      blurb: "The hub says this.",
+      timeAgo: "2 hours ago",
+    };
+    const record = {
+      data: {
+        id: 21353,
+        title: "X",
+        rsi_url:
+          "https://robertsspaceindustries.com/comm-link/transmission/21353-X",
+        channel: null,
+        category: null,
+        series: null,
+        created_at: "2026-11-01T10:00:00.000000Z",
+        translations: {
+          en_EN: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        },
+      },
+    };
+    const item = fromWiki(record, entry);
+    expect(item.summary).toBe("The hub says this.");
+    expect(item.body_html).toBe("<p>The hub says this.</p>");
   });
 });
 

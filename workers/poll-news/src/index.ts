@@ -57,8 +57,11 @@ async function main(): Promise<void> {
         existsSync(path)
           ? parse(JSON.parse(readFileSync(path, "utf8")))
           : empty,
-      write: (next) =>
-        writeFileSync(path, `${JSON.stringify(next, null, 2)}\n`),
+      // Held until the run ends without an error (CLAUDE.md section 5: nothing from a run
+      // with an unknown shape goes live, the state beside the pack included).
+      write: (next) => {
+        pending.set(path, `${JSON.stringify(next, null, 2)}\n`);
+      },
     };
   };
   const summary: Record<string, unknown> = {
@@ -66,6 +69,7 @@ async function main(): Promise<void> {
     job: "workers:poll-news",
     sources,
   };
+  const pending = new Map<string, string>();
   let errors = 0;
   for (const source of sources) {
     try {
@@ -103,7 +107,13 @@ async function main(): Promise<void> {
       summary[source] = { error: String(error) };
     }
   }
-  const written = store.save();
+  let written = false;
+  if (errors === 0) {
+    written = store.save();
+    for (const [path, text] of pending) writeFileSync(path, text);
+  } else {
+    log({ event: "news.run.discarded", errors, added: store.added });
+  }
   console.log(
     JSON.stringify({
       ...summary,

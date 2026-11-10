@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { FeedDocument, createFeedAdapter } from "../src/feed.js";
 import {
+  POLL_SPACING_MS,
   SEARCH_URL,
   SearchAnswer,
   SpectrumStatusError,
@@ -115,6 +116,31 @@ describe("the poll adapter", () => {
       page: 2,
       role_id: null,
     });
+  });
+
+  it("waits five minutes between the pages of a backfill and never repeats a post", async () => {
+    const waits: number[] = [];
+    let calls = 0;
+    const adapter = createPollAdapter({
+      post: async () => {
+        calls += 1;
+        return { ok: true, status: 200, text: async () => sample };
+      },
+      sessionCookie: "x",
+      staffRoleId: "11",
+      staff: { handles: ["Lujayn", "Costfanatic06"] },
+      userAgent: "t",
+      pages: 3,
+      sleep: async (ms) => {
+        waits.push(ms);
+      },
+    });
+    const posts = await adapter.fetchNewStaffPosts(
+      new Date("2026-11-09T00:00:00Z"),
+    );
+    expect(calls).toBe(3);
+    expect(waits).toEqual([POLL_SPACING_MS, POLL_SPACING_MS]);
+    expect(posts.map((p) => p.id)).toEqual(["9219158", "576637"]);
   });
 
   it("halts on any answer that is not a 200, so the caller backs off", async () => {

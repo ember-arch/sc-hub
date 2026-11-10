@@ -1,12 +1,13 @@
 import NextLink from "next/link";
 
 const TABS = [
-  { href: "/news", label: "Feed" },
-  { href: "/news/dev", label: "Dev tracker" },
+  { href: "/news", label: "Dispatches" },
+  { href: "/news/dev", label: "Developer posts" },
 ] as const;
 
 /**
- * The news feed and the dev tracker are tabs of one section (system.md section 4). With the
+ * The dispatches and the developer posts are tabs of one section (system.md section 4): what
+ * CIG publishes on one, what its developers say on Spectrum on the other (ADR-029). With the
  * Spectrum module off (`SPECTRUM_MODE=off`, spec 03) the tracker has nothing to show and the
  * tabs are not drawn.
  */

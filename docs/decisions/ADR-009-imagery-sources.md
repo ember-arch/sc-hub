@@ -35,6 +35,8 @@ What the sources say, read on 2026-11-07:
 
 ## Not decided (the owner's)
 
+ADR-029 adds a second committed record beside `sources.json`, `cover-sources.json`, for the Comm-Link covers copied from RSI's hub for the Comm-Links on record, on the same footing as the ship images; it does not widen the fetch beyond what the site lists.
+
 - **Publishing these images.** RSI's fansite permission covers only content it designates for fansite use, which is the fankit. Showing RSI's ship images on the public site relies on the FAQ's "generally exempt" wording and on common fan-site practice, not on an express grant. `docs/legal/cig-approval.md` has no box for it and its "Fankit assets" box is unticked. Until the owner decides, and records it there, the images stay local.
 - **Fetching beyond the pack.** The fetch script is limited to the pack's ships. Running it for every ship is closer to the harvesting RSI's terms forbid; widening it is the owner's call.
 - **Giving CIG the site URL** (Fankit Agreement 2(k)) once the site has one.

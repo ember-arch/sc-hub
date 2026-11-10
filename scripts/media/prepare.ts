@@ -28,6 +28,7 @@ import {
   type HoloModel,
   MediaManifest,
   type ConceptImage,
+  type CoverImage,
   type MakerLogo,
   type ShipImage,
   type Showcase,
@@ -35,12 +36,15 @@ import {
 import sharp from "sharp";
 import { z } from "zod";
 import {
+  COVER_WIDTHS,
   ConceptSource,
+  CoverSource,
   FANKIT_LOGOS,
   LOGO_HEIGHT,
   RsiSource,
   SHIP_WIDTHS,
   conceptRenditionPath,
+  coverRenditionPath,
   logoRenditionPath,
   shipRenditionPath,
 } from "./sources.js";
@@ -135,6 +139,46 @@ async function concepts(): Promise<ConceptImage[]> {
     out.push({
       slug: row.slug,
       source: "rsi_ship_matrix",
+      page_url: row.page_url,
+      image_url: row.image_url,
+      fetched_at: row.fetched_at,
+      renditions,
+    });
+  }
+  return out;
+}
+
+/** Comm-Link covers (ADR-029): the same renditions as a card's picture, by RSI's id for the Comm-Link. */
+async function covers(): Promise<CoverImage[]> {
+  const sourcesFile = join(rsiDir, "cover-sources.json");
+  if (!existsSync(sourcesFile)) return [];
+  const rows = z
+    .array(CoverSource)
+    .parse(JSON.parse(readFileSync(sourcesFile, "utf8")));
+  const out: CoverImage[] = [];
+  for (const row of rows) {
+    const input = join(rsiDir, "covers", row.file);
+    if (!existsSync(input)) continue;
+    const meta = await sharp(input).metadata();
+    const renditions = [];
+    for (const width of COVER_WIDTHS) {
+      if (
+        meta.width === undefined ||
+        meta.height === undefined ||
+        width > meta.width
+      )
+        continue;
+      const src = coverRenditionPath(row.external_id, width);
+      const info = await sharp(input)
+        .resize({ width })
+        .webp({ quality: width >= 1280 ? 78 : 74 })
+        .toFile(fileFor(src));
+      renditions.push({ src, width: info.width, height: info.height });
+    }
+    if (renditions.length === 0) continue;
+    out.push({
+      external_id: row.external_id,
+      source: "rsi_comm_link_hub",
       page_url: row.page_url,
       image_url: row.image_url,
       fetched_at: row.fetched_at,
@@ -508,6 +552,7 @@ async function main(): Promise<void> {
   mkdirSync(join(mediaDir, "ships"), { recursive: true });
   mkdirSync(join(mediaDir, "makers"), { recursive: true });
   mkdirSync(join(mediaDir, "concepts"), { recursive: true });
+  mkdirSync(join(mediaDir, "covers"), { recursive: true });
   const models = await holoModels();
   const manifest = MediaManifest.parse({
     generated_at: new Date().toISOString(),
@@ -526,6 +571,7 @@ async function main(): Promise<void> {
       mediaDir,
     }),
     concepts: await concepts(),
+    covers: await covers(),
   });
   writeFileSync(
     join(mediaDir, "manifest.json"),
@@ -537,6 +583,7 @@ async function main(): Promise<void> {
       job: "media:prepare",
       ships: manifest.ships.length,
       concepts: manifest.concepts.length,
+      covers: manifest.covers.length,
       makers: manifest.makers.length,
       showcase: manifest.showcase
         .filter((x) => x.wiki_article === null)

@@ -21,7 +21,7 @@ Tick only what is confirmed in writing. Quote the relevant sentence from the con
 - [ ] **Fankit assets** — use of wallpapers, renders, logos, concept art, and fonts on the site with attribution.
   > quote: TBD
 
-- [ ] **RSI website images** — ship images copied from RSI's public ship matrix, shown on the public site with credit and a link back (ADR-009). Not covered by the fankit or by the Terms of Service fansite grant, which names only content RSI designates for fansite use. Local development only until ticked.
+- [ ] **RSI website images** — ship images copied from RSI's public ship matrix (ADR-009) and the Comm-Link covers copied from RSI's Comm-Link hub (ADR-029), shown on the public site with credit and a link back. Not covered by the fankit or by the Terms of Service fansite grant, which names only content RSI designates for fansite use. Local development only until ticked.
   > quote: TBD
 
 - [ ] **Game-extracted 3D models and textures** — extraction from `Data.p4k`, conversion to glTF, hosting on the project CDN, in-browser display.

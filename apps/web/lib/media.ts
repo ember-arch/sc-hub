@@ -41,6 +41,12 @@ export interface Media {
    * picture of, credited to the wiki's article or RSI's own.
    */
   showcaseCard(slug: string): ResponsiveImage | null;
+  /**
+   * A Comm-Link's cover (ADR-029), by RSI's id for it (the content item's `external_id`), for
+   * a dispatch card: the alt is empty, since the card names the dispatch; the credit links the
+   * Comm-Link's page.
+   */
+  cover(externalId: string): ResponsiveImage | null;
   /** The ship's RSI holoviewer model (ADR-015). */
   holo(slug: string): HoloModel | null;
   /** The human figure the holoviewer stands beside the ship. */
@@ -55,6 +61,7 @@ export function createMedia(manifest: MediaManifest | null): Media {
     manifest?.makers.map((m) => [m.manufacturer_code, m]) ?? [],
   );
   const concepts = new Map(manifest?.concepts.map((c) => [c.slug, c]) ?? []);
+  const covers = new Map(manifest?.covers.map((c) => [c.external_id, c]) ?? []);
   const pictureOf = (
     entry:
       | {
@@ -86,6 +93,7 @@ export function createMedia(manifest: MediaManifest | null): Media {
   return {
     concept: (slug, name) =>
       pictureOf(concepts.get(slug), name === null ? "" : `The ${name}`),
+    cover: (externalId) => pictureOf(covers.get(externalId), ""),
     showcase: (slug) => showcases.get(slug) ?? null,
     showcaseCard(slug) {
       const show = showcases.get(slug);

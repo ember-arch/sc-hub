@@ -1,0 +1,298 @@
+{
+ "success": 1,
+ "code": "OK",
+ "msg": "OK",
+ "data": {
+  "id": 1,
+  "url_slug": "Release-View",
+  "name": "Release View",
+  "description": "Live Version: 4.10.2 ([more info](https://robertsspaceindustries.com/en/comm-link/transmission/21334-Alpha-4102-RSI-Discovery-Month)) ▪ Latest Roadmap Roundup: 04/11/2026 ([more info](https://robertsspaceindustries.com/spectrum/community/SC/forum/3/thread/roadmap-roundup-november-4-2026)) ▪ PTU Version: Alpha 4.10.3, 13093654",
+  "body": "# The Release View  \n\nThe Persistent Universe of Star Citizen receives updates on a monthly basis, and the Release View's intent is to show the planned features for the next three months's Persistent ",
+  "order": 0,
+  "thumbnail": {
+   "id": 1296463,
+   "urls": {
+    "square": "/media/8iv5eqjfabb80r/heap_infobox/Logos.png",
+    "rect": "/media/8iv5eqjfabb80r/product_thumb_large/Logos.png",
+    "large": "/media/8iv5eqjfabb80r/hub_large/Logos.png",
+    "source": "/media/8iv5eqjfabb80r/source/Logos.png"
+   }
+  },
+  "background": {
+   "id": 2351648,
+   "urls": {
+    "square": "/media/l3m8eaws8oxrpr/heap_infobox/Roadmap_RV_Prod.jpg",
+    "rect": "/media/l3m8eaws8oxrpr/product_thumb_large/Roadmap_RV_Prod.jpg",
+    "large": "/media/l3m8eaws8oxrpr/hub_large/Roadmap_RV_Prod.jpg",
+    "source": "/media/l3m8eaws8oxrpr/source/Roadmap_RV_Prod.jpg"
+   }
+  },
+  "importer_id": "SC",
+  "info_heading": "Roadmap: Caveats",
+  "notification_title": "Roadmap Roundup for November 4, 2026",
+  "notification_body": "([Read Now](https://robertsspaceindustries.com/spectrum/community/SC/forum/3/thread/roadmap-roundup-november-4-2026))",
+  "notification_enabled": true,
+  "releases": [
+   {
+    "id": 26,
+    "url_slug": "38",
+    "time_created": 1549668479,
+    "time_modified": 1611779560,
+    "name": "3.8",
+    "description": "Q4 2019",
+    "board_id": 1,
+    "scheduled_at": null,
+    "order": 9,
+    "released": 0,
+    "status": "",
+    "importer_id": "3.8",
+    "patch_announcement_link": null,
+    "cards": []
+   },
+   {
+    "id": 71,
+    "url_slug": "47",
+    "time_created": 1769528942,
+    "time_modified": 1776884698,
+    "name": "4.7",
+    "description": "Q1 2026",
+    "board_id": 1,
+    "scheduled_at": null,
+    "order": 42,
+    "released": 0,
+    "status": "Released",
+    "importer_id": "",
+    "patch_announcement_link": null,
+    "cards": [
+     {
+      "id": 1488,
+      "url_slug": "New-Hairstyles-470",
+      "time_created": 1769612931,
+      "time_modified": 1774358701,
+      "board_id": 1,
+      "name": "New Hairstyles (4.7.0)",
+      "scheduled_at": null,
+      "release_id": 71,
+      "category_id": 3,
+      "importer_id": "",
+      "description": "Adding six new hairstyles.",
+      "body": "Adding six new hairstyles.",
+      "order": 0,
+      "thumbnail": {
+       "id": 3720432,
+       "urls": {
+        "square": "https://media.robertsspaceindustries.com/lz0mmugq9si4b/heap_infobox.png",
+        "rect": "https://media.robertsspaceindustries.com/lz0mmugq9si4b/product_thumb_large.png",
+        "large": "https://media.robertsspaceindustries.com/lz0mmugq9si4b/hub_large.png",
+        "source": "https://media.robertsspaceindustries.com/lz0mmugq9si4b/source.png"
+       }
+      },
+      "status": "Released",
+      "released": 0
+     },
+     {
+      "id": 1495,
+      "url_slug": "Crafting-T0",
+      "time_created": 1771937043,
+      "time_modified": 1774358390,
+      "board_id": 1,
+      "name": "Crafting T0",
+      "scheduled_at": null,
+      "release_id": 71,
+      "category_id": 2,
+      "importer_id": "",
+      "description": "Implementing the first iteration of Crafting, introducing earnable blueprints, material quality, and the ability to improve existing item stats through the crafting process. This initial release focuses primarily on crafting weapons and armor.",
+      "body": "Implementing the first iteration of Crafting, introducing earnable blueprints, material quality, and the ability to improve existing item stats through the crafting process. This initial release focuses primarily on crafting weapons and armor.",
+      "order": 0,
+      "thumbnail": {
+       "id": 3741099,
+       "urls": {
+        "square": "https://media.robertsspaceindustries.com/hpoxl2qcqjxiq/heap_infobox.png",
+        "rect": "https://media.robertsspaceindustries.com/hpoxl2qcqjxiq/product_thumb_large.png",
+        "large": "https://media.robertsspaceindustries.com/hpoxl2qcqjxiq/hub_large.png",
+        "source": "https://media.robertsspaceindustries.com/hpoxl2qcqjxiq/source.png"
+       }
+      },
+      "status": "Released",
+      "released": 0
+     },
+     {
+      "id": 1497,
+      "url_slug": "FPS-Weapons-Art-Refactor",
+      "time_created": 1772801627,
+      "time_modified": 1774358383,
+      "board_id": 1,
+      "name": "FPS Weapons Art Refactor",
+      "scheduled_at": null,
+      "release_id": 71,
+      "category_id": 7,
+      "importer_id": "",
+      "description": "Updating visual material and texture for the following weapons and equipment: Behring: BR-2, GP-33, P8-AR, P8-SC, S-38 / Gemini: A03, C54, LH86, R97, S71 / Klaus and Werner: Arclight, Arrowhead, Demeco, Gallant, Lumin / Lightning Bolt Co.: Yubarev, Atzkav / Kastak Arms: Karna / APX Fire Extinguisher",
+      "body": "Updating visual material and texture for the following weapons and equipment: Behring: BR-2, GP-33, P8-AR, P8-SC, S-38 / Gemini: A03, C54, LH86, R97, S71 / Klaus and Werner: Arclight, Arrowhead, Demeco, Gallant, Lumin / Lightning Bolt Co.: Yubarev, Atzkav / Kastak Arms: Karna / APX Fire Extinguisher",
+      "order": 0,
+      "thumbnail": {
+       "id": 3747883,
+       "urls": {
+        "square": "https://media.robertsspaceindustries.com/lde00x0ebnmjw/heap_infobox.jpg",
+        "rect": "https://media.robertsspaceindustries.com/lde00x0ebnmjw/product_thumb_large.jpg",
+        "large": "https://media.robertsspaceindustries.com/lde00x0ebnmjw/hub_large.jpg",
+        "source": "https://media.robertsspaceindustries.com/lde00x0ebnmjw/source.jpg"
+       }
+      },
+      "status": "Released",
+      "released": 0
+     }
+    ]
+   },
+   {
+    "id": 70,
+    "url_slug": "46",
+    "time_created": 1765826160,
+    "time_modified": 1793198262,
+    "name": "4.6",
+    "description": "Q1 2026",
+    "board_id": 1,
+    "scheduled_at": null,
+    "order": 41,
+    "released": 1,
+    "status": "Released",
+    "importer_id": "",
+    "patch_announcement_link": null,
+    "cards": [
+     {
+      "id": 1471,
+      "url_slug": "Clearing-The-Air",
+      "time_created": 1768312041,
+      "time_modified": 1769536315,
+      "board_id": 1,
+      "name": "Clearing The Air",
+      "scheduled_at": null,
+      "release_id": 70,
+      "category_id": 15,
+      "importer_id": "",
+      "description": "Implementing a system wide crisis on Levski built around the Molina Mold outbreak, sending players across Nyx and Stanton on Hauling, Courier, Resource Gathering, Kill Ship, Recover Cargo, Station Escort, and Defend Ship missions.",
+      "body": "Implementing a system wide crisis on Levski built around the Molina Mold outbreak, sending players across Nyx and Stanton on Hauling, Courier, Resource Gathering, Kill Ship, Recover Cargo, Station Escort, and Defend Ship missions.",
+      "order": 0,
+      "thumbnail": {
+       "id": 3637575,
+       "urls": {
+        "square": "https://media.robertsspaceindustries.com/8rzrcptu2gy1r/heap_infobox.jpg",
+        "rect": "https://media.robertsspaceindustries.com/8rzrcptu2gy1r/product_thumb_large.jpg",
+        "large": "https://media.robertsspaceindustries.com/8rzrcptu2gy1r/hub_large.jpg",
+        "source": "https://media.robertsspaceindustries.com/8rzrcptu2gy1r/source.jpg"
+       }
+      },
+      "status": "Released",
+      "released": 0
+     },
+     {
+      "id": 1473,
+      "url_slug": "Kel-To-Ship-Supply-Kiosks",
+      "time_created": 1768313356,
+      "time_modified": 1769536319,
+      "board_id": 1,
+      "name": "Kel-To Ship Supply Kiosks",
+      "scheduled_at": null,
+      "release_id": 70,
+      "category_id": 4,
+      "importer_id": "",
+      "description": "Implementing small, Kel-To owned ship supply kiosks at major cities in Stanton, giving crews quick access to engineering tools and essential provisions.",
+      "body": "Implementing small, Kel-To owned ship supply kiosks at major cities in Stanton, giving crews quick access to engineering tools and essential provisions.",
+      "order": 0,
+      "thumbnail": {
+       "id": 2490261,
+       "urls": {
+        "square": "/media/sw2kg92evtkc5r/heap_infobox/02_Shopping_Kelto_FINAL.jpg",
+        "rect": "/media/sw2kg92evtkc5r/product_thumb_large/02_Shopping_Kelto_FINAL.jpg",
+        "large": "/media/sw2kg92evtkc5r/hub_large/02_Shopping_Kelto_FINAL.jpg",
+        "source": "/media/sw2kg92evtkc5r/source/02_Shopping_Kelto_FINAL.jpg"
+       }
+      },
+      "status": "Released",
+      "released": 0
+     },
+     {
+      "id": 1475,
+      "url_slug": "FPS-Weapons-Art-Refactor",
+      "time_created": 1768408194,
+      "time_modified": 1769536328,
+      "board_id": 1,
+      "name": "FPS Weapons Art Refactor",
+      "scheduled_at": null,
+      "release_id": 70,
+      "category_id": 7,
+      "importer_id": "",
+      "description": "Updating visual material and texture for the following weapons and equipments: Behring P4-AR, FS-9, and P6-LR; Greycat MaxLift Tractor Beam and Cambio SRT; CureLife ParaMed Medical Device; and Ripper SMG.",
+      "body": "Updating visual material and texture for the following weapons and equipments: Behring P4-AR, FS-9, and P6-LR; Greycat MaxLift Tractor Beam and Cambio SRT; CureLife ParaMed Medical Device; and Ripper SMG.",
+      "order": 0,
+      "thumbnail": {
+       "id": 3711300,
+       "urls": {
+        "square": "https://media.robertsspaceindustries.com/ffi5awelzkx7n/heap_infobox.jpg",
+        "rect": "https://media.robertsspaceindustries.com/ffi5awelzkx7n/product_thumb_large.jpg",
+        "large": "https://media.robertsspaceindustries.com/ffi5awelzkx7n/hub_large.jpg",
+        "source": "https://media.robertsspaceindustries.com/ffi5awelzkx7n/source.jpg"
+       }
+      },
+      "status": "Released",
+      "released": 0
+     }
+    ]
+   }
+  ],
+  "categories": [
+   {
+    "id": 5,
+    "board_id": 1,
+    "name": "AI",
+    "order": 0
+   },
+   {
+    "id": 3,
+    "board_id": 1,
+    "name": "Characters",
+    "order": 2
+   },
+   {
+    "id": 1,
+    "board_id": 1,
+    "name": "Core Tech",
+    "order": 3
+   },
+   {
+    "id": 2,
+    "board_id": 1,
+    "name": "Gameplay",
+    "order": 4
+   },
+   {
+    "id": 4,
+    "board_id": 1,
+    "name": "Locations",
+    "order": 5
+   },
+   {
+    "id": 15,
+    "board_id": 1,
+    "name": "Missions and Events",
+    "order": 6
+   },
+   {
+    "id": 6,
+    "board_id": 1,
+    "name": "Ships and Vehicles",
+    "order": 7
+   },
+   {
+    "id": 7,
+    "board_id": 1,
+    "name": "Weapons and Items",
+    "order": 8
+   }
+  ],
+  "tags": [],
+  "chapters": [],
+  "last_updated": 1793824771,
+  "empty_release": "Check back closer to this quarter to view release goals. For now, follow along with every feature currently in development on the"
+ }
+}

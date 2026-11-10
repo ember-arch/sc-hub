@@ -1,0 +1,208 @@
+/**
+ * The Spectrum worker (spec 03, ADR-027): with `SPECTRUM_MODE` `poll` or `feed`, asks the adapter
+ * for staff posts since the newest on record and writes them to the news pack as content items
+ * of source `spectrum`, with their authors in `fixtures/news/Author.json` (handle, display name,
+ * role, first seen, post count; nothing else). With `off`, the default, it does nothing and says
+ * so. `pnpm workers:poll-spectrum [--backfill <pages>]`.
+ */
+import { randomUUID } from "node:crypto";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { escapeHtml, paragraphsHtml, firstParagraph } from "poll-news/html";
+import { openStore, stableId } from "poll-news/store";
+import { Author } from "schema";
+import { z } from "zod";
+import type { SpectrumAdapter, StaffPost } from "../adapter.js";
+import { createFeedAdapter } from "./feed.js";
+import { createPollAdapter, SpectrumStatusError } from "./poll.js";
+import type { StaffList } from "./staff.js";
+
+const here = dirname(fileURLToPath(import.meta.url));
+const repoRoot = join(here, "..", "..", "..");
+const newsDir = join(repoRoot, "fixtures", "news");
+const StaffFile = z.object({ handles: z.array(z.string()) }).loose();
+
+function flag(args: readonly string[], name: string): string | undefined {
+  const at = args.indexOf(name);
+  return at >= 0 ? args[at + 1] : undefined;
+}
+
+export function userAgent(contact: string | null): string {
+  return `sc-hub-spectrum/0.0 (non-commercial fan reference in development; github.com/ember-arch/sc-hub${contact === null ? "" : `; ${contact}`})`;
+}
+
+/** The authors file: every CIG staff member seen, by handle. */
+export function openAuthors(path: string): {
+  readonly rows: Author[];
+  upsert(post: StaffPost, now: string): Author;
+  save(): void;
+} {
+  const rows: Author[] = existsSync(path)
+    ? Author.array().parse(JSON.parse(readFileSync(path, "utf8")))
+    : [];
+  return {
+    rows,
+    upsert(post, now) {
+      const found = rows.find(
+        (a) => a.handle.toLowerCase() === post.author.handle.toLowerCase(),
+      );
+      if (found !== undefined) {
+        const next: Author = {
+          ...found,
+          display_name: post.author.display_name,
+          role: post.author.role ?? found.role,
+          post_count: found.post_count + 1,
+        };
+        rows[rows.indexOf(found)] = next;
+        return next;
+      }
+      const author = Author.parse({
+        id: stableId(`author:${post.author.handle.toLowerCase()}`),
+        handle: post.author.handle,
+        display_name: post.author.display_name,
+        role: post.author.role,
+        first_seen: post.published_at < now ? post.published_at : now,
+        post_count: 1,
+        takedown: false,
+      });
+      rows.push(author);
+      return author;
+    },
+    save() {
+      writeFileSync(path, `${JSON.stringify(rows, null, 2)}\n`);
+    },
+  };
+}
+
+async function main(): Promise<void> {
+  const runId = randomUUID();
+  const started = Date.now();
+  const args = process.argv.slice(2);
+  const log = (event: Record<string, unknown>): void => {
+    process.stderr.write(`${JSON.stringify({ run_id: runId, ...event })}\n`);
+  };
+  const mode = process.env["SPECTRUM_MODE"] ?? "off";
+  const contact = process.env["SC_HUB_CONTACT_EMAIL"]?.trim() || null;
+  if (mode === "off") {
+    console.log(
+      JSON.stringify({
+        run_id: runId,
+        job: "workers:poll-spectrum",
+        mode,
+        note: "SPECTRUM_MODE is off: nothing read, nothing written",
+        duration_ms: Date.now() - started,
+      }),
+    );
+    return;
+  }
+  if (contact === null) {
+    throw new Error(
+      "Set SC_HUB_CONTACT_EMAIL: CLAUDE.md section 9 asks RSI requests to carry a contact address.",
+    );
+  }
+  const staff: StaffList = StaffFile.parse(
+    JSON.parse(readFileSync(join(here, "..", "staff.json"), "utf8")),
+  );
+  let adapter: SpectrumAdapter;
+  if (mode === "poll") {
+    const cookie = process.env["SPECTRUM_SESSION_COOKIE"];
+    if (cookie === undefined || cookie === "") {
+      throw new Error("SPECTRUM_MODE=poll needs SPECTRUM_SESSION_COOKIE");
+    }
+    adapter = createPollAdapter({
+      post: (url, init) =>
+        globalThis.fetch(url, {
+          method: "POST",
+          headers: init.headers,
+          body: init.body,
+        }),
+      sessionCookie: cookie,
+      staffRoleId: process.env["SPECTRUM_STAFF_ROLE_ID"] ?? null,
+      staff,
+      userAgent: userAgent(contact),
+      pages: Number(flag(args, "--backfill") ?? 1),
+      log,
+    });
+  } else if (mode === "feed") {
+    const url = process.env["SPECTRUM_FEED_URL"];
+    if (url === undefined)
+      throw new Error("SPECTRUM_MODE=feed needs SPECTRUM_FEED_URL");
+    adapter = createFeedAdapter({
+      url,
+      fetch: (u, init) => globalThis.fetch(u, init),
+      userAgent: userAgent(contact),
+    });
+  } else {
+    throw new Error(`SPECTRUM_MODE must be off, poll or feed; got ${mode}`);
+  }
+
+  const store = openStore(join(newsDir, "ContentItem.json"));
+  const authors = openAuthors(join(newsDir, "Author.json"));
+  const newest = store
+    .latest()
+    .filter((i) => i.source === "spectrum")
+    .map((i) => i.published_at)
+    .sort()
+    .at(-1);
+  const since = new Date(newest ?? "2025-01-01T00:00:00Z");
+  const now = new Date().toISOString();
+  let posts: readonly StaffPost[];
+  try {
+    posts = await adapter.fetchNewStaffPosts(since);
+  } catch (error) {
+    if (error instanceof SpectrumStatusError) {
+      log({ event: "spectrum.backoff", status: error.status, minutes: 30 });
+    }
+    throw error;
+  }
+  for (const post of posts) {
+    const author = authors.upsert(post, now);
+    store.put(
+      {
+        source: "spectrum",
+        external_id: post.id,
+        url: post.url,
+        title:
+          post.kind === "op" ? post.thread_title : `Re: ${post.thread_title}`,
+        summary: firstParagraph(post.body),
+        body_html: paragraphsHtml(post.body),
+        published_at: post.published_at,
+        author_id: author.id,
+        thread_id: post.thread_id,
+        thread_title: escapeHtml(post.thread_title),
+        forum: post.forum,
+      },
+      now,
+    );
+  }
+  const written = store.save();
+  if (written) authors.save();
+  console.log(
+    JSON.stringify({
+      run_id: runId,
+      job: "workers:poll-spectrum",
+      mode,
+      since: since.toISOString(),
+      posts: posts.length,
+      added: store.added,
+      revised: store.revised,
+      authors: authors.rows.length,
+      written,
+      errors: 0,
+      duration_ms: Date.now() - started,
+    }),
+  );
+}
+
+if (
+  process.argv[1] !== undefined &&
+  fileURLToPath(import.meta.url) === process.argv[1]
+) {
+  main().catch((error: unknown) => {
+    process.stderr.write(
+      `${JSON.stringify({ job: "workers:poll-spectrum", error: String(error) })}\n`,
+    );
+    process.exit(1);
+  });
+}

@@ -1,6 +1,8 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import {
+  Author as AuthorSchema,
+  type Author,
   ContentItem as ContentItemSchema,
   type ContentItem,
   type DataPack,
@@ -10,6 +12,7 @@ import {
   type Manufacturer,
   PackError,
   type Paint,
+  SpectrumMode,
   type Port,
   type Vehicle,
   VehicleDescription as VehicleDescriptionSchema,
@@ -41,6 +44,7 @@ function findRepoRoot(start: string): string {
 export const REPO_ROOT = findRepoRoot(process.cwd());
 const PACK_DIR = join(REPO_ROOT, "fixtures", "bootstrap");
 const NEWS_FILE = join(REPO_ROOT, "fixtures", "news", "ContentItem.json");
+const AUTHORS_FILE = join(REPO_ROOT, "fixtures", "news", "Author.json");
 const DESCRIPTIONS_FILE = join(
   REPO_ROOT,
   "fixtures",
@@ -62,15 +66,54 @@ export function loadPack(dir: string): DataPack {
   });
 }
 
-/** fixtures/news is optional in Phase 0; absent means an empty feed, never an invented one. */
-function loadNews(): ContentItem[] {
+/**
+ * The news pack (ADR-027): optional, absent means an empty feed, never an invented one. The pack
+ * is append-only with revisions (CLAUDE.md section 5): the latest revision of each item shows,
+ * a takedown hides it, newest first.
+ */
+function loadNews(hiddenAuthors: ReadonlySet<string>): ContentItem[] {
   if (!existsSync(NEWS_FILE)) return [];
+  const dev = spectrumOn();
   const rows = ContentItemSchema.array().parse(
     JSON.parse(readFileSync(NEWS_FILE, "utf8")),
   );
-  return rows
-    .filter((row) => !row.takedown)
+  const latest = new Map<string, ContentItem>();
+  for (const row of rows) {
+    const key = `${row.source}:${row.external_id}`;
+    const seen = latest.get(key);
+    if (seen === undefined || row.revision > seen.revision)
+      latest.set(key, row);
+  }
+  return [...latest.values()]
+    .filter(
+      (row) =>
+        !row.takedown &&
+        (dev || row.source !== "spectrum") &&
+        (row.author_id === null || !hiddenAuthors.has(row.author_id)),
+    )
     .sort((a, b) => b.published_at.localeCompare(a.published_at));
+}
+
+/**
+ * Whether the Spectrum module is on (spec 03, ADR-027): `SPECTRUM_MODE` is `poll` or `feed`. With
+ * `off`, the deployed default until docs/legal/cig-approval.md ticks the Spectrum box, no
+ * developer post or author reaches a page, whatever the pack holds.
+ */
+export function spectrumOn(): boolean {
+  const mode = SpectrumMode.safeParse(process.env["SPECTRUM_MODE"] ?? "off");
+  return mode.success && mode.data !== "off";
+}
+
+/**
+ * The authors the Spectrum worker has seen (fixtures/news/Author.json), takedowns included so
+ * their posts can be hidden too (data-model: the author kill switch hides all posts); none with
+ * the module off.
+ */
+function loadAuthors(): Author[] {
+  if (!spectrumOn() || !existsSync(AUTHORS_FILE)) return [];
+  return AuthorSchema.array().parse(
+    JSON.parse(readFileSync(AUTHORS_FILE, "utf8")),
+  );
 }
 
 /**
@@ -128,6 +171,8 @@ export interface Repository {
   readonly components: readonly ComponentView[];
   readonly manufacturers: readonly Manufacturer[];
   readonly news: readonly ContentItem[];
+  /** CIG staff seen on Spectrum; empty with the module off. */
+  readonly authors: readonly Author[];
   readonly searchEntries: readonly SearchEntry[];
   shipBySlug(slug: string): ShipView | undefined;
   shipPorts(className: string): readonly PortNode[];
@@ -152,6 +197,7 @@ export function buildRepository(
   pack: DataPack,
   news: readonly ContentItem[],
   descriptions: readonly VehicleDescription[] = [],
+  authors: readonly Author[] = [],
 ): Repository {
   const rows = pack.rows;
   const current = rows.GameVersion.filter((v) => v.is_current);
@@ -331,6 +377,7 @@ export function buildRepository(
     components,
     manufacturers,
     news,
+    authors,
     searchEntries,
     shipBySlug: (slug) => ships.find((s) => s.vehicle.slug === slug),
     shipPorts: tree,
@@ -365,11 +412,15 @@ let cached: Repository | undefined;
 
 /** The repository, built once per server process. Throws PackError on an invalid pack. */
 export function repo(): Repository {
-  cached ??= buildRepository(
-    loadPack(PACK_DIR),
-    loadNews(),
-    loadDescriptions(),
-  );
+  if (cached === undefined) {
+    const authors = loadAuthors();
+    cached = buildRepository(
+      loadPack(PACK_DIR),
+      loadNews(new Set(authors.filter((a) => a.takedown).map((a) => a.id))),
+      loadDescriptions(),
+      authors.filter((a) => !a.takedown),
+    );
+  }
   return cached;
 }
 

@@ -40,6 +40,7 @@ import { cargoGridsOf, groupGrids, largestBox } from "../../../lib/cargo";
 import {
   type ShipView,
   cargoBoxes,
+  cargoBoxesVersion,
   flattenPorts,
   repo,
 } from "../../../lib/data";
@@ -475,9 +476,12 @@ function cargoSection(
   }
   const groups = groupGrids(grids);
   const total = grids.reduce((sum, g) => sum + g.scu, 0);
-  const external = grids.filter((g) => g.external).length;
+  const external = grids.filter((g) => g.external === true).length;
+  const unsaid = grids.filter((g) => g.external === null).length;
   const largest = largestBox(grids);
+  const noLargest = grids.filter((g) => g.maxBox === null).length;
   const boxes = cargoBoxes();
+  const boxesVersion = cargoBoxesVersion();
   const facts: Fact[] = [
     { label: "Capacity", value: n0(total), unit: "SCU", numeric: true },
     {
@@ -489,17 +493,27 @@ function cargoSection(
         )
         .join(", "),
     },
-    ...(largest === null
-      ? []
-      : [{ label: "Largest box", value: `${n0(largest)} SCU` }]),
+    {
+      label: "Largest box",
+      value:
+        largest === null
+          ? "Not stated"
+          : noLargest === 0
+            ? `${n0(largest)} SCU`
+            : `${n0(largest)} SCU; not stated for ${noLargest} of ${grids.length} grids`,
+    },
     {
       label: "Open to space",
       value:
-        external === 0
-          ? "None"
-          : external === grids.length
-            ? "Every grid"
-            : `${external} of ${grids.length} grids`,
+        unsaid === grids.length
+          ? "Not stated"
+          : external === 0
+            ? unsaid === 0
+              ? "None"
+              : `None of ${grids.length - unsaid}; not stated for ${unsaid}`
+            : external === grids.length
+              ? "Every grid"
+              : `${external} of ${grids.length} grids${unsaid === 0 ? "" : `; not stated for ${unsaid}`}`,
     },
   ];
   const takenSizes = boxes.filter((b) =>
@@ -524,6 +538,7 @@ function cargoSection(
             defaultScu={defaultScu}
             label="Fig. D"
             version={version}
+            boxesVersion={boxesVersion}
           />
         )}
       </div>

@@ -16,8 +16,8 @@ export interface CargoGrid {
   readonly height: number;
   readonly length: number;
   readonly scu: number;
-  /** Open to space, as the record flags it. */
-  readonly external: boolean;
+  /** Open to space, as the record flags it; null where the record does not say. */
+  readonly external: boolean | null;
   /** The smallest and largest box the record says the grid takes, in SCU; null where it does not say. */
   readonly minBox: number | null;
   readonly maxBox: number | null;
@@ -72,7 +72,8 @@ export function cargoGridsOf(raw: unknown): CargoGrid[] | null {
       height,
       length,
       scu,
-      external: g["external"] === true,
+      external:
+        g["external"] === true ? true : g["external"] === false ? false : null,
       minBox: positive(g["min_scu_box"]),
       maxBox: positive(g["max_scu_box"]),
     });
@@ -105,7 +106,10 @@ export function cellOf(grid: CargoGrid): number {
   return Math.cbrt((grid.width * grid.height * grid.length) / grid.scu);
 }
 
-/** Whether the record's smallest and largest box admit this size. */
+/**
+ * Whether the record's smallest and largest box admit this size. A grid whose record names no
+ * largest box admits every size, and the page says so beside it.
+ */
 export function gridTakes(grid: CargoGrid, box: CargoBox): boolean {
   if (grid.minBox !== null && box.scu < grid.minBox) return false;
   if (grid.maxBox !== null && box.scu > grid.maxBox) return false;

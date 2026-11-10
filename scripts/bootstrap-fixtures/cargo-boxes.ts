@@ -156,6 +156,7 @@ export async function fetchCargoBoxes(
   version: string,
   now: () => string,
   log: (event: Record<string, unknown>) => void = () => undefined,
+  channel: "LIVE" | "PTU" | "EPTU" = "LIVE",
 ): Promise<CargoBoxes> {
   const records: CargoItemRecord[] = [];
   for (let page = 1; ; page += 1) {
@@ -175,7 +176,7 @@ export async function fetchCargoBoxes(
     irregular,
   });
   return CargoBoxes.parse({
-    channel: "LIVE",
+    channel,
     game_version: version,
     fetched_at: now(),
     source_url: "https://api.star-citizen.wiki/api/items?filter[type]=Cargo",
@@ -210,6 +211,7 @@ async function main(): Promise<void> {
     manifest.game_version,
     () => new Date().toISOString(),
     log,
+    manifest.channel,
   );
   const outDir = join(root, "fixtures", "cargo");
   mkdirSync(outDir, { recursive: true });

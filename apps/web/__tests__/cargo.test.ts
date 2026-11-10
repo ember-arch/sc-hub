@@ -58,11 +58,49 @@ describe("cargoGridsOf", () => {
   });
 
   it("sums to the record's cargo figure on every ship with grids", () => {
+    let haulers = 0;
     for (const s of vehicleStats) {
       const grids = cargoGridsOf(s.raw) ?? [];
       if (grids.length === 0 || s.cargo_scu === null) continue;
+      haulers += 1;
       expect(grids.reduce((a, g) => a + g.scu, 0)).toBeCloseTo(s.cargo_scu, 2);
     }
+    expect(haulers).toBeGreaterThan(50);
+  });
+
+  it("keeps what the record does not say as not said: open to space, the largest box", () => {
+    const hammerhead = cargoGridsOf(stats("AEGS_Hammerhead").raw)!;
+    expect(hammerhead.length).toBeGreaterThan(0);
+    expect(hammerhead.every((g) => g.external === null)).toBe(true);
+    expect(hammerhead.every((g) => g.maxBox === null)).toBe(true);
+    // Such a grid admits every size, and the page says the record names no largest box.
+    expect(gridTakes(hammerhead[0]!, box(32))).toBe(true);
+    expect(largestBox(hammerhead)).toBeNull();
+    expect(
+      cargoGridsOf({
+        cargo_grids: [
+          { width: 2.5, height: 2.5, length: 2.5, scu: 8, external: false },
+        ],
+      }),
+    ).toEqual([
+      {
+        width: 2.5,
+        height: 2.5,
+        length: 2.5,
+        scu: 8,
+        external: false,
+        minBox: null,
+        maxBox: null,
+      },
+    ]);
+  });
+
+  it("honours a smallest box where the record names one", () => {
+    const mpuv = cargoGridsOf(stats("ARGO_MPUV_1T").raw)!;
+    expect(mpuv[0]).toMatchObject({ minBox: 16, maxBox: 16 });
+    expect(gridTakes(mpuv[0]!, box(8))).toBe(false);
+    expect(fitOf(mpuv[0]!, box(8)).count).toBe(0);
+    expect(fitOf(mpuv[0]!, box(16)).count).toBe(1);
   });
 });
 

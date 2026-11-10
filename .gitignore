@@ -33,10 +33,11 @@ fixtures/galleries/*
 !fixtures/galleries/sources.json
 !fixtures/galleries/samples/
 
-# RSI's holoviewer models (ADR-015): local only, never committed
+# RSI's holoviewer models (ADR-015, ADR-025): local only, never committed
 fixtures/holo/*
 !fixtures/holo/README.md
 !fixtures/holo/sources.json
+!fixtures/holo/samples/
 
 # web copies built by scripts/media/prepare.ts from the two folders above (ADR-009)
 apps/web/public/media/

@@ -3,6 +3,7 @@ import {
   PERSON_WIDTH,
   layoutRow,
   rowGap,
+  spectrumAround,
 } from "../app/ships/[slug]/showcase/lineup-layout";
 
 const ships = [
@@ -57,5 +58,64 @@ describe("layoutRow", () => {
     const row = layoutRow([], false);
     expect(row.slots).toEqual([]);
     expect(row.rowLength).toBe(0);
+  });
+});
+
+describe("spectrumAround", () => {
+  const catalog = [
+    { slug: "merlin", length: 12 },
+    { slug: "gladius", length: 21 },
+    { slug: "cutlass", length: 38 },
+    { slug: "freelancer", length: 45 },
+    { slug: "constellation", length: 61 },
+    { slug: "hercules", length: 94 },
+    { slug: "hammerhead", length: 111 },
+    { slug: "carrack", length: 123 },
+    { slug: "polaris", length: 155 },
+    { slug: "idris", length: 240 },
+    { slug: "javelin", length: 480 },
+    { slug: "odin", length: 752 },
+  ];
+  const by = (slug: string) => catalog.find((s) => s.slug === slug)!;
+
+  it("reaches for a quarter, half, twice and four times the page ship's length, largest first", () => {
+    // 94 m: 23.5 → the Gladius, 47 → the Freelancer, 188 → the Polaris, 376 → the Javelin.
+    expect(spectrumAround(catalog, by("hercules")).map((s) => s.slug)).toEqual([
+      "javelin",
+      "polaris",
+      "freelancer",
+      "gladius",
+    ]);
+  });
+
+  it("stands the nearest ships left in where the catalog runs out on one side", () => {
+    // The largest: nothing twice or four times its size, so the next ships down stand in.
+    expect(spectrumAround(catalog, by("odin")).map((s) => s.slug)).toEqual([
+      "javelin",
+      "idris",
+      "polaris",
+      "carrack",
+    ]);
+    // The smallest: nothing a quarter or half its size, so the next ships up stand in.
+    expect(spectrumAround(catalog, by("merlin")).map((s) => s.slug)).toEqual([
+      "constellation",
+      "freelancer",
+      "cutlass",
+      "gladius",
+    ]);
+  });
+
+  it("never picks the page's ship, and gives every other ship when fewer than four are on record", () => {
+    const few = catalog.slice(0, 3);
+    expect(spectrumAround(few, few[1]!).map((s) => s.slug)).toEqual([
+      "cutlass",
+      "merlin",
+    ]);
+    for (const ship of catalog) {
+      const picks = spectrumAround(catalog, ship);
+      expect(picks).toHaveLength(4);
+      expect(new Set(picks.map((s) => s.slug)).size).toBe(4);
+      expect(picks.some((s) => s.slug === ship.slug)).toBe(false);
+    }
   });
 });

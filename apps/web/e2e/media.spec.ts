@@ -116,32 +116,50 @@ test("a maker logo shows one version for the page's theme", async ({
   await expect(logos).toHaveAttribute("src", /aegs-on-light/);
 });
 
-// ADR-015, ADR-022: Scale lines every ship up in one canvas, models where built, envelopes
-// elsewhere, opening on the page's ship and its neighbours; a picker reaches any one ship.
-test("Scale lines every ship up to scale, opening on the page's ship and its neighbours", async ({
+// ADR-015, ADR-022, and the owner's row of 2026-11-10: Scale opens on the page's ship among four
+// ships across the range of sizes; the picker stands any one ship beside it; "All ships" lines
+// up every ship on record. The caption and the canvas's name say what stands in the row.
+test("Scale opens on the page's ship among four across the sizes, and stands one ship beside it on request", async ({
   page,
 }) => {
   await page.goto("/ships/gladius");
   const scale = page.locator("#scale");
-  const lineup = scale.getByRole("img", { name: /^To scale: \d+ ships/ });
-  await expect(lineup).toHaveAttribute("aria-label", /the Gladius in full ink/);
+  const lineup = scale.getByRole("img", { name: /^To scale: 5 ships/ });
+  await expect(lineup).toHaveAttribute(
+    "aria-label",
+    /the Gladius in full ink beside four ships across the range of sizes/,
+  );
   await expect(lineup).toHaveAttribute("aria-describedby", /./);
+  await expect(scale.locator("figcaption")).toContainText(
+    "the Gladius beside four ships across the range of sizes",
+  );
   await expect(
     scale.getByRole("button", { name: "Around the Gladius" }),
   ).toHaveAttribute("aria-pressed", "true");
-  await scale.getByRole("button", { name: "All ships" }).click();
-  await expect(
-    scale.getByRole("button", { name: "All ships" }),
-  ).toHaveAttribute("aria-pressed", "true");
-  const picker = scale.getByRole("combobox", { name: "One ship" });
-  await expect(
-    picker.getByRole("option", { name: "Gladius, 21 m" }),
-  ).toHaveCount(1);
+  const picker = scale.getByRole("combobox", { name: "Beside one ship" });
+  // The page's ship is already in the row, so the picker does not offer it.
+  await expect(picker.getByRole("option", { name: /^Gladius, / })).toHaveCount(
+    0,
+  );
   await expect(picker.getByRole("option", { name: /^Polaris, / })).toHaveCount(
     1,
   );
   await picker.selectOption({ label: "Polaris, 181 m" });
   await expect(
-    scale.getByRole("button", { name: "All ships" }),
+    scale.getByRole("button", { name: "Around the Gladius" }),
   ).toHaveAttribute("aria-pressed", "false");
+  await expect(
+    scale.getByRole("img", { name: /^To scale: 2 ships/ }),
+  ).toHaveAttribute("aria-label", /the Gladius in full ink beside the Polaris/);
+  await expect(scale.locator("figcaption")).toContainText(
+    "the Gladius beside the Polaris",
+  );
+  await scale.getByRole("button", { name: "All ships" }).click();
+  await expect(
+    scale.getByRole("button", { name: "All ships" }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await expect(
+    scale.getByRole("img", { name: /^To scale: \d+ ships/ }),
+  ).toHaveAttribute("aria-label", /beside every ship on record/);
+  await expect(picker).toHaveValue("");
 });

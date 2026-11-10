@@ -11,21 +11,23 @@ import {
   inkPalette,
   loadHoloGeometry,
 } from "./holo-kit";
-import { layoutRow } from "./lineup-layout";
+import { layoutRow, spectrumAround } from "./lineup-layout";
 
 /**
- * The Scale section's lineup (ADR-015, drawn in ink per ADR-020): every ship on record, each
- * scaled to its recorded length and standing in profile on one ground line, largest first, with
- * a person beside the smallest. A ship with an RSI holoviewer model is drawn as that model; one
- * without is drawn as its envelope, a box of its recorded length, beam and height, so the row is
+ * The Scale section's lineup (ADR-015, drawn in ink per ADR-020): ships to scale, each sized to
+ * its recorded length and standing in profile on one ground line, largest first, with a person
+ * beside the smallest. A ship with an RSI holoviewer model is drawn as that model; one without
+ * is drawn as its envelope, a box of its recorded length, beam and height, so the row is
  * complete whatever has been built (ADR-022). The page's ship is drawn in full ink; the others
- * dimmer. Labels name each ship and its length; the controls below fly the camera to the ship's
- * neighbours, to the whole row or to any one ship. Drag to turn, scroll or pinch to zoom.
+ * dimmer. Labels name each ship and its length. Drag to turn, scroll or pinch to zoom.
  *
- * The row is laid out from the recorded lengths before anything loads, so the paper, the ground
- * line, every envelope and the camera are up at once. Models load a few at a time for the ships
- * the camera is looking at and large enough to show detail, and replace their envelope as they
- * land; their inked edges follow in an idle moment.
+ * What stands in the row is the owner's choice of 2026-11-10: the page's ship among four ships
+ * across the range of sizes (`spectrumAround`), or beside any one ship chosen from the picker,
+ * or, on request, every ship on record. The row is laid out from the recorded lengths before
+ * anything loads, so the paper, the ground line, every envelope and the camera are up at once;
+ * models load a few at a time for the ships in the row that are large enough to show detail, and
+ * replace their envelope as they land; their inked edges follow in an idle moment. A ship keeps
+ * its body when the row changes: it only moves to its new place, or steps out of sight.
  */
 
 export interface LineupShip {
@@ -40,7 +42,7 @@ export interface LineupShip {
   readonly current: boolean;
 }
 
-/** "around": the page's ship among the ships near it in size; "all": the row. */
+/** "around": the page's ship among four across the sizes; "all": every ship; a slug: that ship beside the page's. */
 type Focus = "around" | "all" | string;
 
 interface Api {
@@ -57,6 +59,21 @@ interface Progress {
 
 const n0 = (v: number): string =>
   v.toLocaleString("en-US", { maximumFractionDigits: v < 100 ? 1 : 0 });
+
+/** The ships a focus puts in the row. */
+function shownFor(
+  focus: Focus,
+  ships: readonly LineupShip[],
+  current: LineupShip | undefined,
+  spectrum: readonly LineupShip[],
+): LineupShip[] {
+  if (focus === "all" || current === undefined) return [...ships];
+  if (focus === "around") return [current, ...spectrum];
+  const picked = ships.find((s) => s.slug === focus);
+  return picked === undefined || picked.slug === current.slug
+    ? [current]
+    : [current, picked];
+}
 
 export function HoloLineup({
   ships,
@@ -87,10 +104,15 @@ export function HoloLineup({
     [ships],
   );
   const current = ships.find((s) => s.current);
-  const modelled = ships.filter((s) => s.src !== null).length;
-  // The largest ship's neighbourhood is the whole row.
-  const largest = current !== undefined && order[0]?.slug === current.slug;
-  const [focus, setFocus] = useState<Focus>(largest ? "all" : "around");
+  const spectrum = useMemo(
+    () => (current === undefined ? [] : spectrumAround(ships, current)),
+    [ships, current],
+  );
+  const [focus, setFocus] = useState<Focus>(
+    current === undefined ? "all" : "around",
+  );
+  const shown = shownFor(focus, ships, current, spectrum);
+  const modelled = shown.filter((s) => s.src !== null).length;
   const captionId = useId();
 
   useEffect(() => {
@@ -140,6 +162,18 @@ export function HoloLineup({
     `${option} ${on ? "border-accent bg-accent-bg text-primary" : "border-hairline-strong text-secondary hover:text-primary"}`;
   const loadingModels = progress.done < progress.wanted;
   const picked = focus === "around" || focus === "all" ? "" : focus;
+  const pickedShip = ships.find((s) => s.slug === picked);
+  // What the row holds now, for the caption and the canvas's name.
+  const company =
+    current === undefined
+      ? "every ship on record"
+      : focus === "all"
+        ? "every ship on record"
+        : pickedShip !== undefined && pickedShip.slug !== current.slug
+          ? `the ${pickedShip.name}`
+          : focus === "around"
+            ? `${spectrum.length === 4 ? "four" : String(spectrum.length)} ships across the range of sizes`
+            : "no other ship";
 
   return (
     <figure className="m-0 flex flex-col gap-2">
@@ -153,7 +187,7 @@ export function HoloLineup({
           <div
             ref={box}
             role="img"
-            aria-label={`To scale: ${ships.length} ships${current === undefined ? "" : `, the ${current.name} in full ink`}${figure === null ? "" : `, and a person ${figure.height.toFixed(1)} m tall`}`}
+            aria-label={`To scale: ${shown.length} ships${current === undefined ? "" : `, the ${current.name} in full ink beside ${company}`}${figure === null ? "" : `, and a person ${figure.height.toFixed(1)} m tall`}`}
             aria-describedby={captionId}
             className="absolute inset-0"
           />
@@ -206,7 +240,7 @@ export function HoloLineup({
           className="flex flex-wrap items-center gap-2"
         >
           <span className="text-caption text-secondary">Look at</span>
-          {current === undefined || largest ? null : (
+          {current === undefined ? null : (
             <button
               type="button"
               aria-pressed={focus === "around"}
@@ -225,22 +259,30 @@ export function HoloLineup({
             All ships
           </button>
           <label className="flex items-center gap-2 text-caption text-secondary">
-            <span>One ship</span>
+            <span>Beside</span>
             <select
-              aria-label="One ship"
+              aria-label="Beside one ship"
               value={picked}
               onChange={(event) => {
                 const slug = event.target.value;
-                setFocus(slug === "" ? (largest ? "all" : "around") : slug);
+                setFocus(
+                  slug === ""
+                    ? current === undefined
+                      ? "all"
+                      : "around"
+                    : slug,
+                );
               }}
               className="rounded-pill border border-hairline-strong bg-surface px-3 py-1 text-caption text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
             >
               <option value="">Choose a ship</option>
-              {order.map((s) => (
-                <option key={s.slug} value={s.slug}>
-                  {s.name}, {n0(s.length)} m
-                </option>
-              ))}
+              {order
+                .filter((s) => !s.current)
+                .map((s) => (
+                  <option key={s.slug} value={s.slug}>
+                    {s.name}, {n0(s.length)} m
+                  </option>
+                ))}
             </select>
           </label>
         </div>
@@ -248,12 +290,17 @@ export function HoloLineup({
       <figcaption className="flex flex-wrap justify-between gap-x-3 gap-y-1 text-caption text-secondary">
         <span id={captionId}>
           <span className="font-mono text-primary">{label}</span> To scale: the{" "}
-          {current?.name ?? "ship"} beside every ship on record
+          {current?.name ?? "ship"} beside {company}
           {figure === null ? "" : " and a person"}, each sized to its recorded
           length
           {modelled === 0
             ? ", each as its envelope of length, beam and height"
-            : `; ${modelled === ships.length ? "every ship" : `${modelled} of them`} drawn from RSI's holoviewer model, the rest as their envelope of length, beam and height`}
+            : modelled === shown.length
+              ? ", each drawn from RSI's holoviewer model"
+              : `; ${modelled} of them drawn from RSI's holoviewer model, the rest as their envelope of length, beam and height`}
+          {focus === "all" || ships.length <= shown.length
+            ? ""
+            : `. All ships lines up every one of the ${ships.length} on record`}
         </span>
         {modelled === 0 ? null : (
           <TextLink href={credit.href} external className="text-secondary">
@@ -301,31 +348,44 @@ async function start(
   const palette = inkPalette(THREE, el);
   let disposed = false;
 
-  // The row from the recorded lengths alone (lineup-layout.ts), centred on the origin.
-  const row = layoutRow(ships, figureSrc !== null);
-  const { rowLength } = row;
+  // Every ship's body is baked where it would stand in the full row (lineup-layout.ts); the row
+  // in view is a subset, laid out afresh, and each body is moved there by an offset.
+  const current = ships.find((s) => s.current);
+  const spectrum = current === undefined ? [] : spectrumAround(ships, current);
+  const fullRow = layoutRow(ships, figureSrc !== null);
+  const withPerson = figureSrc !== null;
   interface Slot {
     readonly ship: LineupShip;
-    readonly from: number;
+    /** Where the bow was baked, in the full row. */
+    readonly from0: number;
+    /** The body's centre as baked; a model's once it lands. */
+    centre0: number;
+    /** Where the body stands now: the row in view moves it by this much. */
+    offset: number;
+    /** The centre as shown. */
     x: number;
     top: number;
     readonly length: number;
+    shown: boolean;
     /** What stands on the ground now: the envelope until the model lands. */
     mesh: InstanceType<typeof THREE.Mesh> | null;
     lines: InstanceType<typeof THREE.LineSegments> | null;
     model: "none" | "wanted" | "loading" | "drawn" | "failed";
   }
-  const slots: Slot[] = row.slots.map((s) => ({
+  const slots: Slot[] = fullRow.slots.map((s) => ({
     ship: s.ship,
-    from: s.from,
+    from0: s.from,
+    centre0: s.x,
+    offset: 0,
     x: s.x,
     top: s.ship.height,
     length: s.length,
+    shown: true,
     mesh: null,
     lines: null,
     model: s.ship.src === null ? "none" : "wanted",
   }));
-  const tallest = Math.max(1, ...slots.map((s) => s.top));
+  const bySlug = new Map(slots.map((s) => [s.ship.slug, s]));
 
   const materials: InstanceType<typeof THREE.Material>[] = [];
   const fullBody = inkBody(THREE, palette.body);
@@ -366,12 +426,11 @@ async function start(
   const scene = new THREE.Scene();
   const removeLights = inkLights(THREE, scene, palette.bodyDim);
 
-  // The ground: one line under every keel, the row and a little more.
-  const span = rowLength * 1.15;
+  // The ground: one line under every keel, the row in view and a little more.
   const ground = new THREE.Line(
     new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(-span / 2, 0, 0),
-      new THREE.Vector3(span / 2, 0, 0),
+      new THREE.Vector3(-1, 0, 0),
+      new THREE.Vector3(1, 0, 0),
     ]),
     dimInk,
   );
@@ -405,6 +464,8 @@ async function start(
       slot.lines = null;
     }
     const mesh = new THREE.Mesh(g, slot.ship.current ? fullBody : dimBody);
+    mesh.position.x = slot.offset;
+    mesh.visible = slot.shown;
     slot.mesh = mesh;
     scene.add(mesh);
     dirty = true;
@@ -416,6 +477,8 @@ async function start(
         slot.ship.current ? fullInk : dimInk,
         angle,
       );
+      line.position.x = slot.offset;
+      line.visible = slot.shown;
       slot.lines = line;
       scene.add(line);
     });
@@ -428,7 +491,7 @@ async function start(
       slot.ship.height,
       slot.ship.beam,
     );
-    g.translate(slot.x, slot.ship.height / 2, 0);
+    g.translate(slot.centre0, slot.ship.height / 2, 0);
     stand(slot, g);
   }
 
@@ -437,12 +500,12 @@ async function start(
     fov,
     el.clientWidth / el.clientHeight,
     0.05,
-    rowLength * 40,
+    fullRow.rowLength * 40,
   );
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = 0.08;
-  controls.maxDistance = rowLength * 8;
+  controls.maxDistance = fullRow.rowLength * 8;
   controls.minDistance = 0.5;
 
   /** A side view, a little above, far enough that a span `w` long and `h` tall fills the frame. */
@@ -456,36 +519,57 @@ async function start(
       .add(new THREE.Vector3(0, 0.3, 1).normalize().multiplyScalar(d));
     return { position, target, width: Math.max(w, h * aspect) };
   };
-  const whole = () => view(0, rowLength, tallest * 1.25);
-  // The page's ship among its neighbours in size: the four ships above it and the four below,
-  // so a fighter is shown beside fighters, not beside every capital ship on record.
-  const around = () => {
-    const at = slots.findIndex((s) => s.ship.current);
-    if (at < 0) return whole();
-    const near = slots.slice(
-      Math.max(0, at - 4),
-      Math.min(slots.length, at + 5),
-    );
-    const from = near[0]!.x - near[0]!.length / 2;
-    const end = near[near.length - 1]!;
-    const to = end.x + end.length / 2;
-    const top = Math.max(...near.map((s) => s.top));
-    return view((from + to) / 2, (to - from) * 1.08, top * 1.35);
-  };
-  const viewOf = (focus: Focus) => {
-    const s = slots.find((x) => x.ship.slug === focus);
-    return focus === "around"
-      ? around()
-      : s === undefined
-        ? whole()
-        : view(s.x, s.length * 1.15, s.top * 1.4);
-  };
-  const start0 = around();
-  camera.position.copy(start0.position);
-  controls.target.copy(start0.target);
 
-  // Models: wanted for the ships the camera looks at that are wide enough to show detail, a few
-  // at a time, replacing their envelope as they land. The page's ship always gets its model.
+  // The person, when it lands, stands after the smallest ship of the row in view.
+  let personMesh: InstanceType<typeof THREE.Mesh> | null = null;
+  let personLines: InstanceType<typeof THREE.LineSegments> | null = null;
+  let personAt0 = fullRow.personAt ?? 0;
+  let personOffset = 0;
+
+  // The row in view: laid out afresh from the recorded lengths, every body moved to its place.
+  let inView = { rowLength: fullRow.rowLength, tallest: 1 };
+  const relayout = (focus: Focus): void => {
+    const show = new Set(
+      shownFor(focus, ships, current, spectrum).map((s) => s.slug),
+    );
+    const row = layoutRow(
+      slots.filter((s) => show.has(s.ship.slug)).map((s) => s.ship),
+      withPerson,
+    );
+    const at = new Map(row.slots.map((s) => [s.ship.slug, s.from]));
+    let tallest = 1;
+    for (const slot of slots) {
+      const from = at.get(slot.ship.slug);
+      slot.shown = from !== undefined;
+      if (from !== undefined) {
+        slot.offset = from - slot.from0;
+        slot.x = slot.centre0 + slot.offset;
+        tallest = Math.max(tallest, slot.top);
+      }
+      if (slot.mesh !== null) {
+        slot.mesh.position.x = slot.offset;
+        slot.mesh.visible = slot.shown;
+      }
+      if (slot.lines !== null) {
+        slot.lines.position.x = slot.offset;
+        slot.lines.visible = slot.shown;
+      }
+    }
+    personOffset = row.personAt === null ? 0 : row.personAt - personAt0;
+    if (personMesh !== null) personMesh.position.x = personOffset;
+    if (personLines !== null) personLines.position.x = personOffset;
+    const span = row.rowLength * 1.15;
+    ground.geometry.setFromPoints([
+      new THREE.Vector3(-span / 2, 0, 0),
+      new THREE.Vector3(span / 2, 0, 0),
+    ]);
+    inView = { rowLength: row.rowLength, tallest };
+    dirty = true;
+  };
+  const whole = () => view(0, inView.rowLength, inView.tallest * 1.25);
+
+  // Models: wanted for the ships in view that are wide enough to show detail, a few at a time,
+  // replacing their envelope as they land. The page's ship always gets its model.
   const queue: Slot[] = [];
   const queued = new Set<Slot>();
   let inFlight = 0;
@@ -505,10 +589,11 @@ async function start(
     g.rotateY(-Math.PI / 2);
     g.computeBoundingBox();
     const placedBox = g.boundingBox!;
-    g.translate(slot.from - placedBox.min.x, -placedBox.min.y, 0);
+    g.translate(slot.from0 - placedBox.min.x, -placedBox.min.y, 0);
     g.computeBoundingBox();
     const box = g.boundingBox!;
-    slot.x = (box.min.x + box.max.x) / 2;
+    slot.centre0 = (box.min.x + box.max.x) / 2;
+    slot.x = slot.centre0 + slot.offset;
     slot.top = box.max.y;
     stand(slot, g);
   };
@@ -541,16 +626,16 @@ async function start(
         });
     }
   };
-  /** Asks for the models of the ships a view shows wide enough to tell a model from a box. */
+  /** Asks for the models of the ships in view that are wide enough to tell a model from a box. */
   const wantModels = (span: { width: number }, centre: number): void => {
     const px = el.clientWidth / Math.max(span.width, 1);
     const left = centre - span.width / 2;
     const right = centre + span.width / 2;
     for (const slot of slots) {
-      if (slot.model !== "wanted" || queued.has(slot)) continue;
-      const inView =
+      if (!slot.shown || slot.model !== "wanted" || queued.has(slot)) continue;
+      const inFrame =
         slot.x + slot.length / 2 >= left && slot.x - slot.length / 2 <= right;
-      if (slot.ship.current || (inView && slot.length * px >= DETAIL_PX)) {
+      if (slot.ship.current || (inFrame && slot.length * px >= DETAIL_PX)) {
         queued.add(slot);
         wanted += 1;
         if (slot.ship.current) queue.unshift(slot);
@@ -571,8 +656,8 @@ async function start(
   const extras: (
     InstanceType<typeof THREE.Mesh> | InstanceType<typeof THREE.LineSegments>
   )[] = [];
-  if (figureSrc !== null && row.personAt !== null) {
-    const personAt = row.personAt;
+  if (figureSrc !== null && fullRow.personAt !== null) {
+    personAt0 = fullRow.personAt;
     loadHoloGeometry(THREE, loader, figureSrc)
       .then((person) => {
         if (disposed) {
@@ -582,15 +667,20 @@ async function start(
         person.computeBoundingBox();
         const pb = person.boundingBox!;
         person.translate(
-          personAt - pb.min.x,
+          personAt0 - pb.min.x,
           -pb.min.y,
           -(pb.min.z + pb.max.z) / 2,
         );
         const mesh = new THREE.Mesh(person, dimBody);
+        mesh.position.x = personOffset;
+        personMesh = mesh;
         extras.push(mesh);
         scene.add(mesh);
+        dirty = true;
         ink(() => {
           const line = inkEdges(THREE, person, dimInk, 40);
+          line.position.x = personOffset;
+          personLines = line;
           extras.push(line);
           scene.add(line);
         });
@@ -633,6 +723,7 @@ async function start(
     const h = el.clientHeight;
     const shown = slots
       .map((s, i) => {
+        if (!s.shown) return { i, x: 0, y: 0, visible: false };
         // A ship drawn shorter than a label is too small to name; the picker still lists it.
         stern.set(s.x - s.length / 2, 0, 0).project(camera);
         anchor.set(s.x + s.length / 2, 0, 0).project(camera);
@@ -699,12 +790,19 @@ async function start(
     renderer.render(scene, camera);
     placeTags();
   };
+
+  // The opening row, in place before the first frame.
+  relayout(current === undefined ? "all" : "around");
+  const start0 = whole();
+  camera.position.copy(start0.position);
+  controls.target.copy(start0.target);
   tick();
   wantModels(start0, start0.target.x);
 
   return {
     focus(slug: Focus) {
-      const to = viewOf(slug);
+      relayout(slug);
+      const to = whole();
       wantModels(to, to.target.x);
       if (reduced) {
         camera.position.copy(to.position);
@@ -743,6 +841,7 @@ async function start(
       for (const tag of tagEls) tag.remove();
       renderer.dispose();
       renderer.domElement.remove();
+      bySlug.clear();
     },
   };
 }

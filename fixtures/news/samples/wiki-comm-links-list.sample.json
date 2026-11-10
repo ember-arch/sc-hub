@@ -1,0 +1,98 @@
+{
+ "data": [
+  {
+   "id": 21431,
+   "title": "This Week in Star Citizen",
+   "rsi_url": "https://robertsspaceindustries.com/en/comm-link/transmission/21431-This-Week-In-Star-Citizen",
+   "api_url": "https://api.star-citizen.wiki/api/comm-links/21431",
+   "api_public_url": "https://api.star-citizen.wiki/comm-links/21431",
+   "channel": "Transmission",
+   "category": "Undefined",
+   "series": "None",
+   "images_count": 9,
+   "translations": {
+    "en_EN": "This Week in Star Citizen xē'suelen nyahyan, hello everyone,\nLast week, Alpha 4.10.3 opened to all waves in the PTU as we continued preparing for its upcoming release. As Vanduul attacks escalate across Nyx, the new InterSec Defense Solutions missions will put your combat skills to the test! We want to extend a huge thank you to everyone who jumped into the PTU over the weekend to help our teams test the latest update. We’re now reviewing the data and your reports as we work through the final improvements ahead of release. If you haven’t already, check out the latest PTU Patch Notes and share "
+   },
+   "links_count": 7,
+   "comment_count": 0,
+   "created_at": "2026-11-02T20:00:00+00:00",
+   "created_at_human": "1 week ago",
+   "images": []
+  },
+  {
+   "id": 21427,
+   "title": "Jump Point Now Available!",
+   "rsi_url": "https://robertsspaceindustries.com/en/comm-link/transmission/21427-Jump-Point-Now-Available",
+   "api_url": "https://api.star-citizen.wiki/api/comm-links/21427",
+   "api_public_url": "https://api.star-citizen.wiki/comm-links/21427",
+   "channel": "Transmission",
+   "category": "Undefined",
+   "series": "None",
+   "images_count": 3,
+   "translations": {
+    "en_EN": "h2 h3 Jump Point Now Available! ISSUE: 14 05 – Constellation of the Heart Attention, Subscribers: The October 2026 issue of Jump Point is now available in the Subscriber section of your account.\n\nThis issue goes behind the scenes of the latest RSI releases, the all-new Constellation Mk V Centaurus and its diminutive sister ship, the Skylark, and embraces spooky season with a chilling new short story from the Narrative team.\n\nInterested in becoming a Subscriber? Learn more\n\n\n\n\n\n\n\nJump Point Now Available!ISSUE: 14 05 – Constellation of the HeartAttention, Subscribers: The October 2026 issue of "
+   },
+   "links_count": 1,
+   "comment_count": 0,
+   "created_at": "2026-10-30T19:00:00+00:00",
+   "created_at_human": "1 week ago",
+   "images": []
+  },
+  {
+   "id": 21328,
+   "title": "R-PU-ORS-HeavyArmour-6",
+   "rsi_url": "https://robertsspaceindustries.com/en/comm-link/transmission/21328-R-PU-ORS-HeavyArmour-6",
+   "api_url": "https://api.star-citizen.wiki/api/comm-links/21427",
+   "api_public_url": "https://api.star-citizen.wiki/comm-links/21427",
+   "channel": "Transmission",
+   "category": "Undefined",
+   "series": "None",
+   "images_count": 0,
+   "translations": null,
+   "links_count": 1,
+   "comment_count": 0,
+   "created_at": "2026-10-30T19:00:00+00:00",
+   "created_at_human": "1 week ago",
+   "images": []
+  }
+ ],
+ "links": {
+  "first": "https://api.star-citizen.wiki/api/comm-links?limit=3&page=1&page%5Bnumber%5D=1",
+  "last": "https://api.star-citizen.wiki/api/comm-links?limit=3&page=1&page%5Bnumber%5D=205",
+  "prev": null,
+  "next": "https://api.star-citizen.wiki/api/comm-links?limit=3&page=1&page%5Bnumber%5D=2"
+ },
+ "meta": {
+  "current_page": 1,
+  "from": 1,
+  "last_page": 205,
+  "links": [
+   {
+    "url": null,
+    "label": "&laquo; Previous",
+    "page": null,
+    "active": false
+   },
+   {
+    "url": "https://api.star-citizen.wiki/api/comm-links?limit=3&page=1&page%5Bnumber%5D=1",
+    "label": "1",
+    "page": 1,
+    "active": true
+   },
+   {
+    "url": "https://api.star-citizen.wiki/api/comm-links?limit=3&page=1&page%5Bnumber%5D=2",
+    "label": "2",
+    "page": 2,
+    "active": false
+   }
+  ],
+  "path": "https://api.star-citizen.wiki/api/comm-links",
+  "per_page": 30,
+  "to": 30,
+  "total": 6121,
+  "valid_relations": [
+   "images",
+   "links"
+  ]
+ }
+}

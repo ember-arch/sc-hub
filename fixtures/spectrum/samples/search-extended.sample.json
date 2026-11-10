@@ -1,0 +1,166 @@
+{
+  "success": 1,
+  "code": "OK",
+  "msg": "OK",
+  "data": {
+    "hits": {
+      "hits": [
+        {
+          "_index": "tavern_forum_thread_op",
+          "_id": "576637",
+          "_score": 27.691471,
+          "_source": {
+            "subject": "The Polaris, The Galaxy and The Perseus (Oh My)",
+            "body": "Since the Galaxy has been introduced, I have noticed there is a bit of frustration from Polaris owners. Being someone who has pledged a Polaris since its concept I can understand the viewpoints of power creep and misaligned ship philosophy (no pilot weapons for bigger ships), and I began pondering how it all fits together because the design choices retrospectively do seem odd for the Polaris.\n\nThe Polaris struggles in its current role (hit-and-run torpedo boat) because the torpedoes (and missiles) are unreliable to the point they basically don't work, resulting in weak performance in PvP combat.",
+            "time_created": "2026-11-10T06:01:17Z",
+            "time_modified": "2026-11-10T06:01:17Z",
+            "votes": 1,
+            "community_id": "1",
+            "channel_id": "3",
+            "label_id": "6",
+            "member_id": "18009",
+            "thread_id": "576637",
+            "highlight_role_id": "",
+            "is_erased": false
+          },
+          "sort": [1794290477000],
+          "details": {
+            "community": {
+              "id": "1",
+              "type": "public",
+              "slug": "SC",
+              "name": "Star Citizen"
+            },
+            "thread": {
+              "id": "576637",
+              "time_created": 1794290477,
+              "time_modified": 1794290477,
+              "member_id": "18009",
+              "channel_id": "3",
+              "label_id": "6",
+              "type": "discussion",
+              "slug": "the-polaris-the-galaxy-and-the-perseus-oh-my",
+              "subject": "The Polaris, The Galaxy and The Perseus (Oh My)",
+              "is_locked": false,
+              "is_reply_nesting_disabled": false,
+              "is_pinned": false,
+              "is_sinked": false,
+              "is_erased": false,
+              "erased_by": null,
+              "tracked_post_role_id": "",
+              "content_reply_id": "9220984",
+              "annotation_plaintext": null
+            },
+            "channel": {
+              "id": "3",
+              "community_id": "1",
+              "group_id": "2",
+              "order": 0,
+              "name": "General",
+              "description": "Main discussion channel for all things SC.",
+              "color": "4aa3c9",
+              "sort_filter": null,
+              "label_required": false
+            },
+            "member": {
+              "id": "18009",
+              "displayname": "Costfanatic06",
+              "nickname": "Costfanatic06",
+              "avatar": "https://robertsspaceindustries.com/media/hwbpjhtva10hgr/heap_infobox/StarCitizenArtScreen.jpg?v=1487454441",
+              "signature": "",
+              "meta": {
+                "badges": [
+                  {
+                    "name": "Subscriber",
+                    "icon": "https://robertsspaceindustries.com/media/ls27iyxog62nnr/heap_thumb/Subscriber.png"
+                  },
+                  {
+                    "name": "Southern Cross Alliance",
+                    "icon": "/media/d9xc56l8r6w28r/heap_note/SCA-Thumbnail.png",
+                    "url": "https://robertsspaceindustries.com/orgs/SCA"
+                  }
+                ]
+              },
+              "isGM": false,
+              "spoken_languages": ["en"]
+            }
+          }
+        },
+        {
+          "_index": "tavern_forum_thread_reply",
+          "_id": "9219158",
+          "_score": 10.049869,
+          "_source": {
+            "body": "The Polaris has been a capital ship at every stage of its stats.  It was only ever a bad ship if people refused to crew it.  Balance is a constant change, do not expect those numbers to be final either.  \n\nIt was already virtually immune to most guns.  How much more is needed?",
+            "time_created": "2026-11-09T16:43:19Z",
+            "time_modified": "2026-11-09T16:43:19Z",
+            "community_id": "1",
+            "channel_id": "65300",
+            "label_id": "3248",
+            "member_id": "4299725",
+            "thread_id": "576489",
+            "highlight_role_id": null,
+            "is_erased": false
+          },
+          "sort": [1794242599000],
+          "details": {
+            "community": {
+              "id": "1",
+              "type": "public",
+              "slug": "SC",
+              "name": "Star Citizen"
+            },
+            "thread": {
+              "id": "576489",
+              "time_created": 1794221905,
+              "time_modified": 1794246784,
+              "member_id": "218143",
+              "channel_id": "65300",
+              "label_id": "3248",
+              "type": "discussion",
+              "slug": "changes-for-the-polaris-coming-with-4-10-3-and-5-0",
+              "subject": "Changes for the Polaris coming with 4.10.3 and 5.0",
+              "is_locked": false,
+              "is_reply_nesting_disabled": false,
+              "is_pinned": false,
+              "is_sinked": false,
+              "is_erased": false,
+              "erased_by": null,
+              "tracked_post_role_id": "",
+              "content_reply_id": "9218734",
+              "annotation_plaintext": null
+            },
+            "channel": {
+              "id": "65300",
+              "community_id": "1",
+              "group_id": "22015",
+              "order": 9,
+              "name": "Roberts Space Industries",
+              "description": "RSI discussion group",
+              "color": "919191",
+              "sort_filter": null,
+              "label_required": true
+            },
+            "member": {
+              "id": "4299725",
+              "displayname": "Lujayn",
+              "nickname": "Lujayn",
+              "avatar": "https://squadron42.com/media/podytokr6nyk7r/heap_infobox/7fcd104c-F41b-4d2a-92c1-757dbbef9130.jpg?v=1733533645",
+              "signature": "",
+              "meta": {
+                "badges": [
+                  {
+                    "name": "Space Marshal",
+                    "icon": "https://media.robertsspaceindustries.com/h3alojif1lznt/heap_thumb.png"
+                  }
+                ]
+              },
+              "isGM": false,
+              "spoken_languages": ["en"]
+            }
+          }
+        }
+      ]
+    }
+  }
+}

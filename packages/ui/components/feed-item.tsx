@@ -40,7 +40,9 @@ export function FeedItem({
         </TextLink>
       </h3>
       {excerpt !== null && excerpt !== "" ? (
-        <p className="max-w-prose text-body text-secondary">{excerpt}</p>
+        <p className="max-w-prose text-body text-secondary [overflow-wrap:anywhere]">
+          {excerpt}
+        </p>
       ) : null}
       <div className="flex flex-wrap items-center gap-2 text-caption">
         <TextLink href={sourceUrl} external>

@@ -50,7 +50,7 @@ packages/
   db/            Drizzle schema, migrations, seed from fixtures
 pipeline/        Windows-only: detect, extract, normalize, optimize, publish
 apps/web/        Next.js app
-workers/         pollers (news, spectrum), import job, link-entities job
+workers/         pollers (news, spectrum), import job, link-entities job (poll-news runs from CI every fifteen minutes until Fly; poll-spectrum only with SPECTRUM_MODE on, ADR-027)
 fixtures/        real extracted records per game version; committed (the whole catalog since ADR-022, under 40 MB)
 scripts/         one-off dev scripts; nothing here runs in production (one orchestrator, scripts/refresh, runs daily in CI to refresh the fixtures from their sources and land real changes on main, ADR-023)
 ```
@@ -127,7 +127,7 @@ Environment variables (validated in `packages/schema/env.ts`; a missing required
 DATABASE_URL
 MEILI_HOST, MEILI_MASTER_KEY, MEILI_SEARCH_KEY
 R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET, CDN_BASE_URL
-SPECTRUM_MODE (feed | poll | off), SPECTRUM_FEED_URL, SPECTRUM_SESSION_COOKIE
+SPECTRUM_MODE (feed | poll | off), SPECTRUM_FEED_URL, SPECTRUM_SESSION_COOKIE, SPECTRUM_STAFF_ROLE_ID (poll mode; the staff role id as Spectrum names it once signed in, ADR-027)
 SENTRY_DSN
 SITE_URL (the public origin; canonical URLs, sitemap.xml and Open Graph resolve against it)
 SC_INSTALL_ROOT (Windows only, for example C:\Program Files\Roberts Space Industries\StarCitizen)

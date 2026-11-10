@@ -49,6 +49,15 @@ export const RSI_HOLO_CREDIT = {
   url: "https://robertsspaceindustries.com/pledge",
 } as const;
 
+/**
+ * docs/legal/attribution.md, "Wiki gallery pictures" row (ADR-024): the opening band of a ship file
+ * whose showcase is the wiki's gallery, linked to the article. The official pictures are CIG's
+ * art; the in-game ones are screenshots by the wiki's contributors.
+ */
+export const WIKI_GALLERY_CREDIT = {
+  text: "Images: Roberts Space Industries, via the Star Citizen Wiki; in-game shots by the wiki's contributors",
+} as const;
+
 /** docs/legal/attribution.md, "RSI loaner ship matrix" row (ADR-015). */
 export const LOANER_MATRIX_CREDIT = {
   text: "Loaners: the Roberts Space Industries loaner ship matrix, checked weekly.",

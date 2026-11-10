@@ -19,8 +19,9 @@ export interface DevPostProps {
 /**
  * A developer post (ADR-032): a card with Spectrum's own yellow as its mark, the rule down its
  * left edge and the ring of the role tag, as Spectrum itself marks a staff post; the author's
- * name first, the role, the thread, the time at the right; the post in full as prose; the
- * source link last. The yellow is never text on the light wall (1.75:1); it marks.
+ * name first (a link to the author page, underlined like every link, ADR-005), the role, the
+ * thread, the time at the right; the post in full as prose; the source link last. The yellow is
+ * never text on the light wall (1.75:1); it marks.
  */
 export function DevPost({
   author,
@@ -35,10 +36,7 @@ export function DevPost({
       <header className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-ui">
           {author.href !== undefined ? (
-            <TextLink
-              href={author.href}
-              className="font-medium text-primary no-underline hover:underline"
-            >
+            <TextLink href={author.href} className="font-medium text-primary">
               {author.name}
             </TextLink>
           ) : (

@@ -75,8 +75,12 @@ describe("readBoard and diffBoards", () => {
       source: "roadmap",
       title: `Roadmap: ${card.name} moved from ${card.release} to 5.1`,
       url: `https://robertsspaceindustries.com/roadmap/board/1-Star-Citizen?card=${card.id}`,
-      published_at: new Date(card.time_modified * 1000).toISOString(),
+      // The board's own stamp of its last update, not the card's older one (ADR-030).
+      published_at: new Date(state.last_updated * 1000).toISOString(),
     });
+    expect(item.published_at).not.toBe(
+      new Date(card.time_modified * 1000).toISOString(),
+    );
     expect(item.body_html).toContain("<p>");
     expect(item.body_html).not.toContain("<script");
   });

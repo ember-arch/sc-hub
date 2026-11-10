@@ -145,10 +145,13 @@ export function diffBoards(prev: BoardState, next: BoardState): CardChange[] {
   return changes;
 }
 
-/** A content item for one change, dated by the board's own stamp of the change. */
+/**
+ * A content item for one change, dated by the board's own stamp of its last update: the change
+ * was seen between two reads of the board, and a card moved between releases keeps the older
+ * stamp of its own last edit, which the news window (ADR-030) would read as old news.
+ */
 export function changeItem(change: CardChange, lastUpdated: number): Incoming {
-  const stamp =
-    change.kind === "removed" ? lastUpdated : change.card.time_modified;
+  const stamp = lastUpdated;
   const when = new Date(Math.max(stamp, 0) * 1000).toISOString();
   const lines = [
     `<p>${escapeHtml(change.words)}.</p>`,

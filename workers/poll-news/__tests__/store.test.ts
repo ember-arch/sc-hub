@@ -51,6 +51,25 @@ describe("the news store", () => {
     expect(reopened.save()).toBe(false);
   });
 
+  it("records nothing published before the news window, and answers older (ADR-030)", () => {
+    const dir = mkdtempSync(join(tmpdir(), "news-"));
+    const store = openStore(join(dir, "ContentItem.json"));
+    expect(
+      store.put(
+        item({ published_at: "2026-05-13T23:59:59.000Z" }),
+        "2026-11-10T00:01:00.000Z",
+      ),
+    ).toBe("older");
+    expect(
+      store.put(
+        item({ published_at: "2026-05-14T00:00:00.000Z" }),
+        "2026-11-10T00:01:00.000Z",
+      ),
+    ).toBe("new");
+    expect(store.rows).toHaveLength(1);
+    expect(store.added).toBe(1);
+  });
+
   it("keeps a takedown flag across revisions", () => {
     const dir = mkdtempSync(join(tmpdir(), "news-"));
     const store = openStore(join(dir, "ContentItem.json"));

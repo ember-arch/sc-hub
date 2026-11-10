@@ -13,7 +13,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { paragraphsHtml, firstParagraph } from "poll-news/html";
 import { openStore, stableId } from "poll-news/store";
-import { Author } from "schema";
+import { Author, NEWS_WINDOW_START } from "schema";
 import { z } from "zod";
 import type { SpectrumAdapter, StaffPost } from "../adapter.js";
 import { createFeedAdapter } from "./feed.js";
@@ -155,7 +155,8 @@ async function main(): Promise<void> {
     .map((i) => i.published_at)
     .sort()
     .at(-1);
-  const since = new Date(newest ?? "2025-01-01T00:00:00Z");
+  // The first run reads back to the news window (ADR-030), later runs from the newest on record.
+  const since = new Date(newest ?? NEWS_WINDOW_START);
   const now = new Date().toISOString();
   let posts: readonly StaffPost[];
   try {

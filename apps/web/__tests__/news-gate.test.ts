@@ -72,6 +72,20 @@ describe("visibleNews", () => {
   });
 });
 
+describe("the news window", () => {
+  it("hides anything published before DefenseCon 2956 opened, whatever the pack holds (ADR-030)", () => {
+    const older = [
+      item(1, { published_at: "2026-05-13T23:00:00.000Z" }),
+      item(2, { published_at: "2026-05-14T00:00:00.000Z" }),
+    ];
+    expect(
+      visibleNews(older, { spectrum: true, hiddenAuthors: new Set() }).map(
+        (r) => r.external_id,
+      ),
+    ).toEqual(["2"]);
+  });
+});
+
 describe("the dispatches", () => {
   it("never count a Spectrum item, with the module on or off (ADR-029)", () => {
     const on = visibleNews(rows, { spectrum: true, hiddenAuthors: new Set() });

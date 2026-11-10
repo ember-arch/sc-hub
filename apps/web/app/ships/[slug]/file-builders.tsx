@@ -28,6 +28,13 @@ import {
   shopRows,
 } from "../../../lib/acquisition";
 import { armament, armamentPlan } from "../../../lib/armament";
+import {
+  armourBrief,
+  armourOf,
+  dpsByKindOf,
+  shieldsOf,
+} from "../../../lib/armour";
+import { alphaByKindOf, mitigationOf } from "../../../lib/damage-path";
 import { combatPeers } from "../../../lib/combat";
 import { type ShipView, flattenPorts, repo } from "../../../lib/data";
 import { loadoutGroups } from "../../../lib/loadout";
@@ -62,6 +69,7 @@ import { LoadoutPanels } from "./loadout-panels";
 import { PortTable } from "./port-table";
 import { type SourceEntry, Sources } from "./showcase/dossier";
 import { HoloLineup, type LineupShip } from "./showcase/holo-lineup";
+import { type AttackingWeapon, DamagePath } from "./showcase/damage-path";
 import { Claims, Facts, Gap, Related, type ShipFileProps } from "./ship-file";
 
 /**
@@ -511,6 +519,44 @@ export function packShipFile(ship: ShipView): ShipFileProps {
         };
   });
   const editor = editorModel(r.shipPorts(v.class_name), r.components);
+  // Armour, shields and the damage path (ADR-026), from the records.
+  const armour = s === null ? null : armourOf(s.raw);
+  const mitigation = s === null ? null : mitigationOf(s.raw);
+  const shieldFigures = s === null ? null : shieldsOf(s.raw);
+  const attackers: AttackingWeapon[] = r.components
+    .flatMap((c) => {
+      if (c.item.type !== "weapon") return [];
+      const dps = dpsByKindOf(c.stats?.raw);
+      const alpha = alphaByKindOf(c.stats?.raw);
+      // A shot's kinds are the kinds the gun's per-second figure has: a 0.001 trace is not one.
+      const shot =
+        alpha === null
+          ? null
+          : Object.fromEntries(
+              Object.entries(alpha).filter(([k]) => k in dps!),
+            );
+      return dps === null || shot === null || Object.keys(shot).length === 0
+        ? []
+        : [
+            {
+              id: c.item.class_name,
+              name: c.item.name,
+              size: c.item.size,
+              kind: partKind(c.item, c.stats),
+              shot,
+              dps,
+            },
+          ];
+    })
+    .sort((a, b) => a.size - b.size || a.name.localeCompare(b.name));
+  const firedPerSecond = (w: AttackingWeapon): number =>
+    Object.values(w.dps).reduce((a, b) => a + b, 0);
+  const stockGuns = editor.slots
+    .filter((slot) => slot.group === "guns" && slot.stock !== null)
+    .map((slot) => attackers.find((w) => w.id === slot.stock))
+    .filter((w): w is AttackingWeapon => w !== undefined)
+    .sort((a, b) => firedPerSecond(b) - firedPerSecond(a));
+  const defaultAttacker = stockGuns[0]?.id ?? null;
   const allPorts = flattenPorts(r.shipPorts(v.class_name));
   const ports = allPorts.filter(
     ({ node }) => node.port.port_type !== "other" || node.item !== null,
@@ -758,6 +804,18 @@ export function packShipFile(ship: ShipView): ShipFileProps {
     ...(s?.hull_hp == null
       ? []
       : [{ label: "Hull", value: `${n0(s.hull_hp)} HP`, numeric: true }]),
+    ...(shieldFigures === null
+      ? []
+      : [
+          {
+            label: "Shield strength",
+            value: `${n0(shieldFigures.hp)} HP${shieldFigures.regen === null ? "" : `, regenerating ${n0(shieldFigures.regen)} HP/s`}`,
+            numeric: true,
+          },
+        ]),
+    ...(armour === null
+      ? []
+      : [{ label: "Armour", value: armourBrief(armour) }]),
   ];
 
   const mobility: Fact[] = [
@@ -963,7 +1021,29 @@ export function packShipFile(ship: ShipView): ShipFileProps {
                   scale="log"
                   values={rankValues((o) => o.stats?.mass_kg ?? null)}
                 />
+                <RankBar
+                  label="Shields"
+                  unit="HP"
+                  most="Strongest"
+                  scale="log"
+                  values={rankValues(
+                    (o) => shieldsOf(o.stats?.raw)?.hp ?? null,
+                  )}
+                />
               </div>
+            )}
+            {mitigation === null || attackers.length === 0 ? null : (
+              <DamagePath
+                key={v.slug}
+                shipName={v.name}
+                mitigation={mitigation}
+                hullHp={s?.hull_hp ?? null}
+                shields={shieldFigures}
+                weapons={attackers}
+                defaultId={defaultAttacker}
+                label="Fig. C"
+                version={version}
+              />
             )}
           </div>
         ),

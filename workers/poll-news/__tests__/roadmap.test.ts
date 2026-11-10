@@ -75,8 +75,12 @@ describe("readBoard and diffBoards", () => {
       source: "roadmap",
       title: `Roadmap: ${card.name} moved from ${card.release} to 5.1`,
       url: `https://robertsspaceindustries.com/roadmap/board/1-Star-Citizen?card=${card.id}`,
-      published_at: new Date(card.time_modified * 1000).toISOString(),
+      // The board's own stamp of its last update, not the card's older one (ADR-031).
+      published_at: new Date(state.last_updated * 1000).toISOString(),
     });
+    expect(item.published_at).not.toBe(
+      new Date(card.time_modified * 1000).toISOString(),
+    );
     expect(item.body_html).toContain("<p>");
     expect(item.body_html).not.toContain("<script");
   });
@@ -129,5 +133,56 @@ describe("pollRoadmap", () => {
     expect(store.latest()[0]?.title).toContain(
       `moved from ${from.name} to ${to.name}`,
     );
+  });
+});
+
+describe("pollRoadmap and the news window", () => {
+  const quiet = {
+    sleep: async () => undefined,
+    now: () => 0,
+    contact: "x@example.com",
+  };
+  const fetchBoard = (text: string) => async (url: string) => {
+    if (url !== BOARD_URL) throw new Error(`unexpected ${url}`);
+    return { ok: true, status: 200, text: async () => text };
+  };
+
+  it("counts and logs a change the store refuses as older when the board's stamp is before the window (ADR-031)", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "news-"));
+    const store = openStore(join(dir, "ContentItem.json"));
+    let saved: BoardState | null = null;
+    const state = { read: () => saved, write: (n: BoardState) => (saved = n) };
+    await pollRoadmap(
+      createClient({ fetch: fetchBoard(boardJson), ...quiet }),
+      store,
+      state,
+      () => new Date(),
+    );
+    const board = JSON.parse(boardJson) as {
+      data: {
+        last_updated: number;
+        releases: { name: string; cards: { release_id: number }[] | null }[];
+      };
+    };
+    const from = board.data.releases.find((r) => (r.cards ?? []).length > 0)!;
+    const to = board.data.releases.find((r) => r !== from)!;
+    const card = from.cards!.shift()!;
+    to.cards = [...(to.cards ?? []), card];
+    // A stale board stamp: the day before the window opened.
+    board.data.last_updated = Math.floor(
+      Date.parse("2026-05-13T12:00:00Z") / 1000,
+    );
+    const events: Record<string, unknown>[] = [];
+    const run = await pollRoadmap(
+      createClient({ fetch: fetchBoard(JSON.stringify(board)), ...quiet }),
+      store,
+      state,
+      () => new Date("2026-11-10T00:00:00Z"),
+      { log: (e) => events.push(e) },
+    );
+    expect(run.changes).toBe(1);
+    expect(run.older).toBe(1);
+    expect(store.rows).toHaveLength(0);
+    expect(events.map((e) => e["event"])).toContain("news.roadmap.older");
   });
 });

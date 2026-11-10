@@ -15,6 +15,7 @@ import {
   PackError,
   type Paint,
   SpectrumMode,
+  inNewsWindow,
   type Port,
   ShipFitList as ShipFitListSchema,
   type Vehicle,
@@ -87,7 +88,8 @@ function loadNews(hiddenAuthors: ReadonlySet<string>): ContentItem[] {
 
 /**
  * What the site shows of the pack's rows: the latest revision of each item, no takedown, no
- * Spectrum item unless the module is on, none by an author under takedown; newest first.
+ * Spectrum item unless the module is on, none by an author under takedown, nothing published
+ * before the news window (ADR-031); newest first.
  */
 export function visibleNews(
   rows: readonly ContentItem[],
@@ -109,6 +111,7 @@ export function visibleNews(
     .filter(
       (row) =>
         !row.takedown &&
+        inNewsWindow(row.published_at) &&
         (dev || row.source !== "spectrum") &&
         (row.author_id === null || !hiddenAuthors.has(row.author_id)),
     )

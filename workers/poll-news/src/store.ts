@@ -8,7 +8,7 @@
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
-import { ContentItem } from "schema";
+import { ContentItem, inNewsWindow } from "schema";
 
 const NAMESPACE = "sc-hub:news:";
 
@@ -39,8 +39,12 @@ export interface Store {
   /**
    * Records an item: nothing when the latest revision says the same; a first row when the item
    * is new; the next revision when the source changed its title, summary, body, url or time.
+   * An item published before the news window (ADR-031) is not recorded and answers "older".
    */
-  put(incoming: Incoming, fetchedAt: string): "unchanged" | "new" | "revised";
+  put(
+    incoming: Incoming,
+    fetchedAt: string,
+  ): "unchanged" | "new" | "revised" | "older";
   /** Writes the file when anything was put. */
   save(): boolean;
   readonly added: number;
@@ -87,6 +91,7 @@ export function openStore(path: string): Store {
     put(incoming, fetchedAt) {
       const key = `${incoming.source}:${incoming.external_id}`;
       const current = latestOf.get(key);
+      if (!inNewsWindow(incoming.published_at)) return "older";
       if (current !== undefined && sameContent(current, incoming))
         return "unchanged";
       const revision = current === undefined ? 1 : current.revision + 1;

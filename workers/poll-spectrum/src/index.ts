@@ -13,7 +13,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { paragraphsHtml, firstParagraph } from "poll-news/html";
 import { openStore, stableId } from "poll-news/store";
-import { Author } from "schema";
+import { Author, NEWS_WINDOW_START, inNewsWindow } from "schema";
 import { z } from "zod";
 import type { SpectrumAdapter, StaffPost } from "../adapter.js";
 import { createFeedAdapter } from "./feed.js";
@@ -155,7 +155,8 @@ async function main(): Promise<void> {
     .map((i) => i.published_at)
     .sort()
     .at(-1);
-  const since = new Date(newest ?? "2025-01-01T00:00:00Z");
+  // The first run reads back to the news window (ADR-031), later runs from the newest on record.
+  const since = new Date(newest ?? NEWS_WINDOW_START);
   const now = new Date().toISOString();
   let posts: readonly StaffPost[];
   try {
@@ -166,7 +167,14 @@ async function main(): Promise<void> {
     }
     throw error;
   }
+  let older = 0;
   for (const post of posts) {
+    // Before the author row: a post from before the news window (ADR-031) makes no author
+    // and no item (an old post edited this week comes back from the search with its old time).
+    if (!inNewsWindow(post.published_at)) {
+      older += 1;
+      continue;
+    }
     const author = authors.upsert(post, now);
     const outcome = store.put(
       {
@@ -196,6 +204,7 @@ async function main(): Promise<void> {
       mode,
       since: since.toISOString(),
       posts: posts.length,
+      older,
       added: store.added,
       revised: store.revised,
       authors: authors.rows.length,

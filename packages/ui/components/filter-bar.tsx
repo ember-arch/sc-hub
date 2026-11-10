@@ -114,6 +114,61 @@ export function FilterSelect({
   );
 }
 
+export interface FilterSearchProps {
+  readonly name: string;
+  readonly label: string;
+  /** The current value from the URL; "" means no search. */
+  readonly value: string;
+  readonly placeholder?: string | undefined;
+}
+
+/**
+ * A search field in the bar: Enter submits, as does leaving the field with a changed value; a
+ * cleared field submits too, so the search is dropped from the URL. The same GET semantics as the
+ * selects, so it works without JavaScript through the Apply button.
+ */
+export function FilterSearch({
+  name,
+  label,
+  value,
+  placeholder,
+}: FilterSearchProps) {
+  const id = useId();
+  const [current, setCurrent] = useState(value);
+  const [fromUrl, setFromUrl] = useState(value);
+  if (fromUrl !== value) {
+    setFromUrl(value);
+    setCurrent(value);
+  }
+  const submitIfChanged = (input: HTMLInputElement): void => {
+    if (input.value.trim() !== value) input.form?.requestSubmit();
+  };
+  return (
+    <div className="flex min-w-0 flex-col gap-1">
+      <label htmlFor={id} className="text-caption text-secondary">
+        {label}
+      </label>
+      <input
+        id={id}
+        type="search"
+        name={name}
+        value={current}
+        placeholder={placeholder}
+        autoComplete="off"
+        onChange={(event) => setCurrent(event.currentTarget.value)}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            submitIfChanged(event.currentTarget);
+          }
+        }}
+        onBlur={(event) => submitIfChanged(event.currentTarget)}
+        className="w-full rounded-control border border-hairline bg-surface px-3 py-1 text-ui text-primary placeholder:text-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+      />
+    </div>
+  );
+}
+
 export interface FilterBarProps {
   /** The route the form submits to, for example "/ships". */
   readonly action: string;
@@ -129,7 +184,8 @@ export interface FilterBarProps {
 export function filterHref(action: string, data: FormData): string {
   const params = new URLSearchParams();
   for (const [name, value] of data) {
-    if (typeof value === "string" && value !== "") params.append(name, value);
+    if (typeof value === "string" && value.trim() !== "")
+      params.append(name, value.trim());
   }
   const query = params.toString();
   return query === "" ? action : `${action}?${query}`;

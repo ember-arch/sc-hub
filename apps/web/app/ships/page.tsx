@@ -4,6 +4,7 @@ import {
   Card,
   EmptyState,
   FilterBar,
+  FilterSearch,
   FilterSelect,
   SegmentedLinks,
   TextLink,
@@ -17,6 +18,7 @@ import {
   type ShipFacet,
   applyShipFilters,
   hasShipFilters,
+  matchesSearch,
   parseShipQuery,
   shipFacetOptions,
   shipIndexHref,
@@ -59,8 +61,18 @@ export default async function ShipsPage({
   const r = repo();
   const state = parseShipQuery(await searchParams);
   const ships = applyShipFilters(r.entries, state.filters);
-  // Concept ships sit outside the filters: they have no game data to filter on (ADR-010).
-  const concepts = hasShipFilters(state.filters) ? [] : conceptShips();
+  // Concept ships sit outside the facets, which are game data they do not have (ADR-010); the
+  // search reaches them by name and maker.
+  const q = state.filters.q;
+  const concepts = SHIP_FACETS.some(
+    (facet) => state.filters[facet] !== undefined,
+  )
+    ? []
+    : conceptShips().filter(
+        (c) =>
+          q === undefined ||
+          matchesSearch(q, [c.name, c.manufacturer_code, c.slug]),
+      );
   const options = shipFacetOptions(r.entries, {
     status: (status) => vehicleStatusBadge(status).label,
     kind: sentence,
@@ -99,6 +111,12 @@ export default async function ShipsPage({
             hidden={state.view === "table" ? { view: "table" } : undefined}
             clearHref={filtered ? clearHref : undefined}
           >
+            <FilterSearch
+              name="q"
+              label="Search"
+              value={state.filters.q ?? ""}
+              placeholder="Name, maker or class"
+            />
             {SHIP_FACETS.map((facet) => (
               <FilterSelect
                 key={facet}

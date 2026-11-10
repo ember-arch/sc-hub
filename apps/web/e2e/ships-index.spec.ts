@@ -62,6 +62,33 @@ const sizes = [...new Set(vehicles.map((v) => v.size_class))].filter(
 const size = sizes[0];
 if (size === undefined) throw new Error("pack has no size classes");
 
+test("the search narrows the register by name and is URL state", async ({
+  page,
+}) => {
+  await page.goto("/ships");
+  const target = vehicles[0]!;
+  const expected = vehicles.filter((v) =>
+    v.name.toLowerCase().includes(target.name.toLowerCase()),
+  );
+  const search = page.getByLabel("Search");
+  await search.fill(target.name);
+  await search.press("Enter");
+  await expect(page).toHaveURL(
+    new RegExp(
+      `/ships\\?q=${encodeURIComponent(target.name).replace(/%20/g, "\\+")}`,
+    ),
+  );
+  await expect(page.getByTestId("ship-count")).toContainText(
+    `${expected.length} of ${vehicles.length} ships`,
+  );
+  await expect(page.getByRole("main").locator("ul li a")).toHaveCount(
+    expected.length,
+  );
+  await expect(search).toHaveValue(target.name);
+  await page.getByRole("link", { name: "Clear filters" }).click();
+  await expect(page).toHaveURL(/\/ships$/);
+});
+
 test("a size filter chosen from the select becomes URL state and narrows the cards", async ({
   page,
 }) => {

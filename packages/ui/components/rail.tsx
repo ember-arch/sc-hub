@@ -129,7 +129,7 @@ export function Rail({ label, size, phoneOnly, children }: RailProps) {
         {Children.toArray(children).map((child, i) => (
           <li
             key={i}
-            className={`flex shrink-0 snap-start ${ITEM[size]} ${phoneOnly === undefined ? "" : "md:basis-auto"}`}
+            className={`relative flex shrink-0 snap-start ${ITEM[size]} ${phoneOnly === undefined ? "" : "md:basis-auto"}`}
           >
             <div className="w-full">{child}</div>
           </li>

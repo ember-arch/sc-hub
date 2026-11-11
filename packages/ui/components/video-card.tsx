@@ -54,7 +54,7 @@ export function VideoCard({
   const name = withoutEmoji(title);
   return (
     <article
-      className="flex h-full flex-col overflow-hidden rounded-card bg-surface shadow-soft"
+      className="relative flex h-full flex-col overflow-hidden rounded-card bg-surface shadow-soft"
       data-video={id}
       data-video-embed={embed}
       data-video-title={name}

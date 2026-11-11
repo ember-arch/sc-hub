@@ -63,7 +63,8 @@ export function withoutEmoji(text: string): string {
       .replace(/[\p{Extended_Pictographic}\u{1F1E6}-\u{1F1FF}]/gu, (c) =>
         TYPOGRAPHIC.has(c) ? c : "",
       )
-      .replace(/[\u200D\uFE0E\uFE0F\u20E3]/gu, "")
+      // The joiner, the two presentation selectors and the keycap mark, each on its own.
+      .replace(/\u200D|\uFE0E|\uFE0F|\u20E3/gu, "")
       .replace(/\s{2,}/g, " ")
       .trim()
   );

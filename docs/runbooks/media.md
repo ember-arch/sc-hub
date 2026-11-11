@@ -7,7 +7,7 @@ How the media reach the CDN and the site, and what to do after a refresh. The de
 | Thing | Value |
 | --- | --- |
 | Store | Vercel Blob `sc-hub-media` (public), connected to the `sc-hub` project; keys under `media/` |
-| Public address | `CDN_BASE_URL`, `https://<store>.public.blob.vercel-storage.com`; set on Vercel for production and preview; not a secret |
+| Public address | `CDN_BASE_URL` = `https://eieovaxp8q6yustn.public.blob.vercel-storage.com` (the store's id, lower-cased, without `store_`); set on Vercel for production and preview; not a secret |
 | Credentials | In `.env.local` at the root of the checkout that holds the complete media, written by `vercel env pull .env.local`: `BLOB_STORE_ID` and a `VERCEL_OIDC_TOKEN` good for about twelve hours (the store's read-write token is sensitive on the project and is not pulled). The connection must include the Development environment for the OIDC pair to work (Storage → the store → Projects → `sc-hub` → environments). Never on Vercel's side for the site, never in CI |
 | Keys | Content-addressed: `media/ships/aegs_gladius-1280-<hash12>.webp`, cached for a year. The one mutable object is `media/manifest.json`, cached five minutes |
 

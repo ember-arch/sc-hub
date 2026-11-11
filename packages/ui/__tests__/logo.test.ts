@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { LOGO_ASPECT, LOGO_FILES } from "../components/logo";
 import { color } from "../tokens";
 
-// ADR-045: the logo's files carry the board's coppers and the page's ink per scheme, the favicon
+// ADR-045, ADR-047: the logo's files carry the board's coppers and the page's ink per scheme, the favicon
 // is the lockup's own cork, and the coppers are the logo's alone.
 
 const read = (rel: string): string =>
@@ -46,6 +46,7 @@ describe("the Coppercork logo", () => {
     const lockup = paths(pub(LOGO_FILES.light));
     expect(paths(icon)).toEqual(lockup.slice(0, 2));
     expect(icon).toContain(`.p{fill:${color.light["brand.copper"]}}`);
+    expect(icon).toContain(`.f{fill:${color.light["brand.flame"]}}`);
     expect(icon).toMatch(
       new RegExp(
         `prefers-color-scheme:dark\\)\\{\\.p\\{fill:${color.dark["brand.copper"]}\\}\\.f\\{fill:${color.dark["brand.flame"]}`,

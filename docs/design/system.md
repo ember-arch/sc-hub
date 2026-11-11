@@ -42,7 +42,7 @@ All tokens live in `packages/ui/tokens.ts`. Tailwind config is generated from th
 | `brand.copper` | `#C97A40` | `#C97A40` | The logo's copper (ADR-041, ADR-045, ADR-047): the cork's plates, the logo and the favicon alone, never text, border or fill elsewhere |
 | `brand.flame` | `#B5652E` | `#E9A46E` | The logo's flames (ADR-045, ADR-047): darker than the plates on light, lighter on dark, as the board draws them. The logo and the favicon alone |
 
-Rules: one accent. Manufacturer brand colors may appear only as a 3 px rule on the manufacturer page hero, never as fills. The logo's coppers, `brand.copper` and `brand.flame`, appear only in the logo and the favicon (ADR-041, ADR-045). Semantic colors are for status (flight-ready, concept, PTU-only), never decoration.
+Rules: one accent. Manufacturer brand colors may appear only as a 3 px rule on the manufacturer page hero, never as fills. The logo's coppers, `brand.copper` and `brand.flame`, appear only in the logo and the favicon (ADR-041, ADR-045, ADR-047). Semantic colors are for status (flight-ready, concept, PTU-only), never decoration.
 
 ### Type
 

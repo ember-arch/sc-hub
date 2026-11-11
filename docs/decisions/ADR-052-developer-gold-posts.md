@@ -27,7 +27,7 @@ The front page drops "Featured". One name for one kind of post reads better than
 
 - The addresses: `/news/dev` and `/news/dev/<handle>`, which are published and stay put (CLAUDE.md section 5: slugs never change after first publish).
 - The pages' content, their order, the author pages' titles ("<name> on Spectrum"), the cards, the feeds (which carry dispatches only, ADR-029) and the code's names (`DevPost`, `devPosts`, `dev-post-card.tsx`).
-- Prose that describes the thing rather than naming the section, such as the about page's "every ship, manufacturer, news item and developer post gets a page".
+- Prose that describes the thing rather than naming the section, such as the about page's "every ship, component, manufacturer, news item and developer post gets a page".
 
 ## Alternatives considered
 
@@ -35,10 +35,11 @@ The front page drops "Featured". One name for one kind of post reads better than
 | --- | --- |
 | "Developer Gold Posts", as typed | Title case breaks CLAUDE.md section 7 |
 | "Gold posts" alone | Players know the term, but a newcomer would not know whose posts they are; "developer" says who wrote them |
-| Keep "Featured developer gold posts" on the front page | Four words before the noun, and two names for the same posts |
+| Keep "Featured developer gold posts" on the front page | Three words before the noun, and two names for the same posts |
 | Rename the addresses to `/news/gold` | Breaks published links and canonical URLs for a change of words |
 
 ## Consequences
 
 - `apps/web/app/news/tabs.tsx`, `apps/web/app/news/dev/page.tsx` and `apps/web/app/page.tsx` change their labels; `e2e/news.spec.ts`, `e2e/home.spec.ts` and `e2e/devtracker.spec.ts` look for the new names.
 - system.md's Home and News rows and spec 06's "Hero home page" note name the new heading. The earlier ADRs keep the old names as written; this record amends them.
+- Not yet redrawn: the committed screenshot records of the front page and the news page with Spectrum on (`e2e/__screenshots__/*populated*`) still show the old labels, since CI runs with Spectrum off and the local server port was taken when this merged. The next local run with `SPECTRUM_MODE=poll` re-records them.

@@ -11116,5 +11116,22 @@
     "thread_title": "IAE 2956 - Choose Your Adventure - FAQ",
     "forum": "Announcements",
     "takedown": false
+  },
+  {
+    "id": "8888890a-b64a-516a-8ac0-f4e04a4cbd61",
+    "source": "comm_link",
+    "external_id": "20943",
+    "url": "https://robertsspaceindustries.com/comm-link/transmission/20943-Monthly-Store-Bundle-2026",
+    "title": "Monthly Store Bundle 2026",
+    "summary": null,
+    "body_html": "",
+    "published_at": "2026-11-10T16:00:00.000Z",
+    "fetched_at": "2026-11-11T06:29:59.778Z",
+    "revision": 1,
+    "author_id": null,
+    "thread_id": null,
+    "thread_title": null,
+    "forum": null,
+    "takedown": false
   }
 ]

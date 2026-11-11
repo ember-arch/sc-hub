@@ -11,6 +11,9 @@
  *                     refused in a run that changed the manifest, since the live site still
  *                     names the old keys until its next build
  *   --concurrency <n> parallel uploads (default 8)
+ *   --allow-cover-drop let the new manifest lack Comm-Link covers the live one has; refused
+ *                     otherwise, since the News workflow adds covers to the live manifest that a
+ *                     checkout may not have yet (ADR-048): run fetch-covers.ts and prepare.ts first
  *
  * Credentials come from `.env.local` (then `.env`) at the repository root, never from arguments:
  * either BLOB_READ_WRITE_TOKEN, or VERCEL_OIDC_TOKEN with BLOB_STORE_ID (what `vercel env pull`
@@ -34,8 +37,8 @@ import {
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { MediaManifest } from "schema";
-import { envSchema } from "schema/env";
-import { type BlobAuth, vercelBlobStore } from "./blob.js";
+import { vercelBlobStore } from "./blob.js";
+import { loadBlobSettings } from "./blob-env.js";
 import { type LocalFile, MANIFEST_KEY, planPublish } from "./publish-plan.js";
 import { syncToStore } from "./publish-sync.js";
 
@@ -46,6 +49,7 @@ interface Options {
   mediaDir: string;
   dryRun: boolean;
   prune: boolean;
+  allowCoverDrop: boolean;
   concurrency: number;
 }
 
@@ -54,6 +58,7 @@ function parseArgs(argv: readonly string[]): Options {
     mediaDir: join(repoRoot, "apps", "web", "public", "media"),
     dryRun: false,
     prune: false,
+    allowCoverDrop: false,
     concurrency: 8,
   };
   for (let i = 0; i < argv.length; i += 1) {
@@ -67,6 +72,7 @@ function parseArgs(argv: readonly string[]): Options {
     if (arg === "--media") options.mediaDir = next();
     else if (arg === "--dry-run") options.dryRun = true;
     else if (arg === "--prune") options.prune = true;
+    else if (arg === "--allow-cover-drop") options.allowCoverDrop = true;
     else if (arg === "--concurrency") options.concurrency = Number(next());
     else throw new Error(`unknown argument ${arg}`);
   }
@@ -74,58 +80,6 @@ function parseArgs(argv: readonly string[]): Options {
     throw new Error("--concurrency needs a positive whole number");
   }
   return options;
-}
-
-interface Settings {
-  auth: BlobAuth;
-  cdnBaseUrl: string | null;
-}
-
-/**
- * `.env.local` then `.env` at the repository root; a variable already set wins over both. Either
- * credential form is enough; `vercel env pull` writes the OIDC pair and marks the read-write token
- * sensitive.
- */
-function loadSettings(): Settings | { missing: string } {
-  for (const file of [".env.local", ".env"]) {
-    const path = join(repoRoot, file);
-    if (existsSync(path)) process.loadEnvFile(path);
-  }
-  const source: Record<string, string> = {};
-  for (const key of [
-    "BLOB_READ_WRITE_TOKEN",
-    "BLOB_STORE_ID",
-    "VERCEL_OIDC_TOKEN",
-    "CDN_BASE_URL",
-  ]) {
-    const value = process.env[key];
-    // `vercel env pull` writes "[SENSITIVE]" for a value it may not read back: that is no value.
-    if (value !== undefined && value !== "" && value !== "[SENSITIVE]") {
-      source[key] = value;
-    }
-  }
-  const parsed = envSchema.safeParse(source);
-  if (!parsed.success) {
-    throw new Error(
-      `invalid environment: ${parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ")}`,
-    );
-  }
-  const env = parsed.data;
-  const cdnBaseUrl = env.CDN_BASE_URL?.replace(/\/+$/, "") ?? null;
-  if (env.BLOB_READ_WRITE_TOKEN !== undefined) {
-    return { auth: { token: env.BLOB_READ_WRITE_TOKEN }, cdnBaseUrl };
-  }
-  const oidc = source["VERCEL_OIDC_TOKEN"];
-  if (oidc !== undefined && env.BLOB_STORE_ID !== undefined) {
-    return {
-      auth: { oidcToken: oidc, storeId: env.BLOB_STORE_ID },
-      cdnBaseUrl,
-    };
-  }
-  return {
-    missing:
-      "BLOB_READ_WRITE_TOKEN, or VERCEL_OIDC_TOKEN with BLOB_STORE_ID (vercel env pull .env.local)",
-  };
 }
 
 const sha256File = (path: string): Promise<string> =>
@@ -229,7 +183,7 @@ async function main(): Promise<void> {
   const plan = planPublish(manifest, await scanMedia(options.mediaDir));
   const totalBytes = plan.objects.reduce((sum, o) => sum + o.bytes, 0);
 
-  const settings = loadSettings();
+  const settings = loadBlobSettings(repoRoot);
   if ("missing" in settings) {
     if (!options.dryRun) {
       throw new Error(`missing in .env.local: ${settings.missing}`);
@@ -253,6 +207,7 @@ async function main(): Promise<void> {
   const result = await syncToStore(plan, vercelBlobStore(settings.auth), {
     dryRun: options.dryRun,
     prune: options.prune,
+    allowCoverDrop: options.allowCoverDrop,
     concurrency: options.concurrency,
     readFile: (src) =>
       readFileSync(join(options.mediaDir, ...src.split("/").slice(2))),
@@ -288,6 +243,9 @@ async function main(): Promise<void> {
       orphans: result.orphans,
       pruned: result.pruned,
       ...(result.pruneNote === null ? {} : { prune: result.pruneNote }),
+      ...(result.droppedCovers.length === 0
+        ? {}
+        : { dropped_covers: result.droppedCovers }),
       cdn,
       errors: 0,
       duration_ms: Date.now() - started,

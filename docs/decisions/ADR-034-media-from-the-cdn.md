@@ -3,6 +3,7 @@
 - Status: accepted (owner decisions 2026-11-10: "Yes, publish them"; "In uploading all images to the site, use the Vercel Blob store instead, as agreed")
 - Date: 2026-11-10
 - Deciders: owner, Claude Code session 2026-11-10
+- Amended by: ADR-048 (the News workflow adds new Comm-Links' covers to the live manifest; the hand publish reads the live manifest first, refuses to drop those covers, and writes conditionally)
 
 ## Context
 

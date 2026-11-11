@@ -25,6 +25,7 @@ import {
   createSpacer,
 } from "./sources.js";
 import { rsiUserAgent } from "../user-agent.js";
+import { type OnRecord, commLinksOnRecord } from "./cover-publish.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(here, "..", "..");
@@ -36,16 +37,6 @@ const sourcesPath = join(
   "rsi-media",
   "cover-sources.json",
 );
-
-const PackRow = z
-  .object({
-    source: z.string(),
-    external_id: z.string(),
-    url: z.string(),
-    revision: z.number().int(),
-    takedown: z.boolean(),
-  })
-  .loose();
 
 const EXTENSIONS: Readonly<Record<string, string>> = {
   "image/jpeg": "jpg",
@@ -59,30 +50,16 @@ function flag(args: readonly string[], name: string): string | undefined {
 }
 
 /** The Comm-Links the site can show: the latest revision of each, none under takedown. */
-function commLinksOnRecord(): Map<string, { url: string }> {
+function onRecord(): Map<string, OnRecord> {
   if (!existsSync(newsFile)) return new Map();
-  const rows = z
-    .array(PackRow)
-    .parse(JSON.parse(readFileSync(newsFile, "utf8")));
-  const latest = new Map<string, z.infer<typeof PackRow>>();
-  for (const row of rows) {
-    if (row.source !== "comm_link") continue;
-    const seen = latest.get(row.external_id);
-    if (seen === undefined || row.revision > seen.revision)
-      latest.set(row.external_id, row);
-  }
-  return new Map(
-    [...latest.values()]
-      .filter((row) => !row.takedown)
-      .map((row) => [row.external_id, { url: row.url }]),
-  );
+  return commLinksOnRecord(JSON.parse(readFileSync(newsFile, "utf8")));
 }
 
 async function main(): Promise<void> {
   const runId = randomUUID();
   const started = Date.now();
   const pages = Number(flag(process.argv.slice(2), "--pages") ?? 80);
-  const wanted = commLinksOnRecord();
+  const wanted = onRecord();
   mkdirSync(outDir, { recursive: true });
   const previous: CoverSource[] = existsSync(sourcesPath)
     ? z.array(CoverSource).parse(JSON.parse(readFileSync(sourcesPath, "utf8")))

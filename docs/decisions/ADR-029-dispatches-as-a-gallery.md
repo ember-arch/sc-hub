@@ -4,6 +4,7 @@
 - Date: 2026-11-10
 - Deciders: owner ("we need to delineate between news and staff posts on Spectrum. News should be displayed like a beautiful news feed, kind of like we did on the original Coppercork trading card site, with images, a gallery etc", 2026-11-10), Claude Code session 2026-11-10
 - Amends: ADR-027 (the feed's shape), ADR-009 (which RSI website images are copied), system.md section 4 (the news feed's row)
+- Amended by: ADR-048 (a new Comm-Link's cover now reaches the live site from the News workflow, without a local run)
 
 ## Context
 

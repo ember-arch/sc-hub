@@ -1,10 +1,12 @@
 import type { MediaManifest } from "schema";
 import { createHash } from "node:crypto";
 import { describe, expect, it } from "vitest";
-import type { MediaStore, StoredObject } from "../media/blob.js";
+import type { MediaStore } from "../media/blob.js";
+import { fakeStore } from "./fake-media-store.js";
 import {
   classifyBlobError,
   isAlreadyThere,
+  sameEtag,
   storeBaseUrl,
 } from "../media/blob.js";
 import {
@@ -18,6 +20,7 @@ import {
   rewriteMediaPaths,
 } from "../media/publish-plan.js";
 import {
+  droppedCovers,
   manifestBody,
   syncToStore,
   withRetries,
@@ -233,50 +236,6 @@ describe("the publish plan", () => {
 });
 
 /** An in-memory store that records what was asked of it. */
-function fakeStore(initial: readonly { key: string; body: Uint8Array }[] = []) {
-  const base = "https://store.public.blob.vercel-storage.com";
-  const objects = new Map<string, Uint8Array>(
-    initial.map((o) => [o.key, o.body]),
-  );
-  const puts: {
-    key: string;
-    contentType: string;
-    cacheMaxAge: number;
-    overwrite: boolean;
-  }[] = [];
-  const deletes: string[] = [];
-  const stored = (key: string): StoredObject => ({
-    key,
-    size: objects.get(key)!.byteLength,
-    url: `${base}/${key}`,
-  });
-  const store: MediaStore = {
-    async list(prefix) {
-      return new Map(
-        [...objects.keys()]
-          .filter((k) => k.startsWith(prefix))
-          .map((k) => [k, stored(k)]),
-      );
-    },
-    async put(key, body, options) {
-      if (objects.has(key) && !options.overwrite) {
-        throw Object.assign(new Error("exists"), { status: 409 });
-      }
-      objects.set(key, body);
-      puts.push({ key, ...options });
-      return stored(key);
-    },
-    async delete(key) {
-      objects.delete(key);
-      deletes.push(key);
-    },
-    async read(key) {
-      return objects.get(key) ?? null;
-    },
-  };
-  return { store, objects, puts, deletes, base };
-}
-
 const plan = planPublish(manifest, files);
 const readFile = (src: string): Uint8Array => bytesOf.get(src)!;
 const sync = (
@@ -386,6 +345,79 @@ describe("bringing the store into line", () => {
   });
 });
 
+// ADR-048: the News workflow adds covers to the live manifest, so the hand publish reads it first,
+// refuses to drop covers it lacks, and writes only over the manifest it read.
+describe("sharing the manifest with the CI cover step", () => {
+  const cover = (id: string) => ({
+    external_id: id,
+    source: "rsi_comm_link_hub",
+    page_url: `https://robertsspaceindustries.com/comm-link/transmission/${id}-X`,
+    image_url:
+      "https://media.robertsspaceindustries.com/x/channel_item_full.jpg",
+    fetched_at: "2026-11-11T15:20:17.797Z",
+    renditions: [
+      {
+        src: `/media/covers/${id}-480-0123456789ab.webp`,
+        width: 480,
+        height: 257,
+      },
+    ],
+  });
+  const liveWith = (ids: string[]) =>
+    new TextEncoder().encode(
+      JSON.stringify({ ...plan.manifest, covers: ids.map(cover) }),
+    );
+
+  it("finds the covers a new manifest would drop", () => {
+    expect(
+      droppedCovers(liveWith(["20943", "21445"]), { covers: [cover("21445")] }),
+    ).toEqual(["20943"]);
+    expect(droppedCovers(liveWith([]), { covers: [] })).toEqual([]);
+  });
+
+  it("refuses, before uploading anything, a manifest without a cover the live one has", async () => {
+    const fake = fakeStore([{ key: MANIFEST_KEY, body: liveWith(["20943"]) }]);
+    await expect(sync(fake.store)).rejects.toThrow(
+      /1 cover\(s\) this one lacks \(20943\).*fetch-covers\.ts and prepare\.ts/,
+    );
+    expect(fake.puts).toEqual([]);
+  });
+
+  it("drops them only when asked, and says which", async () => {
+    const fake = fakeStore([{ key: MANIFEST_KEY, body: liveWith(["20943"]) }]);
+    const result = await sync(fake.store, { allowCoverDrop: true });
+    expect(result.manifest).toBe("uploaded");
+    expect(result.droppedCovers).toEqual(["20943"]);
+  });
+
+  it("writes the manifest only over the one it read", async () => {
+    const rival = new TextEncoder().encode('{"rival":true}');
+    let raced = false;
+    const fake = fakeStore([{ key: MANIFEST_KEY, body: liveWith([]) }], {
+      beforePut: (key, store) => {
+        if (key === MANIFEST_KEY && !raced) {
+          raced = true;
+          store.set(MANIFEST_KEY, rival);
+        }
+      },
+    });
+    await expect(sync(fake.store)).rejects.toThrow(
+      /changed while this publish ran.*nothing was overwritten/,
+    );
+    expect(fake.objects.get(MANIFEST_KEY)).toEqual(rival);
+    expect(fake.puts.at(-1)?.key).not.toBe(MANIFEST_KEY);
+  });
+
+  it("names the ETag it read on the manifest's write", async () => {
+    const fake = fakeStore([{ key: MANIFEST_KEY, body: liveWith([]) }]);
+    await sync(fake.store);
+    expect(fake.puts.at(-1)).toMatchObject({
+      key: MANIFEST_KEY,
+      ifMatch: '"v1"',
+    });
+  });
+});
+
 describe("retries", () => {
   const noWait = async () => {};
   const failing = (statuses: (number | null)[]) => {
@@ -434,6 +466,14 @@ describe("retries", () => {
   });
 });
 
+describe("the store's ETags", () => {
+  it("match across the weak marker compression adds, and only then", () => {
+    expect(sameEtag('"abc"', 'W/"abc"')).toBe(true);
+    expect(sameEtag('W/"abc"', '"abc"')).toBe(true);
+    expect(sameEtag('"abc"', '"abd"')).toBe(false);
+  });
+});
+
 describe("the store's base address", () => {
   it("is the object's URL without its key", () => {
     expect(
@@ -459,6 +499,10 @@ describe("the store's errors, as the retry logic reads them", () => {
     expect(
       status(classifyBlobError(new blob.BlobContentTypeNotAllowedError("x"))),
     ).toBe(400);
+    // A lost conditional write (ADR-048) is read again by the caller, never retried blind.
+    expect(
+      status(classifyBlobError(new blob.BlobPreconditionFailedError())),
+    ).toBe(412);
     expect(status(classifyBlobError(new blob.BlobUnknownError()))).toBe(400);
     const limited = classifyBlobError(new blob.BlobServiceRateLimited(7)) as {
       status?: number;
@@ -501,5 +545,28 @@ describe("the store's errors, as the retry logic reads them", () => {
     );
     expect(result).toBe("ok");
     expect(waits).toEqual([3000]);
+  });
+});
+
+describe("a hand publish whose manifest write lost its answer", () => {
+  it("finds its own manifest in the store and counts the write as done", async () => {
+    let lost = false;
+    const fake = fakeStore([], {
+      landThenRefuse: (key) => {
+        if (key !== MANIFEST_KEY || lost) return false;
+        lost = true;
+        return true;
+      },
+    });
+    // A first manifest so the write is conditional, as every real publish's is.
+    fake.set(MANIFEST_KEY, new TextEncoder().encode("{}"));
+    const result = await syncToStore(plan, fake.store, {
+      dryRun: false,
+      prune: false,
+      concurrency: 3,
+      readFile: (src: string) => readFile(src),
+    });
+    expect(result.manifest).toBe("uploaded");
+    expect(fake.objects.get(MANIFEST_KEY)).toEqual(manifestBody(plan));
   });
 });

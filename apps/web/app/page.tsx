@@ -367,19 +367,19 @@ export default function HomePage() {
           <section aria-labelledby="developers" className="flex flex-col gap-4">
             <RunningHead
               id="developers"
-              title="Featured developer posts"
+              title="Developer gold posts"
               aside={
                 <TextLink href="/news/dev" className="text-secondary">
-                  All developer posts
+                  All developer gold posts
                 </TextLink>
               }
             />
             {featured.length === 0 ? (
               <EmptyState>
-                No developer posts yet. The tracker has not read Spectrum.
+                No developer gold posts yet. The tracker has not read Spectrum.
               </EmptyState>
             ) : (
-              <Rail label="Featured developer posts" size="post">
+              <Rail label="Developer gold posts" size="post">
                 {featured.map((post) => {
                   const who = authorOf(post, r.authors);
                   return (

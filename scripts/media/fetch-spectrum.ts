@@ -16,6 +16,7 @@ import { createHash, randomUUID } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { SPECTRUM_PICTURE_ID, SPECTRUM_PICTURE_ID_SOURCE } from "schema";
 import { z } from "zod";
 import { RSI_SPACING_MS, SpectrumSource, createSpacer } from "./sources.js";
 import { rsiUserAgent } from "../user-agent.js";
@@ -29,7 +30,7 @@ const sourcesPath = join(outDir, "sources.json");
 
 /** One row of `fixtures/spectrum/uploads.json`, as the worker writes it. */
 export const UploadRow = z.strictObject({
-  upload_id: z.string().regex(/^\d+$/),
+  upload_id: z.string().regex(SPECTRUM_PICTURE_ID),
   url: z.url(),
   width: z.number().int().positive().nullable(),
   height: z.number().int().positive().nullable(),
@@ -58,10 +59,15 @@ const EXTENSIONS: Readonly<Record<string, string>> = {
   "image/gif": "gif",
 };
 
-/** The upload ids a post's HTML names: every `data-upload` on an `img`. */
+/** The picture ids a post's HTML names: every `data-upload` on an `img` (an upload's number or an embed's "e-" slug). */
+const PICTURE_IMG = new RegExp(
+  `<img\\b[^>]*\\bdata-upload="(${SPECTRUM_PICTURE_ID_SOURCE})"`,
+  "g",
+);
+
 export function uploadIdsIn(bodyHtml: string): string[] {
   const out = new Set<string>();
-  for (const match of bodyHtml.matchAll(/<img\b[^>]*\bdata-upload="(\d+)"/g)) {
+  for (const match of bodyHtml.matchAll(PICTURE_IMG)) {
     out.add(match[1]!);
   }
   return [...out];
@@ -91,7 +97,9 @@ export function wantedUploads(
   const byId = new Map(uploads.map((u) => [u.upload_id, u] as const));
   const wanted: UploadRow[] = [];
   const unrecorded: string[] = [];
-  for (const id of [...named].sort((a, b) => Number(a) - Number(b))) {
+  for (const id of [...named].sort((a, b) =>
+    a.localeCompare(b, "en", { numeric: true }),
+  )) {
     const row = byId.get(id);
     if (row === undefined) unrecorded.push(id);
     else wanted.push(row);
@@ -186,7 +194,9 @@ async function main(): Promise<void> {
   const stillWanted = new Set(wanted.map((u) => u.upload_id));
   const record = [...rows.values()]
     .filter((r) => stillWanted.has(r.upload_id))
-    .sort((a, b) => Number(a.upload_id) - Number(b.upload_id));
+    .sort((a, b) =>
+      a.upload_id.localeCompare(b.upload_id, "en", { numeric: true }),
+    );
   writeFileSync(sourcesPath, `${JSON.stringify(record, null, 2)}\n`);
   console.log(
     JSON.stringify({

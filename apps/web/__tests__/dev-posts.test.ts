@@ -143,6 +143,31 @@ describe("renderBody", () => {
     expect(out).not.toContain("data-upload");
   });
 
+  it("makes a plate or a placeholder of an embedded picture's e- id too (ADR-037)", () => {
+    const embedded =
+      '<p>Vara</p>\n<img data-upload="e-tgcvmgrkzycyy" width="1119" height="600" alt="">';
+    const found = renderBody(
+      embedded,
+      (id) =>
+        id === "e-tgcvmgrkzycyy"
+          ? {
+              src: "/media/spectrum/e-tgcvmgrkzycyy-960.webp",
+              srcSet: "/media/spectrum/e-tgcvmgrkzycyy-960.webp 960w",
+              width: 1119,
+              height: 600,
+              alt: "",
+              credit: { text: "Image", href: THREAD },
+            }
+          : null,
+      THREAD,
+    );
+    expect(found).toContain('src="/media/spectrum/e-tgcvmgrkzycyy-960.webp"');
+    expect(found).not.toContain("data-upload");
+    const pending = renderBody(embedded, () => null, THREAD);
+    expect(pending).toContain("dev-post-plate-pending");
+    expect(pending).not.toContain("data-upload");
+  });
+
   it("leaves a body without pictures as it is, and the excerpt still reads the stored body", () => {
     const plain = "<p>Just <em>words</em>.</p>";
     expect(renderBody(plain, picture, THREAD)).toBe(plain);

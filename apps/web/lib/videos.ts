@@ -12,8 +12,11 @@ import type { VideoCardProps } from "ui";
 export const VIDEO_CHANNELS = ["Star Citizen", "Squadron 42"] as const;
 export type VideoChannel = (typeof VIDEO_CHANNELS)[number];
 
-/** How many of the newest the front page's rail carries (owner, 2026-11-11: "5-7"). */
-export const FRONT_VIDEOS = 7;
+/**
+ * How many of the newest the front page's carousel carries: the owner asked for "5-7", then for
+ * the dispatches' "5 slide scroll" and "same for videos" (2026-11-11).
+ */
+export const FRONT_VIDEOS = 5;
 
 /** A Short's page is `/shorts/<id>`; a video's is `/watch?v=<id>`. */
 export const isShort = (item: Pick<ContentItem, "url">): boolean =>

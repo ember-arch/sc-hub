@@ -48,14 +48,14 @@ test("the sections run dispatches, featured ships, developers (with Spectrum on)
   }
 });
 
-test("the dispatches come first, three of them, each linked to its source, and none from Spectrum", async ({
+test("the dispatches come first, five of them in a carousel, each linked to its source, and none from Spectrum", async ({
   page,
 }) => {
   await page.goto("/");
   const section = page.locator("section[aria-labelledby=dispatches]");
-  await expect(section.locator("article")).toHaveCount(3);
+  await expect(section.locator("article")).toHaveCount(5);
   const links = section.getByRole("link", { name: "Read on the source site" });
-  await expect(links).toHaveCount(3);
+  await expect(links).toHaveCount(5);
   for (const href of await links.evaluateAll((as) =>
     as.map((a) => a.getAttribute("href")),
   )) {

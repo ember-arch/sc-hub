@@ -2,7 +2,8 @@
  * The site's icons (ADR-044): one small set of line glyphs, drawn in the colour of the text
  * beside them (`currentColor`) with a 1.5 stroke on a 24-unit grid, at 16 px beside interface
  * text (24 px is there for a larger mark; nothing uses it yet but the story). An icon always stands beside its label,
- * never in place of it, so it is hidden from assistive tech; it carries no colour, fill, glow or
+ * never in place of it, so it is hidden from assistive tech (the one exception, on the owner's
+ * word: the front page's carousel arrows in `rail.tsx`, whose buttons carry the name); it carries no colour, fill, glow or
  * shadow of its own (CLAUDE.md section 2), and nothing here is an emoji.
  */
 

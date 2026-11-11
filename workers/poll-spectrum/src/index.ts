@@ -7,7 +7,7 @@
  * many pages of the last year, five minutes apart; a plain run reads the newest page of the last
  * week. `poll` mode needs no credential: Spectrum's search answers without a sign-in (ADR-027).
  *
- * After the search, in `poll` mode, the thread step (ADR-036, `threads.ts`) reads each collected
+ * After the search, in `poll` mode, the thread step (ADR-037, `threads.ts`) reads each collected
  * post's thread in full and writes the post's own blocks and pictures as a new revision of its
  * `body_html`: a plain run reads the threads of the posts it just collected, up to three; with
  * `--threads <n>` it reads up to n threads due anywhere on the pack, the backfill, which runs
@@ -41,7 +41,7 @@ const newsDir = join(repoRoot, "fixtures", "news");
 const spectrumDir = join(repoRoot, "fixtures", "spectrum");
 
 /**
- * How many threads a scheduled run reads in full after the search (ADR-036): the threads of the
+ * How many threads a scheduled run reads in full after the search (ADR-037): the threads of the
  * posts it just collected, five minutes apart, within the workflow's timeout. The rest wait for
  * the next run, or for `--threads <n>`, which reads up to n threads due across the pack.
  */
@@ -219,7 +219,7 @@ async function main(): Promise<void> {
   const written = store.save();
   if (written) authors.save();
 
-  // The thread step (ADR-036): the posts' own blocks and pictures, in poll mode only (a feed
+  // The thread step (ADR-037): the posts' own blocks and pictures, in poll mode only (a feed
   // from CIG would carry them itself).
   const threadsFlag = flag(args, "--threads");
   let threads = null;
@@ -252,7 +252,7 @@ async function main(): Promise<void> {
             headers: init.headers,
             body: init.body,
           }),
-        userAgent: userAgent(contact),
+        userAgent: userAgent("poll-spectrum", contact),
         log,
       }),
       due,

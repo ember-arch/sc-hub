@@ -1,5 +1,5 @@
 /**
- * The thread step (ADR-036): each developer post on the pack read in full from Spectrum's
+ * The thread step (ADR-037): each developer post on the pack read in full from Spectrum's
  * nested-thread endpoint, the call its web app makes for a thread page, without a sign-in. The
  * search (`poll.ts`) gives a post's plain text; the thread gives its own blocks and pictures, and
  * this step writes them as a new revision of the post's `body_html` (append-only, CLAUDE.md

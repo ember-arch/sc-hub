@@ -241,7 +241,7 @@ export function coversFromHub(
 }
 
 /**
- * Web copies of each picture in a developer post (ADR-036), widest first; never upscaled. The
+ * Web copies of each picture in a developer post (ADR-037), widest first; never upscaled. The
  * post runs across its card, so 1280 serves a wide screen at 1x and 1920 at 1.5x; 640 serves
  * phones. A picture narrower than the smallest width gets one copy at its own size.
  */
@@ -252,7 +252,7 @@ export function spectrumRenditionPath(uploadId: string, width: number): string {
   return `/media/spectrum/${uploadId}-${width}.webp`;
 }
 
-/** One row of `fixtures/spectrum-media/sources.json`: where a copied post picture came from (ADR-036). */
+/** One row of `fixtures/spectrum-media/sources.json`: where a copied post picture came from (ADR-037). */
 export const SpectrumSource = RsiSource.omit({ class_name: true }).extend({
   /** Spectrum's upload id, the `data-upload` of the post's `img`. */
   upload_id: z.string().regex(/^\d+$/),

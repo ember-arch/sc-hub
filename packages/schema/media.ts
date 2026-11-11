@@ -198,7 +198,7 @@ export const CoverImage = z.strictObject({
 export type CoverImage = z.infer<typeof CoverImage>;
 
 /**
- * A picture in a developer post (ADR-036): an upload CIG staff attached to a Spectrum post,
+ * A picture in a developer post (ADR-037): an upload CIG staff attached to a Spectrum post,
  * copied by `scripts/media/fetch-spectrum.ts` at its uploaded size and keyed by Spectrum's own
  * upload id, which the post's `body_html` carries as `data-upload` on its `img`. Credited to Cloud
  * Imperium Games, via Spectrum, and linked to the post.
@@ -229,7 +229,7 @@ export const MediaManifest = z.strictObject({
   concepts: z.array(ConceptImage).default([]),
   /** Comm-Link covers (ADR-029), by RSI's id for the Comm-Link; absent in manifests built before it. */
   covers: z.array(CoverImage).default([]),
-  /** Pictures in developer posts (ADR-036), by Spectrum's upload id; absent in manifests built before it. */
+  /** Pictures in developer posts (ADR-037), by Spectrum's upload id; absent in manifests built before it. */
   spectrum: z.array(SpectrumImage).default([]),
 });
 export type MediaManifest = z.infer<typeof MediaManifest>;

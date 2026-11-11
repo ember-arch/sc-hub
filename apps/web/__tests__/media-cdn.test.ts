@@ -63,6 +63,7 @@ const manifest: MediaManifest = {
   titles: [],
   concepts: [],
   covers: [],
+  spectrum: [],
 };
 
 describe("CDN_BASE_URL", () => {

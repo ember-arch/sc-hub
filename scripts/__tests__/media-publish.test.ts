@@ -120,6 +120,7 @@ const manifest: MediaManifest = {
   ],
   concepts: [],
   covers: [],
+  spectrum: [],
 };
 
 const paths = mediaPathsIn(manifest);

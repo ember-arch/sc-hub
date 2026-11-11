@@ -1,7 +1,7 @@
 /**
  * Copies the pictures CIG staff attached to the Spectrum posts on the news pack into
  * `fixtures/spectrum-media/` (git-ignored) and records where each came from in
- * `fixtures/spectrum-media/sources.json` (ADR-036).
+ * `fixtures/spectrum-media/sources.json` (ADR-037).
  *
  * The addresses come from `fixtures/spectrum/uploads.json`, which the Spectrum worker writes when
  * it reads a thread's posts in full; only the uploads a shown post names (the latest revision of

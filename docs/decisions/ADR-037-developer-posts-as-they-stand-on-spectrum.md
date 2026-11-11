@@ -1,4 +1,4 @@
-# ADR-036: Developer posts as they stand on Spectrum, pictures included
+# ADR-037: Developer posts as they stand on Spectrum, pictures included
 
 - Status: accepted
 - Date: 2026-11-10

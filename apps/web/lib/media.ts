@@ -112,7 +112,7 @@ export interface Media {
    */
   cover(externalId: string): ResponsiveImage | null;
   /**
-   * A picture in a developer post (ADR-036), by Spectrum's upload id (the `data-upload` of the
+   * A picture in a developer post (ADR-037), by Spectrum's upload id (the `data-upload` of the
    * post's `img`): the alt is empty, since the post's own text stands around it; the credit names
    * Cloud Imperium Games via Spectrum and links the post.
    */
@@ -133,7 +133,7 @@ export function createMedia(manifest: MediaManifest | null): Media {
   const concepts = new Map(manifest?.concepts.map((c) => [c.slug, c]) ?? []);
   const covers = new Map(manifest?.covers.map((c) => [c.external_id, c]) ?? []);
   const uploads = new Map(
-    manifest?.spectrum.map((u) => [u.upload_id, u]) ?? [],
+    (manifest?.spectrum ?? []).map((u) => [u.upload_id, u]),
   );
   const pictureOf = (
     entry:

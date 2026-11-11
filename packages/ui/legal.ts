@@ -155,13 +155,13 @@ export const TITLES_TEXT_CREDIT = {
 
 /**
  * Under every picture a CIG developer attached to a Spectrum post, shown in the post as it stands
- * on Spectrum and linked to the post (ADR-036, docs/legal/attribution.md "Spectrum post pictures").
+ * on Spectrum and linked to the post (ADR-037, docs/legal/attribution.md "Spectrum post pictures").
  */
 export const SPECTRUM_IMAGE_CREDIT = {
   text: "Image: Cloud Imperium Games, via Spectrum",
 } as const;
 
-/** The caption a developer post shows where its picture has not been copied yet (ADR-036). */
+/** The caption a developer post shows where its picture has not been copied yet (ADR-037). */
 export const SPECTRUM_IMAGE_PENDING =
   "Picture on Spectrum, not yet copied here";
 

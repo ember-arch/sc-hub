@@ -22,7 +22,7 @@ import {
   threadBody,
 } from "../src/threads.js";
 
-// ADR-036: the thread step reads each post's thread in full and writes the post's own content as
+// ADR-037: the thread step reads each post's thread in full and writes the post's own content as
 // a revision. The fake reader answers with the committed samples; no network here.
 
 const samples = "../../../fixtures/spectrum/samples/";

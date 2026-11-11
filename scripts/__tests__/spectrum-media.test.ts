@@ -10,7 +10,7 @@ import {
   spectrumRenditionPath,
 } from "../media/sources.js";
 
-// ADR-036: the pictures in developer posts are copied by Spectrum's upload id, only for posts the
+// ADR-037: the pictures in developer posts are copied by Spectrum's upload id, only for posts the
 // site shows, and served as web copies named by that id. No network here.
 
 const row = (upload_id: string, post_id: string): UploadRow => ({

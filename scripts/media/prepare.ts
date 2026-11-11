@@ -195,7 +195,7 @@ async function covers(): Promise<CoverImage[]> {
 const spectrumDir = join(repoRoot, "fixtures", "spectrum-media");
 
 /**
- * Pictures in developer posts (ADR-036): web copies at the widths a post's card needs, by
+ * Pictures in developer posts (ADR-037): web copies at the widths a post's card needs, by
  * Spectrum's upload id; a picture narrower than the smallest width gets one copy at its own size.
  * Resized and re-encoded only, like everything here.
  */

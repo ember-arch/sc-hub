@@ -53,7 +53,7 @@ const ESCAPES: Readonly<Record<string, string>> = {
 const escapeHtml = (text: string): string =>
   text.replace(/[&<>"']/g, (c) => ESCAPES[c] ?? c);
 
-/** Spectrum's upload id on an `img` the worker wrote (ADR-036). */
+/** Spectrum's upload id on an `img` the worker wrote (ADR-037). */
 const UPLOAD_IMG = /<img\b([^>]*)\bdata-upload="(\d+)"([^>]*)>/g;
 
 /**
@@ -64,7 +64,7 @@ export const PLATE_SIZES =
   "(min-width: 1400px) 1320px, (min-width: 768px) calc(100vw - 5rem), calc(100vw - 4rem)";
 
 /**
- * The post's body as the page shows it (ADR-036): every picture the worker left as an `img` with
+ * The post's body as the page shows it (ADR-037): every picture the worker left as an `img` with
  * Spectrum's upload id becomes a plate across the card, the picture's web copies from the media
  * manifest with their credit under it, or, where the picture has not been copied yet, a captioned
  * placeholder with the same credit. Nothing is ever fetched from Spectrum by the reader's browser

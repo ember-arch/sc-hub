@@ -9,7 +9,7 @@
 # runs in the same job and does nothing until the repository variable SPECTRUM_MODE is poll (no
 # credential: Spectrum's search answers without a sign-in) or feed (with SPECTRUM_FEED_URL); in poll
 # mode it then reads the threads of the posts it just collected, up to three, five minutes apart,
-# for the posts' own blocks and pictures (ADR-036), which is why the job has twenty minutes.
+# for the posts' own blocks and pictures (ADR-037), which is why the job has twenty minutes.
 # What it reads lands in this private repository only; the site shows nothing from Spectrum until
 # its own SPECTRUM_MODE is set, once docs/legal/cig-approval.md ticks the box, and whether the
 # collection itself needs CIG's word is recorded there as the owner's call.

@@ -1,5 +1,5 @@
 /**
- * A Spectrum post's own content as HTML (ADR-036). Spectrum stores a post as `content_blocks`:
+ * A Spectrum post's own content as HTML (ADR-037). Spectrum stores a post as `content_blocks`:
  * `text` blocks in Draft.js's raw form (paragraphs, headings, list items and quotes, each with
  * inline style ranges and entity ranges over its text, and an entity map of links, mentions and
  * emoji shortcodes), `image` blocks of uploads, and `quote` blocks. This module turns them into

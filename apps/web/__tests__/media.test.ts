@@ -193,7 +193,7 @@ describe("createMedia", () => {
     ).toBeNull();
   });
 
-  it("gives a developer post its picture by Spectrum's upload id, with an empty alt and CIG's credit linked to the post (ADR-036)", () => {
+  it("gives a developer post its picture by Spectrum's upload id, with an empty alt and CIG's credit linked to the post (ADR-037)", () => {
     expect(media.spectrumUpload("3463136")).toEqual({
       src: "/media/spectrum/3463136-1280.webp",
       width: 1280,

@@ -9,7 +9,7 @@ import {
 } from "../src/blocks.js";
 import { postsInAnswer } from "../src/threads.js";
 
-// ADR-036: a post's own blocks, from Spectrum's nested-thread answer, as HTML within the allowlist.
+// ADR-037: a post's own blocks, from Spectrum's nested-thread answer, as HTML within the allowlist.
 // Both samples are real answers of 2026-11-10, cut (fixtures/spectrum/README.md); no network here.
 
 const samples = "../../../fixtures/spectrum/samples/";

@@ -68,7 +68,7 @@ test.describe("the dev tracker with Spectrum on", () => {
     ).toBeVisible();
   });
 
-  test("a post's pictures are plates served by the site or captioned placeholders, never hotlinks to Spectrum (ADR-036)", async ({
+  test("a post's pictures are plates served by the site or captioned placeholders, never hotlinks to Spectrum (ADR-037)", async ({
     page,
   }) => {
     await page.goto("/news/dev");
@@ -159,7 +159,7 @@ test.describe("the dev tracker with Spectrum on", () => {
     { name: "phone", width: 390, height: 844 },
     { name: "desktop", width: 1280, height: 800 },
   ] as const;
-  // A post opened, the first with a picture on the page (ADR-036): the record of the plate and
+  // A post opened, the first with a picture on the page (ADR-037): the record of the plate and
   // the post's own blocks across the card. Falls back to the first post where none has one.
   for (const viewport of VIEWPORTS) {
     for (const scheme of ["light", "dark"] as const) {

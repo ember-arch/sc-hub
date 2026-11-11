@@ -14,6 +14,7 @@
  *
  *   pnpm --filter schema build && pnpm exec tsx scripts/bootstrap-fixtures/acquisition.ts
  */
+import { randomUUID } from "node:crypto";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -59,12 +60,10 @@ const SKIPPED_SKU_SOURCES: ReadonlySet<string> = new Set(["upgrade_api"]);
 
 /**
  * A pledge-store row the store lists at no price: nothing a backer pays for, so not an offer to
- * show beside the ship's prices. It is left out, counted and named in the log (issue 34); any
- * other price that is not a positive number still halts.
+ * show beside the ship's prices. Its shape is checked like any other row; it is left out, counted
+ * and named in the run summary (issue 34). Any other price that is not a positive number halts.
  */
-const ZeroPriced = z
-  .object({ source: z.literal("pledge_store"), price: z.literal(0) })
-  .loose();
+const ZeroPriced = Sku.extend({ price: z.literal(0) });
 const AnySku = z.object({ source: z.string() }).loose();
 export type Sku = z.infer<typeof Sku>;
 
@@ -147,7 +146,7 @@ export function offersFromSkus(
     }
     const free = ZeroPriced.safeParse(row);
     if (free.success) {
-      zeroPriced.push(String(free.data["title"] ?? "untitled"));
+      zeroPriced.push(free.data.title);
       return false;
     }
     return true;
@@ -331,6 +330,7 @@ const readJson = (file: string): unknown =>
   JSON.parse(readFileSync(join(packDir, file), "utf8"));
 
 async function main(): Promise<void> {
+  const runId = randomUUID();
   const manifest = Manifest.parse(readJson("manifest.json"));
   const stats = z.array(StatsRow).parse(readJson("VehicleStats.json"));
   const slugs = new Map(
@@ -389,7 +389,9 @@ async function main(): Promise<void> {
         class_name: row.class_name,
         offers: own.offers.length,
         skipped_upgrade_api: own.skipped,
-        skipped_zero_price: own.zeroPriced,
+        ...(own.zeroPriced.length > 0
+          ? { skipped_zero_price: own.zeroPriced.length }
+          : {}),
         purchase: prices.rows.filter((r) => r.kind === "purchase").length,
         rental: prices.rows.filter((r) => r.kind === "rental").length,
         skipped_other_version: prices.skipped,
@@ -420,16 +422,20 @@ async function main(): Promise<void> {
     );
   write("PledgeOffer.json", offers);
   write("ShopPrice.json", shops);
-  console.log(
-    JSON.stringify({
+  // The summary goes to stderr, which the daily refresh keeps for its report (CLAUDE.md section 6).
+  process.stderr.write(
+    `${JSON.stringify({
+      run_id: runId,
       event: "acquisition.done",
       offers: offers.length,
       shop_prices: shops.length,
       skipped_upgrade_api: staleSkus,
-      skipped_zero_price: zeroPriced,
+      skipped_zero_price: zeroPriced.length,
+      zero_price_titles: zeroPriced,
       skipped_other_version: skipped,
       requests: client.requests,
-    }),
+    })}
+`,
   );
 }
 

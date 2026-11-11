@@ -98,18 +98,37 @@ describe("offersFromSkus", () => {
     );
   });
 
-  // Issue 34: the store listed a row at $0 and the whole price refresh halted for days.
-  it("leaves out a row the store lists at no price, names it, and still halts on a negative one", () => {
+  // Issue 34: RSI listed the Origin 300-series customizations at $0 and the price refresh halted.
+  it("leaves out a row the store lists at no price, names it, and counts it apart from stale rows", () => {
+    const free = sku({
+      title: "300i Customization",
+      url: "https://robertsspaceindustries.com/pledge/Upgrades/300i-Customization",
+      price: 0,
+    });
+    const stale = { source: "upgrade_api", title: "Old", url: null, price: 1 };
     const { offers, skipped, zeroPriced } = offersFromSkus(
-      [sku(), sku({ title: "Free Thing", price: 0 })],
+      [sku(), stale, free],
       ship,
       AT,
     );
     expect(offers.map((o) => o.price_usd)).toEqual([90]);
-    expect(skipped).toBe(0);
-    expect(zeroPriced).toEqual(["Free Thing"]);
-    expect(() => offersFromSkus([sku({ price: -5 })], ship, AT)).toThrow();
-    expect(() => offersFromSkus([sku({ price: null })], ship, AT)).toThrow();
+    expect(skipped).toBe(1);
+    expect(zeroPriced).toEqual(["300i Customization"]);
+  });
+
+  it("still halts on a negative, empty or missing price, and on a $0 row of unknown shape", () => {
+    const unpriced: { source: string; price?: unknown } = sku();
+    delete unpriced.price;
+    expect(() => offersFromSkus([sku({ price: -5 })], ship, AT)).toThrow(
+      /price/,
+    );
+    expect(() => offersFromSkus([sku({ price: null })], ship, AT)).toThrow(
+      /price/,
+    );
+    expect(() => offersFromSkus([unpriced], ship, AT)).toThrow(/price/);
+    expect(() =>
+      offersFromSkus([sku({ price: 0, title: "" })], ship, AT),
+    ).toThrow(/title/);
   });
 });
 

@@ -166,12 +166,12 @@ export const SPECTRUM_IMAGE_PENDING =
   "Picture on Spectrum, not yet copied here";
 
 /**
- * The funding page follows the measures of Sycend's Tableau dashboard (ADR-018): the breakdown by
+ * The funding figures follow the measures of Sycend's Tableau dashboard (ADR-018, on the front page since ADR-040): the breakdown by
  * year and month, the year-against-year running totals and the trailing-year comparison. None of
- * its data is used (its downloads are off); the credit is for the idea, on the page and the about page.
+ * its data is used (its downloads are off); the credit is for the idea, on the about page (ADR-040).
  */
 export const FUNDING_INSPIRATION = {
-  text: "The measures follow Sycend's Star Citizen Funding Dashboard on Tableau Public, which this page is modelled on; its data is its own and not used here.",
+  text: "The measures follow Sycend's Star Citizen Funding Dashboard on Tableau Public, which the site's funding figures are modelled on; its data is its own and not used here.",
   linkText: "Star Citizen Funding Dashboard by Sycend",
   url: "https://public.tableau.com/app/profile/sycend/viz/StarCitizenFundingDashboard/IncomeView",
 } as const;

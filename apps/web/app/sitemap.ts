@@ -28,7 +28,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     entry("/news", 0.8),
     entry("/news/dev", 0.6),
     entry("/titles", 0.6),
-    entry("/funding", 0.7),
     entry("/about", 0.3),
     entry("/privacy", 0.2),
     entry("/licenses", 0.1),

@@ -7,7 +7,7 @@ import {
   TextLink,
 } from "ui";
 import { SITE_NAME, SITE_TAGLINE } from "ui/brand";
-import { RSI_IMAGE_CREDIT } from "ui/legal";
+import { RSI_IMAGE_CREDIT, WIKI_CREDIT } from "ui/legal";
 import { repo, spectrumOn } from "../lib/data";
 import {
   authorOf,
@@ -86,7 +86,7 @@ const DAILY_PLATES = 3;
  * contents, the counters; then the newest dispatches, the featured ships (the showcase pair and
  * three that change daily, with the register's count), the developers' latest posts from Spectrum
  * (only with the module on), and this year's funding against last year's in one drawing with two
- * views. Without media the bento's cards hold their captions alone and the dispatch cards their
+ * views, the site's one funding surface since ADR-040. Without media the bento's cards hold their captions alone and the dispatch cards their
  * words.
  */
 export default function HomePage() {
@@ -115,7 +115,7 @@ export default function HomePage() {
             label: `Pledged since ${firstYear(pledges)}`,
             value: formatValue(money.latest.value, "pledges"),
             note: `as of ${formatDay(money.latest.day)}`,
-            href: "/funding",
+            href: "#funding",
           },
         ]),
     ...(people === null
@@ -128,7 +128,6 @@ export default function HomePage() {
               people.last30 === null
                 ? "on record"
                 : `${signed(people.last30, (n) => formatCompact(n, "citizens"))} in the last 30 days`,
-            href: "/funding?measure=citizens",
           },
         ]),
     ...(money === null || money.yearToDate === null
@@ -141,7 +140,7 @@ export default function HomePage() {
               money.yearToDateChange === null
                 ? "so far"
                 : `${formatChange(money.yearToDateChange)} on the same days of ${Number(money.latest.day.slice(0, 4)) - 1}`,
-            href: "/funding",
+            href: "#funding",
           },
         ]),
     {
@@ -335,18 +334,36 @@ export default function HomePage() {
           </section>
         ) : null}
 
-        {pledges === null || pledges.length < 2 ? null : (
-          <section aria-labelledby="funding" className="flex flex-col gap-4">
+        {series === null || pledges === null || pledges.length < 2 ? null : (
+          <section
+            aria-labelledby="funding"
+            className="flex scroll-mt-8 flex-col gap-4"
+          >
             <RunningHead
               id="funding"
               title="Funding this year"
               aside={
-                <TextLink href="/funding" className="text-secondary">
-                  The ledger of pledges
-                </TextLink>
+                money === null
+                  ? undefined
+                  : `as of ${formatDay(money.latest.day)}`
               }
             />
             <FundingNow list={pledges} measure="pledges" />
+            {/* The ledger's sources line, now the card's (ADR-040); the wiki's credit is in every footer. */}
+            <p className="m-0 max-w-prose text-caption text-secondary">
+              Daily snapshots of RSI&apos;s counter on{" "}
+              <TextLink href={series.source.origin_url} external>
+                robertsspaceindustries.com
+              </TextLink>
+              , as recorded by the{" "}
+              <TextLink href={WIKI_CREDIT.url} external>
+                Star Citizen Wiki API
+              </TextLink>
+              ; copied {formatDay(series.source.fetched_at.slice(0, 10))}.
+              Months, years and comparisons are differences between snapshots;
+              where the API has none within three days of a period&apos;s ends,
+              the period is left blank rather than estimated.
+            </p>
           </section>
         )}
       </div>

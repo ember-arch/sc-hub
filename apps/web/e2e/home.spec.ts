@@ -90,6 +90,50 @@ test("the featured ships are five cards with the showcase pair, and the register
   );
 });
 
+test("the ledger's old address lands on the home's funding card, which the counters point at (ADR-040)", async ({
+  page,
+  request,
+}) => {
+  const response = await request.get("/funding", { maxRedirects: 0 });
+  expect(response.status()).toBe(308);
+  expect(response.headers()["location"]).toMatch(/\/#funding$/);
+  await page.goto("/");
+  const pledged = page
+    .locator("dl div", { hasText: /^Pledged since/ })
+    .locator("dd a")
+    .first();
+  await expect(pledged).toHaveAttribute("href", "#funding");
+  await expect(page.locator("section[aria-labelledby=funding]")).toBeVisible();
+  await expect(
+    page
+      .getByRole("navigation", { name: "Primary" })
+      .getByRole("link", { name: "Funding" }),
+  ).toHaveCount(0);
+  // The other funding counter points at the card too; Citizens, no longer drawn, links nowhere.
+  const thisYear = page.locator("dl div", { hasText: /^This year/ });
+  await expect(thisYear.locator("dd a").first()).toHaveAttribute(
+    "href",
+    "#funding",
+  );
+  await expect(
+    page.locator("dl div", { hasText: /^Citizens/ }).locator("dd a"),
+  ).toHaveCount(0);
+  // The sources line names RSI's page and the copy date.
+  const sources = page.locator("section[aria-labelledby=funding] p", {
+    hasText: /^Daily snapshots/,
+  });
+  await expect(
+    sources.getByRole("link", { name: "robertsspaceindustries.com" }),
+  ).toBeVisible();
+  await expect(sources).toContainText(/copied \d+ \w+ \d{4}\./);
+  // The old measure address lands on the card too; Next keeps the query, which the home ignores.
+  const citizens = await request.get("/funding?measure=citizens", {
+    maxRedirects: 0,
+  });
+  expect(citizens.status()).toBe(308);
+  expect(citizens.headers()["location"]).toMatch(/#funding$/);
+});
+
 test("the funding card shows the year's three figures and toggles between the two views", async ({
   page,
 }) => {
@@ -98,9 +142,10 @@ test("the funding card shows the year's three figures and toggles between the tw
   await expect(section.getByText(/^Pledged in \d{4} so far$/)).toBeVisible();
   await expect(section.getByText(/^Of \d{4}'s total$/)).toBeVisible();
   await expect(section.getByText("Year on year")).toBeVisible();
+  await expect(section.getByText(/^as of \d+ \w+ \d{4}$/)).toBeVisible();
   await expect(
-    section.getByRole("link", { name: "The ledger of pledges" }),
-  ).toHaveAttribute("href", "/funding");
+    section.getByRole("link", { name: "Star Citizen Wiki API" }),
+  ).toBeVisible();
   const group = section.getByRole("group", { name: "Funding view" });
   const ytd = group.getByRole("button", { name: "Year to date" });
   const months = group.getByRole("button", { name: "By month" });

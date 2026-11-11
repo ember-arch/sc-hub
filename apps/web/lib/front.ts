@@ -17,9 +17,8 @@ export const CONTENTS: readonly ContentsEntry[] = [
   { number: "01", label: "The register of ships", href: "/ships" },
   { number: "02", label: "Parts, by type", href: "/components" },
   { number: "03", label: "Honours and titles", href: "/titles" },
-  { number: "04", label: "The ledger of pledges", href: "/funding" },
-  { number: "05", label: "Dispatches", href: "/news" },
-  { number: "06", label: "About this almanac", href: "/about" },
+  { number: "04", label: "Dispatches", href: "/news" },
+  { number: "05", label: "About this almanac", href: "/about" },
 ];
 
 const dateLine = new Intl.DateTimeFormat("en-GB", {

@@ -1,26 +1,18 @@
 import { describe, expect, it } from "vitest";
 import {
   type Reading,
-  dailyRate,
-  declines,
   formatChange,
   formatCompact,
-  fundingHref,
-  gapTotal,
   headline,
   loadFunding,
-  parseMeasure,
   readingAt,
   readings,
   sameDayPriorYear,
-  trailingTrend,
   yearPaths,
   yearRows,
-  firstCrossing,
-  totalSegments,
 } from "../lib/funding";
 
-// ADR-018: the funding page's numbers, on the committed fixture and on small synthetic series.
+// ADR-018, ADR-040: the funding figures, on the committed fixture and on small synthetic series.
 
 const series = loadFunding();
 if (series === null)
@@ -154,46 +146,19 @@ describe("headline", () => {
   });
 });
 
-describe("yearPaths and trailingTrend", () => {
+describe("yearPaths", () => {
   it("builds a path per year with a baseline and skips years without one", () => {
     const paths = yearPaths(pledges, [2026, 2025, 2023]);
     expect(paths.map((p) => p.year)).toEqual([2026, 2025]);
     expect(paths[1]?.points.at(-1)?.doy).toBe(365);
     expect(paths[0]?.points[0]?.value).toBeGreaterThan(0);
   });
-
-  it("computes the trailing change only where both windows exist", () => {
-    const list = synthetic("2020-01-01", 1100, 10);
-    const trend = trailingTrend(list, 100);
-    expect(trend).toHaveLength(101);
-    expect(trend[0]?.change).toBeCloseTo(0);
-    expect(trailingTrend(synthetic("2020-01-01", 400, 10), 100)).toEqual([]);
-  });
 });
 
-describe("rates, gaps, URL state and formatting", () => {
-  it("spreads a jump across the days it covers", () => {
-    const list = synthetic("2020-01-01", 10, 10, ["2020-01-05", "2020-01-06"]);
-    const rate = dailyRate(list);
-    expect(rate.find((r) => r.day === "2020-01-07")?.perDay).toBe(10);
-    expect(rate).toHaveLength(list.length - 1);
-  });
-
-  it("totals the long gap and lists readings at a day", () => {
-    const gap = series.source.gaps[0];
-    if (gap === undefined) throw new Error("no gap");
-    expect(gapTotal(pledges, gap)).toBeGreaterThan(1e8);
+describe("readings at a day and formatting", () => {
+  it("lists readings at a day, none inside the long gap", () => {
     expect(readingAt(pledges, "2023-01-01")).toBeNull();
     expect(readingAt(pledges, "2021-12-31")?.day).toBe("2021-12-31");
-  });
-
-  it("reads the measure from the query and writes the address", () => {
-    expect(parseMeasure({})).toBe("pledges");
-    expect(parseMeasure({ measure: "citizens" })).toBe("citizens");
-    expect(parseMeasure({ measure: ["citizens"] })).toBe("citizens");
-    expect(parseMeasure({ measure: "other" })).toBe("pledges");
-    expect(fundingHref("pledges")).toBe("/funding");
-    expect(fundingHref("citizens")).toBe("/funding?measure=citizens");
   });
 
   it("compares to the same calendar date a year earlier, 29 February included", () => {
@@ -202,62 +167,12 @@ describe("rates, gaps, URL state and formatting", () => {
     expect(sameDayPriorYear("2025-03-01")).toBe("2024-03-01");
   });
 
-  it("lists the days the counter read lower than the day before", () => {
-    const list: Reading[] = [
-      { day: "2020-01-01", value: 10 },
-      { day: "2020-01-02", value: 12 },
-      { day: "2020-01-03", value: 11 },
-      { day: "2020-01-04", value: 11 },
-      { day: "2020-01-05", value: 9 },
-    ];
-    expect(declines(list)).toEqual([
-      { day: "2020-01-03", by: 1 },
-      { day: "2020-01-05", by: 2 },
-    ]);
-    const real = declines(pledges);
-    expect(real.length).toBeGreaterThan(0);
-    expect(real.some((d) => d.day.startsWith("2019-11"))).toBe(true);
-  });
-
   it("formats compact values and signed changes", () => {
     expect(formatCompact(131_708_150, "pledges")).toBe("$131.7M");
     expect(formatCompact(6_753_476, "citizens")).toBe("6.8M");
     expect(formatChange(0.1994)).toBe("+19.9%");
     expect(formatChange(-0.15)).toBe("-15%");
     expect(formatChange(0)).toBe("0%");
-  });
-});
-
-describe("totalSegments and firstCrossing", () => {
-  const r = (day: string, value: number) => ({ day, value });
-  const list = [
-    r("2021-01-01", 10),
-    r("2021-01-02", 11),
-    r("2021-01-03", 12),
-    r("2021-03-10", 20),
-    r("2021-03-11", 21),
-  ];
-  it("splits the line at a gap and bridges it with the readings either side", () => {
-    const segments = totalSegments(list, 60);
-    expect(segments.map((s) => [s.bridge, s.points.map((p) => p.day)])).toEqual(
-      [
-        [false, ["2021-01-01", "2021-01-02", "2021-01-03"]],
-        [true, ["2021-01-03", "2021-03-10"]],
-        [false, ["2021-03-10", "2021-03-11"]],
-      ],
-    );
-  });
-  it("keeps one run when no gap reaches the threshold", () => {
-    const segments = totalSegments(list, 100);
-    expect(segments).toHaveLength(1);
-    expect(segments[0]?.bridge).toBe(false);
-    expect(segments[0]?.points).toHaveLength(5);
-    expect(totalSegments([], 60)).toEqual([]);
-  });
-  it("finds the first reading at or above a threshold", () => {
-    expect(firstCrossing(list, 12)?.day).toBe("2021-01-03");
-    expect(firstCrossing(list, 20)?.day).toBe("2021-03-10");
-    expect(firstCrossing(list, 1000)).toBeNull();
   });
 });
 

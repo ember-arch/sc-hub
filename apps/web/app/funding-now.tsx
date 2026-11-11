@@ -12,7 +12,7 @@ import {
   yearPaths,
   yearRows,
 } from "../lib/funding";
-import { Frame, H, W, YearVsYear, pct } from "./funding/charts";
+import { Frame, H, W, YearVsYear, pct } from "./funding-charts";
 import { FigureStrip } from "./strip";
 import { ViewToggle } from "./view-toggle";
 

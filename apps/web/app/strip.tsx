@@ -3,8 +3,8 @@ import type { ReactNode } from "react";
 
 /**
  * The almanac's figure strip (ADR-020): headline figures over a 2 px ink rule, each a label, a
- * mono value and a note; a figure with an `href` links to the page it summarises. The front page,
- * the ledger and the parts index all open on one.
+ * mono value and a note; a figure with an `href` links to the page it summarises. The front page
+ * and the parts index open on one, and the front page's funding card carries another (ADR-040).
  */
 
 export interface Figure {

@@ -17,14 +17,12 @@ describe("contents", () => {
       "03",
       "04",
       "05",
-      "06",
     ]);
     expect(new Set(CONTENTS.map((c) => c.href)).size).toBe(CONTENTS.length);
     expect(CONTENTS.map((c) => c.href)).toEqual([
       "/ships",
       "/components",
       "/titles",
-      "/funding",
       "/news",
       "/about",
     ]);

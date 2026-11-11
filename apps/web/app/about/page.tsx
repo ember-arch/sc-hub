@@ -82,8 +82,11 @@ export default function AboutPage() {
               <TextLink href={FUNDING_INSPIRATION.url} external>
                 {FUNDING_INSPIRATION.linkText}
               </TextLink>
-              . The <TextLink href="/funding">funding page</TextLink> reads
-              RSI&apos;s counters through the Star Citizen Wiki API.
+              . The{" "}
+              <TextLink href="/#funding">
+                front page&apos;s funding card
+              </TextLink>{" "}
+              reads RSI&apos;s counter through the Star Citizen Wiki API.
             </li>
             <li>
               <TextLink href={UEX_CREDIT.url} external>

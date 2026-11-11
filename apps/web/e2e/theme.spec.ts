@@ -17,7 +17,7 @@ test("the switch turns dark mode on, and the choice survives a reload", async ({
   await expect(toggle).toHaveAccessibleName("Dark mode on");
 
   // The stored choice is applied by the inline script, before hydration.
-  await page.goto("/funding");
+  await page.goto("/titles");
   expect(
     await page.evaluate(() => document.documentElement.dataset["theme"]),
   ).toBe("dark");

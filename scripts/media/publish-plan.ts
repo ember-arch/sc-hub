@@ -100,6 +100,8 @@ export interface PlannedObject {
   /** The local file it is the copy of. */
   readonly src: string;
   readonly bytes: number;
+  /** Its content hash, which the key is built from; the upload checks the bytes against it. */
+  readonly sha256: string;
   readonly contentType: string;
   readonly cacheControl: string;
 }
@@ -141,6 +143,7 @@ export function planPublish(
       key: published.get(src)!.slice(1),
       src,
       bytes: file.bytes,
+      sha256: file.sha256,
       contentType: contentTypeOf(src),
       cacheControl: IMMUTABLE_CACHE,
     };

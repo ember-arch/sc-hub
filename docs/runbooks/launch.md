@@ -50,7 +50,7 @@ The GitHub connection (Settings → Git) needs the owner's GitHub account connec
 
 ## The pictures
 
-Never in the deploy. The four imagery boxes in `docs/legal/cig-approval.md` were the gate; the media live in an R2 bucket behind `CDN_BASE_URL` (CLAUDE.md section 2, ADR-034), and `docs/runbooks/media.md` says how a refresh reaches the site.
+Never in the deploy. The four imagery boxes in `docs/legal/cig-approval.md` are the gate; the media live in an R2 bucket behind `CDN_BASE_URL` (CLAUDE.md section 2, ADR-034), and `docs/runbooks/media.md` says how a refresh reaches the site.
 
 ## Rolling back
 

@@ -1,6 +1,6 @@
 # Runbook: the pictures and models on the live site
 
-How the media reach the CDN and the site, and what to do after a refresh. The decision is ADR-034; the legal gate is the four imagery boxes in `docs/legal/cig-approval.md`.
+How the media reach the CDN and the site, and what to do after a refresh. The decision is ADR-034; nothing is published until the four imagery boxes in `docs/legal/cig-approval.md` are ticked on the owner's word or CIG's.
 
 ## What exists
 
@@ -22,7 +22,7 @@ pnpm exec tsx scripts/media/prepare.ts
 pnpm exec tsx scripts/media/publish.ts
 ```
 
-The publish prints one summary line: how many objects the plan has, how many were already in the bucket, how many went up, whether the manifest changed, how many old keys are now orphans, and what the CDN answered when the manifest was read back (`"manifest": "current"`) and one picture was asked for with an `Origin` (`"cors": "*"`). Try `--dry-run` first to see the plan without uploading; `--prune` deletes the orphans.
+The publish prints one summary line: how many objects the plan has, how many were already in the bucket, how many went up, whether the manifest changed, how many old keys are now orphans, and what the CDN answered when the manifest was read back (`"manifest": "current"`) and one picture was asked for with an `Origin` (`"cors": "*"`). Try `--dry-run` first to see the plan without uploading; `--prune` deletes the orphans, and only on a run whose manifest did not change: after a publish, redeploy first, then run `publish.ts --prune`, because the live site names the old keys until its build fetches the new manifest. The script refuses to prune in the run that changed the manifest. Keep each run's summary line; the first one is the evidence for spec 00's infrastructure criterion.
 
 Then redeploy the site: a push to `main` does it, or Deployments → Redeploy in the Vercel dashboard. The build fetches `manifest.json` from the CDN; until that build, the live site keeps the manifest it was built with. If the publish's CDN check said `previous`, the edge still holds the older manifest for up to five minutes: wait that long before the redeploy.
 

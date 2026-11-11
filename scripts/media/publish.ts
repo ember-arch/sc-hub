@@ -12,8 +12,9 @@
  *   --concurrency <n> parallel uploads (default 8)
  *
  * Credentials come from `.env.local` (then `.env`) at the repository root, never from arguments:
- * R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET, CDN_BASE_URL. Nothing here
- * prints a value from them.
+ * R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET, CDN_BASE_URL. The summary line
+ * names the bucket and the CDN address, neither of which is a secret; the account id and the
+ * token never appear in anything this prints.
  *
  * Every file goes up under a content-addressed key (`publish-plan.ts`) with a one-year immutable
  * Cache-Control, so a run uploads only what the bucket lacks and never overwrites a key; the
@@ -167,8 +168,15 @@ async function withRetries<T>(
     try {
       return await attempt();
     } catch (error) {
-      // A 4xx is a decision (bad credentials, no such bucket), not weather: stop at once.
-      if (error instanceof R2Error && error.status < 500) throw error;
+      // A 4xx is a decision (bad credentials, no such bucket), not weather: stop at once. The two
+      // exceptions are the ones that mean "later": a timeout (408) and rate limiting (429).
+      if (
+        error instanceof R2Error &&
+        error.status < 500 &&
+        error.status !== 408 &&
+        error.status !== 429
+      )
+        throw error;
       if (n >= attempts) throw error;
       const wait = 1000 * 2 ** (n - 1);
       console.error(
@@ -234,7 +242,9 @@ async function checkCdn(
       const response = await fetch(`${cdnBaseUrl}/${sampleKey}`, {
         method: "HEAD",
         cache: "no-store",
-        headers: { origin: "https://coppercork.com" },
+        headers: {
+          origin: process.env["SITE_URL"] ?? "https://coppercork.com",
+        },
       });
       out["sample"] = {
         key: sampleKey,
@@ -328,6 +338,14 @@ async function main(): Promise<void> {
       const body = readFileSync(
         join(options.mediaDir, ...object.src.split("/").slice(2)),
       );
+      // The key promises these exact bytes for a year: refuse to fill it with anything else, which
+      // is what a prepare.ts run in the same folder between the scan and now would do.
+      const sha256 = createHash("sha256").update(body).digest("hex");
+      if (sha256 !== object.sha256) {
+        throw new Error(
+          `${object.src} changed on disk since it was scanned (is prepare.ts running?); publish again when it has finished`,
+        );
+      }
       await withRetries(object.key, () =>
         client.put(object.key, body, {
           contentType: object.contentType,
@@ -368,7 +386,14 @@ async function main(): Promise<void> {
     (key) => !planned.has(key) && key !== MANIFEST_KEY,
   );
   let pruned = 0;
-  if (options.prune && !options.dryRun) {
+  let pruneNote: string | undefined;
+  if (options.prune && !options.dryRun && manifestState === "uploaded") {
+    // The live site still names the old keys until its next build fetches the new manifest, and
+    // the CDN may serve the old manifest for its TTL: deleting now would break pictures that are
+    // live. Prune on a later run, after the redeploy.
+    pruneNote =
+      "skipped: the manifest changed this run; prune on a later run, after the site has redeployed";
+  } else if (options.prune && !options.dryRun) {
     await inParallel(orphans, options.concurrency, async (key) => {
       await withRetries(`delete ${key}`, () => client.delete(key));
       pruned += 1;
@@ -401,6 +426,7 @@ async function main(): Promise<void> {
       unreferenced_local: plan.unreferenced.length,
       orphans: orphans.length,
       pruned,
+      ...(pruneNote === undefined ? {} : { prune: pruneNote }),
       cdn,
       errors: 0,
       duration_ms: Date.now() - started,

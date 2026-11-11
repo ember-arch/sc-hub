@@ -185,6 +185,7 @@ describe("the publish plan", () => {
       key: "media/ships/aegs_gladius-1920-aaaaaaaaaaaa.webp",
       src: "/media/ships/aegs_gladius-1920.webp",
       bytes: 1000,
+      sha256: hashA,
       contentType: "image/webp",
       cacheControl: IMMUTABLE_CACHE,
     });

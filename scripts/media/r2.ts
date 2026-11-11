@@ -241,6 +241,9 @@ export class R2Client {
     if (!response.ok) {
       throw new R2Error(response.status, operation, await response.text());
     }
+    // A body left unread keeps its connection from being reused; a PUT's or DELETE's is empty
+    // anyway. The caller reads a GET's.
+    if (method !== "GET") await response.arrayBuffer();
     return response;
   }
 

@@ -37,7 +37,6 @@ import {
 import sharp from "sharp";
 import { z } from "zod";
 import {
-  COVER_WIDTHS,
   ConceptSource,
   CoverSource,
   FANKIT_LOGOS,
@@ -56,6 +55,7 @@ import { parseArticle } from "./article.js";
 import { readCtm } from "./ctm.js";
 import { HOLO_FIGURE } from "./holo.js";
 import { packHoloModel } from "./holo-glb.js";
+import { encodeCoverRenditions } from "./cover-renditions.js";
 import { mp4Size } from "./mp4.js";
 import { GallerySource, captionFor, composeShowcase } from "./gallery.js";
 import { FILE_SECTIONS, SHOWCASE } from "./showcase.js";
@@ -163,21 +163,12 @@ async function covers(): Promise<CoverImage[]> {
   for (const row of rows) {
     const input = join(rsiDir, "covers", row.file);
     if (!existsSync(input)) continue;
-    const meta = await sharp(input).metadata();
+    // The same encoder as the CI cover step (ADR-048), so both reach the same keys.
     const renditions = [];
-    for (const width of COVER_WIDTHS) {
-      if (
-        meta.width === undefined ||
-        meta.height === undefined ||
-        width > meta.width
-      )
-        continue;
-      const src = coverRenditionPath(row.external_id, width);
-      const info = await sharp(input)
-        .resize({ width })
-        .webp({ quality: width >= 1280 ? 78 : 74 })
-        .toFile(fileFor(src));
-      renditions.push({ src, width: info.width, height: info.height });
+    for (const r of await encodeCoverRenditions(readFileSync(input))) {
+      const src = coverRenditionPath(row.external_id, r.width);
+      writeFileSync(fileFor(src), r.data);
+      renditions.push({ src, width: r.width, height: r.height });
     }
     if (renditions.length === 0) continue;
     out.push({

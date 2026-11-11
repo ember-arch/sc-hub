@@ -1,8 +1,8 @@
 # ADR-040: The ledger folded into the front page; the funding page removed
 
 - Status: accepted
-- Date: 2026-11-11
-- Deciders: owner ("The funding module on the main page is perfect - we can deprecate and remove the dedicated funding page", 2026-11-11), Claude Code session 2026-11-11
+- Date: 2026-11-10
+- Deciders: owner ("The funding module on the main page is perfect - we can deprecate and remove the dedicated funding page", 2026-11-10), Claude Code session 2026-11-10
 - Amends: ADR-018 (the page), ADR-038 (the card's link to the ledger), ADR-020's ledger row in system.md, spec 02's Funding criterion, spec 06's ledger criteria, `docs/legal/attribution.md`
 
 ## Context

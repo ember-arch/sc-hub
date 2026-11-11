@@ -7,7 +7,9 @@
 # answers with a shape the parsers do not know fails the run and writes nothing. The RSI requests
 # need the repository variable SC_HUB_CONTACT_EMAIL (CLAUDE.md section 9). The Spectrum worker
 # runs in the same job and does nothing until the repository variable SPECTRUM_MODE is poll (no
-# credential: Spectrum's search answers without a sign-in) or feed (with SPECTRUM_FEED_URL).
+# credential: Spectrum's search answers without a sign-in) or feed (with SPECTRUM_FEED_URL); in poll
+# mode it then reads the threads of the posts it just collected, up to three, five minutes apart,
+# for the posts' own blocks and pictures (ADR-037), which is why the job has twenty minutes.
 # What it reads lands in this private repository only; the site shows nothing from Spectrum until
 # its own SPECTRUM_MODE is set, once docs/legal/cig-approval.md ticks the box, and whether the
 # collection itself needs CIG's word is recorded there as the owner's call.
@@ -36,7 +38,9 @@ jobs:
   poll:
     name: Poll the news sources
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # Forty: the thread step sleeps five minutes between its requests (up to three threads, a page
+    # each as a rule) and thirty on a refusal (ADR-037); a timeout would lose the run's news too.
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
         with:
@@ -59,10 +63,12 @@ jobs:
           SC_HUB_CONTACT_EMAIL: ${{ vars.SC_HUB_CONTACT_EMAIL }}
           SPECTRUM_MODE: ${{ vars.SPECTRUM_MODE }}
           SPECTRUM_FEED_URL: ${{ vars.SPECTRUM_FEED_URL }}
+          # "off" while a local backfill holds the thread endpoint (ADR-037); unset otherwise.
+          SPECTRUM_THREADS: ${{ vars.SPECTRUM_THREADS }}
         run: pnpm workers:poll-spectrum
       - name: Commit what changed
         run: |
-          git add fixtures/news
+          git add fixtures/news fixtures/spectrum/thread-state.json fixtures/spectrum/uploads.json
           if git diff --cached --quiet; then
             echo "Nothing new."
             exit 0

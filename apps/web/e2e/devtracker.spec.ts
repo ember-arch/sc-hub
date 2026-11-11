@@ -68,6 +68,45 @@ test.describe("the dev tracker with Spectrum on", () => {
     ).toBeVisible();
   });
 
+  test("a post's pictures are plates served by the site or captioned placeholders, never hotlinks to Spectrum (ADR-037)", async ({
+    page,
+  }) => {
+    await page.goto("/news/dev");
+    // No img anywhere in a post body points at RSI's hosts; no bare upload marker is left.
+    const sources = await page
+      .locator(".dev-post-body img")
+      .evaluateAll((imgs) =>
+        imgs.map((img) => ({
+          src: img.getAttribute("src"),
+          upload: img.getAttribute("data-upload"),
+          inPlate: img.closest("figure.dev-post-plate") !== null,
+          alt: img.getAttribute("alt"),
+        })),
+      );
+    for (const img of sources) {
+      expect(img.src, JSON.stringify(img)).toMatch(/^(\/media\/|https?:\/\/)/);
+      expect(img.src).not.toMatch(/robertsspaceindustries\.com/);
+      expect(img.upload).toBeNull();
+      expect(img.inPlate).toBe(true);
+      expect(img.alt).toBe("");
+    }
+    // Every plate, with a picture or pending one, carries CIG's credit linked to the post.
+    const plates = page.locator(".dev-post-body figure.dev-post-plate");
+    for (const credit of await plates
+      .locator("figcaption a")
+      .evaluateAll((as) =>
+        as.map((a) => ({ text: a.textContent, href: a.getAttribute("href") })),
+      )) {
+      expect(credit.text).toBe("Image: Cloud Imperium Games, via Spectrum");
+      expect(credit.href).toMatch(
+        /^https:\/\/robertsspaceindustries\.com\/spectrum\//,
+      );
+    }
+    expect(await plates.count()).toBe(
+      await plates.locator("figcaption a").count(),
+    );
+  });
+
   test("an author page pages by twenty, carries the disclaimer, and a wide post never scrolls sideways", async ({
     browser,
   }) => {
@@ -120,6 +159,71 @@ test.describe("the dev tracker with Spectrum on", () => {
     { name: "phone", width: 390, height: 844 },
     { name: "desktop", width: 1280, height: 800 },
   ] as const;
+  // A post opened, the first with a picture on the page (ADR-037): the record of the plate and
+  // the post's own blocks across the card. Falls back to the first post where none has one.
+  for (const viewport of VIEWPORTS) {
+    for (const scheme of ["light", "dark"] as const) {
+      test(`news-dev-post-open at ${viewport.width} px, ${scheme}`, async ({
+        browser,
+      }) => {
+        const context = await browser.newContext({
+          viewport: { width: viewport.width, height: viewport.height },
+          colorScheme: scheme,
+          deviceScaleFactor: 1,
+        });
+        const page = await context.newPage();
+        await page.goto("/news/dev");
+        const withPlate = page.locator("article", {
+          has: page.locator("figure.dev-post-plate"),
+        });
+        const article =
+          (await withPlate.count()) > 0
+            ? withPlate.first()
+            : page.locator("article").first();
+        await article.locator("summary").click();
+        await expect(article.locator("details")).toHaveAttribute("open", "");
+        await expect(article.getByText("Fold the post")).toBeVisible();
+        // The post's text is hidden from the summary once open; the body shows instead.
+        const overflow = await page.evaluate(
+          () =>
+            document.documentElement.scrollWidth >
+            document.documentElement.clientWidth,
+        );
+        expect(overflow, "page scrolls sideways").toBe(false);
+        // The plates load lazily: scroll the post through like a reader, then wait for every
+        // picture in it to have loaded, so the record shows them and not their frames.
+        const box = await article.boundingBox();
+        for (let y = 0; y < (box?.height ?? 0); y += 600) {
+          await page.evaluate(
+            (top) => window.scrollTo(0, top),
+            (box?.y ?? 0) + y,
+          );
+          await page.waitForTimeout(60);
+        }
+        await expect
+          .poll(
+            () =>
+              article
+                .locator("figure.dev-post-plate img")
+                .evaluateAll((imgs) =>
+                  imgs.every(
+                    (img) =>
+                      (img as HTMLImageElement).complete &&
+                      (img as HTMLImageElement).naturalWidth > 0,
+                  ),
+                ),
+            { timeout: 20_000 },
+          )
+          .toBe(true);
+        mkdirSync(OUT, { recursive: true });
+        await article.screenshot({
+          path: join(OUT, `news-dev-post-open-${viewport.name}-${scheme}.png`),
+        });
+        await context.close();
+      });
+    }
+  }
+
   for (const screen of SCREENS) {
     for (const viewport of VIEWPORTS) {
       for (const scheme of ["light", "dark"] as const) {

@@ -21,6 +21,10 @@
 .dev-post-body a {
   color: var(--accent);
 }
+/* Bold in a post, and a heading read as a bold paragraph (ADR-037), at the site's one emphasis weight (CLAUDE.md section 7). */
+.dev-post-body strong {
+  font-weight: var(--text-heading--font-weight);
+}
 /* The folded post card (ADR-035): no disclosure marker, and a title or excerpt with no break in it wraps. */
 .dev-post-fold summary::-webkit-details-marker {
   display: none;
@@ -28,6 +32,67 @@
 .dev-post-fold h2,
 .dev-post-fold summary p {
   overflow-wrap: anywhere;
+}
+.dev-post-body ul,
+.dev-post-body ol {
+  margin: 0 0 var(--spacing-3);
+  padding-left: var(--spacing-6);
+}
+.dev-post-body ul {
+  list-style: disc;
+}
+.dev-post-body ol {
+  list-style: decimal;
+}
+.dev-post-body li {
+  margin: 0 0 var(--spacing-1);
+}
+.dev-post-body li > p {
+  margin: 0;
+}
+.dev-post-body blockquote > :last-child {
+  margin-bottom: 0;
+}
+/*
+ * A picture in a post (ADR-037) is a plate across the card, as every picture on the site is
+ * (ADR-020): the frame's tone, radius and soft shadow, the credit as a label under it. A picture
+ * not yet copied keeps the frame and the caption alone, so the post keeps its shape and nothing
+ * is fetched from Spectrum (ADR-009).
+ */
+.dev-post-body .dev-post-plate {
+  margin: 0 0 var(--spacing-4);
+  overflow: hidden;
+  border-radius: var(--radius-card);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-soft);
+}
+.dev-post-body .dev-post-plate img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.dev-post-body .dev-post-plate figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--spacing-1) var(--spacing-4);
+  border-top: 1px solid var(--border-default);
+  padding: var(--spacing-2) var(--spacing-3);
+  font-size: var(--text-caption);
+  line-height: var(--text-caption--line-height);
+  color: var(--text-secondary);
+}
+.dev-post-body .dev-post-plate-pending figcaption {
+  border-top: 0;
+  padding: var(--spacing-4) var(--spacing-3);
+}
+.dev-post-body .dev-post-plate figcaption a {
+  color: var(--text-muted);
+  text-decoration: none;
+}
+.dev-post-body .dev-post-plate figcaption a:hover {
+  color: var(--accent);
 }
 
 /*

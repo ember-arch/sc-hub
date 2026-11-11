@@ -131,6 +131,21 @@ const manifest: MediaManifest = {
       ],
     },
   ],
+  spectrum: [
+    {
+      upload_id: "3463136",
+      source: "spectrum_upload",
+      page_url:
+        "https://robertsspaceindustries.com/spectrum/community/SC/forum/1/thread/spectrum-redesign-phase-1-now-live",
+      image_url:
+        "https://theverse.robertsspaceindustries.com/6jyg90p60itm0/source.jpg",
+      fetched_at: "2026-11-10T21:00:00.000Z",
+      renditions: [
+        { src: "/media/spectrum/3463136-1280.webp", width: 1280, height: 720 },
+        { src: "/media/spectrum/3463136-640.webp", width: 640, height: 360 },
+      ],
+    },
+  ],
 };
 
 describe("createMedia", () => {
@@ -175,6 +190,30 @@ describe("createMedia", () => {
     delete older["covers"];
     expect(
       createMedia(parseMediaManifest(JSON.stringify(older))).cover("21445"),
+    ).toBeNull();
+  });
+
+  it("gives a developer post its picture by Spectrum's upload id, with an empty alt and CIG's credit linked to the post (ADR-037)", () => {
+    expect(media.spectrumUpload("3463136")).toEqual({
+      src: "/media/spectrum/3463136-1280.webp",
+      width: 1280,
+      height: 720,
+      srcSet:
+        "/media/spectrum/3463136-1280.webp 1280w, /media/spectrum/3463136-640.webp 640w",
+      alt: "",
+      credit: {
+        text: "Image: Cloud Imperium Games, via Spectrum",
+        href: "https://robertsspaceindustries.com/spectrum/community/SC/forum/1/thread/spectrum-redesign-phase-1-now-live",
+      },
+    });
+    expect(media.spectrumUpload("1")).toBeNull();
+    // A manifest built before posts carried pictures parses with none.
+    const older = { ...manifest } as Record<string, unknown>;
+    delete older["spectrum"];
+    expect(
+      createMedia(parseMediaManifest(JSON.stringify(older))).spectrumUpload(
+        "3463136",
+      ),
     ).toBeNull();
   });
 

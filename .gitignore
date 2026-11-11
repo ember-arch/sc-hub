@@ -28,6 +28,11 @@ fixtures/rsi-media/*
 !fixtures/rsi-media/sources.json
 !fixtures/rsi-media/cover-sources.json
 
+# pictures CIG staff attached to their Spectrum posts (ADR-037): local only, never committed
+fixtures/spectrum-media/*
+!fixtures/spectrum-media/README.md
+!fixtures/spectrum-media/sources.json
+
 # the wiki's galleries of RSI's art per ship (ADR-024): local only, never committed
 fixtures/galleries/*
 !fixtures/galleries/README.md

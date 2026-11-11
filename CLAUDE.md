@@ -129,7 +129,7 @@ MEILI_HOST, MEILI_MASTER_KEY, MEILI_SEARCH_KEY
 R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET (the data pack's object store, spec 01: the Windows PC for the pipeline, Fly for the import job; not yet provisioned)
 BLOB_READ_WRITE_TOKEN, BLOB_STORE_ID (the media store on Vercel Blob, ADR-034: scripts/media/publish.ts on the owner's machine, from .env.local, where `vercel env pull` writes the store id and a short-lived VERCEL_OIDC_TOKEN that stands in for the sensitive token; never the site, never CI)
 CDN_BASE_URL (the media store's public address; the site resolves every /media/ path against it and fetches manifest.json from it at build when no media is built locally, ADR-034)
-SPECTRUM_MODE (feed | poll | off), SPECTRUM_FEED_URL (feed mode), SPECTRUM_STAFF_ROLE_ID (optional; poll mode resolves the staff role from Spectrum's own role list each run and needs no sign-in, ADR-027)
+SPECTRUM_MODE (feed | poll | off), SPECTRUM_FEED_URL (feed mode), SPECTRUM_THREADS (off skips the thread step of a scheduled run while a local backfill holds the endpoint, ADR-037), SPECTRUM_STAFF_ROLE_ID (optional; poll mode resolves the staff role from Spectrum's own role list each run and needs no sign-in, ADR-027)
 SENTRY_DSN
 SITE_URL (the public origin; canonical URLs, sitemap.xml and Open Graph resolve against it)
 SC_INSTALL_ROOT (Windows only, for example C:\Program Files\Roberts Space Industries\StarCitizen)
@@ -144,7 +144,7 @@ Rate limits (polite defaults; never exceed):
 | Source | Limit |
 | --- | --- |
 | robertsspaceindustries.com pages (the store's data endpoint included, ADR-025) | 1 request every 5 seconds per worker; identify with a project User-Agent and contact email |
-| Spectrum (poll mode) | 1 request every 5 minutes per endpoint; back off to 30 minutes on any non-200 |
+| Spectrum (poll mode: the search and the thread endpoint, ADR-027, ADR-037) | 1 request every 5 minutes per endpoint; back off to 30 minutes on any non-200 |
 | api.star-citizen.wiki | 30 requests per minute (their stated cap is 60); credit line required on pages using its data |
 | starcitizen.tools (Star Citizen Wiki articles and media uploads) | 1 request every 5 seconds (its robots.txt crawl delay); article pages and uploads only, never `/api.php` or `?action=` URLs, which robots.txt disallows; project User-Agent; text is CC BY-SA 4.0 and credited where shown (ADR-017) |
 | YouTube RSS | 1 request per hour |

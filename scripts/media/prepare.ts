@@ -32,6 +32,7 @@ import {
   type MakerLogo,
   type ShipImage,
   type Showcase,
+  type SpectrumImage,
 } from "schema";
 import sharp from "sharp";
 import { z } from "zod";
@@ -43,10 +44,13 @@ import {
   LOGO_HEIGHT,
   RsiSource,
   SHIP_WIDTHS,
+  SPECTRUM_UPLOAD_WIDTHS,
+  SpectrumSource,
   conceptRenditionPath,
   coverRenditionPath,
   logoRenditionPath,
   shipRenditionPath,
+  spectrumRenditionPath,
 } from "./sources.js";
 import { parseArticle } from "./article.js";
 import { readCtm } from "./ctm.js";
@@ -179,6 +183,48 @@ async function covers(): Promise<CoverImage[]> {
     out.push({
       external_id: row.external_id,
       source: "rsi_comm_link_hub",
+      page_url: row.page_url,
+      image_url: row.image_url,
+      fetched_at: row.fetched_at,
+      renditions,
+    });
+  }
+  return out;
+}
+
+const spectrumDir = join(repoRoot, "fixtures", "spectrum-media");
+
+/**
+ * Pictures in developer posts (ADR-037): web copies at the widths a post's card needs, by
+ * Spectrum's upload id; a picture narrower than the smallest width gets one copy at its own size.
+ * Resized and re-encoded only, like everything here.
+ */
+async function spectrum(): Promise<SpectrumImage[]> {
+  const sourcesFile = join(spectrumDir, "sources.json");
+  if (!existsSync(sourcesFile)) return [];
+  const rows = z
+    .array(SpectrumSource)
+    .parse(JSON.parse(readFileSync(sourcesFile, "utf8")));
+  const out: SpectrumImage[] = [];
+  for (const row of rows) {
+    const input = join(spectrumDir, row.file);
+    if (!existsSync(input)) continue;
+    const meta = await sharp(input).metadata();
+    if (meta.width === undefined || meta.height === undefined) continue;
+    const widths = SPECTRUM_UPLOAD_WIDTHS.filter((w) => w <= meta.width!);
+    if (widths.length === 0) widths.push(meta.width);
+    const renditions = [];
+    for (const width of widths) {
+      const src = spectrumRenditionPath(row.upload_id, width);
+      const info = await sharp(input)
+        .resize({ width })
+        .webp({ quality: width >= 1280 ? 78 : 74 })
+        .toFile(fileFor(src));
+      renditions.push({ src, width: info.width, height: info.height });
+    }
+    out.push({
+      upload_id: row.upload_id,
+      source: "spectrum_upload",
       page_url: row.page_url,
       image_url: row.image_url,
       fetched_at: row.fetched_at,
@@ -553,6 +599,7 @@ async function main(): Promise<void> {
   mkdirSync(join(mediaDir, "makers"), { recursive: true });
   mkdirSync(join(mediaDir, "concepts"), { recursive: true });
   mkdirSync(join(mediaDir, "covers"), { recursive: true });
+  mkdirSync(join(mediaDir, "spectrum"), { recursive: true });
   const models = await holoModels();
   const manifest = MediaManifest.parse({
     generated_at: new Date().toISOString(),
@@ -572,6 +619,7 @@ async function main(): Promise<void> {
     }),
     concepts: await concepts(),
     covers: await covers(),
+    spectrum: await spectrum(),
   });
   writeFileSync(
     join(mediaDir, "manifest.json"),
@@ -584,6 +632,7 @@ async function main(): Promise<void> {
       ships: manifest.ships.length,
       concepts: manifest.concepts.length,
       covers: manifest.covers.length,
+      spectrum: manifest.spectrum.length,
       makers: manifest.makers.length,
       showcase: manifest.showcase
         .filter((x) => x.wiki_article === null)

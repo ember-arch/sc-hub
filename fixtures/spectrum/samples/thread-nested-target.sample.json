@@ -1,0 +1,721 @@
+{
+  "success": 1,
+  "code": "OK",
+  "msg": "OK",
+  "data": {
+    "id": "550304",
+    "time_created": 1778668436,
+    "time_modified": 1779490932,
+    "channel_id": "50259",
+    "type": "discussion",
+    "slug": "ironclad-assault-4",
+    "subject": "Ironclad/assault",
+    "is_erased": false,
+    "tracked_post_role_id": "2",
+    "content_reply_id": "8851787",
+    "content_blocks": [
+      {
+        "id": 1,
+        "type": "text",
+        "data": {
+          "blocks": [
+            {
+              "key": "osgi",
+              "text": "They are fantastic ships. But the comand modules only take a few good hits to destroy. Is there any plans for it to share the armor of the host ship? ",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "6mabc",
+              "text": "Im by no means a good tester, I miss alot of things. ",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "ercqa",
+              "text": "",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "cl4e3",
+              "text": "Just seems like a rather nasty weak spot if it gets focused.",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            }
+          ],
+          "entityMap": []
+        }
+      }
+    ],
+    "lexical_content": null,
+    "highlight_role_id": null,
+    "community_id": "1",
+    "member": {
+      "id": "2359489",
+      "displayname": "AlexandraVixen",
+      "nickname": "AlexandraVixen"
+    },
+    "replies_count": 95,
+    "tracked_replies_references": [
+      {
+        "id": "8856786",
+        "label": "Montic-CIG"
+      }
+    ],
+    "replies": [
+      {
+        "id": "8856786",
+        "time_created": 1778762213,
+        "time_modified": 1778762213,
+        "thread_id": "550304",
+        "content_blocks": [
+          {
+            "id": 1,
+            "type": "text",
+            "data": {
+              "blocks": [
+                {
+                  "key": "8i403",
+                  "text": "Ciao!",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "d3uee",
+                  "text": "The expected damage behaviour when the Command Module is docked to the Ironclad/Caterpillar is as follows:",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "617u8",
+                  "text": "Armour: The Command Module inherits all armour values of the ship to which it is docked.",
+                  "type": "unordered-list-item",
+                  "depth": 0,
+                  "inlineStyleRanges": [
+                    {
+                      "offset": 0,
+                      "length": 6,
+                      "style": "BOLD"
+                    }
+                  ],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "eht5o",
+                  "text": "Damage Propagation: When bullets strike the Command Module while docked, the damage is transferred directly to the host ship. This damage remains with the host ship and is not transferred to the Command Module upon undocking.",
+                  "type": "unordered-list-item",
+                  "depth": 0,
+                  "inlineStyleRanges": [
+                    {
+                      "offset": 0,
+                      "length": 18,
+                      "style": "BOLD"
+                    }
+                  ],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "2k3q2",
+                  "text": "Shields: When docked, the Command Module is covered by the host ship's shields and utilises only the host ship's shield items, never its own.",
+                  "type": "unordered-list-item",
+                  "depth": 0,
+                  "inlineStyleRanges": [
+                    {
+                      "offset": 0,
+                      "length": 7,
+                      "style": "BOLD"
+                    }
+                  ],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "37egf",
+                  "text": "If any of these behaviours are not respected, you may have encountered a bug. In that case, we would appreciate it if you could contribute to an existing Issue Council report or create a new one if needed.",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "831ae",
+                  "text": "",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "1fs9s",
+                  "text": "Thanks!",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "fq4ac",
+                  "text": "Montic - Vehicle Experience Team",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                }
+              ],
+              "entityMap": []
+            }
+          }
+        ],
+        "lexical_content": null,
+        "is_erased": false,
+        "highlight_role_id": "2",
+        "replies_count": 85,
+        "member": {
+          "id": "4727212",
+          "displayname": "Montic-CIG",
+          "nickname": "Montic-CIG"
+        },
+        "replies": [
+          {
+            "id": "8857142",
+            "time_created": 1778766980,
+            "time_modified": 1778766980,
+            "thread_id": "550304",
+            "content_blocks": [
+              {
+                "id": "mp5jwf6r-e26wcp5ggxs",
+                "type": "quote",
+                "reply_id": "8856786",
+                "data": [
+                  {
+                    "id": 1,
+                    "type": "text",
+                    "data": {
+                      "blocks": [
+                        {
+                          "key": "8i403",
+                          "text": "Ciao!",
+                          "type": "unstyled",
+                          "depth": 0,
+                          "inlineStyleRanges": [],
+                          "entityRanges": [],
+                          "data": []
+                        },
+                        {
+                          "key": "d3uee",
+                          "text": "The expected damage behaviour when the Command Module is docked to the Ironclad/Caterpillar is as follows:",
+                          "type": "unstyled",
+                          "depth": 0,
+                          "inlineStyleRanges": [],
+                          "entityRanges": [],
+                          "data": []
+                        },
+                        {
+                          "key": "617u8",
+                          "text": "Armour: The Command Module inherits all armour values of the ship to which it is docked.",
+                          "type": "unordered-list-item",
+                          "depth": 0,
+                          "inlineStyleRanges": [
+                            {
+                              "offset": 0,
+                              "length": 6,
+                              "style": "BOLD"
+                            }
+                          ],
+                          "entityRanges": [],
+                          "data": []
+                        },
+                        {
+                          "key": "eht5o",
+                          "text": "Damage Propagation: When bullets strike the Command Module while docked, the damage is transferred directly to the host ship. This damage remains with the host ship and is not transferred to the Command Module upon undocking.",
+                          "type": "unordered-list-item",
+                          "depth": 0,
+                          "inlineStyleRanges": [
+                            {
+                              "offset": 0,
+                              "length": 18,
+                              "style": "BOLD"
+                            }
+                          ],
+                          "entityRanges": [],
+                          "data": []
+                        },
+                        {
+                          "key": "2k3q2",
+                          "text": "Shields: When docked, the Command Module is covered by the host ship's shields and utilises only the host ship's shield items, never its own.",
+                          "type": "unordered-list-item",
+                          "depth": 0,
+                          "inlineStyleRanges": [
+                            {
+                              "offset": 0,
+                              "length": 7,
+                              "style": "BOLD"
+                            }
+                          ],
+                          "entityRanges": [],
+                          "data": []
+                        },
+                        {
+                          "key": "37egf",
+                          "text": "If any of these behaviours are not respected, you may have encountered a bug. In that case, we would appreciate it if you could contribute to an existing Issue Council report or create a new one if needed.",
+                          "type": "unstyled",
+                          "depth": 0,
+                          "inlineStyleRanges": [],
+                          "entityRanges": [],
+                          "data": []
+                        },
+                        {
+                          "key": "831ae",
+                          "text": "",
+                          "type": "unstyled",
+                          "depth": 0,
+                          "inlineStyleRanges": [],
+                          "entityRanges": [],
+                          "data": []
+                        },
+                        {
+                          "key": "1fs9s",
+                          "text": "Thanks!",
+                          "type": "unstyled",
+                          "depth": 0,
+                          "inlineStyleRanges": [],
+                          "entityRanges": [],
+                          "data": []
+                        },
+                        {
+                          "key": "fq4ac",
+                          "text": "Montic - Vehicle Experience Team",
+                          "type": "unstyled",
+                          "depth": 0,
+                          "inlineStyleRanges": [],
+                          "entityRanges": [],
+                          "data": []
+                        }
+                      ],
+                      "entityMap": []
+                    }
+                  }
+                ],
+                "member": {
+                  "id": "4727212",
+                  "displayname": "Montic-CIG",
+                  "nickname": "Montic-CIG"
+                }
+              },
+              {
+                "id": "mp5jwf6r-ifqxho81g9s",
+                "type": "text",
+                "data": {
+                  "blocks": [
+                    {
+                      "key": "c8b7v",
+                      "text": "Everyone, please funnel any contributions about damage going to the command module while docked to Command Module taking energy dmg with shields on when docked - Star Citizen - Issue Council",
+                      "type": "unstyled",
+                      "depth": 0,
+                      "inlineStyleRanges": [],
+                      "entityRanges": [
+                        {
+                          "offset": 99,
+                          "length": 91,
+                          "key": 0
+                        }
+                      ],
+                      "data": []
+                    },
+                    {
+                      "key": "ekssl",
+                      "text": "",
+                      "type": "unstyled",
+                      "depth": 0,
+                      "inlineStyleRanges": [],
+                      "entityRanges": [],
+                      "data": []
+                    },
+                    {
+                      "key": "1hm8c",
+                      "text": "Thank you all for your help!",
+                      "type": "unstyled",
+                      "depth": 0,
+                      "inlineStyleRanges": [],
+                      "entityRanges": [],
+                      "data": []
+                    }
+                  ],
+                  "entityMap": [
+                    {
+                      "type": "LINK",
+                      "mutability": "MUTABLE",
+                      "data": {
+                        "href": "https://issue-council.robertsspaceindustries.com/projects/STAR-CITIZEN/issues/STARC-205205",
+                        "url": "https://issue-council.robertsspaceindustries.com/projects/STAR-CITIZEN/issues/STARC-205205"
+                      }
+                    }
+                  ]
+                }
+              }
+            ],
+            "lexical_content": null,
+            "is_erased": false,
+            "highlight_role_id": "2",
+            "replies_count": 0,
+            "member": {
+              "id": "4180203",
+              "displayname": "Raven-CIG",
+              "nickname": "Raven-CIG"
+            },
+            "replies": []
+          },
+          {
+            "id": "8856805",
+            "time_created": 1778762460,
+            "time_modified": 1778762460,
+            "thread_id": "550304",
+            "content_blocks": [
+              {
+                "id": 1,
+                "type": "text",
+                "data": {
+                  "blocks": [
+                    {
+                      "key": "7hvbq",
+                      "text": "can we still use the guns on it or is there no pilot controlled guns intended while docked?",
+                      "type": "unstyled",
+                      "depth": 0,
+                      "inlineStyleRanges": [],
+                      "entityRanges": [],
+                      "data": []
+                    }
+                  ],
+                  "entityMap": []
+                }
+              }
+            ],
+            "lexical_content": null,
+            "is_erased": false,
+            "replies_count": 50,
+            "member": {
+              "id": "2126985",
+              "displayname": "Dionisos",
+              "nickname": "Dionisos"
+            },
+            "replies": [
+              {
+                "id": "8856819",
+                "time_created": 1778762597,
+                "time_modified": 1778762597,
+                "thread_id": "550304",
+                "content_blocks": [
+                  {
+                    "id": 1,
+                    "type": "text",
+                    "data": {
+                      "blocks": [
+                        {
+                          "key": "7fkkp",
+                          "text": "No pilot-controlled guns for now.",
+                          "type": "unstyled",
+                          "depth": 0,
+                          "inlineStyleRanges": [],
+                          "entityRanges": [],
+                          "data": []
+                        },
+                        {
+                          "key": "ftmog",
+                          "text": "All the Command Module systems enter a \"dormant\" state, and your dashboard takes control of the main ship systems instead.",
+                          "type": "unstyled",
+                          "depth": 0,
+                          "inlineStyleRanges": [],
+                          "entityRanges": [],
+                          "data": []
+                        }
+                      ],
+                      "entityMap": []
+                    }
+                  }
+                ],
+                "lexical_content": null,
+                "is_erased": false,
+                "highlight_role_id": "2",
+                "replies_count": 49,
+                "member": {
+                  "id": "4727212",
+                  "displayname": "Montic-CIG",
+                  "nickname": "Montic-CIG"
+                },
+                "replies": [
+                  {
+                    "id": "8858137",
+                    "time_created": 1778782712,
+                    "time_modified": 1778782712,
+                    "thread_id": "550304",
+                    "content_blocks": [
+                      {
+                        "id": 1,
+                        "type": "text",
+                        "data": {
+                          "blocks": [
+                            {
+                              "key": "45c9e",
+                              "text": "@Montic-CIG     What do you mean by \"for now\"? Please clarify.",
+                              "type": "unstyled",
+                              "depth": 0,
+                              "inlineStyleRanges": [
+                                {
+                                  "offset": 0,
+                                  "length": 62,
+                                  "style": "BOLD"
+                                }
+                              ],
+                              "entityRanges": [
+                                {
+                                  "offset": 0,
+                                  "length": 11,
+                                  "key": 0
+                                }
+                              ],
+                              "data": []
+                            }
+                          ],
+                          "entityMap": [
+                            {
+                              "type": "MENTION",
+                              "mutability": "IMMUTABLE",
+                              "data": {
+                                "nickname": "montic-cig"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ],
+                    "lexical_content": null,
+                    "is_erased": false,
+                    "replies_count": 37,
+                    "member": {
+                      "id": "4293892",
+                      "displayname": "Capt_Zed",
+                      "nickname": "Capt_Zed"
+                    },
+                    "replies": [
+                      {
+                        "id": "8861609",
+                        "time_created": 1778848554,
+                        "time_modified": 1778848554,
+                        "thread_id": "550304",
+                        "content_blocks": [
+                          {
+                            "id": 1,
+                            "type": "text",
+                            "data": {
+                              "blocks": [
+                                {
+                                  "key": "ct3ba",
+                                  "text": "I mean that at the moment of release, this is the setup we are happy with.",
+                                  "type": "unstyled",
+                                  "depth": 0,
+                                  "inlineStyleRanges": [],
+                                  "entityRanges": [],
+                                  "data": []
+                                },
+                                {
+                                  "key": "dbdt7",
+                                  "text": "As a wise, famous man involved in Star Citizen said multiple times: \"The only constant in game dev is change!\"",
+                                  "type": "unstyled",
+                                  "depth": 0,
+                                  "inlineStyleRanges": [],
+                                  "entityRanges": [],
+                                  "data": []
+                                },
+                                {
+                                  "key": "9ignk",
+                                  "text": "",
+                                  "type": "unstyled",
+                                  "depth": 0,
+                                  "inlineStyleRanges": [],
+                                  "entityRanges": [],
+                                  "data": []
+                                },
+                                {
+                                  "key": "dhuf6",
+                                  "text": "So if, after feedback or later game iteration, we think it should not be the case anymore, we might change it.",
+                                  "type": "unstyled",
+                                  "depth": 0,
+                                  "inlineStyleRanges": [],
+                                  "entityRanges": [],
+                                  "data": []
+                                },
+                                {
+                                  "key": "ds5en",
+                                  "text": "As simple as that :slightly_smiling_face:",
+                                  "type": "unstyled",
+                                  "depth": 0,
+                                  "inlineStyleRanges": [],
+                                  "entityRanges": [
+                                    {
+                                      "offset": 18,
+                                      "length": 23,
+                                      "key": 0
+                                    }
+                                  ],
+                                  "data": []
+                                }
+                              ],
+                              "entityMap": [
+                                {
+                                  "type": "EMOJI",
+                                  "mutability": "IMMUTABLE",
+                                  "data": ":slightly_smiling_face:"
+                                }
+                              ]
+                            }
+                          }
+                        ],
+                        "lexical_content": null,
+                        "is_erased": false,
+                        "highlight_role_id": "2",
+                        "replies_count": 36,
+                        "member": {
+                          "id": "4727212",
+                          "displayname": "Montic-CIG",
+                          "nickname": "Montic-CIG"
+                        },
+                        "replies": []
+                      }
+                    ]
+                  },
+                  {
+                    "id": "8856873",
+                    "time_created": 1778763275,
+                    "time_modified": 1778763275,
+                    "thread_id": "550304",
+                    "content_blocks": [
+                      {
+                        "id": 1,
+                        "type": "text",
+                        "data": {
+                          "blocks": [
+                            {
+                              "key": "3rft5",
+                              "text": "Does the CM's remote turret still work while docked?",
+                              "type": "unstyled",
+                              "depth": 0,
+                              "inlineStyleRanges": [],
+                              "entityRanges": [],
+                              "data": []
+                            },
+                            {
+                              "key": "4vr69",
+                              "text": "",
+                              "type": "unstyled",
+                              "depth": 0,
+                              "inlineStyleRanges": [],
+                              "entityRanges": [],
+                              "data": []
+                            },
+                            {
+                              "key": "cdvkk",
+                              "text": "Also, why not have a 2nd pilot seat in Operations? 890J has 2 pilot seats! :wink:",
+                              "type": "unstyled",
+                              "depth": 0,
+                              "inlineStyleRanges": [],
+                              "entityRanges": [
+                                {
+                                  "offset": 75,
+                                  "length": 6,
+                                  "key": 0
+                                }
+                              ],
+                              "data": []
+                            }
+                          ],
+                          "entityMap": [
+                            {
+                              "type": "EMOJI",
+                              "mutability": "IMMUTABLE",
+                              "data": ":wink:"
+                            }
+                          ]
+                        }
+                      }
+                    ],
+                    "lexical_content": null,
+                    "is_erased": false,
+                    "replies_count": 1,
+                    "member": {
+                      "id": "515344",
+                      "displayname": "Jono",
+                      "nickname": "JO-5H1N-ZO"
+                    },
+                    "replies": [
+                      {
+                        "id": "8857067",
+                        "time_created": 1778766070,
+                        "time_modified": 1778766070,
+                        "thread_id": "550304",
+                        "content_blocks": [
+                          {
+                            "id": 1,
+                            "type": "text",
+                            "data": {
+                              "blocks": [
+                                {
+                                  "key": "4bk40",
+                                  "text": "As for the main guns, the CM turret won't be active while paired to a ship for now.",
+                                  "type": "unstyled",
+                                  "depth": 0,
+                                  "inlineStyleRanges": [],
+                                  "entityRanges": [],
+                                  "data": []
+                                }
+                              ],
+                              "entityMap": []
+                            }
+                          }
+                        ],
+                        "lexical_content": null,
+                        "is_erased": false,
+                        "highlight_role_id": "2",
+                        "replies_count": 0,
+                        "member": {
+                          "id": "4727212",
+                          "displayname": "Montic-CIG",
+                          "nickname": "Montic-CIG"
+                        },
+                        "replies": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

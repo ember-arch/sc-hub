@@ -35,6 +35,7 @@ import {
   shieldsOf,
 } from "../../../lib/armour";
 import { alphaByKindOf, mitigationOf } from "../../../lib/damage-path";
+import { AXES, AXIS_LABEL, agilityOf, formatTurn } from "../../../lib/agility";
 import { combatPeers } from "../../../lib/combat";
 import { cargoGridsOf, groupGrids, largestBox } from "../../../lib/cargo";
 import {
@@ -955,6 +956,8 @@ export function packShipFile(ship: ShipView): ShipFileProps {
       : [{ label: "Armour", value: armourBrief(armour) }]),
   ];
 
+  // Pitch, yaw and roll from the record (ADR-043); none for a vehicle without turn rates.
+  const agility = agilityOf(s?.raw);
   const mobility: Fact[] = [
     ...(s?.scm_speed == null
       ? []
@@ -974,6 +977,13 @@ export function packShipFile(ship: ShipView): ShipFileProps {
             numeric: true,
           },
         ]),
+    ...(agility === null
+      ? []
+      : AXES.map((axis) => ({
+          label: AXIS_LABEL[axis],
+          value: formatTurn(agility[axis]),
+          numeric: true,
+        }))),
     {
       label: "Quantum drive",
       value:
@@ -1205,6 +1215,19 @@ export function packShipFile(ship: ShipView): ShipFileProps {
                   most="Fastest"
                   values={rankValues((o) => o.stats?.nav_speed ?? null)}
                 />
+                {agilityOf(s.raw) === null
+                  ? null
+                  : AXES.map((axis) => (
+                      <RankBar
+                        key={axis}
+                        label={AXIS_LABEL[axis]}
+                        unit="°/s"
+                        most="Quickest"
+                        values={rankValues(
+                          (o) => agilityOf(o.stats?.raw)?.[axis].rate ?? null,
+                        )}
+                      />
+                    ))}
               </div>
             )}
           </div>

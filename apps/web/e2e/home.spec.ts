@@ -32,7 +32,7 @@ test("the sections run dispatches, featured ships, developers (with Spectrum on)
     ? [
         "Dispatches from the Verse",
         "Featured vehicles and ships",
-        "Featured developer posts",
+        "Developer gold posts",
         "Funding this year",
       ]
     : [
@@ -44,7 +44,7 @@ test("the sections run dispatches, featured ships, developers (with Spectrum on)
   // The entries A to Z left the front page.
   expect(heads).not.toContain("Entries, A to Z");
   if (!on) {
-    await expect(page.getByText("Featured developer posts")).toHaveCount(0);
+    await expect(page.getByText("Developer gold posts")).toHaveCount(0);
   }
 });
 

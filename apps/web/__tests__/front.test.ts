@@ -213,6 +213,15 @@ describe("featuredPosts", () => {
       "z",
       "late",
     ]);
+    // Past 72 hours an answered thread is out of the tier: only the floor would bring it back.
+    const fewer = [
+      post(1, "b", { opener: true }),
+      post(2, "w"),
+      post(80, "older"),
+    ];
+    expect(
+      featuredPosts(fewer, now, { min: 2 }).map((p) => p.thread_id),
+    ).toEqual(["b", "w"]);
   });
 
   it("fills to three with the newest remaining threads when the windows hold fewer", () => {

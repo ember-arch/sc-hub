@@ -100,8 +100,16 @@ export function classifyBlobError(error: unknown): unknown {
   ) {
     return withStatus(400);
   }
+  // A plain BlobError is the store's own "bad request" (an existing blob, a refused OIDC
+  // environment): repeating it changes nothing.
+  if (Object.getPrototypeOf(error) === BlobError.prototype)
+    return withStatus(400);
   return error;
 }
+
+/** The store's answer when a key is already taken and overwriting was not asked for. */
+export const isAlreadyThere = (error: unknown): boolean =>
+  error instanceof BlobError && /already exists/i.test(error.message);
 
 /** A read-write token, or the OIDC pair `vercel env pull` writes (the token itself is sensitive). */
 export type BlobAuth =
@@ -148,15 +156,28 @@ export function vercelBlobStore(
       }),
     put: (key, body, options) =>
       call(async () => {
-        const result = await put(key, Buffer.from(body), {
-          ...credentials,
-          access: "public",
-          addRandomSuffix: false,
-          allowOverwrite: options.overwrite,
-          contentType: options.contentType,
-          cacheControlMaxAge: options.cacheMaxAge,
-        });
-        return { key: result.pathname, size: body.byteLength, url: result.url };
+        try {
+          const result = await put(key, Buffer.from(body), {
+            ...credentials,
+            access: "public",
+            addRandomSuffix: false,
+            allowOverwrite: options.overwrite,
+            contentType: options.contentType,
+            cacheControlMaxAge: options.cacheMaxAge,
+          });
+          return {
+            key: result.pathname,
+            size: body.byteLength,
+            url: result.url,
+          };
+        } catch (error) {
+          // A key is its content: an object already there with these bytes' size is this upload,
+          // landed by an earlier attempt the SDK or a previous run did not hear back from.
+          if (!isAlreadyThere(error)) throw error;
+          const held = await head(key, credentials);
+          if (held.size !== body.byteLength) throw error;
+          return { key: held.pathname, size: held.size, url: held.url };
+        }
       }),
     delete: (key) =>
       call(async () => {

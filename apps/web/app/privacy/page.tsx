@@ -17,7 +17,9 @@ export default function PrivacyPage() {
           <h1 className="text-title text-primary">Privacy</h1>
           <p className="text-body text-secondary">
             {SITE_NAME} has no accounts and sets no cookies. There are no
-            third-party trackers, no advertising and no sale of data.
+            third-party trackers, no advertising and no sale of data. The one
+            third party a page loads is YouTube, for CIG&apos;s videos; see
+            below.
           </p>
         </div>
         <Section id="browser" title="What stays in your browser">
@@ -34,9 +36,11 @@ export default function PrivacyPage() {
             then see your IP address as with any image; no referrer is sent with
             them. The player loads from youtube-nocookie.com, YouTube's
             privacy-enhanced mode, only when you press a video, and is unloaded
-            when you close it; while it plays, YouTube's own privacy policy
-            applies. Every video also links to YouTube, if you would rather
-            watch it there.
+            when you close it. It is told this site&apos;s address, as YouTube
+            requires of an embedded player, and while it plays YouTube&apos;s
+            own privacy policy applies, its cookies and storage and any
+            advertising YouTube shows in it included. Every video also links to
+            YouTube, if you would rather watch it there.
           </p>
         </Section>
         <Section id="later" title="Planned">

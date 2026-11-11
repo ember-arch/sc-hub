@@ -2,7 +2,9 @@
  * The news pollers (spec 03, ADR-027): one run reads every source and writes what is new to the
  * news pack in `fixtures/news/`. Run from the news workflow every thirty minutes until the
  * pollers move to Fly; by hand with `pnpm workers:poll-news [--source comm_link|roadmap|video]`.
- * The YouTube feeds are read on the hour's first run only (ADR-050, `videosDue`). Logs
+ * One YouTube feed is read on the hour's first scheduled run only (ADR-050, `videosDue`). A
+ * failed video read is logged and leaves the videos as they were; it never discards the run's
+ * other sources, whose news would otherwise wait an hour for a channel's feed. Logs
  * are JSON lines on stderr; the summary line goes to stdout. The Comm-Link archive backfill
  * (`--backfill <pages>`, the wiki's list) is refused since ADR-031: the news window admits
  * nothing before 14 May 2026, the hub carries everything newer, and the wiki's older records
@@ -41,8 +43,8 @@ async function main(): Promise<void> {
       ? [
           "comm_link",
           "roadmap",
-          // Once an hour (CLAUDE.md section 9): the first of the workflow's two runs.
-          ...(videosDue(new Date()) ? ["video"] : []),
+          // Once an hour (CLAUDE.md section 9): the workflow's :07 schedule only.
+          ...(videosDue(process.env) ? ["video"] : []),
         ]
       : [only];
   const backfillPages = Number(flag(args, "--backfill") ?? 0);
@@ -120,6 +122,18 @@ async function main(): Promise<void> {
         throw new Error(`unknown source ${source}`);
       }
     } catch (error) {
+      if (source === "video") {
+        // Nothing of the feed was recorded (pollVideos parses before it records); the run's other
+        // sources still go live, and the next hour's run reads the other channel.
+        log({
+          event: "news.source.failed",
+          source,
+          soft: true,
+          error: String(error),
+        });
+        summary[source] = { error: String(error), soft: true };
+        continue;
+      }
       errors += 1;
       log({ event: "news.source.failed", source, error: String(error) });
       summary[source] = { error: String(error) };

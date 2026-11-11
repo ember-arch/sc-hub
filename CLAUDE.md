@@ -148,7 +148,7 @@ Rate limits (polite defaults; never exceed):
 | Spectrum (poll mode: the search and the thread endpoint, ADR-027, ADR-037) | 1 request every 5 minutes per endpoint; back off to 30 minutes on any non-200 |
 | api.star-citizen.wiki | 30 requests per minute (their stated cap is 60); credit line required on pages using its data |
 | starcitizen.tools (Star Citizen Wiki articles and media uploads) | 1 request every 5 seconds (its robots.txt crawl delay); article pages and uploads only, never `/api.php` or `?action=` URLs, which robots.txt disallows; project User-Agent; text is CC BY-SA 4.0 and credited where shown (ADR-017) |
-| YouTube RSS | 1 request per hour per channel feed (the Star Citizen and Squadron 42 channels, read on the News workflow's first run of each hour, ADR-050) |
+| YouTube RSS | 1 request per hour: one channel feed a run, the Star Citizen and Squadron 42 channels in turn, from the News workflow's :07 schedule only, never retried (ADR-050) |
 | docs.google.com (the fitting list's sheet, ADR-028) | 1 request per daily refresh, the workbook export; project User-Agent |
 
 ## 10. Session workflow

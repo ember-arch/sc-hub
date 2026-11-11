@@ -30,10 +30,12 @@ export interface ClientOptions {
 export const SPACING_MS: Readonly<Record<string, number>> = {
   "robertsspaceindustries.com": 5_000,
   "api.star-citizen.wiki": 2_000,
-  // Two channel feeds a run, each once an hour (ADR-050); spaced like every other host.
+  // One channel feed a run, once an hour (ADR-050); spaced like every other host all the same.
   "www.youtube.com": 5_000,
 };
 const RSI_HOSTS = new Set(["robertsspaceindustries.com"]);
+/** Hosts asked once and never again in a run: a retry would be a second request inside the hour (ADR-050). */
+const NO_RETRY_HOSTS = new Set(["www.youtube.com"]);
 const BACKOFF_MS: readonly number[] = [30_000, 120_000];
 
 export class FetchError extends Error {
@@ -87,7 +89,9 @@ export function createClient(options: ClientOptions): Client {
           },
         });
       } catch (error) {
-        const backoff = BACKOFF_MS[attempt];
+        const backoff = NO_RETRY_HOSTS.has(host)
+          ? undefined
+          : BACKOFF_MS[attempt];
         if (backoff === undefined)
           throw new FetchError(`network error: ${String(error)}`, url);
         log({ event: "news.fetch.retry", url, attempt, backoff_ms: backoff });
@@ -95,7 +99,9 @@ export function createClient(options: ClientOptions): Client {
         continue;
       }
       if (response.ok) return response.text();
-      const backoff = BACKOFF_MS[attempt];
+      const backoff = NO_RETRY_HOSTS.has(host)
+        ? undefined
+        : BACKOFF_MS[attempt];
       if (
         (response.status === 429 || response.status >= 500) &&
         backoff !== undefined

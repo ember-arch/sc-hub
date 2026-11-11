@@ -6,6 +6,7 @@ import { createClient } from "../src/client.js";
 import {
   CHANNELS,
   FeedShapeError,
+  channelForHour,
   feedUrl,
   parseFeed,
   pollVideos,
@@ -68,6 +69,18 @@ describe("parseFeed", () => {
       'href="https://example.com/yFQ6H0gKric"',
     );
     expect(() => parseFeed(elsewhere, starCitizen)).toThrow(/not its watch/);
+    const empty = starCitizenXml.replace(/<entry>[\s\S]*<\/entry>/, "");
+    expect(() => parseFeed(empty, starCitizen)).toThrow(/lists no entries/);
+    const unnamed = starCitizenXml.replace(
+      /<yt:channelId>TeLqJq1mXUX5WWoNXLmOIA<\/yt:channelId>/,
+      "<yt:channelId></yt:channelId>",
+    );
+    expect(() => parseFeed(unnamed, starCitizen)).toThrow(FeedShapeError);
+  });
+
+  it("reads an entry whose tag carries attributes", () => {
+    const tagged = squadronXml.replace(/<entry>/g, '<entry xml:lang="en">');
+    expect(parseFeed(tagged, squadron)).toHaveLength(2);
   });
 });
 
@@ -93,10 +106,17 @@ describe("toIncoming", () => {
   });
 });
 
-describe("videosDue", () => {
-  it("reads the feeds on the first of the hour's two runs only", () => {
-    expect(videosDue(new Date("2026-11-11T18:07:00Z"))).toBe(true);
-    expect(videosDue(new Date("2026-11-11T18:37:00Z"))).toBe(false);
+describe("videosDue and channelForHour", () => {
+  it("reads a feed only when the workflow's :07 schedule says so", () => {
+    expect(videosDue({ NEWS_VIDEO_SLOT: "due" })).toBe(true);
+    expect(videosDue({ NEWS_VIDEO_SLOT: "" })).toBe(false);
+    expect(videosDue({})).toBe(false);
+  });
+
+  it("takes the channels in turn, one an hour", () => {
+    expect(channelForHour(new Date("2026-11-11T18:07:00Z"))).toBe(starCitizen);
+    expect(channelForHour(new Date("2026-11-11T19:07:00Z"))).toBe(squadron);
+    expect(channelForHour(new Date("2026-11-11T20:59:00Z"))).toBe(starCitizen);
   });
 });
 
@@ -116,17 +136,62 @@ describe("pollVideos", () => {
     return { ok: true, status: 200, text: async () => text };
   };
 
+  it("reads one feed a run, the hour's channel", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "news-"));
+    const store = openStore(join(dir, "ContentItem.json"));
+    const client = createClient({ fetch: fetchFeed, ...quiet });
+    const at = () => new Date("2026-11-11T19:07:00Z");
+    const run = await pollVideos(client, store, at);
+    expect(run.channels).toBe(1);
+    expect(run.entries).toBe(2);
+    expect(client.requests).toBe(1);
+    expect(store.latest().every((r) => r.forum === "Squadron 42")).toBe(true);
+  });
+
+  it("asks YouTube once even when it answers 429, and records nothing", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "news-"));
+    const store = openStore(join(dir, "ContentItem.json"));
+    const client = createClient({
+      fetch: async () => ({ ok: false, status: 429, text: async () => "" }),
+      ...quiet,
+    });
+    await expect(
+      pollVideos(client, store, () => new Date("2026-11-11T18:07:00Z")),
+    ).rejects.toThrow(/HTTP 429/);
+    expect(client.requests).toBe(1);
+    expect(store.added).toBe(0);
+  });
+
+  it("records nothing of any channel when one feed is of an unknown shape", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "news-"));
+    const store = openStore(join(dir, "ContentItem.json"));
+    const broken = new Map(feeds);
+    broken.set(feedUrl(squadron), "<feed></feed>");
+    const client = createClient({
+      fetch: async (url: string) => ({
+        ok: true,
+        status: 200,
+        text: async () => broken.get(url) ?? "",
+      }),
+      ...quiet,
+    });
+    await expect(
+      pollVideos(client, store, () => new Date(), CHANNELS),
+    ).rejects.toThrow(FeedShapeError);
+    expect(store.added).toBe(0);
+  });
+
   it("records both channels' videos once, and nothing on a second run", async () => {
     const dir = mkdtempSync(join(tmpdir(), "news-"));
     const store = openStore(join(dir, "ContentItem.json"));
     const client = createClient({ fetch: fetchFeed, ...quiet });
     const at = () => new Date("2026-11-11T18:07:00Z");
-    const first = await pollVideos(client, store, at);
+    const first = await pollVideos(client, store, at, CHANNELS);
     expect(first.channels).toBe(2);
     expect(first.entries).toBe(17);
     expect(first.added + first.older).toBe(17);
     expect(first.added).toBeGreaterThan(0);
-    const second = await pollVideos(client, store, at);
+    const second = await pollVideos(client, store, at, CHANNELS);
     expect(second.added).toBe(0);
     expect(second.revised).toBe(0);
     expect(client.requests).toBe(4);

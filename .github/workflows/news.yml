@@ -29,7 +29,10 @@ on:
     # two-hourly "0 */2" ran twice in twenty hours), and the repository is public, so Actions
     # minutes no longer limit the cadence. Spec 03's fifteen-minute gate holds once the pollers
     # run on Fly.
-    - cron: "7,37 * * * *"
+    # Two schedules rather than one "7,37" so the poll knows which one started it: one YouTube
+    # feed is read from the :07 schedule only, once an hour however late GitHub starts it (ADR-050).
+    - cron: "7 * * * *"
+    - cron: "37 * * * *"
   workflow_dispatch:
     inputs:
       rehearse_covers:
@@ -70,6 +73,8 @@ jobs:
       - name: Poll
         env:
           SC_HUB_CONTACT_EMAIL: ${{ vars.SC_HUB_CONTACT_EMAIL }}
+          # "due" from the :07 schedule only: the hour's one YouTube feed (ADR-050).
+          NEWS_VIDEO_SLOT: ${{ github.event.schedule == '7 * * * *' && 'due' || '' }}
         run: pnpm workers:poll-news
       - name: Poll Spectrum (off until SPECTRUM_MODE is set)
         continue-on-error: true

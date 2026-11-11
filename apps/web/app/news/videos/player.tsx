@@ -93,10 +93,11 @@ export function VideoPlayer() {
               type="button"
               onClick={close}
               aria-label="Close the video"
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-pill text-secondary transition-colors duration-hover hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+              className="flex shrink-0 items-center gap-1 rounded-pill px-3 py-1 text-ui text-secondary transition-colors duration-hover hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
               autoFocus
             >
               <Icon name="close" />
+              Close
             </button>
           </div>
           <iframe
@@ -104,7 +105,7 @@ export function VideoPlayer() {
             title={playing.title}
             allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
             referrerPolicy="strict-origin-when-cross-origin"
-            className={`block rounded-control border-0 bg-inset ${playing.short ? "mx-auto aspect-[9/16] h-[80vh] max-w-full" : "aspect-video max-h-[80vh] w-full"}`}
+            className={`block rounded-control border-0 bg-inset ${playing.short ? "mx-auto aspect-[9/16] h-[80svh] max-w-full" : "aspect-video max-h-[80svh] w-full"}`}
           />
           <p className="m-0 text-caption">
             <TextLink href={playing.url} external>

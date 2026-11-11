@@ -5,7 +5,9 @@
  * an hour) and records each upload as a content item of source `video`: the video's own id, its
  * page on YouTube, its title, the first paragraph of its description as the summary and the whole
  * description as escaped paragraphs, and the channel's name in `forum`, the field that names
- * where on its source an item was published (on Spectrum, its forum). The feed's view counts and
+ * where on its source an item was published (on Spectrum, its forum). One run reads one feed, the
+ * hour's channel (`channelForHour`), so the site asks YouTube once an hour and each channel
+ * every two hours. The feed's view counts and
  * ratings are not kept: they change every hour and would make a revision of every video.
  */
 import type { Client } from "../client.js";
@@ -61,13 +63,17 @@ const tag = (xml: string, name: string): string | undefined => {
 export function parseFeed(xml: string, channel: Channel): FeedEntry[] {
   const channelId = tag(xml, "yt:channelId");
   // The feed names its channel without the "UC" prefix; the entries name it in full.
-  if (channelId === undefined || !channel.id.endsWith(channelId.trim())) {
+  if (
+    channelId === undefined ||
+    channelId.trim() === "" ||
+    !channel.id.endsWith(channelId.trim())
+  ) {
     throw new FeedShapeError(
       `the feed for ${channel.name} does not name channel ${channel.id}`,
     );
   }
   const entries: FeedEntry[] = [];
-  for (const match of xml.matchAll(/<entry>([\s\S]*?)<\/entry>/g)) {
+  for (const match of xml.matchAll(/<entry(?:\s[^>]*)?>([\s\S]*?)<\/entry>/g)) {
     const entry = match[1]!;
     const videoId = tag(entry, "yt:videoId")?.trim();
     const entryChannel = tag(entry, "yt:channelId")?.trim();
@@ -107,6 +113,10 @@ export function parseFeed(xml: string, channel: Channel): FeedEntry[] {
       description: decodeEntities(description).trim(),
     });
   }
+  // A channel's feed always lists its newest uploads; none is a feed this parser does not read.
+  if (entries.length === 0) {
+    throw new FeedShapeError(`the feed for ${channel.name} lists no entries`);
+  }
   return entries;
 }
 
@@ -137,12 +147,24 @@ export function toIncoming(entry: FeedEntry, channel: Channel) {
 }
 
 /**
- * Whether this run reads the feeds: the News workflow runs at 7 and 37 minutes past the hour
- * (ADR-027), and the feeds are read on the first run of each hour only, so each feed is asked
- * once an hour (CLAUDE.md section 9). A run started by hand for the video source alone reads them
- * regardless.
+ * Whether this run reads a feed (CLAUDE.md section 9: YouTube RSS, one request an hour). The News
+ * workflow has two schedules, at 7 and at 37 minutes past the hour (ADR-027), and passes
+ * `NEWS_VIDEO_SLOT=due` from the first one only, whatever time GitHub starts it; a run started
+ * by hand or by `workflow_dispatch` reads no feed unless asked for with `--source video`.
  */
-export const videosDue = (now: Date): boolean => now.getUTCMinutes() < 30;
+export const videosDue = (
+  env: Readonly<Record<string, string | undefined>>,
+): boolean => env["NEWS_VIDEO_SLOT"] === "due";
+
+/** The hour's channel: the two take turns, so one feed is asked each hour. */
+export function channelForHour(
+  now: Date,
+  channels: readonly Channel[] = CHANNELS,
+): Channel {
+  const channel = channels[now.getUTCHours() % channels.length];
+  if (channel === undefined) throw new Error("no channels");
+  return channel;
+}
 
 export interface VideoSummary {
   readonly channels: number;
@@ -152,20 +174,33 @@ export interface VideoSummary {
   readonly older: number;
 }
 
+/**
+ * Reads the given channels' feeds and records their uploads. Every feed is read and parsed
+ * before anything is recorded, so a feed of an unknown shape leaves the pack as it was
+ * (CLAUDE.md section 5).
+ */
 export async function pollVideos(
   client: Client,
   store: Store,
   now: () => Date,
-  channels: readonly Channel[] = CHANNELS,
+  channels: readonly Channel[] = [channelForHour(now())],
 ): Promise<VideoSummary> {
+  const read: { channel: Channel; entries: FeedEntry[]; fetchedAt: string }[] =
+    [];
+  for (const channel of channels) {
+    const xml = await client.text(feedUrl(channel));
+    read.push({
+      channel,
+      entries: parseFeed(xml, channel),
+      fetchedAt: now().toISOString(),
+    });
+  }
   let entries = 0;
   let added = 0;
   let revised = 0;
   let older = 0;
-  for (const channel of channels) {
-    const xml = await client.text(feedUrl(channel));
-    const fetchedAt = now().toISOString();
-    for (const entry of parseFeed(xml, channel)) {
+  for (const { channel, entries: list, fetchedAt } of read) {
+    for (const entry of list) {
       entries += 1;
       const result = store.put(toIncoming(entry, channel), fetchedAt);
       if (result === "new") added += 1;

@@ -45,9 +45,11 @@ export interface RailProps {
  * reader moves along a section with a swipe and down the page past it, instead of down five tall
  * cards per section. Scroll snapping lands each card at the edge; the next card always peeks in
  * so the row reads as one that continues. From tablet width two buttons page the row by its own
- * width, disabled at either end and hidden when the row fits. Keyboard readers move through the
- * cards' own links, which scroll the row as they take focus. Motion only on the buttons' own
- * paging, and none with reduced motion (CLAUDE.md section 7).
+ * width (a jump, not a glide: CLAUDE.md section 7 keeps motion for viewer transitions), marked
+ * unavailable at either end and hidden when the row fits; they are arrows alone, named for
+ * assistive tech (ADR-044's line for them). Keyboard readers move through the cards' own links,
+ * which scroll the row as they take focus. The row is a list named for its section, not a
+ * landmark of its own.
  */
 export function Rail({ label, size, phoneOnly, children }: RailProps) {
   const list = useRef<HTMLUListElement>(null);
@@ -77,14 +79,12 @@ export function Rail({ label, size, phoneOnly, children }: RailProps) {
     };
   }, [measure]);
 
+  // A jump, not a glide: motion is for viewer transitions only (CLAUDE.md section 7).
   const page = (direction: 1 | -1) => {
     const el = list.current;
     if (el === null) return;
-    const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    el.scrollBy({
-      left: direction * el.clientWidth * 0.9,
-      behavior: still ? "auto" : "smooth",
-    });
+    if (direction === -1 ? edges.start : edges.end) return;
+    el.scrollBy({ left: direction * el.clientWidth * 0.9, behavior: "auto" });
   };
 
   const grid =
@@ -92,10 +92,10 @@ export function Rail({ label, size, phoneOnly, children }: RailProps) {
       ? ""
       : `md:mx-0 md:grid md:snap-none md:overflow-visible md:px-0 md:pb-0 ${GRID[phoneOnly.columns]}`;
   const button =
-    "flex h-8 w-8 items-center justify-center rounded-pill bg-surface text-primary shadow-soft transition-colors duration-hover hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent disabled:cursor-default disabled:text-muted disabled:shadow-none";
+    "flex h-8 w-8 items-center justify-center rounded-pill bg-surface text-primary shadow-soft transition-colors duration-hover hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent aria-disabled:cursor-default aria-disabled:text-muted aria-disabled:shadow-none aria-disabled:hover:text-muted";
 
   return (
-    <div className="flex flex-col gap-2" role="region" aria-label={label}>
+    <div className="flex flex-col gap-2">
       {phoneOnly === undefined ? (
         <div
           className={`hidden justify-end gap-2 md:flex ${edges.fits ? "md:hidden" : ""}`}
@@ -104,8 +104,8 @@ export function Rail({ label, size, phoneOnly, children }: RailProps) {
             type="button"
             className={button}
             onClick={() => page(-1)}
-            disabled={edges.start}
-            aria-label={`Earlier in ${label.toLowerCase()}`}
+            aria-disabled={edges.start}
+            aria-label={`${label}: scroll back`}
           >
             <Icon name="next" className="rotate-180" />
           </button>
@@ -113,8 +113,8 @@ export function Rail({ label, size, phoneOnly, children }: RailProps) {
             type="button"
             className={button}
             onClick={() => page(1)}
-            disabled={edges.end}
-            aria-label={`Later in ${label.toLowerCase()}`}
+            aria-disabled={edges.end}
+            aria-label={`${label}: scroll on`}
           >
             <Icon name="next" />
           </button>
@@ -123,6 +123,7 @@ export function Rail({ label, size, phoneOnly, children }: RailProps) {
       {/* The row bleeds to the screen's edges on a phone, so the peek reaches the edge. */}
       <ul
         ref={list}
+        aria-label={label}
         className={`-mx-4 m-0 flex list-none snap-x snap-mandatory scroll-px-4 gap-4 overflow-x-auto overscroll-x-contain px-4 pb-2 [scrollbar-width:thin] ${grid}`}
       >
         {Children.toArray(children).map((child, i) => (

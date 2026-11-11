@@ -24,7 +24,7 @@ test("the videos tab lists the uploads newest first, each linked to YouTube, wit
     .locator("time")
     .evaluateAll((ts) => ts.map((t) => t.getAttribute("datetime") ?? ""));
   expect([...times].sort().reverse()).toEqual(times);
-  const out = page.getByRole("link", { name: "Watch on YouTube" });
+  const out = page.getByRole("link", { name: /^Watch .+ on YouTube$/ });
   expect(await out.count()).toBe(await cards.count());
   for (const href of await out.evaluateAll((as) =>
     as.map((a) => a.getAttribute("href")),
@@ -36,6 +36,9 @@ test("the videos tab lists the uploads newest first, each linked to YouTube, wit
   await expect(
     page.getByText("Videos: Cloud Imperium Games, on YouTube"),
   ).toBeVisible();
+  // CLAUDE.md section 2: no emoji anywhere in the UI, though some of CIG's titles carry them.
+  const text = (await page.locator("main").textContent()) ?? "";
+  expect(text).not.toMatch(/\p{Extended_Pictographic}/u);
   const channels = page.getByRole("navigation", { name: "Channels" });
   await channels.getByRole("link", { name: "Squadron 42" }).click();
   await expect(page).toHaveURL(/channel=Squadron(%20|\+)42$/);
@@ -50,10 +53,12 @@ test("a press on a video opens the player in place; Escape closes it and unloads
   page,
 }) => {
   await page.goto("/news/videos");
+  // Nothing of YouTube's player is in the page until a reader asks for it.
+  await expect(page.locator("iframe")).toHaveCount(0);
   const card = page.locator("article[data-video]").first();
-  const title = (await card.locator("h3").textContent()) ?? "";
+  const title = (await card.locator("h3 a").innerText()).trim();
   await card.locator("h3 a").click();
-  const player = page.getByRole("dialog", { name: title.trim() });
+  const player = page.getByRole("dialog", { name: title });
   await expect(player).toBeVisible();
   await expect(player.locator("iframe")).toHaveAttribute(
     "src",
@@ -67,6 +72,40 @@ test("a press on a video opens the player in place; Escape closes it and unloads
   await expect(player).toBeHidden();
   await expect(page.locator("dialog iframe")).toHaveCount(0);
   await expect(card.locator("h3 a")).toBeFocused();
+  // The close button, and a press on the dimmed page around the player, close it too.
+  await card.locator("h3 a").click();
+  await player.getByRole("button", { name: "Close the video" }).click();
+  await expect(player).toBeHidden();
+  await card.locator("h3 a").click();
+  await expect(player).toBeVisible();
+  await page.mouse.click(4, 4);
+  await expect(player).toBeHidden();
+  await expect(page.locator("iframe")).toHaveCount(0);
+});
+
+test("a press with a modifier key leaves the player closed, as a link to YouTube", async ({
+  page,
+  context,
+}) => {
+  await page.goto("/news/videos");
+  const link = page.locator("article[data-video] h3 a").first();
+  const opened = context.waitForEvent("page");
+  await link.click({ modifiers: ["Control"] });
+  const tab = await opened;
+  expect(tab.url()).toMatch(/^https:\/\/(www|consent)\.youtube\.com\//);
+  await tab.close();
+  await expect(page.getByRole("dialog")).toBeHidden();
+});
+
+test("the front page's videos open the player too", async ({ page }) => {
+  await page.goto("/");
+  const card = page
+    .locator("section[aria-labelledby='videos'] article[data-video]")
+    .first();
+  await card.locator("h3 a").click();
+  await expect(page.getByRole("dialog")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog")).toBeHidden();
 });
 
 test("the dispatches leave videos to their tab", async ({ page }) => {

@@ -1,4 +1,4 @@
-import { formatTime } from "./format";
+import { formatTime, withoutEmoji } from "./format";
 import { Icon } from "./icon";
 import { TextLink } from "./text-link";
 
@@ -30,7 +30,8 @@ export interface VideoCardProps {
 }
 
 /**
- * A video as a card (ADR-050): YouTube's thumbnail at 16:9 to the card's edges with a play mark,
+ * A video as a card (ADR-050): YouTube's thumbnail at 16:9 to the card's edges with a play mark
+ * (the one icon on a card, ADR-044's line for it), the title without its emoji,
  * then the channel and the time as a label, the title, and the link to YouTube. The thumbnail and
  * the title are links to the video on YouTube, so the card works without script and a middle
  * click opens a new tab; on a page with a `VideoPlayer`, a plain press on either opens the player
@@ -50,12 +51,13 @@ export function VideoCard({
   sizes = "(min-width: 1024px) 25vw, (min-width: 640px) 45vw, 80vw",
   priority = false,
 }: VideoCardProps) {
+  const name = withoutEmoji(title);
   return (
     <article
       className="flex h-full flex-col overflow-hidden rounded-card bg-surface shadow-soft"
       data-video={id}
       data-video-embed={embed}
-      data-video-title={title}
+      data-video-title={name}
       data-video-short={short ? "true" : undefined}
     >
       {/* The title carries the readable link; the thumbnail repeats it for the pointer. */}
@@ -97,12 +99,19 @@ export function VideoCard({
         </p>
         <h3 className="m-0 line-clamp-3 text-ui font-medium text-primary">
           <TextLink href={url} external className="text-primary">
-            {title}
+            {name}
+            {/* The thumbnail's label is hidden with the thumbnail; the title says it too. */}
+            {short ? <span className="sr-only"> (Short)</span> : null}
           </TextLink>
         </h3>
         {/* Always to YouTube, even where the player would open: the source link (obligations.md). */}
         <p className="m-0 mt-auto pt-1 text-caption" data-video-out="">
-          <TextLink href={url} external className="text-secondary">
+          <TextLink
+            href={url}
+            external
+            className="text-secondary"
+            ariaLabel={`Watch ${name} on YouTube`}
+          >
             Watch on YouTube
           </TextLink>
         </p>

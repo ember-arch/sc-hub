@@ -77,6 +77,7 @@ export {
   formatDate,
   formatNumber,
   formatTime,
+  withoutEmoji,
   sentence,
 } from "./components/format";
 export {

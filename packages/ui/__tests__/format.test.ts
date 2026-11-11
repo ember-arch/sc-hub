@@ -4,6 +4,7 @@ import {
   formatNumber,
   formatTime,
   sentence,
+  withoutEmoji,
 } from "../components/format";
 
 describe("formatNumber", () => {
@@ -44,5 +45,27 @@ describe("sentence", () => {
     expect(sentence("flight_ready")).toBe("Flight ready");
     expect(sentence("quantum_drive")).toBe("Quantum drive");
     expect(sentence("comm_link")).toBe("Comm link");
+  });
+});
+
+describe("withoutEmoji", () => {
+  // CLAUDE.md section 2: no emoji in the UI. Built from code points so this file holds none either.
+  const e = (...points: number[]): string => String.fromCodePoint(...points);
+  it("drops pictographs, their joiners and selectors, and the spaces they leave", () => {
+    expect(withoutEmoji(`Cargo Hauling | Star Citizen ${e(0x1f4e6)}`)).toBe(
+      "Cargo Hauling | Star Citizen",
+    );
+    expect(withoutEmoji(`Mining Tips ${e(0x26cf, 0xfe0f)} Laser Heads`)).toBe(
+      "Mining Tips Laser Heads",
+    );
+    expect(withoutEmoji(`Crew ${e(0x1f469, 0x200d, 0x1f680)} night`)).toBe(
+      "Crew night",
+    );
+  });
+  it("leaves words, numbers and punctuation as they are", () => {
+    expect(withoutEmoji("IAE 2956 - Save The Date | Star Citizen")).toBe(
+      "IAE 2956 - Save The Date | Star Citizen",
+    );
+    expect(withoutEmoji("4.10.3 #1 © ®")).toBe("4.10.3 #1 © ®");
   });
 });

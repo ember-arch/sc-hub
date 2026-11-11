@@ -1,6 +1,6 @@
 # ADR-038: The hero home page: dispatches first, featured ships that change daily, the developers' latest, this year's funding
 
-- Status: accepted
+- Status: accepted; the funding card's link to the ledger ends with ADR-040, which folds the ledger into the card
 - Date: 2026-11-10
 - Deciders: owner ("on the home page - let's move dispatches to the top of the page under the stats and call them 'Dispatches from the Verse'. Then under that the Ships Hero section we have now labeled Featured Vehicles and Ships (updating daily) with a 'See All XXX Ships and Vehicles in the register' link below that (removing the broader entries A-Z block and replacing it with Featured Developer posts from Spectrum (maybe the top 3-5 from the past 48 hours) and then below that an always updating one visualization for Funding that Shows Total Funding YTD (with % to last year's total funding and current YoY growth) and a toggle that switches to YTD monthly funding with YoY monthly comparisons -- this will be our new Hero home page --- always relevant always updating and creating great hooks to dive deeper in the site", 2026-11-10), Claude Code session 2026-11-10
 - Amends: ADR-020 and ADR-021 (the front page's order and parts), ADR-029 (where the front page's dispatches sit), system.md's Home row, spec 06

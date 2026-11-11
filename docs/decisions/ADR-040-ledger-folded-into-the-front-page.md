@@ -15,7 +15,7 @@ What goes with the page and is not carried to the home: the citizens measure (it
 
 | Concern | Choice | Reason |
 | --- | --- | --- |
-| The page | `apps/web/app/funding/` is removed with its page, its running-total chart and the charts the card does not draw; `/funding` (and `/funding?measure=citizens`) redirects permanently to `/#funding`, the card's anchor, since the address has been public since ADR-018 and in the sitemap | The owner's call; a published address lands somewhere |
+| The page | `apps/web/app/funding/` is removed with its page, its running-total chart and the charts the card does not draw; `/funding` redirects permanently to `/#funding`, the card's anchor, since the address has been public since ADR-018 and in the sitemap (the measure address lands on `/?measure=citizens#funding`, Next keeping the query, which the home ignores) | The owner's call; a published address lands somewhere |
 | The card | The front page's "Funding this year" section is the site's one funding surface: the three figures, the two views (ADR-038), and under them the ledger's sources line (RSI's counter via the Star Citizen Wiki API, the copy date, differences between snapshots, never estimated). The running head carries the latest reading's date in place of the link to the ledger | What the page said about its numbers, the card now says |
 | The counters | "Pledged since 2012" and "This year" in the figure strip link to the card (`#funding`); "Citizens" links nowhere, since the site no longer draws citizens | No link to a page that is gone |
 | The nav and contents | "Funding" leaves the shell's sections and the front page's contents, which renumber to five | |

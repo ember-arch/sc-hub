@@ -25,12 +25,7 @@ interface Scale {
   readonly y: (v: number) => number;
 }
 
-export function scale(
-  xMin: number,
-  xMax: number,
-  yMin: number,
-  yMax: number,
-): Scale {
+function scale(xMin: number, xMax: number, yMin: number, yMax: number): Scale {
   const dx = xMax - xMin || 1;
   const dy = yMax - yMin || 1;
   return {
@@ -39,7 +34,7 @@ export function scale(
   };
 }
 
-export const pathOf = (pts: readonly { x: number; y: number }[]): string =>
+const pathOf = (pts: readonly { x: number; y: number }[]): string =>
   pts
     .map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)} ${p.y.toFixed(1)}`)
     .join(" ");

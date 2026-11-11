@@ -1,4 +1,5 @@
 import { repo } from "../../../lib/data";
+import { SITE_NAME } from "ui/brand";
 import { siteUrl } from "../../../lib/seo";
 
 /** The feed as RSS 2.0 (spec 03, "Feed UI"): the latest fifty items, each linking its original. */
@@ -33,7 +34,7 @@ export function GET(): Response {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>SC Hub news</title>
+    <title>${SITE_NAME} news</title>
     <link>${escape(`${base}/news`)}</link>
     <atom:link href="${escape(`${base}/news/rss.xml`)}" rel="self" type="application/rss+xml" />
     <description>Comm-Links and roadmap changes, each linked to its original on the source site. Comm-Link text via the Star Citizen Wiki API (api.star-citizen.wiki). An unofficial fan site, not affiliated with Cloud Imperium.</description>

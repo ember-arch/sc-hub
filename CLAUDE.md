@@ -1,10 +1,10 @@
-# CLAUDE.md — SC Hub constitution
+# CLAUDE.md — Coppercork constitution
 
 Read this file in full at the start of every session. It is the single source of rules for this repository. When a spec, a comment, or a chat instruction conflicts with this file, say so and ask before proceeding.
 
 ## 1. What this project is
 
-SC Hub (working title) is a non-commercial fan reference site for Star Citizen. It merges four things into one cross-linked entity model: a news feed (RSI Comm-Links, patch notes, roadmap, video), a developer-post tracker (CIG staff posts on Spectrum), a ship and component database with specs per patch channel, and an in-browser 3D ship viewer built from game-extracted models.
+Coppercork (named by the owner on 2026-11-10, ADR-041; "SC Hub" was the working title) is a non-commercial fan reference site for Star Citizen. It merges four things into one cross-linked entity model: a news feed (RSI Comm-Links, patch notes, roadmap, video), a developer-post tracker (CIG staff posts on Spectrum), a ship and component database with specs per patch channel, and an in-browser 3D ship viewer built from game-extracted models.
 
 The model to copy is Wowhead: every ship, component, manufacturer, news item, and developer post is an entity with a page, and entities link to each other. A dev post that mentions the Carrack appears on the Carrack page.
 
@@ -177,7 +177,7 @@ If a step cannot be completed (missing credential, unknown record shape, a desig
 
 | Decision | Current state | Placeholder in code |
 | --- | --- | --- |
-| Project name | Undecided; "SC Hub" is a working title | `SITE_NAME` constant in `packages/schema/site.ts`, re-exported by `packages/ui/brand.ts` (ADR-036) |
+| Project name | Decided: Coppercork (ADR-041, 2026-11-10); CIG has not yet been told, which spec 05's "Name and domain" criterion keeps as its own box | `SITE_NAME` constant in `packages/schema/site.ts`, re-exported by `packages/ui/brand.ts` (ADR-036) |
 | License | Undecided; MIT for code with assets and data excluded is the recommendation | `LICENSE` file is absent until decided; do not add one |
 | Hero ship list | Undecided until Phase 4 (the showcase pair, Odin and Perseus, is a separate owner choice, ADR-010) | `pipeline/hero-ships.json` |
 | Spectrum access method | Ask CIG for a feed; build the poller behind the adapter either way | `SPECTRUM_MODE` |

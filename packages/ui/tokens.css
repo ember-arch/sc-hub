@@ -19,6 +19,7 @@
   --warning: #8A5A00;
   --danger: #B3261E;
   --spectrum-staff: #DEC342;
+  --brand-copper: #A8652F;
   color-scheme: light;
 }
 
@@ -41,6 +42,7 @@
     --warning: #E0A94A;
     --danger: #EF7A6E;
     --spectrum-staff: #DEC342;
+    --brand-copper: #D08A4F;
     color-scheme: dark;
   }
 }
@@ -63,6 +65,7 @@
   --warning: #E0A94A;
   --danger: #EF7A6E;
   --spectrum-staff: #DEC342;
+  --brand-copper: #D08A4F;
   color-scheme: dark;
 }
 
@@ -85,6 +88,7 @@
   --color-warning: var(--warning);
   --color-danger: var(--danger);
   --color-spectrum-staff: var(--spectrum-staff);
+  --color-brand-copper: var(--brand-copper);
 
   --font-*: initial;
   --font-sans: var(--font-manrope), system-ui, -apple-system, 'Segoe UI', sans-serif;

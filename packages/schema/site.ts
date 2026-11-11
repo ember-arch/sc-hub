@@ -7,8 +7,8 @@
  * is read in this module: callers pass the contact address they were given.
  */
 
-/** The working title (CLAUDE.md section 12); the one place the name is written. */
-export const SITE_NAME = "SC Hub";
+/** The site's name (ADR-041, closing CLAUDE.md section 12's open decision); the one place it is written. */
+export const SITE_NAME = "Coppercork";
 
 /**
  * The canonical origin since the launch of 2026-11-10 (ADR-033). The pages resolve theirs from
@@ -29,7 +29,7 @@ export const SITE_VERSION = "1.0";
 /** RFC 9110 `token`: what a User-Agent product name may contain. */
 const TOKEN = /^[!#$%&'*+.^_`|~0-9A-Za-z-]+$/;
 
-/** The site name as a product token: "SC Hub" is written "SC-Hub", since a token has no spaces. */
+/** The site name as a product token; a name with spaces would have them replaced, since a token has none. */
 export const SITE_PRODUCT = SITE_NAME.replace(/\s+/g, "-");
 
 /**
@@ -37,7 +37,7 @@ export const SITE_PRODUCT = SITE_NAME.replace(/\s+/g, "-");
  * <contact email>)`, followed by the job's name as a second product token so a source can tell
  * the pollers, the refresh and the dev scripts apart in its logs:
  *
- *     SC-Hub/1.0 (+https://coppercork.com/about; ventures@coppercork.com) poll-news
+ *     Coppercork/1.0 (+https://coppercork.com/about; ventures@coppercork.com) poll-news
  *
  * `contact` is the `SC_HUB_CONTACT_EMAIL` the caller read; with `null` the address is left out,
  * and the callers that reach robertsspaceindustries.com refuse to run (CLAUDE.md section 9).

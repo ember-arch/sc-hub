@@ -35,7 +35,7 @@ export default function AboutPage() {
           <h1 className="text-title text-primary">About {SITE_NAME}</h1>
           <p className="text-body text-primary">{ABOUT_STATEMENT}</p>
           <p className="text-body text-secondary">
-            {SITE_NAME} is a reference for Star Citizen: every ship, component,
+            {SITE_NAME} is a record of Star Citizen: every ship, component,
             manufacturer, news item and developer post gets a page, and the
             pages link to each other. Ship and component data is shown per game
             channel and version; LIVE is canonical.

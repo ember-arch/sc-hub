@@ -24,6 +24,7 @@ export const storyMeta: readonly {
   { id: "command-palette", width: 1280, capture: "viewport" },
   { id: "page-shell", width: 1280 },
   { id: "theme-toggle", width: 390 },
+  { id: "logo", width: 390 },
   { id: "filter-bar", width: 1280 },
   { id: "filter-bar-phone", width: 390 },
   { id: "segmented-links", width: 390 },

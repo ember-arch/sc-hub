@@ -33,6 +33,8 @@ import { SegmentedLinks } from "../components/segmented-links";
 import { StatList, StatRow } from "../components/stat-row";
 import { StatsByChannel } from "../components/stats-by-channel";
 import { ThemeToggle } from "../components/theme-toggle";
+import { Logo } from "../components/logo";
+import { SITE_NAME } from "../brand";
 import { channelBadge, vehicleStatusBadge } from "../components/status";
 import { DataTableStory } from "./data-table-story";
 import { storyMeta } from "./ids";
@@ -403,6 +405,21 @@ const renderers: Record<string, { title: string; render: Story["render"] }> = {
       <div className="flex items-center gap-3 p-4">
         <ThemeToggle />
         <span className="text-ui text-secondary">Light or dark</span>
+      </div>
+    ),
+  },
+  logo: {
+    title: "Logo",
+    render: () => (
+      <div className="flex flex-col gap-4 p-4">
+        <p className="m-0 flex items-center gap-2 text-ui font-medium text-primary">
+          <Logo />
+          {SITE_NAME}
+        </p>
+        <p className="m-0 flex items-center gap-4 text-primary">
+          <Logo size={96} />
+          <Logo size={16} />
+        </p>
       </div>
     ),
   },

@@ -9,8 +9,8 @@
  *   JSON-LD of the ship's pledge page, one request per ship, five seconds apart (CLAUDE.md
  *   section 9).
  *
- * Nothing is converted, defaulted or typed in. An unknown shape halts the run and nothing is
- * written.
+ * Nothing is converted, defaulted or typed in. Pledge-store rows listed at no price are left out
+ * and named in the log (issue 34). An unknown shape halts the run and nothing is written.
  *
  *   pnpm --filter schema build && pnpm exec tsx scripts/bootstrap-fixtures/acquisition.ts
  */
@@ -56,6 +56,15 @@ const Sku = z
  * code does not know halts the run.
  */
 const SKIPPED_SKU_SOURCES: ReadonlySet<string> = new Set(["upgrade_api"]);
+
+/**
+ * A pledge-store row the store lists at no price: nothing a backer pays for, so not an offer to
+ * show beside the ship's prices. It is left out, counted and named in the log (issue 34); any
+ * other price that is not a positive number still halts.
+ */
+const ZeroPriced = z
+  .object({ source: z.literal("pledge_store"), price: z.literal(0) })
+  .loose();
 const AnySku = z.object({ source: z.string() }).loose();
 export type Sku = z.infer<typeof Sku>;
 
@@ -129,11 +138,17 @@ export function offersFromSkus(
   skus: readonly { readonly source: string }[],
   ship: { slug: string; class_name: string },
   fetchedAt: string,
-): { offers: PledgeOffer[]; skipped: number } {
+): { offers: PledgeOffer[]; skipped: number; zeroPriced: string[] } {
+  const zeroPriced: string[] = [];
   const kept = skus.filter((row) => {
     if (SKIPPED_SKU_SOURCES.has(row.source)) return false;
     if (row.source !== "pledge_store") {
       throw new Error(`${ship.class_name}: unknown sku source "${row.source}"`);
+    }
+    const free = ZeroPriced.safeParse(row);
+    if (free.success) {
+      zeroPriced.push(String(free.data["title"] ?? "untitled"));
+      return false;
     }
     return true;
   });
@@ -155,7 +170,11 @@ export function offersFromSkus(
       fetched_at: fetchedAt,
     });
   });
-  return { offers, skipped: skus.length - kept.length };
+  return {
+    offers,
+    skipped: skus.length - kept.length - zeroPriced.length,
+    zeroPriced,
+  };
 }
 
 /** UEX rows for the pack's build; rows reported for another build are returned as `skipped`. */
@@ -329,6 +348,7 @@ async function main(): Promise<void> {
   const shops: ShopPrice[] = [];
   let skipped = 0;
   let staleSkus = 0;
+  const zeroPriced: string[] = [];
   for (const row of [...stats].sort((a, b) =>
     a.class_name.localeCompare(b.class_name),
   )) {
@@ -360,12 +380,16 @@ async function main(): Promise<void> {
     shops.push(...prices.rows);
     skipped += prices.skipped;
     staleSkus += own.skipped;
+    zeroPriced.push(
+      ...own.zeroPriced.map((title) => `${row.class_name}: ${title}`),
+    );
     console.log(
       JSON.stringify({
         event: "acquisition.ship",
         class_name: row.class_name,
         offers: own.offers.length,
         skipped_upgrade_api: own.skipped,
+        skipped_zero_price: own.zeroPriced,
         purchase: prices.rows.filter((r) => r.kind === "purchase").length,
         rental: prices.rows.filter((r) => r.kind === "rental").length,
         skipped_other_version: prices.skipped,
@@ -402,6 +426,7 @@ async function main(): Promise<void> {
       offers: offers.length,
       shop_prices: shops.length,
       skipped_upgrade_api: staleSkus,
+      skipped_zero_price: zeroPriced,
       skipped_other_version: skipped,
       requests: client.requests,
     }),

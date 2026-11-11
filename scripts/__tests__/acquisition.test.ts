@@ -97,6 +97,20 @@ describe("offersFromSkus", () => {
       /unknown sku source/,
     );
   });
+
+  // Issue 34: the store listed a row at $0 and the whole price refresh halted for days.
+  it("leaves out a row the store lists at no price, names it, and still halts on a negative one", () => {
+    const { offers, skipped, zeroPriced } = offersFromSkus(
+      [sku(), sku({ title: "Free Thing", price: 0 })],
+      ship,
+      AT,
+    );
+    expect(offers.map((o) => o.price_usd)).toEqual([90]);
+    expect(skipped).toBe(0);
+    expect(zeroPriced).toEqual(["Free Thing"]);
+    expect(() => offersFromSkus([sku({ price: -5 })], ship, AT)).toThrow();
+    expect(() => offersFromSkus([sku({ price: null })], ship, AT)).toThrow();
+  });
 });
 
 describe("shopRows", () => {

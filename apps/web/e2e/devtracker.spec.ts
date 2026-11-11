@@ -159,6 +159,71 @@ test.describe("the dev tracker with Spectrum on", () => {
     { name: "phone", width: 390, height: 844 },
     { name: "desktop", width: 1280, height: 800 },
   ] as const;
+  // A post opened, the first with a picture on the page (ADR-036): the record of the plate and
+  // the post's own blocks across the card. Falls back to the first post where none has one.
+  for (const viewport of VIEWPORTS) {
+    for (const scheme of ["light", "dark"] as const) {
+      test(`news-dev-post-open at ${viewport.width} px, ${scheme}`, async ({
+        browser,
+      }) => {
+        const context = await browser.newContext({
+          viewport: { width: viewport.width, height: viewport.height },
+          colorScheme: scheme,
+          deviceScaleFactor: 1,
+        });
+        const page = await context.newPage();
+        await page.goto("/news/dev");
+        const withPlate = page.locator("article", {
+          has: page.locator("figure.dev-post-plate"),
+        });
+        const article =
+          (await withPlate.count()) > 0
+            ? withPlate.first()
+            : page.locator("article").first();
+        await article.locator("summary").click();
+        await expect(article.locator("details")).toHaveAttribute("open", "");
+        await expect(article.getByText("Fold the post")).toBeVisible();
+        // The post's text is hidden from the summary once open; the body shows instead.
+        const overflow = await page.evaluate(
+          () =>
+            document.documentElement.scrollWidth >
+            document.documentElement.clientWidth,
+        );
+        expect(overflow, "page scrolls sideways").toBe(false);
+        // The plates load lazily: scroll the post through like a reader, then wait for every
+        // picture in it to have loaded, so the record shows them and not their frames.
+        const box = await article.boundingBox();
+        for (let y = 0; y < (box?.height ?? 0); y += 600) {
+          await page.evaluate(
+            (top) => window.scrollTo(0, top),
+            (box?.y ?? 0) + y,
+          );
+          await page.waitForTimeout(60);
+        }
+        await expect
+          .poll(
+            () =>
+              article
+                .locator("figure.dev-post-plate img")
+                .evaluateAll((imgs) =>
+                  imgs.every(
+                    (img) =>
+                      (img as HTMLImageElement).complete &&
+                      (img as HTMLImageElement).naturalWidth > 0,
+                  ),
+                ),
+            { timeout: 20_000 },
+          )
+          .toBe(true);
+        mkdirSync(OUT, { recursive: true });
+        await article.screenshot({
+          path: join(OUT, `news-dev-post-open-${viewport.name}-${scheme}.png`),
+        });
+        await context.close();
+      });
+    }
+  }
+
   for (const screen of SCREENS) {
     for (const viewport of VIEWPORTS) {
       for (const scheme of ["light", "dark"] as const) {

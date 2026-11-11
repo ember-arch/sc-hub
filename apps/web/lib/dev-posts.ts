@@ -4,6 +4,8 @@
  * card (ADR-035). Pure functions over repository rows; no fetching here.
  */
 import type { Author, ContentItem } from "schema";
+import type { ResponsiveImage } from "ui";
+import { SPECTRUM_IMAGE_CREDIT, SPECTRUM_IMAGE_PENDING } from "ui/legal";
 
 /** The Spectrum items of the feed, newest first as the repository keeps them. */
 export function devPosts(news: readonly ContentItem[]): ContentItem[] {
@@ -38,6 +40,43 @@ export function excerptOf(bodyHtml: string): string | null {
   const cut = text.slice(0, 280);
   const at = cut.lastIndexOf(" ");
   return `${at > 120 ? cut.slice(0, at) : cut}…`;
+}
+
+const ESCAPES: Readonly<Record<string, string>> = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#39;",
+};
+
+const escapeHtml = (text: string): string =>
+  text.replace(/[&<>"']/g, (c) => ESCAPES[c] ?? c);
+
+/** Spectrum's upload id on an `img` the worker wrote (ADR-036). */
+const UPLOAD_IMG = /<img\b([^>]*)\bdata-upload="(\d+)"([^>]*)>/g;
+
+/**
+ * The post's body as the page shows it (ADR-036): every picture the worker left as an `img` with
+ * Spectrum's upload id becomes a plate across the card, the picture's web copies from the media
+ * manifest with their credit under it, or, where the picture has not been copied yet, a captioned
+ * placeholder with the same credit. Nothing is ever fetched from Spectrum by the reader's browser
+ * (ADR-009). The rest of the HTML, sanitized by the worker, passes through untouched; the first
+ * picture loads with the post, the rest lazily.
+ */
+export function renderBody(
+  bodyHtml: string,
+  picture: (uploadId: string) => ResponsiveImage | null,
+  sourceUrl: string,
+): string {
+  return bodyHtml.replace(UPLOAD_IMG, (_whole, _before, uploadId: string) => {
+    const found = picture(uploadId);
+    const credit = `<a href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer" class="lab">${escapeHtml(SPECTRUM_IMAGE_CREDIT.text)}</a>`;
+    if (found === null) {
+      return `<figure class="dev-post-plate dev-post-plate-pending"><figcaption><span>${escapeHtml(SPECTRUM_IMAGE_PENDING)}</span>${credit}</figcaption></figure>`;
+    }
+    return `<figure class="dev-post-plate"><img src="${escapeHtml(found.src)}" srcset="${escapeHtml(found.srcSet)}" sizes="(min-width: 1024px) 896px, calc(100vw - 2rem)" width="${found.width}" height="${found.height}" alt="" loading="lazy" decoding="async"><figcaption>${credit}</figcaption></figure>`;
+  });
 }
 
 /** The author of a post, by the id the worker wrote on it. */

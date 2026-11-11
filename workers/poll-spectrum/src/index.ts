@@ -3,9 +3,15 @@
  * for staff posts since the newest on record and writes them to the news pack as content items
  * of source `spectrum`, with their authors in `fixtures/news/Author.json` (handle, display name,
  * role, first seen, post count; nothing else). With `off`, the default, it does nothing and says
- * so. `pnpm workers:poll-spectrum [--backfill <pages>]`: a backfill reads that many pages of the
- * last year, five minutes apart; a plain run reads the newest page of the last week. `poll` mode
- * needs no credential: Spectrum's search answers without a sign-in (ADR-027).
+ * so. `pnpm workers:poll-spectrum [--backfill <pages>] [--threads <n>]`: a backfill reads that
+ * many pages of the last year, five minutes apart; a plain run reads the newest page of the last
+ * week. `poll` mode needs no credential: Spectrum's search answers without a sign-in (ADR-027).
+ *
+ * After the search, in `poll` mode, the thread step (ADR-036, `threads.ts`) reads each collected
+ * post's thread in full and writes the post's own blocks and pictures as a new revision of its
+ * `body_html`: a plain run reads the threads of the posts it just collected, up to three; with
+ * `--threads <n>` it reads up to n threads due anywhere on the pack, the backfill, which runs
+ * locally in the background at one request every five minutes.
  */
 import { randomUUID } from "node:crypto";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
@@ -20,10 +26,26 @@ import type { SpectrumAdapter, StaffPost } from "../adapter.js";
 import { createFeedAdapter } from "./feed.js";
 import { createPollAdapter, SpectrumStatusError } from "./poll.js";
 import type { StaffList } from "./staff.js";
+import {
+  ThreadStateFile,
+  UploadRow,
+  createThreadReader,
+  dueThreads,
+  openJson,
+  readThreads,
+} from "./threads.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(here, "..", "..", "..");
 const newsDir = join(repoRoot, "fixtures", "news");
+const spectrumDir = join(repoRoot, "fixtures", "spectrum");
+
+/**
+ * How many threads a scheduled run reads in full after the search (ADR-036): the threads of the
+ * posts it just collected, five minutes apart, within the workflow's timeout. The rest wait for
+ * the next run, or for `--threads <n>`, which reads up to n threads due across the pack.
+ */
+export const SCHEDULED_THREADS = 3;
 const StaffFile = z.object({ handles: z.array(z.string()) }).loose();
 
 function flag(args: readonly string[], name: string): string | undefined {
@@ -165,6 +187,7 @@ async function main(): Promise<void> {
     throw error;
   }
   let older = 0;
+  const collected = new Set<string>();
   for (const post of posts) {
     // Before the author row: a post from before the news window (ADR-031) makes no author
     // and no item (an old post edited this week comes back from the search with its old time).
@@ -191,9 +214,53 @@ async function main(): Promise<void> {
       now,
     );
     if (outcome === "new") authors.count(author.id);
+    if (outcome === "new" || outcome === "revised") collected.add(post.id);
   }
   const written = store.save();
   if (written) authors.save();
+
+  // The thread step (ADR-036): the posts' own blocks and pictures, in poll mode only (a feed
+  // from CIG would carry them itself).
+  const threadsFlag = flag(args, "--threads");
+  let threads = null;
+  if (mode === "poll") {
+    const state = openJson(
+      join(spectrumDir, "thread-state.json"),
+      ThreadStateFile,
+      {},
+    );
+    const uploads = openJson(
+      join(spectrumDir, "uploads.json"),
+      UploadRow.array(),
+      [],
+    );
+    const due =
+      threadsFlag === undefined
+        ? dueThreads(store.latest(), state.value, collected)
+        : dueThreads(store.latest(), state.value);
+    const limit =
+      threadsFlag === undefined ? SCHEDULED_THREADS : Number(threadsFlag);
+    log({ event: "spectrum.threads.due", due: due.length, limit });
+    threads = await readThreads({
+      store,
+      state,
+      uploads,
+      reader: createThreadReader({
+        post: (url, init) =>
+          globalThis.fetch(url, {
+            method: "POST",
+            headers: init.headers,
+            body: init.body,
+          }),
+        userAgent: userAgent(contact),
+        log,
+      }),
+      due,
+      limit,
+      now: () => new Date().toISOString(),
+      log,
+    });
+  }
   console.log(
     JSON.stringify({
       run_id: runId,
@@ -206,6 +273,7 @@ async function main(): Promise<void> {
       revised: store.revised,
       authors: authors.rows.length,
       written,
+      threads,
       errors: 0,
       duration_ms: Date.now() - started,
     }),

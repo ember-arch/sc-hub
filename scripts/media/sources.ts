@@ -240,6 +240,27 @@ export function coversFromHub(
   return out;
 }
 
+/**
+ * Web copies of each picture in a developer post (ADR-036), widest first; never upscaled. The
+ * post runs across its card, so 1280 serves a wide screen at 1x and 1920 at 1.5x; 640 serves
+ * phones. A picture narrower than the smallest width gets one copy at its own size.
+ */
+export const SPECTRUM_UPLOAD_WIDTHS: readonly number[] = [1920, 1280, 960, 640];
+
+/** `/media/spectrum/3481105-1280.webp`: a post's picture by Spectrum's upload id. */
+export function spectrumRenditionPath(uploadId: string, width: number): string {
+  return `/media/spectrum/${uploadId}-${width}.webp`;
+}
+
+/** One row of `fixtures/spectrum-media/sources.json`: where a copied post picture came from (ADR-036). */
+export const SpectrumSource = RsiSource.omit({ class_name: true }).extend({
+  /** Spectrum's upload id, the `data-upload` of the post's `img`. */
+  upload_id: z.string().regex(/^\d+$/),
+  /** The post the picture was attached to, on Spectrum. */
+  page_url: z.url(),
+});
+export type SpectrumSource = z.infer<typeof SpectrumSource>;
+
 /** One row of `fixtures/rsi-media/cover-sources.json`: where a copied Comm-Link cover came from (ADR-029). */
 export const CoverSource = RsiSource.omit({ class_name: true }).extend({
   /** RSI's id for the Comm-Link, the content item's `external_id`. */

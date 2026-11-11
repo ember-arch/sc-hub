@@ -8,7 +8,11 @@ import {
 } from "schema";
 import { envSchema } from "schema/env";
 import type { MakerMark, ResponsiveImage } from "ui";
-import { RSI_IMAGE_CREDIT, WIKI_GALLERY_CREDIT } from "ui/legal";
+import {
+  RSI_IMAGE_CREDIT,
+  SPECTRUM_IMAGE_CREDIT,
+  WIKI_GALLERY_CREDIT,
+} from "ui/legal";
 import { REPO_ROOT, type ShipView } from "./data";
 
 /**
@@ -107,6 +111,12 @@ export interface Media {
    * Comm-Link's page.
    */
   cover(externalId: string): ResponsiveImage | null;
+  /**
+   * A picture in a developer post (ADR-036), by Spectrum's upload id (the `data-upload` of the
+   * post's `img`): the alt is empty, since the post's own text stands around it; the credit names
+   * Cloud Imperium Games via Spectrum and links the post.
+   */
+  spectrumUpload(uploadId: string): ResponsiveImage | null;
   /** The ship's RSI holoviewer model (ADR-015). */
   holo(slug: string): HoloModel | null;
   /** The human figure the holoviewer stands beside the ship. */
@@ -122,6 +132,9 @@ export function createMedia(manifest: MediaManifest | null): Media {
   );
   const concepts = new Map(manifest?.concepts.map((c) => [c.slug, c]) ?? []);
   const covers = new Map(manifest?.covers.map((c) => [c.external_id, c]) ?? []);
+  const uploads = new Map(
+    manifest?.spectrum.map((u) => [u.upload_id, u]) ?? [],
+  );
   const pictureOf = (
     entry:
       | {
@@ -134,6 +147,7 @@ export function createMedia(manifest: MediaManifest | null): Media {
         }
       | undefined,
     alt: string,
+    creditText: string = RSI_IMAGE_CREDIT.text,
   ): ResponsiveImage | null => {
     const widest = entry?.renditions[0];
     if (entry === undefined || widest === undefined) return null;
@@ -145,7 +159,7 @@ export function createMedia(manifest: MediaManifest | null): Media {
       height: widest.height,
       srcSet: entry.renditions.map((r) => `${r.src} ${r.width}w`).join(", "),
       alt,
-      credit: { text: RSI_IMAGE_CREDIT.text, href: entry.page_url },
+      credit: { text: creditText, href: entry.page_url },
     };
   };
   const image = (className: string, alt: string): ResponsiveImage | null =>
@@ -154,6 +168,8 @@ export function createMedia(manifest: MediaManifest | null): Media {
     concept: (slug, name) =>
       pictureOf(concepts.get(slug), name === null ? "" : `The ${name}`),
     cover: (externalId) => pictureOf(covers.get(externalId), ""),
+    spectrumUpload: (uploadId) =>
+      pictureOf(uploads.get(uploadId), "", SPECTRUM_IMAGE_CREDIT.text),
     showcase: (slug) => showcases.get(slug) ?? null,
     showcaseCard(slug) {
       const show = showcases.get(slug);

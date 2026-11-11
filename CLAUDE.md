@@ -144,7 +144,7 @@ Rate limits (polite defaults; never exceed):
 | Source | Limit |
 | --- | --- |
 | robertsspaceindustries.com pages (the store's data endpoint included, ADR-025) | 1 request every 5 seconds per worker; identify with a project User-Agent and contact email |
-| Spectrum (poll mode) | 1 request every 5 minutes per endpoint; back off to 30 minutes on any non-200 |
+| Spectrum (poll mode: the search and the thread endpoint, ADR-027, ADR-036) | 1 request every 5 minutes per endpoint; back off to 30 minutes on any non-200 |
 | api.star-citizen.wiki | 30 requests per minute (their stated cap is 60); credit line required on pages using its data |
 | starcitizen.tools (Star Citizen Wiki articles and media uploads) | 1 request every 5 seconds (its robots.txt crawl delay); article pages and uploads only, never `/api.php` or `?action=` URLs, which robots.txt disallows; project User-Agent; text is CC BY-SA 4.0 and credited where shown (ADR-017) |
 | YouTube RSS | 1 request per hour |

@@ -9,8 +9,10 @@ import {
   devPosts,
   excerptOf,
   postsBy,
+  renderBody,
   threadUrl,
 } from "../../../lib/dev-posts";
+import { media } from "../../../lib/media";
 import { Site, now } from "../../../lib/site";
 import { Chip } from "../chip";
 import { NewsTabs } from "../tabs";
@@ -55,6 +57,7 @@ export default async function DevTrackerPage({ searchParams }: Props) {
     return s === "" ? "/news/dev" : `/news/dev?${s}`;
   };
   const at = now();
+  const pictures = media();
   return (
     <Site
       current="news"
@@ -120,7 +123,11 @@ export default async function DevTrackerPage({ searchParams }: Props) {
                   }
                   publishedAt={post.published_at}
                   now={at}
-                  bodyHtml={post.body_html}
+                  bodyHtml={renderBody(
+                    post.body_html,
+                    (id) => pictures.spectrumUpload(id),
+                    post.url,
+                  )}
                   excerpt={excerptOf(post.body_html)}
                   sourceUrl={post.url}
                   threadUrl={threadUrl(post)}

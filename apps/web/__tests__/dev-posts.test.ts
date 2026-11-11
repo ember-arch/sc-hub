@@ -7,6 +7,7 @@ import {
   devPosts,
   excerptOf,
   postsBy,
+  renderBody,
   threadUrl,
 } from "../lib/dev-posts";
 
@@ -106,6 +107,46 @@ describe("the dev tracker's reading", () => {
     expect(postsBy(posts, authors[1]!).map((p) => p.external_id)).toEqual([
       "2",
     ]);
+  });
+});
+
+describe("renderBody", () => {
+  const body =
+    '<p>Hi everyone,</p>\n<img data-upload="3463136" width="1680" height="945" alt="">\n<p><strong>Mobile</strong></p>\n<img data-upload="3463137" alt="">';
+  const picture = (id: string) =>
+    id === "3463136"
+      ? {
+          src: "/media/spectrum/3463136-1280.webp",
+          srcSet:
+            "/media/spectrum/3463136-1280.webp 1280w, /media/spectrum/3463136-640.webp 640w",
+          width: 1280,
+          height: 720,
+          alt: "",
+          credit: {
+            text: "Image: Cloud Imperium Games, via Spectrum",
+            href: THREAD,
+          },
+        }
+      : null;
+
+  it("makes a plate of a picture on file, with its web copies and the credit linked to the post, and a captioned placeholder of one not yet copied", () => {
+    const out = renderBody(body, picture, THREAD);
+    expect(out).toContain("<p>Hi everyone,</p>");
+    expect(out).toContain(
+      `<figure class="dev-post-plate"><img src="/media/spectrum/3463136-1280.webp" srcset="/media/spectrum/3463136-1280.webp 1280w, /media/spectrum/3463136-640.webp 640w" sizes="(min-width: 1024px) 896px, calc(100vw - 2rem)" width="1280" height="720" alt="" loading="lazy" decoding="async"><figcaption><a href="${THREAD}" target="_blank" rel="noopener noreferrer" class="lab">Image: Cloud Imperium Games, via Spectrum</a></figcaption></figure>`,
+    );
+    expect(out).toContain(
+      `<figure class="dev-post-plate dev-post-plate-pending"><figcaption><span>Picture on Spectrum, not yet copied here</span><a href="${THREAD}" target="_blank" rel="noopener noreferrer" class="lab">Image: Cloud Imperium Games, via Spectrum</a></figcaption></figure>`,
+    );
+    // Nothing points at Spectrum's own media host, and no bare img is left.
+    expect(out).not.toMatch(/robertsspaceindustries\.com\/[^"]*\.(jpg|png)/);
+    expect(out).not.toContain("data-upload");
+  });
+
+  it("leaves a body without pictures as it is, and the excerpt still reads the stored body", () => {
+    const plain = "<p>Just <em>words</em>.</p>";
+    expect(renderBody(plain, picture, THREAD)).toBe(plain);
+    expect(excerptOf(body)).toBe("Hi everyone, Mobile");
   });
 });
 

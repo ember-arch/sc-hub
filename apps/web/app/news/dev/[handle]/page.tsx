@@ -8,8 +8,10 @@ import {
   devPosts,
   excerptOf,
   postsBy,
+  renderBody,
   threadUrl,
 } from "../../../../lib/dev-posts";
+import { media } from "../../../../lib/media";
 import { Site, now } from "../../../../lib/site";
 import { NewsTabs } from "../../tabs";
 
@@ -58,6 +60,7 @@ export default async function AuthorPage({ params, searchParams }: Params) {
   const base = `/news/dev/${encodeURIComponent(author.handle)}`;
   const pageHref = (p: number): string => (p > 1 ? `${base}?page=${p}` : base);
   const at = now();
+  const pictures = media();
   return (
     <Site
       current="news"
@@ -90,7 +93,11 @@ export default async function AuthorPage({ params, searchParams }: Params) {
                 author={{ name: author.display_name, role: author.role }}
                 publishedAt={post.published_at}
                 now={at}
-                bodyHtml={post.body_html}
+                bodyHtml={renderBody(
+                  post.body_html,
+                  (id) => pictures.spectrumUpload(id),
+                  post.url,
+                )}
                 excerpt={excerptOf(post.body_html)}
                 sourceUrl={post.url}
                 threadUrl={threadUrl(post)}

@@ -1,0 +1,1548 @@
+{
+  "success": 1,
+  "code": "OK",
+  "msg": "OK",
+  "data": {
+    "id": "564187",
+    "time_created": 1784725671,
+    "time_modified": 1792204085,
+    "channel_id": "1",
+    "type": "discussion",
+    "slug": "spectrum-redesign-phase-1-now-live",
+    "subject": "Spectrum Redesign: Phase 1 Now Live",
+    "is_erased": false,
+    "tracked_post_role_id": "2",
+    "content_reply_id": "9044551",
+    "content_blocks": [
+      {
+        "id": 1,
+        "type": "text",
+        "data": {
+          "blocks": [
+            {
+              "key": "16tql",
+              "text": "Hi everyone,",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "flme8",
+              "text": "",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "4ph1v",
+              "text": "The first phase of the new Spectrum redesign is now live!",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "9o03g",
+              "text": "",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "enkc9",
+              "text": "This update introduces a cleaner, more modern experience designed to make Spectrum easier to navigate, easier to read, and better suited to the community it serves. Phase 1 lays the foundation, and this is only the beginning. We’ll continue refining and expanding Spectrum in the updates ahead.",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "fq6q0",
+              "text": "",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "6e00n",
+              "text": "",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "5ri5b",
+              "text": "What's New in Phase 1",
+              "type": "header-one",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "8tja5",
+              "text": "You’ll notice Spectrum looks a little different today. Phase 1 refreshes the core experience with an updated layout, a redesigned sidebar for communities, bookmarks, and navigation, and updates to the Star Citizen community page.",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            }
+          ],
+          "entityMap": []
+        }
+      },
+      {
+        "id": "mrw3ip6s-8rbahm5jl20",
+        "type": "image",
+        "data": [
+          {
+            "id": "upload:3463136",
+            "type": "upload",
+            "data": {
+              "url": "https://theverse.robertsspaceindustries.com/6jyg90p60itm0/source.jpg",
+              "image_width": 1680,
+              "image_height": 945,
+              "sizes": {
+                "mini": {
+                  "url": "https://theverse.robertsspaceindustries.com/6jyg90p60itm0/tavern_upload_mini.jpg"
+                },
+                "square": {
+                  "url": "https://theverse.robertsspaceindustries.com/6jyg90p60itm0/tavern_upload_square.jpg"
+                },
+                "small": {
+                  "url": "https://theverse.robertsspaceindustries.com/6jyg90p60itm0/tavern_upload_small.jpg"
+                },
+                "medium": {
+                  "url": "https://theverse.robertsspaceindustries.com/6jyg90p60itm0/tavern_upload_medium.jpg"
+                },
+                "large": {
+                  "url": "https://theverse.robertsspaceindustries.com/6jyg90p60itm0/tavern_upload_large.jpg"
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "mrw3iysq-ctfeuvqs2dk",
+        "type": "text",
+        "data": {
+          "blocks": [
+            {
+              "key": "8u6pl",
+              "text": "A New Home for Your Direct Messages",
+              "type": "header-one",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "fm1et",
+              "text": "Direct Messages now have a dedicated panel accessible from the top navigation bar, keeping your conversations just one click away wherever you are on Spectrum.",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            }
+          ],
+          "entityMap": []
+        }
+      },
+      {
+        "id": "mrw3jlsl-9jg1ib785yo",
+        "type": "image",
+        "data": [
+          {
+            "id": "upload:3463137",
+            "type": "upload",
+            "data": {
+              "url": "https://theverse.robertsspaceindustries.com/ya9c9nd1inwvy/source.jpg",
+              "image_width": 1680,
+              "image_height": 945,
+              "sizes": {
+                "mini": {
+                  "url": "https://theverse.robertsspaceindustries.com/ya9c9nd1inwvy/tavern_upload_mini.jpg"
+                },
+                "square": {
+                  "url": "https://theverse.robertsspaceindustries.com/ya9c9nd1inwvy/tavern_upload_square.jpg"
+                },
+                "small": {
+                  "url": "https://theverse.robertsspaceindustries.com/ya9c9nd1inwvy/tavern_upload_small.jpg"
+                },
+                "medium": {
+                  "url": "https://theverse.robertsspaceindustries.com/ya9c9nd1inwvy/tavern_upload_medium.jpg"
+                },
+                "large": {
+                  "url": "https://theverse.robertsspaceindustries.com/ya9c9nd1inwvy/tavern_upload_large.jpg"
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "mrw3juyj-fonb6w7fkqg",
+        "type": "text",
+        "data": {
+          "blocks": [
+            {
+              "key": "1tkvh",
+              "text": "Spectrum on Mobile, Refreshed",
+              "type": "header-one",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "2h8ie",
+              "text": "Spectrum’s mobile experience has also received a refresh, with a dedicated navigation bar that keeps key destinations within easy reach. Community pages and lobbies are now easier to browse, with a cleaner experience that feels more consistent with desktop.",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            }
+          ],
+          "entityMap": []
+        }
+      },
+      {
+        "id": "mrw3k73z-i32hbbgol3c",
+        "type": "image",
+        "data": [
+          {
+            "id": "upload:3463138",
+            "type": "upload",
+            "data": {
+              "url": "https://theverse.robertsspaceindustries.com/swte5ukf03t2b/source.jpg",
+              "image_width": 1680,
+              "image_height": 945,
+              "sizes": {
+                "mini": {
+                  "url": "https://theverse.robertsspaceindustries.com/swte5ukf03t2b/tavern_upload_mini.jpg"
+                },
+                "square": {
+                  "url": "https://theverse.robertsspaceindustries.com/swte5ukf03t2b/tavern_upload_square.jpg"
+                },
+                "small": {
+                  "url": "https://theverse.robertsspaceindustries.com/swte5ukf03t2b/tavern_upload_small.jpg"
+                },
+                "medium": {
+                  "url": "https://theverse.robertsspaceindustries.com/swte5ukf03t2b/tavern_upload_medium.jpg"
+                },
+                "large": {
+                  "url": "https://theverse.robertsspaceindustries.com/swte5ukf03t2b/tavern_upload_large.jpg"
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "mrw3khnv-5xompl2fmvs",
+        "type": "text",
+        "data": {
+          "blocks": [
+            {
+              "key": "cv0l3",
+              "text": "This is Just the Beginning",
+              "type": "header-one",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "fql88",
+              "text": "Phase 1 lays the foundation. Throughout 2026, we’ll continue rolling out the redesign across Spectrum, with threads and messages coming next.",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "b6vbe",
+              "text": "",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "28av7",
+              "text": "This is about more than a new look. Each phase will introduce meaningful quality-of-life improvements, including better Markdown support, richer formatting options, and more ways to bring structure and personality to your posts.",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "vpjs",
+              "text": "",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "13jle",
+              "text": "We want Spectrum to be a place you enjoy contributing to, not just catching up on.",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "a0adi",
+              "text": "",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "5s3so",
+              "text": "",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "ehmbj",
+              "text": "We Want to Hear From You",
+              "type": "header-one",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "av6vv",
+              "text": "Before we finalize the quality-of-life improvements coming to threads and messages, we want to hear what would make the biggest difference to your experience on Spectrum.",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "ajgo7",
+              "text": "",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "ei275",
+              "text": "Share your ideas in the comments below. Whether it’s better formatting tools, improved Markdown support, new messaging features, or something else entirely, we’re reading.",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "eqqe9",
+              "text": "",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "11ko",
+              "text": "While we can’t make any promises, your feedback will help shape what we prioritize next.",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            }
+          ],
+          "entityMap": []
+        }
+      },
+      {
+        "id": "mrz2cpyp-6kggdk6kdqg",
+        "type": "text",
+        "data": {
+          "blocks": [
+            {
+              "key": "34pil",
+              "text": "Thread Update on July 24th",
+              "type": "header-one",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "1a42a",
+              "text": "Messages & notifications:",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [
+                {
+                  "offset": 0,
+                  "length": 25,
+                  "style": "BOLD"
+                },
+                {
+                  "offset": 0,
+                  "length": 25,
+                  "style": "UNDERLINE"
+                }
+              ],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "9m2at",
+              "text": "Fixed an issue where new direct message notifications weren't including all the info needed to display properly.",
+              "type": "unordered-list-item",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "5f950",
+              "text": "Fixed the unread message counter incorrectly going up when you sent a message yourself for some users.",
+              "type": "unordered-list-item",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "6pm06",
+              "text": "Fixed blocked users being able to trigger \"new activity\" alerts even though they were blocked.",
+              "type": "unordered-list-item",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "fha2h",
+              "text": "",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "9tth",
+              "text": "Things not updating right away:",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [
+                {
+                  "offset": 0,
+                  "length": 31,
+                  "style": "BOLD"
+                },
+                {
+                  "offset": 0,
+                  "length": 31,
+                  "style": "UNDERLINE"
+                }
+              ],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "63f3d",
+              "text": "Fixed groups, categories, and chat rooms not showing changes immediately after you created, edited, or deleted them. Previously you'd need to refresh the page to see updates.",
+              "type": "unordered-list-item",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "2g5sl",
+              "text": "Fixed collapsed forum sections not staying collapsed, they'd reset instead of remembering your preference.",
+              "type": "unordered-list-item",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "a544n",
+              "text": "",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "ba9pc",
+              "text": "Visual glitches:",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [
+                {
+                  "offset": 0,
+                  "length": 16,
+                  "style": "BOLD"
+                },
+                {
+                  "offset": 0,
+                  "length": 16,
+                  "style": "UNDERLINE"
+                }
+              ],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "71r02",
+              "text": "Fixed bookmarked lobbies missing their \"#\" symbol in the sidebar.",
+              "type": "unordered-list-item",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "1pk1g",
+              "text": "Fixed organization names with special characters (like ampersands) displaying incorrectly instead of showing the proper text.",
+              "type": "unordered-list-item",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "ea1q8",
+              "text": "",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "bf4mj",
+              "text": "Mobile display issues:",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [
+                {
+                  "offset": 0,
+                  "length": 22,
+                  "style": "BOLD"
+                },
+                {
+                  "offset": 0,
+                  "length": 22,
+                  "style": "UNDERLINE"
+                }
+              ],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "6lhtl",
+              "text": "Fixed the pending friend requests panel being hidden behind the bottom navigation bar.",
+              "type": "unordered-list-item",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "207sl",
+              "text": "Fixed profile popups appearing behind the Friends sidebar instead of on top of it.",
+              "type": "unordered-list-item",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "comgs",
+              "text": "Fixed some content getting cut off on the right side of the screen on certain phone sizes.",
+              "type": "unordered-list-item",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            }
+          ],
+          "entityMap": []
+        }
+      }
+    ],
+    "lexical_content": null,
+    "highlight_role_id": "2",
+    "community_id": "1",
+    "member": {
+      "id": "3615334",
+      "displayname": "LoujoD_CIG",
+      "nickname": "LoujoD"
+    },
+    "replies_count": 206,
+    "tracked_replies_references": [
+      {
+        "id": "9044769",
+        "label": "LoujoD_CIG"
+      }
+    ],
+    "replies": [
+      {
+        "id": "9044758",
+        "time_created": 1784733373,
+        "time_modified": 1784733398,
+        "thread_id": "564187",
+        "content_blocks": [
+          {
+            "id": 1,
+            "type": "text",
+            "data": {
+              "blocks": [
+                {
+                  "key": "25tq6",
+                  "text": "Please add the ability to navigate to parent comment when opening a direct link to a Spectrum comment!",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [
+                    {
+                      "offset": 26,
+                      "length": 26,
+                      "style": "BOLD"
+                    }
+                  ],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "e1hmd",
+                  "text": "",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "10ob1",
+                  "text": "I constantly open linked comments that contain a direct response to something, and it's very frustrating right now trying to understand the context of the response with the lack of a \"parent\" link.",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                }
+              ],
+              "entityMap": []
+            }
+          }
+        ],
+        "lexical_content": null,
+        "is_erased": false,
+        "replies_count": 7,
+        "member": {
+          "id": "583510",
+          "displayname": "sunaurus",
+          "nickname": "sunaurus"
+        },
+        "replies": [
+          {
+            "id": "9044809",
+            "time_created": 1784734347,
+            "time_modified": 1784734347,
+            "thread_id": "564187",
+            "content_blocks": [
+              {
+                "id": 1,
+                "type": "text",
+                "data": {
+                  "blocks": [
+                    {
+                      "key": "f700l",
+                      "text": "That's on our list of most wanted update for the forum pages.",
+                      "type": "unstyled",
+                      "depth": 0,
+                      "inlineStyleRanges": [],
+                      "entityRanges": [],
+                      "data": []
+                    }
+                  ],
+                  "entityMap": []
+                }
+              }
+            ],
+            "lexical_content": null,
+            "is_erased": false,
+            "highlight_role_id": "2",
+            "replies_count": 5,
+            "member": {
+              "id": "5199977",
+              "displayname": "Nick | Spectrum",
+              "nickname": "nschiro"
+            },
+            "replies": [
+              {
+                "id": "9044820",
+                "time_created": 1784734637,
+                "time_modified": 1784734637,
+                "thread_id": "564187",
+                "content_blocks": [
+                  {
+                    "id": 1,
+                    "type": "text",
+                    "data": {
+                      "blocks": [
+                        {
+                          "key": "375t8",
+                          "text": "i in fact came here wondering what this was a response to, and upon discovering what it was a response to, i was very happy with this response :wink:",
+                          "type": "unstyled",
+                          "depth": 0,
+                          "inlineStyleRanges": [],
+                          "entityRanges": [
+                            {
+                              "offset": 143,
+                              "length": 6,
+                              "key": 0
+                            }
+                          ],
+                          "data": []
+                        }
+                      ],
+                      "entityMap": [
+                        {
+                          "type": "EMOJI",
+                          "mutability": "IMMUTABLE",
+                          "data": ":wink:"
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "lexical_content": null,
+                "is_erased": false,
+                "replies_count": 0,
+                "member": {
+                  "id": "3774444",
+                  "displayname": "leinir",
+                  "nickname": "leinir"
+                },
+                "replies": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "9044772",
+        "time_created": 1784733571,
+        "time_modified": 1784733620,
+        "thread_id": "564187",
+        "content_blocks": [
+          {
+            "id": 1,
+            "type": "text",
+            "data": {
+              "blocks": [
+                {
+                  "key": "4sl93",
+                  "text": "Before we finalize the quality-of-life improvements coming to threads and messages, we want to hear what would make the biggest difference to your experience on Spectrum.",
+                  "type": "code-block",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "8us6j",
+                  "text": "",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "bv2q0",
+                  "text": "Time zone formatting. This is a stupid basic feature that every other internet chat or forum uses. While posting in UTC is perfectly functional it's a nice QoL feature given the global nature of the platform.",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                }
+              ],
+              "entityMap": []
+            }
+          }
+        ],
+        "lexical_content": null,
+        "is_erased": false,
+        "replies_count": 1,
+        "member": {
+          "id": "701346",
+          "displayname": "Karga In The Middle",
+          "nickname": "Karga11"
+        },
+        "replies": [
+          {
+            "id": "9044798",
+            "time_created": 1784734041,
+            "time_modified": 1784734041,
+            "thread_id": "564187",
+            "content_blocks": [
+              {
+                "id": 1,
+                "type": "text",
+                "data": {
+                  "blocks": [
+                    {
+                      "key": "6lddj",
+                      "text": "See also https://robertsspaceindustries.com/spectrum/community/SC/forum/5/thread/some-spectrum-qol-items/4971184",
+                      "type": "unstyled",
+                      "depth": 0,
+                      "inlineStyleRanges": [],
+                      "entityRanges": [
+                        {
+                          "offset": 9,
+                          "length": 103,
+                          "key": 0
+                        }
+                      ],
+                      "data": []
+                    },
+                    {
+                      "key": "ec3ca",
+                      "text": "and Discord's @time command.",
+                      "type": "unstyled",
+                      "depth": 0,
+                      "inlineStyleRanges": [
+                        {
+                          "offset": 14,
+                          "length": 5,
+                          "style": "CODE"
+                        }
+                      ],
+                      "entityRanges": [
+                        {
+                          "offset": 14,
+                          "length": 5,
+                          "key": 1
+                        }
+                      ],
+                      "data": []
+                    }
+                  ],
+                  "entityMap": [
+                    {
+                      "type": "LINK",
+                      "mutability": "IMMUTABLE",
+                      "data": {
+                        "href": "https://robertsspaceindustries.com/spectrum/community/SC/forum/5/thread/some-spectrum-qol-items/4971184"
+                      }
+                    },
+                    {
+                      "type": "MENTION",
+                      "mutability": "IMMUTABLE",
+                      "data": {
+                        "nickname": "time"
+                      }
+                    }
+                  ]
+                }
+              }
+            ],
+            "lexical_content": null,
+            "is_erased": false,
+            "replies_count": 0,
+            "member": {
+              "id": "211640",
+              "displayname": "GotenXiao",
+              "nickname": "GotenXiao"
+            },
+            "replies": []
+          }
+        ]
+      },
+      {
+        "id": "9048700",
+        "time_created": 1784905672,
+        "time_modified": 1784905911,
+        "thread_id": "564187",
+        "content_blocks": [
+          {
+            "id": 1,
+            "type": "text",
+            "data": {
+              "blocks": [
+                {
+                  "key": "1ermh",
+                  "text": "We updated Spectrum to answer most QOL and bugfix request since the release on Wednesday. ",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "449r9",
+                  "text": "",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "5svn7",
+                  "text": "It will be fully propagated in 1 hour. So you might still experience some of the issues but it should resolve by 4pm UTC ",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "f58ve",
+                  "text": "",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "c7jvq",
+                  "text": "Messages & notifications:",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [
+                    {
+                      "offset": 0,
+                      "length": 25,
+                      "style": "BOLD"
+                    },
+                    {
+                      "offset": 0,
+                      "length": 25,
+                      "style": "UNDERLINE"
+                    }
+                  ],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "3nu9a",
+                  "text": "Fixed an issue where new direct message notifications weren't including all the info needed to display properly.",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "agr2t",
+                  "text": "Fixed the unread message counter incorrectly going up when you sent a message yourself for some users.",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "48ai0",
+                  "text": "Fixed blocked users being able to trigger \"new activity\" alerts even though they were blocked.",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "8cikc",
+                  "text": "",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "4c3cg",
+                  "text": "Things not updating right away:",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [
+                    {
+                      "offset": 0,
+                      "length": 31,
+                      "style": "BOLD"
+                    },
+                    {
+                      "offset": 0,
+                      "length": 31,
+                      "style": "UNDERLINE"
+                    }
+                  ],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "688ee",
+                  "text": "Fixed groups, categories, and chat rooms not showing changes immediately after you created, edited, or deleted them — previously you'd need to refresh the page to see updates.",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "b037h",
+                  "text": "Fixed collapsed forum sections not staying collapsed — they'd reset instead of remembering your preference.",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "b094c",
+                  "text": "",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "1e0gp",
+                  "text": "Visual glitches:",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [
+                    {
+                      "offset": 0,
+                      "length": 16,
+                      "style": "BOLD"
+                    },
+                    {
+                      "offset": 0,
+                      "length": 16,
+                      "style": "UNDERLINE"
+                    }
+                  ],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "1lsip",
+                  "text": "Fixed bookmarked lobbies missing their \"#\" symbol in the sidebar.",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "cj6k",
+                  "text": "Fixed organization names with special characters (like ampersands) displaying incorrectly instead of showing the proper text.",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "67jv0",
+                  "text": "",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "83thn",
+                  "text": "Mobile display issues:",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [
+                    {
+                      "offset": 0,
+                      "length": 22,
+                      "style": "BOLD"
+                    },
+                    {
+                      "offset": 0,
+                      "length": 22,
+                      "style": "UNDERLINE"
+                    }
+                  ],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "b91i2",
+                  "text": "Fixed the pending friend requests panel being hidden behind the bottom navigation bar.",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "580eh",
+                  "text": "Fixed profile popups appearing behind the Friends sidebar instead of on top of it.",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "1jvd3",
+                  "text": "Fixed some content getting cut off on the right side of the screen on certain phone sizes.",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                }
+              ],
+              "entityMap": []
+            }
+          }
+        ],
+        "lexical_content": null,
+        "is_erased": false,
+        "highlight_role_id": "2",
+        "replies_count": 5,
+        "member": {
+          "id": "3615334",
+          "displayname": "LoujoD_CIG",
+          "nickname": "LoujoD"
+        },
+        "replies": []
+      },
+      {
+        "id": "9048532",
+        "time_created": 1784900640,
+        "time_modified": 1784900670,
+        "thread_id": "564187",
+        "content_blocks": [
+          {
+            "id": 1,
+            "type": "text",
+            "data": {
+              "blocks": [
+                {
+                  "key": "9uomt",
+                  "text": "Hello @500servererror-CIG,",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [
+                    {
+                      "offset": 6,
+                      "length": 19,
+                      "key": 0
+                    }
+                  ],
+                  "data": []
+                },
+                {
+                  "key": "bm83a",
+                  "text": "",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "2ena0",
+                  "text": "I would like to provide a little feedback as well. I follow CIG's interactions on Spectrum via the Dev Tracker. When I click on a response given by CIG in a thread, it takes me directly to the message itself. Sometimes, CIG writes a message in reply to one of the comments, but I couldn't find a way to see exactly which message this reply is addressing. I am forced to open the entire thread, find the reply manually, and look for the specific question it was responding to. Here is an example:",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "c4edm",
+                  "text": "",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "d8dno",
+                  "text": "https://robertsspaceindustries.com/spectrum/community/SC/forum/3/thread/see-how-easy-it-is-to-get-engaging-and-meaningful-/9048518",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [
+                    {
+                      "offset": 0,
+                      "length": 130,
+                      "key": 1
+                    }
+                  ],
+                  "data": []
+                },
+                {
+                  "key": "4qr65",
+                  "text": "",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "8vloa",
+                  "text": "It is very difficult to see which question the reply belongs to here.",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                }
+              ],
+              "entityMap": [
+                {
+                  "type": "MENTION",
+                  "mutability": "IMMUTABLE",
+                  "data": {
+                    "id": "6211466",
+                    "nickname": "500servererror-CIG"
+                  }
+                },
+                {
+                  "type": "LINK",
+                  "mutability": "IMMUTABLE",
+                  "data": {
+                    "href": "https://robertsspaceindustries.com/spectrum/community/SC/forum/3/thread/see-how-easy-it-is-to-get-engaging-and-meaningful-/9048518"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "lexical_content": null,
+        "is_erased": false,
+        "replies_count": 2,
+        "member": {
+          "id": "4626147",
+          "displayname": "Voisys",
+          "nickname": "Voisys"
+        },
+        "replies": [
+          {
+            "id": "9048644",
+            "time_created": 1784904061,
+            "time_modified": 1784904061,
+            "thread_id": "564187",
+            "content_blocks": [
+              {
+                "id": 1,
+                "type": "text",
+                "data": {
+                  "blocks": [
+                    {
+                      "key": "fbcf3",
+                      "text": "That's valid feedback, and thanks for raising it. Our next round of updates will focus on improving the thread list, the thread page, and navigation between them.",
+                      "type": "unstyled",
+                      "depth": 0,
+                      "inlineStyleRanges": [],
+                      "entityRanges": [],
+                      "data": []
+                    }
+                  ],
+                  "entityMap": []
+                }
+              }
+            ],
+            "lexical_content": null,
+            "is_erased": false,
+            "highlight_role_id": "2",
+            "replies_count": 1,
+            "member": {
+              "id": "6211466",
+              "displayname": "500ServerError-CIG",
+              "nickname": "500servererror-CIG"
+            },
+            "replies": []
+          }
+        ]
+      },
+      {
+        "id": "9044764",
+        "time_created": 1784733420,
+        "time_modified": 1786480987,
+        "thread_id": "564187",
+        "content_blocks": [],
+        "lexical_content": null,
+        "is_erased": true,
+        "replies_count": 1,
+        "replies": [
+          {
+            "id": "9044786",
+            "time_created": 1784733821,
+            "time_modified": 1786480982,
+            "thread_id": "564187",
+            "content_blocks": [],
+            "lexical_content": null,
+            "is_erased": true,
+            "replies_count": 0,
+            "replies": []
+          }
+        ]
+      },
+      {
+        "id": "9045254",
+        "time_created": 1784747627,
+        "time_modified": 1784747627,
+        "thread_id": "564187",
+        "content_blocks": [
+          {
+            "id": 1,
+            "type": "text",
+            "data": {
+              "blocks": [
+                {
+                  "key": "7nkuu",
+                  "text": "Feedback:",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "k956",
+                  "text": "",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "a9g7t",
+                  "text": "Remove the bottom left logo/company info. We know whose website we in and that is eating up useful screen space for no reason. You can put that info on the top center or top left where there is empty, unused space. ",
+                  "type": "unordered-list-item",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "b013m",
+                  "text": "",
+                  "type": "unordered-list-item",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "6lg8m",
+                  "text": "Also, when will the website stop giving error messages because we used special characters in the formating.. like quotation marks, parenthesis, semicolons, etc and it thinks we doing javascript or something.. because one has to hunt down which damned thing is triggering the error to be able to post the message. ",
+                  "type": "unordered-list-item",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                }
+              ],
+              "entityMap": []
+            }
+          }
+        ],
+        "lexical_content": null,
+        "is_erased": false,
+        "replies_count": 0,
+        "member": {
+          "id": "15690",
+          "displayname": "Loot_Goblin",
+          "nickname": "Golyem"
+        },
+        "replies": []
+      },
+      {
+        "id": "9063857",
+        "time_created": 1785773343,
+        "time_modified": 1785773343,
+        "thread_id": "564187",
+        "content_blocks": [
+          {
+            "id": 1,
+            "type": "text",
+            "data": {
+              "blocks": [
+                {
+                  "key": "8h8r2",
+                  "text": "As a QoL change:",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "sqbq",
+                  "text": "",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "ae2hr",
+                  "text": "When you click on a link to a forum post, especially if it's one you've visited previously, spectrum has a very annoying habit of not taking you to the top of that post, it takes you halfway down the page. This is especially annoying on posts with many comments like patch notes or official feedback forums, necessitating a lot of scrolling back to the top of the page.",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "8t1ua",
+                  "text": "",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "8i35u",
+                  "text": "Can you guys please change that?",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "fbota",
+                  "text": "",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                },
+                {
+                  "key": "36hm4",
+                  "text": "As an addendum to this, a button both at the top of the forum post that lets you jump straight to comments would also be helpful if you change this, mostly for those times where you don't want to scroll through a long forum post and you DO want the comments, having a quicklink to get there would be amazing as well.",
+                  "type": "unstyled",
+                  "depth": 0,
+                  "inlineStyleRanges": [],
+                  "entityRanges": [],
+                  "data": []
+                }
+              ],
+              "entityMap": []
+            }
+          }
+        ],
+        "lexical_content": null,
+        "is_erased": false,
+        "replies_count": 2,
+        "member": {
+          "id": "701346",
+          "displayname": "Karga In The Middle",
+          "nickname": "Karga11"
+        },
+        "replies": [
+          {
+            "id": "9064164",
+            "time_created": 1785785007,
+            "time_modified": 1785785007,
+            "thread_id": "564187",
+            "content_blocks": [
+              {
+                "id": 1,
+                "type": "text",
+                "data": {
+                  "blocks": [
+                    {
+                      "key": "66r5i",
+                      "text": "Yes, we fully agree. This will be adressed when we update the thread pages and the lobbies. ",
+                      "type": "unstyled",
+                      "depth": 0,
+                      "inlineStyleRanges": [],
+                      "entityRanges": [],
+                      "data": []
+                    }
+                  ],
+                  "entityMap": []
+                }
+              }
+            ],
+            "lexical_content": null,
+            "is_erased": false,
+            "highlight_role_id": "2",
+            "replies_count": 1,
+            "member": {
+              "id": "3615334",
+              "displayname": "LoujoD_CIG",
+              "nickname": "LoujoD"
+            },
+            "replies": [
+              {
+                "id": "9075343",
+                "time_created": 1786367215,
+                "time_modified": 1786367227,
+                "thread_id": "564187",
+                "content_blocks": [],
+                "lexical_content": null,
+                "is_erased": true,
+                "highlight_role_id": "2",
+                "replies_count": 0,
+                "replies": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

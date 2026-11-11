@@ -1088,5 +1088,15 @@
     "sha256": "87395b52f6d3b5bbcecb84efb2afe598fb5a2f9a89af7ed49e31f933f933f75f",
     "fetched_at": "2026-11-10T20:33:45.586Z",
     "external_id": "21052"
+  },
+  {
+    "file": "20943.jpg",
+    "page_url": "https://robertsspaceindustries.com/comm-link/transmission/20943-Monthly-Store-Bundle-2026",
+    "image_url": "https://media.robertsspaceindustries.com/i7mj1vlaqkuch/channel_item_full.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 214963,
+    "sha256": "a28dd885e7af3bdf12ede99734df0e5d8e2cc2ac9c0def61f7ae6ef6ea445a6e",
+    "fetched_at": "2026-11-11T15:20:17.797Z",
+    "external_id": "20943"
   }
 ]

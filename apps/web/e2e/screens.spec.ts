@@ -38,6 +38,7 @@ const SCREENS = [
   // The concept hero (ADR-010): a ship file with no game data.
   { name: "ship-concept", path: "/ships/odin", status: 200 },
   { name: "news", path: "/news", status: 200 },
+  { name: "news-videos", path: "/news/videos", status: 200 },
   { name: "ships", path: "/ships", status: 200 },
   { name: "ships-table", path: "/ships?view=table", status: 200 },
   { name: "ships-filtered", path: "/ships?size=small", status: 200 },

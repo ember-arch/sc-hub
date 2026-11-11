@@ -50,7 +50,7 @@ packages/
   db/            Drizzle schema, migrations, seed from fixtures
 pipeline/        Windows-only: detect, extract, normalize, optimize, publish
 apps/web/        Next.js app
-workers/         pollers (news, spectrum), import job, link-entities job (poll-news runs from CI every two hours until Fly; poll-spectrum only with SPECTRUM_MODE on, ADR-027)
+workers/         pollers (news, spectrum), import job, link-entities job (poll-news runs from CI every thirty minutes until Fly; poll-spectrum only with SPECTRUM_MODE on, ADR-027)
 fixtures/        real extracted records per game version; committed (the whole catalog since ADR-022, under 40 MB)
 scripts/         one-off dev scripts; nothing here runs in production (one orchestrator, scripts/refresh, runs daily in CI to refresh the fixtures from their sources and land real changes on main, ADR-023; and scripts/media/publish-covers.ts runs in the News workflow to put new Comm-Links' covers in the live media manifest, ADR-048)
 ```
@@ -148,7 +148,7 @@ Rate limits (polite defaults; never exceed):
 | Spectrum (poll mode: the search and the thread endpoint, ADR-027, ADR-037) | 1 request every 5 minutes per endpoint; back off to 30 minutes on any non-200 |
 | api.star-citizen.wiki | 30 requests per minute (their stated cap is 60); credit line required on pages using its data |
 | starcitizen.tools (Star Citizen Wiki articles and media uploads) | 1 request every 5 seconds (its robots.txt crawl delay); article pages and uploads only, never `/api.php` or `?action=` URLs, which robots.txt disallows; project User-Agent; text is CC BY-SA 4.0 and credited where shown (ADR-017) |
-| YouTube RSS | 1 request per hour |
+| YouTube RSS | 1 request per clock hour, at least 38 minutes apart: one channel feed a run, the Star Citizen and Squadron 42 channels in turn, from the News workflow's :07 schedule only and only before half past, never retried (ADR-050) |
 | docs.google.com (the fitting list's sheet, ADR-028) | 1 request per daily refresh, the workbook export; project User-Agent |
 
 ## 10. Session workflow

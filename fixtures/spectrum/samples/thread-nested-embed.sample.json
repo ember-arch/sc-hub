@@ -1,0 +1,265 @@
+{
+  "success": 1,
+  "code": "OK",
+  "msg": "OK",
+  "data": {
+    "id": "571353",
+    "time_created": 1792598400,
+    "time_modified": 1794429551,
+    "channel_id": "1",
+    "type": "discussion",
+    "slug": "day-of-the-vara-2956",
+    "subject": "Day of the Vara 2956",
+    "is_erased": false,
+    "tracked_post_role_id": "2",
+    "content_reply_id": "9146193",
+    "content_blocks": [
+      {
+        "id": 1,
+        "type": "text",
+        "data": {
+          "blocks": [
+            {
+              "key": "a8uvf",
+              "text": "Long ago, the Vara vanished into the silent depths of the Hades system, never to return, leaving only whispers and dread in its wake. Each year, we honor the departed with spirit cakes and iced wine, flickering candles, spectral costumes, and chilling tales of what lurks beyond the jump point.",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "6vq2k",
+              "text": "",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "1nekg",
+              "text": "Day of the Vara 2956 is upon us! Get into the spirit by carving or painting a pumpkin inspired by Frankenstein, Vampire, or Werewolf, with bonus points for adding a touch of Star Citizen, for a chance to earn some eerie rewards. Brave the return of Kill Collector in Arena Commander, and discover the haunting history behind this mysterious holiday. With new paints also making their appearance, there's plenty to sink your teeth into this season. Just remember, in the darkness of the 'verse, some things are better left undisturbed...",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [
+                {
+                  "offset": 0,
+                  "length": 32,
+                  "style": "BOLD"
+                }
+              ],
+              "entityRanges": [],
+              "data": []
+            }
+          ],
+          "entityMap": []
+        }
+      },
+      {
+        "id": "mvibvnw1-8l7rc56gsw",
+        "type": "image",
+        "data": [
+          {
+            "id": "embed:tgcvmgrkzycyy",
+            "slug": "tgcvmgrkzycyy",
+            "type": "embed",
+            "data": {
+              "embed_type": "photo",
+              "url": "https://media.robertsspaceindustries.com/3l2owd4euw4r9/channel_item_full.png",
+              "provider_name": "robertsspaceindustries",
+              "title": "https://media.robertsspaceindustries.com/3l2owd4euw4r9/channel_item_full.png",
+              "description": null,
+              "image": "https://media.robertsspaceindustries.com/3l2owd4euw4r9/channel_item_full.png",
+              "image_width": 1119,
+              "image_height": 600,
+              "time_fetched": 1792600210,
+              "sizes": {
+                "mini": {
+                  "url": "https://robertsspaceindustries.com/imager/Hnk1DFrCmFV443503eA5RQ8WWnQ=/150x100/https://media.robertsspaceindustries.com/3l2owd4euw4r9/channel_item_full.png",
+                  "image_width": 150,
+                  "image_height": 150
+                },
+                "square": {
+                  "url": "https://robertsspaceindustries.com/imager/VX5_jSVgV6r8sggrmEXVN90Gmi8=/250x250/https://media.robertsspaceindustries.com/3l2owd4euw4r9/channel_item_full.png",
+                  "image_width": 250,
+                  "image_height": 250
+                },
+                "small": {
+                  "url": "https://robertsspaceindustries.com/imager/nMlc46j8H0vWFOnwb8r5AayicSQ=/fit-in/400x224/https://media.robertsspaceindustries.com/3l2owd4euw4r9/channel_item_full.png",
+                  "image_width": 400,
+                  "image_height": 120
+                },
+                "medium": {
+                  "url": "https://robertsspaceindustries.com/imager/W8NRBMmJxRQrn4dBHx7Ny4JW05w=/fit-in/400x400/https://media.robertsspaceindustries.com/3l2owd4euw4r9/channel_item_full.png",
+                  "image_width": 400,
+                  "image_height": 214
+                },
+                "large": {
+                  "url": "https://robertsspaceindustries.com/imager/e1DLFhxr3tFEDMazd0IGv1mFpjs=/fit-in/1680x1050/https://media.robertsspaceindustries.com/3l2owd4euw4r9/channel_item_full.png",
+                  "image_width": 1680,
+                  "image_height": 563
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "mvibvxj7-dn4unv8b7w0",
+        "type": "text",
+        "data": {
+          "blocks": [
+            {
+              "key": "cbhrt",
+              "text": "Enjoy everything Day of the Vara has to offer:",
+              "type": "header-one",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            },
+            {
+              "key": "d5fb9",
+              "text": "Day of the Vara 2956 - Visit the official event page to discover this year's festivities, including a new contest, the return of a favorite Arena Commander mode, and eerie new paints available from October 21 through November 9.",
+              "type": "unordered-list-item",
+              "depth": 0,
+              "inlineStyleRanges": [
+                {
+                  "offset": 0,
+                  "length": 22,
+                  "style": "BOLD"
+                }
+              ],
+              "entityRanges": [
+                {
+                  "offset": 0,
+                  "length": 20,
+                  "key": 0
+                }
+              ],
+              "data": []
+            },
+            {
+              "key": "hm33",
+              "text": "Pumpkin Decorating Contest - Carve or paint a pumpkin inspired by Frankenstein, Vampire, or Werewolf, and show off your creativity! Bonus points for adding Star Citizen-inspired details. Every qualifying entry earns \"The Hill Horror\" helmet, while winners will receive even more frightening rewards inspired by these classic monsters.",
+              "type": "unordered-list-item",
+              "depth": 0,
+              "inlineStyleRanges": [
+                {
+                  "offset": 0,
+                  "length": 29,
+                  "style": "BOLD"
+                }
+              ],
+              "entityRanges": [
+                {
+                  "offset": 0,
+                  "length": 26,
+                  "key": 1
+                }
+              ],
+              "data": []
+            },
+            {
+              "key": "8j7n8",
+              "text": "Arena Commander - Check out the returning Arena Commander mode, Kill Collector, and jump into some scary, spooky skeleton action! Play two rounds to earn a Vanduul mask, which will be distributed after the event ends.",
+              "type": "unordered-list-item",
+              "depth": 0,
+              "inlineStyleRanges": [
+                {
+                  "offset": 0,
+                  "length": 18,
+                  "style": "BOLD"
+                }
+              ],
+              "entityRanges": [
+                {
+                  "offset": 0,
+                  "length": 15,
+                  "key": 2
+                }
+              ],
+              "data": []
+            },
+            {
+              "key": "2pflh",
+              "text": "Day of the Vara - Discover the history and lore behind this chilling holiday on Galactapedia.",
+              "type": "unordered-list-item",
+              "depth": 0,
+              "inlineStyleRanges": [
+                {
+                  "offset": 0,
+                  "length": 18,
+                  "style": "BOLD"
+                }
+              ],
+              "entityRanges": [
+                {
+                  "offset": 0,
+                  "length": 15,
+                  "key": 3
+                }
+              ],
+              "data": []
+            },
+            {
+              "key": "9litt",
+              "text": "Gather your courage, pilots, and see you in the ‘verse, where the lost wait in the dark…",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": []
+            }
+          ],
+          "entityMap": [
+            {
+              "type": "LINK",
+              "mutability": "MUTABLE",
+              "data": {
+                "href": "https://robertsspaceindustries.com/comm-link/transmission/21337-Day-Of-The-Vara-2956",
+                "url": "https://robertsspaceindustries.com/comm-link/transmission/21337-Day-Of-The-Vara-2956"
+              }
+            },
+            {
+              "type": "LINK",
+              "mutability": "MUTABLE",
+              "data": {
+                "href": "https://robertsspaceindustries.com/spectrum/community/SC/forum/3/thread/2026-pumpkin-decorating-contest",
+                "url": "https://robertsspaceindustries.com/spectrum/community/SC/forum/3/thread/2026-pumpkin-decorating-contest"
+              }
+            },
+            {
+              "type": "LINK",
+              "mutability": "MUTABLE",
+              "data": {
+                "href": "https://robertsspaceindustries.com/comm-link/Comm-links/19735-Arena-Commander-Modes-Schedule",
+                "url": "https://robertsspaceindustries.com/comm-link/Comm-links/19735-Arena-Commander-Modes-Schedule"
+              }
+            },
+            {
+              "type": "LINK",
+              "mutability": "MUTABLE",
+              "data": {
+                "href": "https://robertsspaceindustries.com/galactapedia/article/RkGQqpJwGp-day-of-the-vara",
+                "url": "https://robertsspaceindustries.com/galactapedia/article/RkGQqpJwGp-day-of-the-vara"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "lexical_content": null,
+    "highlight_role_id": "2",
+    "community_id": "1",
+    "member": {
+      "id": "4713987",
+      "displayname": "Nicou-CIG",
+      "nickname": "Nicou-CIG"
+    },
+    "replies_count": 0,
+    "tracked_replies_references": [],
+    "replies": []
+  }
+}

@@ -48,3 +48,26 @@ export function sentence(value: string): string {
   const words = value.replace(/[_-]+/g, " ").trim();
   return words.charAt(0).toUpperCase() + words.slice(1);
 }
+
+/**
+ * A source's text without its emoji (CLAUDE.md section 2: no emoji anywhere in the UI): CIG's video
+ * titles carry some (a parcel after "Cargo Hauling - Day 1 vs. Day 432"). The pack keeps the
+ * source's text as it came; only what a page draws loses them, and the spaces they leave.
+ */
+const TYPOGRAPHIC = new Set(["©", "®", "™"]);
+
+export function withoutEmoji(text: string): string {
+  return (
+    text
+      // The trademark signs are typography, though Unicode files them with the pictographs.
+      // Skin tones and the tags of subdivision flags are not pictographs themselves; they go too.
+      .replace(
+        /\p{Extended_Pictographic}|[\u{1F1E6}-\u{1F1FF}]|\p{Emoji_Modifier}|[\u{E0020}-\u{E007F}]/gu,
+        (c) => (TYPOGRAPHIC.has(c) ? c : ""),
+      )
+      // The joiner, the two presentation selectors and the keycap mark, each on its own.
+      .replace(/\u200D|\uFE0E|\uFE0F|\u20E3/gu, "")
+      .replace(/\s{2,}/g, " ")
+      .trim()
+  );
+}

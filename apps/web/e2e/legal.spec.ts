@@ -21,6 +21,7 @@ const ROUTES = [
   "/compare",
   "/components",
   "/news",
+  "/news/videos",
   "/titles",
   "/patches",
   "/patches/ptu",

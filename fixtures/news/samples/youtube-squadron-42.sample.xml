@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns:yt="http://www.youtube.com/xml/schemas/2015" xmlns:media="http://search.yahoo.com/mrss/" xmlns="http://www.w3.org/2005/Atom">
+ <link rel="self" href="http://www.youtube.com/feeds/videos.xml?channel_id=UCU-xYE7KrmqarZ3Lqu2PK_w"/>
+ <id>yt:channel:U-xYE7KrmqarZ3Lqu2PK_w</id>
+ <yt:channelId>U-xYE7KrmqarZ3Lqu2PK_w</yt:channelId>
+ <title>Squadron 42</title>
+ <link rel="alternate" href="https://www.youtube.com/channel/UCU-xYE7KrmqarZ3Lqu2PK_w"/>
+ <author>
+  <name>Squadron 42</name>
+  <uri>https://www.youtube.com/channel/UCU-xYE7KrmqarZ3Lqu2PK_w</uri>
+ </author>
+ <published>2023-07-18T17:19:25+00:00</published>
+ <entry>
+  <id>yt:video:6JHK6KPap-M</id>
+  <yt:videoId>6JHK6KPap-M</yt:videoId>
+  <yt:channelId>UCU-xYE7KrmqarZ3Lqu2PK_w</yt:channelId>
+  <title>Squadron 42 | Inside CIG: Community Gameplay Event</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=6JHK6KPap-M"/>
+  <author>
+   <name>Squadron 42</name>
+   <uri>https://www.youtube.com/channel/UCU-xYE7KrmqarZ3Lqu2PK_w</uri>
+  </author>
+  <published>2026-11-11T16:02:27+00:00</published>
+  <updated>2026-11-11T20:09:47+00:00</updated>
+  <media:group>
+   <media:title>Squadron 42 | Inside CIG: Community Gameplay Event</media:title>
+   <media:content url="https://www.youtube.com/v/6JHK6KPap-M?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i3.ytimg.com/vi/6JHK6KPap-M/hqdefault.jpg" width="480" height="360"/>
+   <media:description>Join us for a look back at our recent Squadron 42 community event in Manchester, England, where players got their hands on the game for the very first time. Featuring gameplay captured directly from attendees' play sessions, along with a behind-the-scenes glimpse at the weekend that brought it all together.
+
+Wishlist Squadron 42 now, on Steam and squadron42.com</media:description>
+   <media:community>
+    <media:starRating count="5475" average="5.00" min="1" max="5"/>
+    <media:statistics views="78303"/>
+   </media:community>
+  </media:group>
+ </entry>
+ <entry>
+  <id>yt:video:i4rVtLAenmk</id>
+  <yt:videoId>i4rVtLAenmk</yt:videoId>
+  <yt:channelId>UCU-xYE7KrmqarZ3Lqu2PK_w</yt:channelId>
+  <title>Squadron 42 | Official Wishlist Trailer | The Oath</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=i4rVtLAenmk"/>
+  <author>
+   <name>Squadron 42</name>
+   <uri>https://www.youtube.com/channel/UCU-xYE7KrmqarZ3Lqu2PK_w</uri>
+  </author>
+  <published>2026-10-10T15:04:14+00:00</published>
+  <updated>2026-10-14T03:57:57+00:00</updated>
+  <media:group>
+   <media:title>Squadron 42 | Official Wishlist Trailer | The Oath</media:title>
+   <media:content url="https://www.youtube.com/v/i4rVtLAenmk?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i2.ytimg.com/vi/i4rVtLAenmk/hqdefault.jpg" width="480" height="360"/>
+   <media:description>Wishlist on Steam Now: https://bit.ly/47KwKpb
+
+Enlist as a rookie in the UEE Navy and step into a cinematic, single-player space adventure where you are the center of the action. You don’t watch the rise of a hero, you become one. 
+
+Wishlist Squadron 42 now, on Steam and squadron42.com</media:description>
+   <media:community>
+    <media:starRating count="19347" average="5.00" min="1" max="5"/>
+    <media:statistics views="511517"/>
+   </media:community>
+  </media:group>
+ </entry>
+</feed>

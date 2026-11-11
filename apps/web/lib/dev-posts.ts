@@ -3,7 +3,11 @@
  * Spectrum items, their authors, each post's thread address and its first lines for the folded
  * card (ADR-035). Pure functions over repository rows; no fetching here.
  */
-import type { Author, ContentItem } from "schema";
+import {
+  type Author,
+  type ContentItem,
+  SPECTRUM_PICTURE_ID_SOURCE,
+} from "schema";
 import type { ResponsiveImage } from "ui";
 import { SPECTRUM_IMAGE_CREDIT, SPECTRUM_IMAGE_PENDING } from "ui/legal";
 
@@ -53,8 +57,11 @@ const ESCAPES: Readonly<Record<string, string>> = {
 const escapeHtml = (text: string): string =>
   text.replace(/[&<>"']/g, (c) => ESCAPES[c] ?? c);
 
-/** Spectrum's upload id on an `img` the worker wrote (ADR-037). */
-const UPLOAD_IMG = /<img\b([^>]*)\bdata-upload="(\d+)"([^>]*)>/g;
+/** Spectrum's picture id on an `img` the worker wrote: an upload's number or an embed's "e-" slug (ADR-037). */
+const UPLOAD_IMG = new RegExp(
+  `<img\\b([^>]*)\\bdata-upload="(${SPECTRUM_PICTURE_ID_SOURCE})"([^>]*)>`,
+  "g",
+);
 
 /**
  * How wide a plate is drawn, for `sizes`: the content column (1400 px, `layout.contentMaxWidth`)

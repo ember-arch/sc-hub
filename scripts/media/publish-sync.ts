@@ -2,6 +2,12 @@
  * Brings the store into line with a publish plan (ADR-034): uploads the objects it lacks, then the
  * manifest, and counts (or, on request, deletes) what the manifest no longer names. Takes the
  * store and the file reader as parameters, so the unit tests run it against an in-memory store.
+ *
+ * Since ADR-048 the hand publish is not the only writer of the manifest: the News workflow adds new
+ * Comm-Link covers to it. So the sync reads the live manifest from the store before it uploads
+ * anything, refuses a manifest that would drop a cover the live one has (a checkout without the
+ * CI's covers: run fetch-covers.ts and prepare.ts first), and writes its manifest only if the live
+ * one is still the one it read (a conditional write on its ETag).
  */
 import { createHash } from "node:crypto";
 import { type MediaStore, type StoredObject, storeBaseUrl } from "./blob.js";
@@ -15,6 +21,8 @@ import {
 export interface SyncOptions {
   readonly dryRun: boolean;
   readonly prune: boolean;
+  /** Let the new manifest lack covers the live one has (a takedown, ADR-048); refused otherwise. */
+  readonly allowCoverDrop?: boolean;
   readonly concurrency: number;
   /** The bytes of a planned object, by its local `src`. */
   readonly readFile: (src: string) => Uint8Array;
@@ -36,7 +44,30 @@ export interface SyncResult {
   /** The store's public base, from the first object seen, or null when the store is empty. */
   readonly storeBaseUrl: string | null;
   readonly sampleKey: string | null;
+  /** Covers the live manifest had and this one does not (only with `allowCoverDrop`). */
+  readonly droppedCovers: readonly string[];
 }
+
+/** The Comm-Link ids whose cover the live manifest lists and `next` does not (ADR-048). */
+export function droppedCovers(
+  live: Uint8Array,
+  next: { readonly covers: readonly { readonly external_id: string }[] },
+): string[] {
+  const parsed = JSON.parse(new TextDecoder().decode(live)) as {
+    covers?: unknown;
+  };
+  const liveIds = Array.isArray(parsed.covers)
+    ? parsed.covers
+        .map((c) => (c as { external_id?: unknown }).external_id)
+        .filter((id): id is string => typeof id === "string")
+    : [];
+  const kept = new Set(next.covers.map((c) => c.external_id));
+  return liveIds.filter((id) => !kept.has(id));
+}
+
+/** The error a conditional write that lost its race carries (`classifyBlobError`). */
+export const lostRace = (error: unknown): boolean =>
+  (error as { status?: unknown }).status === 412;
 
 /** Runs `work` over `items`, at most `limit` at a time, in order of submission. */
 export async function inParallel<T>(
@@ -114,6 +145,17 @@ export async function syncToStore(
 ): Promise<SyncResult> {
   const log = options.log ?? (() => {});
   const existing = await withRetries("list", () => store.list("media/"), log);
+  // The live manifest, from the store, before anything goes up: the cover guard reads it, and the
+  // manifest's write at the end is conditional on it still being this one (ADR-048).
+  const live = existing.has(MANIFEST_KEY)
+    ? await withRetries("read manifest", () => store.read(MANIFEST_KEY), log)
+    : null;
+  const dropped = live === null ? [] : droppedCovers(live.bytes, plan.manifest);
+  if (dropped.length > 0 && options.allowCoverDrop !== true) {
+    throw new Error(
+      `the live manifest has ${dropped.length} cover(s) this one lacks (${dropped.slice(0, 8).join(", ")}${dropped.length > 8 ? ", ..." : ""}), most likely added by the News workflow (ADR-048): run fetch-covers.ts and prepare.ts in this checkout, then publish again; pass --allow-cover-drop only when they are meant to go`,
+    );
+  }
   const planned = new Set(plan.objects.map((o) => o.key));
   const toUpload = plan.objects.filter((o) => {
     const held = existing.get(o.key);
@@ -161,24 +203,28 @@ export async function syncToStore(
   let manifest: SyncResult["manifest"];
   if (options.dryRun) manifest = "dry run";
   else {
-    const current = existing.has(MANIFEST_KEY)
-      ? await withRetries("read manifest", () => store.read(MANIFEST_KEY), log)
-      : null;
-    // `read` comes back through the CDN, so inside the manifest's TTL this compares against the
-    // edge's copy; a stale "changed" only re-uploads, and a false "unchanged" would need a plan
-    // identical to a previous one, which `generated_at` rules out.
-    if (current !== null && sameBytes(current, body)) manifest = "unchanged";
+    if (live !== null && sameBytes(live.bytes, body)) manifest = "unchanged";
     else {
-      const stored = await withRetries(
-        MANIFEST_KEY,
-        () =>
-          store.put(MANIFEST_KEY, body, {
-            contentType: "application/json",
-            cacheMaxAge: MANIFEST_MAX_AGE,
-            overwrite: true,
-          }),
-        log,
-      );
+      let stored: StoredObject;
+      try {
+        stored = await withRetries(
+          MANIFEST_KEY,
+          () =>
+            store.put(MANIFEST_KEY, body, {
+              contentType: "application/json",
+              cacheMaxAge: MANIFEST_MAX_AGE,
+              overwrite: true,
+              ...(live === null ? {} : { ifMatch: live.etag }),
+            }),
+          log,
+        );
+      } catch (error) {
+        if (!lostRace(error)) throw error;
+        throw new Error(
+          "the live manifest changed while this publish ran (the News workflow's cover step, ADR-048, or another publish); nothing was overwritten: run fetch-covers.ts and prepare.ts, then publish again",
+          { cause: error },
+        );
+      }
       first ??= stored;
       manifest = "uploaded";
     }
@@ -214,6 +260,7 @@ export async function syncToStore(
     storeBaseUrl:
       first === undefined ? null : storeBaseUrl(first.url, first.key),
     sampleKey: plan.objects[0]?.key ?? null,
+    droppedCovers: dropped,
   };
 }
 

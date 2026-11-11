@@ -12,11 +12,13 @@ import {
   BlobFileTooLargeError,
   BlobNotFoundError,
   BlobPathnameMismatchError,
+  BlobPreconditionFailedError,
   BlobServiceRateLimited,
   BlobStoreNotFoundError,
   BlobStoreSuspendedError,
   BlobUnknownError,
   del,
+  get,
   head,
   list,
   put,
@@ -36,6 +38,17 @@ export interface PutOptions {
   readonly cacheMaxAge: number;
   /** Whether an object already at the key may be replaced; the store refuses otherwise. */
   readonly overwrite: boolean;
+  /**
+   * Write only if the object's current ETag is this one (ADR-048): the manifest's read-modify-write
+   * fails with a 412 instead of overwriting a manifest another writer put up since it was read.
+   */
+  readonly ifMatch?: string;
+}
+
+/** An object's bytes as the store holds them now, with the ETag a conditional write names. */
+export interface CurrentObject {
+  readonly bytes: Uint8Array;
+  readonly etag: string;
 }
 
 export interface MediaStore {
@@ -47,8 +60,11 @@ export interface MediaStore {
     options: PutOptions,
   ): Promise<StoredObject>;
   delete(key: string): Promise<void>;
-  /** The bytes at `key` as the CDN serves them now, or null when there is none. */
-  read(key: string): Promise<Uint8Array | null>;
+  /**
+   * The bytes at `key` from the store itself, never an edge copy, with their ETag; null when
+   * there is none (ADR-048).
+   */
+  read(key: string): Promise<CurrentObject | null>;
 }
 
 /** `https://x.public.blob.vercel-storage.com/media/a.webp` + `media/a.webp` → the store's base. */
@@ -60,7 +76,7 @@ export function storeBaseUrl(url: string, key: string): string {
   return url.slice(0, -suffix.length);
 }
 
-/** An error the sync's retry logic can read: a refusal carries a 4xx `status`, rate limiting 429. */
+/** An error the sync's retry logic can read: a refusal carries a 4xx `status`, rate limiting 429; a lost conditional write 412. */
 export interface StoreError extends Error {
   readonly status?: number;
   /** Seconds to wait, when the store said so. */
@@ -90,6 +106,8 @@ export function classifyBlobError(error: unknown): unknown {
     return withStatus(403);
   }
   if (error instanceof BlobStoreNotFoundError) return withStatus(404);
+  // Another writer changed the object since it was read (ADR-048): read again, never retry blind.
+  if (error instanceof BlobPreconditionFailedError) return withStatus(412);
   if (
     error instanceof BlobStoreSuspendedError ||
     error instanceof BlobContentTypeNotAllowedError ||
@@ -107,6 +125,10 @@ export function classifyBlobError(error: unknown): unknown {
   return error;
 }
 
+/** Two ETags for the same bytes: equal once a weak marker (`W/`, added by compression) is set aside. */
+export const sameEtag = (a: string, b: string): boolean =>
+  a.replace(/^W\//, "") === b.replace(/^W\//, "");
+
 /** The store's answer when a key is already taken and overwriting was not asked for. */
 export const isAlreadyThere = (error: unknown): boolean =>
   error instanceof BlobError && /already exists/i.test(error.message);
@@ -116,10 +138,7 @@ export type BlobAuth =
   | { readonly token: string }
   | { readonly oidcToken: string; readonly storeId: string };
 
-export function vercelBlobStore(
-  auth: BlobAuth,
-  fetchImpl: typeof fetch = fetch,
-): MediaStore {
+export function vercelBlobStore(auth: BlobAuth): MediaStore {
   const credentials =
     "token" in auth
       ? { token: auth.token }
@@ -161,9 +180,12 @@ export function vercelBlobStore(
             ...credentials,
             access: "public",
             addRandomSuffix: false,
-            allowOverwrite: options.overwrite,
+            allowOverwrite: options.overwrite || options.ifMatch !== undefined,
             contentType: options.contentType,
             cacheControlMaxAge: options.cacheMaxAge,
+            ...(options.ifMatch === undefined
+              ? {}
+              : { ifMatch: options.ifMatch }),
           });
           return {
             key: result.pathname,
@@ -185,19 +207,35 @@ export function vercelBlobStore(
       }),
     read: (key) =>
       call(async () => {
-        let url: string;
-        try {
-          url = (await head(key, credentials)).url;
-        } catch (error) {
-          if (error instanceof BlobNotFoundError) return null;
-          throw error;
+        // The manifest's read-modify-write (ADR-048) needs the bytes and the ETag a conditional
+        // write is checked against. `head` gives the store's own, strong ETag; `get` with
+        // useCache: false gives the bytes from the store, not an edge copy, with the ETag of
+        // its HTTP answer, which compression weakens (`W/"..."`). The bytes are the head's only
+        // when the two agree; when they do not, a write landed in between, so read again.
+        for (let attempt = 1; attempt <= 3; attempt += 1) {
+          let etag: string;
+          let result: Awaited<ReturnType<typeof get>>;
+          try {
+            etag = (await head(key, credentials)).etag;
+            result = await get(key, {
+              ...credentials,
+              access: "public",
+              useCache: false,
+            });
+          } catch (error) {
+            if (error instanceof BlobNotFoundError) return null;
+            throw error;
+          }
+          if (result === null) return null;
+          if (result.statusCode !== 200) {
+            throw new Error(`${key}: the store answered ${result.statusCode}`);
+          }
+          const bytes = new Uint8Array(
+            await new Response(result.stream).arrayBuffer(),
+          );
+          if (sameEtag(etag, result.blob.etag)) return { bytes, etag };
         }
-        // Through the CDN, so an edge copy inside its TTL is what comes back; the sync notes it.
-        const response = await fetchImpl(url, { cache: "no-store" });
-        if (!response.ok) {
-          throw new Error(`${url} answered ${response.status}`);
-        }
-        return new Uint8Array(await response.arrayBuffer());
+        throw new Error(`${key} kept changing while it was read`);
       }),
   };
 }

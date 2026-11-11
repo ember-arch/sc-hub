@@ -9,11 +9,12 @@
  *   JSON-LD of the ship's pledge page, one request per ship, five seconds apart (CLAUDE.md
  *   section 9).
  *
- * Nothing is converted, defaulted or typed in. An unknown shape halts the run and nothing is
- * written.
+ * Nothing is converted, defaulted or typed in. Pledge-store rows listed at no price are left out
+ * and named in the log (issue 34). An unknown shape halts the run and nothing is written.
  *
  *   pnpm --filter schema build && pnpm exec tsx scripts/bootstrap-fixtures/acquisition.ts
  */
+import { randomUUID } from "node:crypto";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -56,6 +57,13 @@ const Sku = z
  * code does not know halts the run.
  */
 const SKIPPED_SKU_SOURCES: ReadonlySet<string> = new Set(["upgrade_api"]);
+
+/**
+ * A pledge-store row the store lists at no price: nothing a backer pays for, so not an offer to
+ * show beside the ship's prices. Its shape is checked like any other row; it is left out, counted
+ * and named in the run summary (issue 34). Any other price that is not a positive number halts.
+ */
+const ZeroPriced = Sku.extend({ price: z.literal(0) });
 const AnySku = z.object({ source: z.string() }).loose();
 export type Sku = z.infer<typeof Sku>;
 
@@ -129,11 +137,17 @@ export function offersFromSkus(
   skus: readonly { readonly source: string }[],
   ship: { slug: string; class_name: string },
   fetchedAt: string,
-): { offers: PledgeOffer[]; skipped: number } {
+): { offers: PledgeOffer[]; skipped: number; zeroPriced: string[] } {
+  const zeroPriced: string[] = [];
   const kept = skus.filter((row) => {
     if (SKIPPED_SKU_SOURCES.has(row.source)) return false;
     if (row.source !== "pledge_store") {
       throw new Error(`${ship.class_name}: unknown sku source "${row.source}"`);
+    }
+    const free = ZeroPriced.safeParse(row);
+    if (free.success) {
+      zeroPriced.push(free.data.title);
+      return false;
     }
     return true;
   });
@@ -155,7 +169,11 @@ export function offersFromSkus(
       fetched_at: fetchedAt,
     });
   });
-  return { offers, skipped: skus.length - kept.length };
+  return {
+    offers,
+    skipped: skus.length - kept.length - zeroPriced.length,
+    zeroPriced,
+  };
 }
 
 /** UEX rows for the pack's build; rows reported for another build are returned as `skipped`. */
@@ -312,6 +330,7 @@ const readJson = (file: string): unknown =>
   JSON.parse(readFileSync(join(packDir, file), "utf8"));
 
 async function main(): Promise<void> {
+  const runId = randomUUID();
   const manifest = Manifest.parse(readJson("manifest.json"));
   const stats = z.array(StatsRow).parse(readJson("VehicleStats.json"));
   const slugs = new Map(
@@ -329,6 +348,7 @@ async function main(): Promise<void> {
   const shops: ShopPrice[] = [];
   let skipped = 0;
   let staleSkus = 0;
+  const zeroPriced: string[] = [];
   for (const row of [...stats].sort((a, b) =>
     a.class_name.localeCompare(b.class_name),
   )) {
@@ -360,12 +380,18 @@ async function main(): Promise<void> {
     shops.push(...prices.rows);
     skipped += prices.skipped;
     staleSkus += own.skipped;
+    zeroPriced.push(
+      ...own.zeroPriced.map((title) => `${row.class_name}: ${title}`),
+    );
     console.log(
       JSON.stringify({
         event: "acquisition.ship",
         class_name: row.class_name,
         offers: own.offers.length,
         skipped_upgrade_api: own.skipped,
+        ...(own.zeroPriced.length > 0
+          ? { skipped_zero_price: own.zeroPriced.length }
+          : {}),
         purchase: prices.rows.filter((r) => r.kind === "purchase").length,
         rental: prices.rows.filter((r) => r.kind === "rental").length,
         skipped_other_version: prices.skipped,
@@ -396,15 +422,20 @@ async function main(): Promise<void> {
     );
   write("PledgeOffer.json", offers);
   write("ShopPrice.json", shops);
-  console.log(
-    JSON.stringify({
+  // The summary goes to stderr, which the daily refresh keeps for its report (CLAUDE.md section 6).
+  process.stderr.write(
+    `${JSON.stringify({
+      run_id: runId,
       event: "acquisition.done",
       offers: offers.length,
       shop_prices: shops.length,
       skipped_upgrade_api: staleSkus,
+      skipped_zero_price: zeroPriced.length,
+      zero_price_titles: zeroPriced,
       skipped_other_version: skipped,
       requests: client.requests,
-    }),
+    })}
+`,
   );
 }
 

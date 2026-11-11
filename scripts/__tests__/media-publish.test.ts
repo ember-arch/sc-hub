@@ -2,7 +2,11 @@ import type { MediaManifest } from "schema";
 import { createHash } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import type { MediaStore, StoredObject } from "../media/blob.js";
-import { classifyBlobError, storeBaseUrl } from "../media/blob.js";
+import {
+  classifyBlobError,
+  isAlreadyThere,
+  storeBaseUrl,
+} from "../media/blob.js";
 import {
   IMMUTABLE_MAX_AGE,
   MANIFEST_KEY,
@@ -461,6 +465,12 @@ describe("the store's errors, as the retry logic reads them", () => {
     };
     expect(limited.status).toBe(429);
     expect(limited.retryAfter).toBe(7);
+    const taken = new blob.BlobError(
+      "This blob already exists, use `allowOverwrite: true` if you want to overwrite it.",
+    );
+    expect(status(classifyBlobError(taken))).toBe(400);
+    expect(isAlreadyThere(taken)).toBe(true);
+    expect(isAlreadyThere(new blob.BlobAccessError())).toBe(false);
     const network = new TypeError("fetch failed");
     expect(classifyBlobError(network)).toBe(network);
     expect(

@@ -50,3 +50,4 @@ The first launch shows words and data only: every page, the register, the ship f
 - CLAUDE.md section 9 said every deployed runtime requires `DATABASE_URL` and that a missing required variable fails startup; the Vercel runtime has neither the variable nor a `loadEnv` call, so the wording now says so and points here.
 - `.vercel/` is git-ignored: the CLI writes the project link there.
 - Implemented by PR 44 (https://github.com/ember-arch/sc-hub/pull/44).
+- With the site live and the address published, the fetchers' User-Agent takes the form `docs/legal/obligations.md` asks for, with the about page https://coppercork.com/about and the address, built once in `packages/schema/site.ts` (ADR-036).

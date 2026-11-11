@@ -1,9 +1,12 @@
 /**
- * The User-Agent every dev script sends (CLAUDE.md section 9): the project's name, that it is a
- * non-commercial fan reference, where it lives and, for robertsspaceindustries.com, a contact
- * email. The owner chose ventures@coppercork.com on 2026-11-10 (ADR-033); scripts read it from
- * SC_HUB_CONTACT_EMAIL, and a script that calls RSI halts without it.
+ * The User-Agent every dev script and the daily refresh send (CLAUDE.md section 9), in the form
+ * docs/legal/obligations.md asks for: the site's name and version, its about page and the
+ * contact address, built by `userAgent` in `packages/schema/site.ts` so the scripts and the news
+ * workers send the same header (ADR-036). The owner chose ventures@coppercork.com on 2026-11-10
+ * (ADR-033); scripts read it from SC_HUB_CONTACT_EMAIL, and a script that calls RSI halts
+ * without it.
  */
+import { userAgent as build } from "schema/site";
 
 const contact = (): string | null => {
   const value = process.env["SC_HUB_CONTACT_EMAIL"]?.trim();
@@ -11,8 +14,7 @@ const contact = (): string | null => {
 };
 
 export function userAgent(tool: string): string {
-  const email = contact();
-  return `sc-hub-${tool}/0.0 (non-commercial fan reference in development; github.com/ember-arch/sc-hub${email === null ? "" : `; ${email}`})`;
+  return build(tool, contact());
 }
 
 /** For requests to RSI's sites, which CLAUDE.md section 9 asks to carry a contact email. */

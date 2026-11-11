@@ -16,6 +16,7 @@ export default defineConfig({
       { find: /^schema$/, replacement: schemaSource("index.ts") },
       { find: /^schema\/env$/, replacement: schemaSource("env.ts") },
       { find: /^schema\/pack$/, replacement: schemaSource("pack.ts") },
+      { find: /^schema\/site$/, replacement: schemaSource("site.ts") },
     ],
   },
   test: {

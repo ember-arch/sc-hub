@@ -14,6 +14,7 @@ import { fileURLToPath } from "node:url";
 import { paragraphsHtml, firstParagraph } from "poll-news/html";
 import { openStore, stableId } from "poll-news/store";
 import { Author, NEWS_WINDOW_START, inNewsWindow } from "schema";
+import { userAgent } from "schema/site";
 import { z } from "zod";
 import type { SpectrumAdapter, StaffPost } from "../adapter.js";
 import { createFeedAdapter } from "./feed.js";
@@ -28,10 +29,6 @@ const StaffFile = z.object({ handles: z.array(z.string()) }).loose();
 function flag(args: readonly string[], name: string): string | undefined {
   const at = args.indexOf(name);
   return at >= 0 ? args[at + 1] : undefined;
-}
-
-export function userAgent(contact: string | null): string {
-  return `sc-hub-spectrum/0.0 (non-commercial fan reference in development; github.com/ember-arch/sc-hub${contact === null ? "" : `; ${contact}`})`;
 }
 
 /** The authors file: every CIG staff member seen, by handle. */
@@ -129,7 +126,7 @@ async function main(): Promise<void> {
         }),
       staffRoleId: roleId,
       staff,
-      userAgent: userAgent(contact),
+      userAgent: userAgent("poll-spectrum", contact),
       pages: Number(backfill ?? 1),
       range: backfill === undefined ? "week" : "year",
       log,
@@ -141,7 +138,7 @@ async function main(): Promise<void> {
     adapter = createFeedAdapter({
       url,
       fetch: (u, init) => globalThis.fetch(u, init),
-      userAgent: userAgent(contact),
+      userAgent: userAgent("poll-spectrum", contact),
     });
   } else {
     throw new Error(`SPECTRUM_MODE must be off, poll or feed; got ${mode}`);

@@ -132,7 +132,7 @@ SENTRY_DSN
 SITE_URL (the public origin; canonical URLs, sitemap.xml and Open Graph resolve against it)
 SC_INSTALL_ROOT (Windows only, for example C:\Program Files\Roberts Space Industries\StarCitizen)
 STARBREAKER_BIN (Windows only)
-SC_HUB_CONTACT_EMAIL (dev scripts and the daily refresh; the contact address RSI requests carry, ADR-015, ADR-023; a repository variable in CI)
+SC_HUB_CONTACT_EMAIL (dev scripts, the daily refresh and the news workers; the contact address every User-Agent carries and RSI requests require, ADR-015, ADR-023, ADR-036; a repository variable in CI)
 ```
 
 When `DATABASE_URL` is unset, `pnpm db:migrate` and `pnpm db:seed` use an embedded PGlite database in `packages/db/.pglite/` (local development only; ADR-004). Every deployed worker requires it; the Vercel site serves the committed packs without it until the database arrives (ADR-033).
@@ -175,7 +175,7 @@ If a step cannot be completed (missing credential, unknown record shape, a desig
 
 | Decision | Current state | Placeholder in code |
 | --- | --- | --- |
-| Project name | Undecided; "SC Hub" is a working title | `SITE_NAME` constant in `packages/ui/brand.ts` |
+| Project name | Undecided; "SC Hub" is a working title | `SITE_NAME` constant in `packages/schema/site.ts`, re-exported by `packages/ui/brand.ts` (ADR-036) |
 | License | Undecided; MIT for code with assets and data excluded is the recommendation | `LICENSE` file is absent until decided; do not add one |
 | Hero ship list | Undecided until Phase 4 (the showcase pair, Odin and Perseus, is a separate owner choice, ADR-010) | `pipeline/hero-ships.json` |
 | Spectrum access method | Ask CIG for a feed; build the poller behind the adapter either way | `SPECTRUM_MODE` |

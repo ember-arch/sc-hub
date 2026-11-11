@@ -23,3 +23,5 @@ pnpm --filter schema build && pnpm exec tsx scripts/media/prepare.ts
 ```
 
 The fetch reads the hub's pages (`?page=N`, ten transmissions a page) and then each cover not yet on disk, one request every 5 seconds, with the project User-Agent and the contact address and no session. It stops when every Comm-Link on record has its cover, when six pages in a row add nothing (the hub's pages are not in date order), or at `--pages <n>` (80 by default).
+
+Since ADR-048 a new Comm-Link's cover also reaches the live site without this: the News workflow's cover step (`scripts/media/publish-covers.ts`) publishes it from CI and adds its row to `cover-sources.json`, but not its file to `covers/`. Run the fetch above before a hand publish; it copies every recorded cover whose file is missing.

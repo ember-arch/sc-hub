@@ -13,6 +13,14 @@
 # What it reads lands in this private repository only; the site shows nothing from Spectrum until
 # its own SPECTRUM_MODE is set, once docs/legal/cig-approval.md ticks the box, and whether the
 # collection itself needs CIG's word is recorded there as the owner's call.
+#
+# The cover step (ADR-048) then puts the cover of each new Comm-Link on the live site: it reads the
+# live media manifest from the store, finds the Comm-Links of the last fortnight it has no cover
+# for, takes their covers from RSI's hub, uploads their web copies and adds them to the manifest,
+# leaving every other entry as it was. It adds a row per cover to
+# fixtures/rsi-media/cover-sources.json, and that row's commit to main is what redeploys the site
+# on the new manifest. It needs the repository secret BLOB_READ_WRITE_TOKEN (the media store's
+# read-write token); without it the step is a dry run that writes nothing.
 name: News
 
 on:
@@ -23,6 +31,11 @@ on:
     # fifteen-minute gate holds once the pollers run on Fly.
     - cron: "0 */2 * * *"
   workflow_dispatch:
+    inputs:
+      rehearse_covers:
+        description: "Comm-Link ids whose covers are already up, to rehearse the cover step on (a dry run; ADR-048)"
+        required: false
+        default: ""
 
 concurrency:
   group: news
@@ -66,9 +79,22 @@ jobs:
           # "off" while a local backfill holds the thread endpoint (ADR-037); unset otherwise.
           SPECTRUM_THREADS: ${{ vars.SPECTRUM_THREADS }}
         run: pnpm workers:poll-spectrum
+      # After the polls, so a Comm-Link collected in this run is looked for in this run; before the
+      # commit, so the push that redeploys the site comes once the CDN serves the new manifest.
+      # A failure here never holds back the news commit (ADR-048).
+      - name: Publish new Comm-Link covers (a dry run until BLOB_READ_WRITE_TOKEN is set)
+        continue-on-error: true
+        timeout-minutes: 12
+        env:
+          SC_HUB_CONTACT_EMAIL: ${{ vars.SC_HUB_CONTACT_EMAIL }}
+          # The media store's public address (ADR-034); not a secret.
+          CDN_BASE_URL: https://eieovaxp8q6yustn.public.blob.vercel-storage.com
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+          REHEARSE: ${{ inputs.rehearse_covers }}
+        run: pnpm exec tsx scripts/media/publish-covers.ts --dry-run-without-token --rehearse "$REHEARSE"
       - name: Commit what changed
         run: |
-          git add fixtures/news fixtures/spectrum/thread-state.json fixtures/spectrum/uploads.json
+          git add fixtures/news fixtures/spectrum/thread-state.json fixtures/spectrum/uploads.json fixtures/rsi-media/cover-sources.json
           if git diff --cached --quiet; then
             echo "Nothing new."
             exit 0

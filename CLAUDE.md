@@ -52,7 +52,7 @@ pipeline/        Windows-only: detect, extract, normalize, optimize, publish
 apps/web/        Next.js app
 workers/         pollers (news, spectrum), import job, link-entities job (poll-news runs from CI every two hours until Fly; poll-spectrum only with SPECTRUM_MODE on, ADR-027)
 fixtures/        real extracted records per game version; committed (the whole catalog since ADR-022, under 40 MB)
-scripts/         one-off dev scripts; nothing here runs in production (one orchestrator, scripts/refresh, runs daily in CI to refresh the fixtures from their sources and land real changes on main, ADR-023)
+scripts/         one-off dev scripts; nothing here runs in production (one orchestrator, scripts/refresh, runs daily in CI to refresh the fixtures from their sources and land real changes on main, ADR-023; and scripts/media/publish-covers.ts runs in the News workflow to put new Comm-Links' covers in the live media manifest, ADR-048)
 ```
 
 Create exactly this layout in Phase 0. Add folders only with an ADR.
@@ -127,7 +127,7 @@ Environment variables (validated in `packages/schema/env.ts`; a missing required
 DATABASE_URL
 MEILI_HOST, MEILI_MASTER_KEY, MEILI_SEARCH_KEY
 R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET (the data pack's object store, spec 01: the Windows PC for the pipeline, Fly for the import job; not yet provisioned)
-BLOB_READ_WRITE_TOKEN, BLOB_STORE_ID (the media store on Vercel Blob, ADR-034: scripts/media/publish.ts on the owner's machine, from .env.local, where `vercel env pull` writes the store id and a short-lived VERCEL_OIDC_TOKEN that stands in for the sensitive token; never the site, never CI)
+BLOB_READ_WRITE_TOKEN, BLOB_STORE_ID (the media store on Vercel Blob, ADR-034: scripts/media/publish.ts on the owner's machine, from .env.local, where `vercel env pull` writes the store id and a short-lived VERCEL_OIDC_TOKEN that stands in for the sensitive token; never the site. In CI only the News workflow's cover step has the token, as the repository secret BLOB_READ_WRITE_TOKEN, and it adds covers to the manifest and changes nothing else, ADR-048)
 CDN_BASE_URL (the media store's public address; the site resolves every /media/ path against it and fetches manifest.json from it at build when no media is built locally, ADR-034)
 SPECTRUM_MODE (feed | poll | off), SPECTRUM_FEED_URL (feed mode), SPECTRUM_THREADS (off skips the thread step of a scheduled run while a local backfill holds the endpoint, ADR-037), SPECTRUM_STAFF_ROLE_ID (optional; poll mode resolves the staff role from Spectrum's own role list each run and needs no sign-in, ADR-027)
 SENTRY_DSN

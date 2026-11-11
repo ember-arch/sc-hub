@@ -39,9 +39,10 @@ All tokens live in `packages/ui/tokens.ts`. Tailwind config is generated from th
 | `accent.bg` | `#E3E6FA` | `#2A2E4A` | Accent tint |
 | `success` / `warning` / `danger` | `#2F6B3A` / `#8A5A00` / `#B3261E` | `#6FBF7F` / `#E0A94A` / `#EF7A6E` | Status only |
 | `spectrum.staff` | `#DEC342` | `#DEC342` | Spectrum's own yellow for a staff post (ADR-032): the rule and the role tag on a developer post, never text on the light wall |
-| `brand.copper` | `#A8652F` | `#D08A4F` | The site's own colour (ADR-041): the Coppercork mark and the favicon alone, never text, border or fill elsewhere |
+| `brand.copper` | `#A85E27` | `#C97A40` | The logo's copper (ADR-041, ADR-045): the cork's plates and the rule over the wordmark, the logo and the favicon alone, never text, border or fill elsewhere |
+| `brand.flame` | `#A85E27` | `#E9A46E` | The logo's flames (ADR-045): one copper with the plates on light, as the light board draws them; lighter on dark. The logo and the favicon alone |
 
-Rules: one accent. Manufacturer brand colors may appear only as a 3 px rule on the manufacturer page hero, never as fills. The site's own colour, `brand.copper`, appears only in the mark and the favicon (ADR-041). Semantic colors are for status (flight-ready, concept, PTU-only), never decoration.
+Rules: one accent. Manufacturer brand colors may appear only as a 3 px rule on the manufacturer page hero, never as fills. The logo's coppers, `brand.copper` and `brand.flame`, appear only in the logo and the favicon (ADR-041, ADR-045). Semantic colors are for status (flight-ready, concept, PTU-only), never decoration.
 
 ### Type
 
@@ -76,9 +77,9 @@ Faces: Manrope (ADR-021, replacing the almanac's serifs) for everything: text, i
 
 `packages/ui` ships these, each with light and dark stories and a Playwright screenshot:
 
-- `PageShell` — the mark and the name (ADR-041), the sections as pills (the current one filled), the search field as a pill and the theme switch (ADR-021); the footer on every page.
+- `PageShell` — the logo with the name as visually hidden text (ADR-045), the sections as pills (the current one filled), the search field as a pill and the theme switch (ADR-021); the footer on every page.
 - `Icon` — the site's line glyphs (ADR-044): damage kinds, the damage path's stages and the three axes, at 16 or 24 px in `currentColor`, hidden beside their labels.
-- `Logo` — the Coppercork mark (ADR-041): a cork stopper in copper with an ink band, decorative beside the name in the header; the favicon is the same drawing.
+- `Logo` — the Coppercork logo (ADR-045): the owner's "Launch Cork", the cork lifting off beside the wordmark under a copper rule, two static SVG files (light and dark) swapped by the theme like a maker's mark, in the header at 32 px; the favicon is the cork alone.
 - `ThemeToggle` — a switch between light and dark; the choice is kept in localStorage and applied as `data-theme` on `<html>` before the first paint, and the site follows the system until it is used (ADR-021).
 - `CommandPalette` — ⌘K on desktop, persistent button on phone; results grouped by entity type; keyboard navigable; shows recent entities.
 - `EntityPage` — the template: `Hero` (name, manufacturer, status badge, one image or the viewer slot), `KeyFacts` (4 to 8 label/value pairs), `Section`s, `Related`.
@@ -147,8 +148,8 @@ Added with the ship file (ADR-008, ADR-012 to ADR-016):
 
 ## 7. Review checklist (used by the design-review prompt)
 
-1. Any color outside the token table? (The mark's copper is in the table, for the mark and the favicon alone, ADR-041.)
-2. Any type size or weight outside the type table?
+1. Any color outside the token table? (The logo's coppers are in the table, for the logo and the favicon alone, ADR-045.)
+2. Any type size or weight outside the type table? (The logo's lettering is drawn inside its two files, not a face the interface sets, ADR-045.)
 3. Any decoration: gradient, glow, texture, emoji, icon used as ornament (an icon stands beside a label and marks something compared, ADR-044)? (One gradient is allowed because it keeps text legible over CIG's art, never as decoration: the scrim under text over CIG's art, on the entry's cover and the bento's cards, ADR-021.)
 4. Any page element the reader could lose without losing meaning?
 5. Does the ship page key-facts block read in one glance at 390 px?

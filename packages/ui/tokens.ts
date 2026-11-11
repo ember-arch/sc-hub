@@ -25,6 +25,7 @@ export const colorTokens = [
   "danger",
   "spectrum.staff",
   "brand.copper",
+  "brand.flame",
 ] as const;
 export type ColorToken = (typeof colorTokens)[number];
 
@@ -53,6 +54,7 @@ export const colorUtility: Record<ColorToken, string> = {
   danger: "danger",
   "spectrum.staff": "spectrum-staff",
   "brand.copper": "brand-copper",
+  "brand.flame": "brand-flame",
 };
 
 export const color: Record<Scheme, Record<ColorToken, string>> = {
@@ -77,8 +79,9 @@ export const color: Record<Scheme, Record<ColorToken, string>> = {
     warning: "#8A5A00",
     danger: "#B3261E",
     "spectrum.staff": "#DEC342",
-    // The site's own colour (ADR-041): the mark and the favicon alone.
-    "brand.copper": "#A8652F",
+    // The logo's coppers (ADR-041, ADR-045): the plates and rule, and the flames; the logo alone.
+    "brand.copper": "#A85E27",
+    "brand.flame": "#A85E27",
   },
   dark: {
     "bg.page": "#161513",
@@ -98,7 +101,8 @@ export const color: Record<Scheme, Record<ColorToken, string>> = {
     warning: "#E0A94A",
     danger: "#EF7A6E",
     "spectrum.staff": "#DEC342",
-    "brand.copper": "#D08A4F",
+    "brand.copper": "#C97A40",
+    "brand.flame": "#E9A46E",
   },
 };
 

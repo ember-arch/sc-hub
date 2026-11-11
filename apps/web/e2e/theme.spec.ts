@@ -33,6 +33,30 @@ test("the switch turns dark mode on, and the choice survives a reload", async ({
   );
 });
 
+// ADR-045: the header's logo is the home link, named for the site, one lockup per scheme.
+test("the logo is the home link, named Coppercork, and shows the lockup for the scheme", async ({
+  browser,
+}) => {
+  for (const scheme of ["light", "dark"] as const) {
+    const context = await browser.newContext({ colorScheme: scheme });
+    const page = await context.newPage();
+    await page.goto("/");
+    const home = page
+      .getByRole("banner")
+      .getByRole("link", { name: "Coppercork", exact: true });
+    await expect(home).toHaveAttribute("href", "/");
+    const shown = await home
+      .locator("img")
+      .evaluateAll((imgs) =>
+        imgs
+          .filter((img) => getComputedStyle(img).display !== "none")
+          .map((img) => img.getAttribute("src")),
+      );
+    expect(shown, scheme).toEqual([`/brand/coppercork-${scheme}.svg`]);
+    await context.close();
+  }
+});
+
 test("without a choice the switch reports the system's scheme", async ({
   browser,
 }) => {

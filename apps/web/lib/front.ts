@@ -1,3 +1,5 @@
+import { formatTime } from "ui";
+
 /**
  * The front page's pure parts (ADR-020, ADR-038, spec 06): the contents list, the date line,
  * plate numerals, which ships take the plates and change daily, and which developer posts are
@@ -247,10 +249,14 @@ export function freshestStaffWord<T extends FeaturedCandidate>(
 
 /** What the pack says today, as the daily line reads it (ADR-042). Nulls are left out. */
 export interface DailyFacts {
-  /** The newest staff-opened Spectrum thread with a staff post in the window, or null. */
+  /**
+   * The newest staff-opened Spectrum thread with a staff post in the window, or null; `reply`
+   * when that post answers the thread rather than opens it, so the line says "posted in".
+   */
   readonly staffThread: {
     readonly title: string;
     readonly publishedAt: string;
+    readonly reply: boolean;
   } | null;
   /** The newest dispatch, or null. */
   readonly dispatch: {
@@ -270,18 +276,33 @@ export interface DailyFacts {
   } | null;
 }
 
+/** CIG's audience tags on a patch-notes thread: who may read the build it describes. */
+const AUDIENCE_TAG = /^\s*\[(?:all (?:waves|backers)|wave \d+|evocati)\]\s*/i;
+
 /**
  * A Spectrum thread's title as a headline reads it: CIG's audience tag in brackets at the front
- * ("[All Waves] ") and a build number at the end (" 13160301") are dropped, nothing else changes.
+ * ("[All Waves] ", never another bracketed word such as "[Now Closed]") and a build number of six
+ * digits or more at the end (" 13160301") are dropped, nothing else changes.
  */
 export function headlineTitle(title: string): string {
   return title
-    .replace(/^\s*\[[^\]]*\]\s*/, "")
+    .replace(AUDIENCE_TAG, "")
     .replace(/\s+\d{6,}\s*$/, "")
     .trim();
 }
 
-/** "4.10.2-LIVE.12881860" → "4.10.2": the build as the strip prints it, before its channel. */
+/** How much of a title the line quotes before an ellipsis, on a word. */
+export const HEADLINE_TITLE_CHARS = 90;
+
+/** A title cut for the line: whole up to the limit, else cut on a word with an ellipsis. */
+export function headlineCut(title: string, max = HEADLINE_TITLE_CHARS): string {
+  if (title.length <= max) return title;
+  const cut = title.slice(0, max);
+  const at = cut.lastIndexOf(" ");
+  return `${at > max / 2 ? cut.slice(0, at) : cut}…`;
+}
+
+/** "4.10.2-LIVE.12881860" → "4.10.2": the build string before its channel, short enough for a line. */
 export const shortBuild = (version: string | null): string | null =>
   version === null ? null : (version.split("-")[0] ?? version);
 
@@ -297,22 +318,15 @@ export function dailyLine(
   now: Date,
   dayNumber: number,
 ): string {
-  const hours = (at: string): number =>
-    Math.max(0, (now.getTime() - Date.parse(at)) / 3_600_000);
-  const ago = (at: string): string => {
-    const h = Math.round(hours(at));
-    if (h < 1) return "just now";
-    if (h < 24) return `${h} h ago`;
-    const d = Math.round(h / 24);
-    return `${d} ${d === 1 ? "day" : "days"} ago`;
-  };
+  // The cards' own clock words (system.md section 5): relative under a week, then the date.
+  const ago = (at: string): string => formatTime(at, now);
   const word =
     facts.staffThread !== null &&
     (facts.dispatch === null ||
       facts.staffThread.publishedAt >= facts.dispatch.publishedAt)
-      ? `CIG posted “${headlineTitle(facts.staffThread.title)}” on Spectrum ${ago(facts.staffThread.publishedAt)}`
+      ? `CIG posted ${facts.staffThread.reply ? "in " : ""}“${headlineCut(headlineTitle(facts.staffThread.title))}” on Spectrum ${ago(facts.staffThread.publishedAt)}`
       : facts.dispatch !== null
-        ? `the latest dispatch is “${facts.dispatch.title}”, ${ago(facts.dispatch.publishedAt)}`
+        ? `the latest dispatch is “${headlineCut(facts.dispatch.title)}”, ${ago(facts.dispatch.publishedAt)}`
         : null;
   const builds =
     facts.builds.live === null

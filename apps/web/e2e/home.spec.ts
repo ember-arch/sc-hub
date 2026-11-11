@@ -19,7 +19,7 @@ test("the title is the daily line: one sentence from the pack, the date label ab
   await expect(title).toHaveText(/^[A-Z$].{20,220}\.$/);
   await expect(title).toHaveText(/, and /);
   await expect(page.locator("main p.lab").first()).toHaveText(
-    /^\w+ \d+ \w+ \d{4} · in the ’verse today$/,
+    /^\w+ \d+ \w+ \d{4} · in the ’verse$/,
   );
 });
 

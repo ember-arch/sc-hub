@@ -229,6 +229,8 @@ export default function HomePage() {
           : {
               title: staffWord.thread_title ?? staffWord.title,
               publishedAt: staffWord.published_at,
+              // A reply's address ends in its number; the thread's own page does not.
+              reply: /\/\d+$/.test(staffWord.url),
             },
       dispatch:
         newest === undefined
@@ -264,7 +266,7 @@ export default function HomePage() {
         <div className="flex flex-col gap-6">
           {/* The date alone: the builds stay in the footer's patch strip (ADR-007, one strip per page). */}
           <p className="lab m-0 text-secondary">
-            {formatFrontDate(at)} · in the ’verse today
+            {formatFrontDate(at)} · in the ’verse
           </p>
           <div className="grid items-end gap-8 md:grid-cols-[3fr_2fr] md:gap-12">
             {/* The daily line (ADR-042): what the pack says today, composed by rule. */}

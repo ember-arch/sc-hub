@@ -153,6 +153,10 @@ test.describe("the dev tracker with Spectrum on", () => {
     await expect(
       section.getByRole("heading", { name: "Featured developer posts" }),
     ).toBeVisible();
+    // The daily line (ADR-042) leads with CIG's freshest word: a staff thread or a dispatch.
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+      /^(CIG posted (in )?“|The latest dispatch is “)/,
+    );
     await expect(
       section.getByRole("link", { name: "All developer posts" }),
     ).toHaveAttribute("href", "/news/dev");

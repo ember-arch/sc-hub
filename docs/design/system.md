@@ -46,9 +46,9 @@ Rules: one accent. Manufacturer brand colors may appear only as a 3 px rule on t
 
 | Token | Size / line | Weight | Use |
 | --- | --- | --- | --- |
-| `hero` | 80 / 84 | 400 | The front page's title and an entry's name, desktop (ADR-021) |
-| `display` | 40 / 44 | 400 | Page and entry titles on phones; headline figures |
-| `title` | 28 / 34 | 400 | Page title; the figure strip's numbers |
+| `hero` | 80 / 84 | 400 | An entry's name, desktop (ADR-021) |
+| `display` | 40 / 44 | 400 | Page and entry titles on phones; the front page's daily line from lg (ADR-042); headline figures |
+| `title` | 28 / 34 | 400 | Page title; the figure strip's numbers; the front page's daily line on phones (ADR-042) |
 | `heading` | 20 / 26 | 500 | Section heading, card names |
 | `body` | 16 / 26 | 400 | Prose |
 | `ui` | 14 / 20 | 400 / 500 | Controls, table cells, nav |

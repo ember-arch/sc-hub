@@ -301,6 +301,7 @@ describe("dailyPicks", () => {
 import {
   dailyLine,
   freshestStaffWord,
+  headlineCut,
   headlineTitle,
   shortBuild,
 } from "../lib/front";
@@ -312,6 +313,7 @@ describe("dailyLine", () => {
       title:
         "[All Waves] Star Citizen Alpha 4.10.3 PTU RC1 Patch Notes 13160301",
       publishedAt: "2026-11-10T20:00:00Z",
+      reply: false,
     },
     dispatch: {
       title: "Twitch Drops: IAE 2956",
@@ -336,10 +338,10 @@ describe("dailyLine", () => {
       dispatch: { ...facts.dispatch, publishedAt: "2026-11-10T23:50:00Z" },
     };
     expect(dailyLine(newer, now, 20769)).toMatch(
-      /^The latest dispatch is “Twitch Drops: IAE 2956”, just now, and Alpha/,
+      /^The latest dispatch is “Twitch Drops: IAE 2956”, 10 min ago, and Alpha/,
     );
     expect(dailyLine({ ...facts, staffThread: null }, now, 20768)).toMatch(
-      /^The latest dispatch is “Twitch Drops: IAE 2956”, 1 day ago, and \$132/,
+      /^The latest dispatch is “Twitch Drops: IAE 2956”, 1 d ago, and \$132/,
     );
   });
 
@@ -382,6 +384,37 @@ describe("dailyLine", () => {
     ).toBe("Alpha 4.10.2 is live.");
   });
 
+  it('says "posted in" when the freshest staff post answers a thread, and leaves a change out when unknown', () => {
+    const reply = {
+      ...facts,
+      staffThread: { ...facts.staffThread, reply: true },
+      funding: { year: 2027, yearToDate: "$412.3K", change: null },
+    };
+    expect(dailyLine(reply, now, 20768)).toBe(
+      "CIG posted in “Star Citizen Alpha 4.10.3 PTU RC1 Patch Notes” on Spectrum 4 h ago, and $412.3K pledged in 2027.",
+    );
+    // A week on, the cards' clock goes absolute, and so does the line's.
+    expect(
+      dailyLine(
+        { ...facts, staffThread: null },
+        new Date("2026-11-20T00:00:00Z"),
+        20768,
+      ),
+    ).toMatch(
+      /^The latest dispatch is “Twitch Drops: IAE 2956”, 9 Nov 2026, and/,
+    );
+  });
+
+  it("cuts a long title on a word with an ellipsis", () => {
+    const long =
+      "Star Citizen Live: Q&A with the vehicle team on the Perseus, the Polaris and everything in between, part two";
+    expect(headlineCut(long)).toBe(
+      "Star Citizen Live: Q&A with the vehicle team on the Perseus, the Polaris and everything…",
+    );
+    expect(headlineCut("Short")).toBe("Short");
+    expect(headlineCut("a".repeat(100))).toBe(`${"a".repeat(90)}…`);
+  });
+
   it("trims a thread's title for a headline and shortens a build", () => {
     expect(
       headlineTitle(
@@ -392,6 +425,16 @@ describe("dailyLine", () => {
       "IAE 2956 - Choose Your Adventure - FAQ",
     );
     expect(headlineTitle("Pumpkin contest 2026")).toBe("Pumpkin contest 2026");
+    // Only an audience tag is dropped; any other bracketed word is CIG's and stays.
+    expect(headlineTitle("[Now Closed] Alpha 4.10 PTU Feedback")).toBe(
+      "[Now Closed] Alpha 4.10 PTU Feedback",
+    );
+    expect(headlineTitle("[5.0 PTU Feedback] Planet Tech V5")).toBe(
+      "[5.0 PTU Feedback] Planet Tech V5",
+    );
+    expect(
+      headlineTitle("[Wave 1] Alpha 4.10.3 PTU Patch Notes 13130000"),
+    ).toBe("Alpha 4.10.3 PTU Patch Notes");
     expect(shortBuild("4.10.2-LIVE.12881860")).toBe("4.10.2");
     expect(shortBuild(null)).toBeNull();
   });

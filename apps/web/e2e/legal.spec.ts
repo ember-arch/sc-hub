@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { expect, test } from "@playwright/test";
 import {
+  CONTACT_EMAIL,
   DISCLAIMER,
   FANKIT_NOTICE,
   TRADEMARK_LINE,
@@ -54,8 +55,25 @@ for (const route of ROUTES) {
     await expect(
       footer.getByRole("link", { name: "robertsspaceindustries.com" }),
     ).toHaveAttribute("href", "https://robertsspaceindustries.com/");
+    // The takedown address is published in every footer (docs/legal/obligations.md, ADR-033).
+    expect(CONTACT_EMAIL).not.toBeNull();
+    await expect(
+      footer.getByRole("link", { name: CONTACT_EMAIL ?? "" }),
+    ).toHaveAttribute("href", "mailto:" + CONTACT_EMAIL);
   });
 }
+
+test("the about page names the takedown address in its own section", async ({
+  page,
+}) => {
+  const response = await page.goto("/about");
+  expect(response?.status()).toBe(200);
+  // docs/legal/obligations.md: the address is published on the about page and in the footer.
+  const section = page.locator("#contact");
+  await expect(
+    section.getByRole("link", { name: CONTACT_EMAIL ?? "" }),
+  ).toHaveAttribute("href", "mailto:" + CONTACT_EMAIL);
+});
 
 test("a component page and a manufacturer page carry the footer too", async ({
   page,

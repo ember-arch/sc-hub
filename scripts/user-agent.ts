@@ -1,7 +1,7 @@
 /**
  * The User-Agent every dev script sends (CLAUDE.md section 9): the project's name, that it is a
  * non-commercial fan reference, where it lives and, for robertsspaceindustries.com, a contact
- * email. The address is the owner's to choose (ADR-005, open); scripts read it from
+ * email. The owner chose ventures@coppercork.com on 2026-11-10 (ADR-033); scripts read it from
  * SC_HUB_CONTACT_EMAIL, and a script that calls RSI halts without it.
  */
 

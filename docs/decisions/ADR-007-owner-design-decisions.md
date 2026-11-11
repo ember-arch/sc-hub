@@ -46,7 +46,7 @@ The dark accent, success, warning and danger, the light danger (4.59:1 on inset)
 ## Still the owner's
 
 - Download the fankit into `fixtures/fankit/` (spec 00 prerequisite). It fills the ship-page image slot and card images, which are empty today. The fankit is licensed, so the download is the owner's.
-- Choose the contact address for corrections and takedowns (`CONTACT_EMAIL` in `packages/ui/legal.ts`).
+- Choose the contact address for corrections and takedowns (`CONTACT_EMAIL` in `packages/ui/legal.ts`). Chosen on 2026-11-10: ventures@coppercork.com (ADR-033).
 - The project name, and with it the domain for `SITE_URL` (CLAUDE.md section 12).
 
 ## Alternatives considered

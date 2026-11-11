@@ -21,6 +21,10 @@
 .dev-post-body a {
   color: var(--accent);
 }
+/* Bold in a post, and a heading read as a bold paragraph (ADR-037), at the site's one emphasis weight (CLAUDE.md section 7). */
+.dev-post-body strong {
+  font-weight: var(--text-heading--font-weight);
+}
 /* The folded post card (ADR-035): no disclosure marker, and a title or excerpt with no break in it wraps. */
 .dev-post-fold summary::-webkit-details-marker {
   display: none;

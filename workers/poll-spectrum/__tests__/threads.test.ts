@@ -16,7 +16,9 @@ import {
   UploadRow,
   createThreadReader,
   dueThreads,
+  markUnread,
   openJson,
+  readFromThread,
   readThreads,
   slugOf,
   threadBody,
@@ -468,5 +470,128 @@ describe("readThreads", () => {
         ) as unknown[]
       ).length,
     ).toBe(1);
+  });
+});
+
+describe("the search beside the thread step", () => {
+  it("knows which posts the thread gave, and unlists an edited one so its thread is due again", () => {
+    const state: ThreadStateFile = {
+      "564187": {
+        slug: "spectrum-redesign-phase-1-now-live",
+        read_at: "2026-11-10T21:00:00.000Z",
+        requests: 1,
+        posts: ["564187", "9048700"],
+        missing: [],
+      },
+    };
+    expect(readFromThread(state, "564187", "9048700")).toBe(true);
+    expect(readFromThread(state, "564187", "1")).toBe(false);
+    expect(readFromThread(state, null, "9048700")).toBe(false);
+    markUnread(state, "564187", "9048700");
+    expect(state["564187"]?.posts).toEqual(["564187"]);
+    markUnread(state, "nowhere", "1");
+    const { store } = workspace();
+    store.put(
+      item("564187", "2026-07-22T12:00:00.000Z"),
+      "2026-11-10T20:00:00.000Z",
+    );
+    store.put(
+      item("9048700", "2026-07-24T12:00:00.000Z"),
+      "2026-11-10T20:00:00.000Z",
+    );
+    expect(
+      dueThreads(store.latest(), state).map((t) =>
+        t.posts.map((p) => p.external_id),
+      ),
+    ).toEqual([["9048700", "564187"]]);
+    // A scheduled run wants only what it collected.
+    expect(
+      dueThreads(store.latest(), state, new Set(["9048700"])).map((t) =>
+        t.posts.map((p) => p.external_id),
+      ),
+    ).toEqual([["9048700"]]);
+  });
+
+  it("records a thread Spectrum answers 404 for as missing and moves on, without a backoff", async () => {
+    const { store, state, uploads } = workspace();
+    store.put(
+      item("564187", "2026-07-22T12:00:00.000Z"),
+      "2026-11-10T20:00:00.000Z",
+    );
+    const waits: number[] = [];
+    const events: Record<string, unknown>[] = [];
+    const gone = createThreadReader({
+      post: async () => ({ ok: false, status: 404, text: async () => "" }),
+      userAgent: "t",
+    });
+    const summary = await readThreads({
+      store,
+      state,
+      uploads,
+      reader: gone,
+      due: dueThreads(store.latest(), state.value),
+      limit: 1,
+      now: () => "2026-11-10T21:00:00.000Z",
+      sleep: async (ms) => {
+        waits.push(ms);
+      },
+      log: (e) => events.push(e),
+    });
+    expect(waits).toEqual([]);
+    expect(summary).toMatchObject({
+      requests: 1,
+      backoffs: 0,
+      missing: 1,
+      revised: 0,
+    });
+    expect(state.value["564187"]?.missing).toEqual(["564187"]);
+    expect(events.map((e) => e["event"])).toContain("spectrum.thread.gone");
+    expect(store.find("spectrum", "564187")!.revision).toBe(1);
+  });
+
+  it("leaves a post with no blocks and no Lexical content as the search wrote it", async () => {
+    const { store, state, uploads } = workspace();
+    store.put(
+      item("564187", "2026-07-22T12:00:00.000Z"),
+      "2026-11-10T20:00:00.000Z",
+    );
+    const empty = JSON.parse(redesign) as { data: { content_blocks: unknown } };
+    empty.data.content_blocks = [];
+    const events: Record<string, unknown>[] = [];
+    const summary = await readThreads({
+      store,
+      state,
+      uploads,
+      reader: { read: async () => empty },
+      due: dueThreads(store.latest(), state.value),
+      limit: 1,
+      now: () => "2026-11-10T21:00:00.000Z",
+      sleep: async () => undefined,
+      log: (e) => events.push(e),
+    });
+    expect(summary).toMatchObject({ found: 1, revised: 0, unchanged: 0 });
+    expect(store.find("spectrum", "564187")!.body_html).toBe(
+      "<p>From the search.</p>",
+    );
+    expect(events.map((e) => e["event"])).toContain("spectrum.thread.empty");
+    // Empty blocks beside Lexical content are the new editor: a halt, not a blank post.
+    const lexical = JSON.parse(redesign) as {
+      data: { content_blocks: unknown; lexical_content: unknown };
+    };
+    lexical.data.content_blocks = [];
+    lexical.data.lexical_content = { root: {} };
+    delete state.value["564187"];
+    await expect(
+      readThreads({
+        store,
+        state,
+        uploads,
+        reader: { read: async () => lexical },
+        due: dueThreads(store.latest(), state.value),
+        limit: 1,
+        now: () => "2026-11-10T21:00:00.000Z",
+        sleep: async () => undefined,
+      }),
+    ).rejects.toThrow(/lexical_content and no content_blocks/);
   });
 });

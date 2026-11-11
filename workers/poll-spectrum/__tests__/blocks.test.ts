@@ -370,3 +370,59 @@ describe("withinAllowlist", () => {
     ).toBe(true);
   });
 });
+
+describe("what the parser refuses or leaves out", () => {
+  it("drops the pictures inside a quote, which are the quoted member's, and collects no upload for them", () => {
+    const quoted = {
+      id: "q",
+      type: "quote",
+      reply_id: "1",
+      member: { displayname: "Someone" },
+      data: [
+        draft([{ text: "Look:" }]),
+        {
+          id: 2,
+          type: "image",
+          data: [
+            {
+              id: "upload:77",
+              type: "upload",
+              data: {
+                url: "https://theverse.robertsspaceindustries.com/x/source.jpg",
+                image_width: 10,
+                image_height: 10,
+              },
+            },
+          ],
+        },
+      ],
+    };
+    const parsed = htmlFromBlocks([quoted, draft([{ text: "Reply." }])]);
+    expect(parsed.html).toBe(
+      "<blockquote><p><strong>Someone</strong></p><p>Look:</p></blockquote>\n<p>Reply.</p>",
+    );
+    expect(parsed.uploads).toEqual([]);
+  });
+
+  it("halts on an atomic block that embeds an entity, and skips an empty one", () => {
+    expect(() =>
+      htmlFromDraft(
+        draft(
+          [
+            {
+              text: " ",
+              type: "atomic",
+              entityRanges: [{ offset: 0, length: 1, key: 0 }],
+            },
+          ],
+          [{ type: "IMAGE", data: { src: "https://x/y.png" } }],
+        ).data,
+      ),
+    ).toThrow(UnknownBlockError);
+    expect(
+      htmlFromDraft(
+        draft([{ text: "", type: "atomic" }, { text: "after" }]).data,
+      ).html,
+    ).toBe("<p>after</p>");
+  });
+});

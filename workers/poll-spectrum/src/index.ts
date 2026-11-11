@@ -31,7 +31,9 @@ import {
   UploadRow,
   createThreadReader,
   dueThreads,
+  markUnread,
   openJson,
+  readFromThread,
   readThreads,
 } from "./threads.js";
 
@@ -186,7 +188,15 @@ async function main(): Promise<void> {
     }
     throw error;
   }
+  // The thread state (ADR-037) is read before the search is written: a post the thread step
+  // already read keeps the thread's body, and an edit the search reports makes it due again.
+  const state = openJson(
+    join(spectrumDir, "thread-state.json"),
+    ThreadStateFile,
+    {},
+  );
   let older = 0;
+  let reread = 0;
   const collected = new Set<string>();
   for (const post of posts) {
     // Before the author row: a post from before the news window (ADR-031) makes no author
@@ -196,6 +206,19 @@ async function main(): Promise<void> {
       continue;
     }
     const author = authors.upsert(post, now);
+    const current = store.find("spectrum", post.id);
+    const fromThread =
+      current !== undefined &&
+      readFromThread(state.value, post.thread_id, post.id);
+    if (fromThread && post.edited_at !== null) {
+      // Edited since its thread was read: the thread step reads it again this run.
+      const readAt = state.value[post.thread_id]?.read_at ?? "";
+      if (post.edited_at > readAt) {
+        markUnread(state.value, post.thread_id, post.id);
+        collected.add(post.id);
+        reread += 1;
+      }
+    }
     const outcome = store.put(
       {
         source: "spectrum",
@@ -203,8 +226,8 @@ async function main(): Promise<void> {
         url: post.url,
         title:
           post.kind === "op" ? post.thread_title : `Re: ${post.thread_title}`,
-        summary: firstParagraph(post.body),
-        body_html: paragraphsHtml(post.body),
+        summary: fromThread ? current.summary : firstParagraph(post.body),
+        body_html: fromThread ? current.body_html : paragraphsHtml(post.body),
         published_at: post.published_at,
         author_id: author.id,
         thread_id: post.thread_id,
@@ -218,17 +241,17 @@ async function main(): Promise<void> {
   }
   const written = store.save();
   if (written) authors.save();
+  if (reread > 0) state.save();
 
   // The thread step (ADR-037): the posts' own blocks and pictures, in poll mode only (a feed
-  // from CIG would carry them itself).
+  // from CIG would carry them itself). SPECTRUM_THREADS=off skips it: set as a repository
+  // variable while a local backfill runs, so two processes never share the endpoint's limit.
   const threadsFlag = flag(args, "--threads");
+  const threadsOff = process.env["SPECTRUM_THREADS"] === "off";
   let threads = null;
-  if (mode === "poll") {
-    const state = openJson(
-      join(spectrumDir, "thread-state.json"),
-      ThreadStateFile,
-      {},
-    );
+  if (mode === "poll" && threadsOff) {
+    log({ event: "spectrum.threads.off" });
+  } else if (mode === "poll") {
     const uploads = openJson(
       join(spectrumDir, "uploads.json"),
       UploadRow.array(),
@@ -271,6 +294,7 @@ async function main(): Promise<void> {
       older,
       added: store.added,
       revised: store.revised,
+      reread,
       authors: authors.rows.length,
       written,
       threads,

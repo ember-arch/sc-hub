@@ -304,8 +304,15 @@ export function htmlFromDraft(raw: unknown): {
         parts.push(`<p>${inline}</p>`);
         break;
       case "atomic":
-        // An atomic block holds an embedded entity; Spectrum carries pictures as blocks of their
-        // own, so nothing is lost here.
+        // An atomic block holds an embedded entity. Spectrum carries pictures as blocks of their
+        // own and has sent no atomic block with an entity; one with an entity is a shape this
+        // parser does not know and must not drop in silence (CLAUDE.md section 5).
+        if (block.entityRanges.length > 0) {
+          throw new UnknownBlockError(
+            "an atomic Draft.js block with an entity",
+            block,
+          );
+        }
         break;
       default:
         throw new UnknownBlockError(
@@ -378,21 +385,17 @@ export const QuoteBlock = z
   .loose();
 
 /** The HTML of a `quote` block: the quoted member's name in bold, then the quoted content, as a blockquote. */
-function htmlFromQuote(block: unknown): {
-  html: string;
-  uploads: Upload[];
-} {
+function htmlFromQuote(block: unknown): string {
   const quote = QuoteBlock.parse(block);
-  const inner = htmlFromBlocks(quote.data ?? []);
+  // The quoted post is someone else's, often a player's: its pictures are not copied, shown or
+  // credited to CIG; the quote carries its words alone.
+  const inner = htmlFromBlocks(quote.data ?? [], { pictures: false });
   const name = quote.member?.displayname ?? quote.member?.nickname ?? null;
   const who =
     name === null || name.trim() === ""
       ? ""
       : `<p><strong>${escapeHtml(name.trim())}</strong></p>`;
-  return {
-    html: `<blockquote>${who}${inner.html}</blockquote>`,
-    uploads: [...inner.uploads],
-  };
+  return `<blockquote>${who}${inner.html}</blockquote>`;
 }
 
 /**
@@ -400,7 +403,10 @@ function htmlFromQuote(block: unknown): {
  * uploads, each an `img` with Spectrum's upload id and the picture's size and no source; `quote`
  * blocks are blockquotes of the quoted content. Any other kind halts.
  */
-export function htmlFromBlocks(blocks: readonly unknown[]): ParsedPost {
+export function htmlFromBlocks(
+  blocks: readonly unknown[],
+  options: { readonly pictures: boolean } = { pictures: true },
+): ParsedPost {
   const parts: string[] = [];
   const uploads: Upload[] = [];
   let first: string | null = null;
@@ -415,6 +421,7 @@ export function htmlFromBlocks(blocks: readonly unknown[]): ParsedPost {
       }
       case "image": {
         const entries = ImageData.parse(block.data);
+        if (!options.pictures) break;
         for (const entry of entries) {
           const id = entry.id.slice("upload:".length);
           const width = entry.data.image_width ?? null;
@@ -428,12 +435,9 @@ export function htmlFromBlocks(blocks: readonly unknown[]): ParsedPost {
         }
         break;
       }
-      case "quote": {
-        const quote = htmlFromQuote(block);
-        parts.push(quote.html);
-        uploads.push(...quote.uploads);
+      case "quote":
+        parts.push(htmlFromQuote(block));
         break;
-      }
       default:
         throw new UnknownBlockError(
           `unknown content block type "${block.type}"`,

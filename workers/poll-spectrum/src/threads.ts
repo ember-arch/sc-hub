@@ -29,6 +29,7 @@ import {
   UnknownBlockError,
   type Upload,
   htmlFromBlocks,
+  withinAllowlist,
 } from "./blocks.js";
 import {
   BACKOFF_MS,
@@ -211,7 +212,9 @@ export function dueThreads(
         (only === undefined || only.has(p.external_id)),
     );
     if (unread.length === 0) continue;
-    const sorted = [...posts].sort((a, b) =>
+    // A scheduled run wants only the posts it collected, one page as a rule; the backfill wants
+    // every unread post of the thread.
+    const sorted = [...(only === undefined ? posts : unread)].sort((a, b) =>
       b.published_at.localeCompare(a.published_at),
     );
     const slug = slugOf(sorted[0]!.url);
@@ -223,9 +226,41 @@ export function dueThreads(
   );
 }
 
+/** True when the post's body on record came from the thread step: its thread's state lists it found. */
+export function readFromThread(
+  state: ThreadStateFile,
+  threadId: string | null,
+  postId: string,
+): boolean {
+  if (threadId === null) return false;
+  return state[threadId]?.posts.includes(postId) === true;
+}
+
+/**
+ * The search saw the post edited after its thread was read: it is unlisted from the thread's
+ * found posts, so the thread is due again and the next thread step reads the edit. The search's
+ * plain text never replaces a body the thread gave (CLAUDE.md section 5: the latest revision
+ * shows, and the thread's is the fuller).
+ */
+export function markUnread(
+  state: ThreadStateFile,
+  threadId: string,
+  postId: string,
+): void {
+  const entry = state[threadId];
+  if (entry === undefined) return;
+  state[threadId] = {
+    ...entry,
+    posts: entry.posts.filter((id) => id !== postId),
+  };
+}
+
 export interface ThreadReader {
-  /** One request: the thread's page centred on the reply, or its top. Halts on any non-200. */
-  read(slug: string, targetReplyId: string | null): Promise<unknown>;
+  /**
+   * One request: the thread's page centred on the reply, or its top; null when Spectrum answers
+   * 404 (the thread is gone or its slug changed). Halts on any other non-200.
+   */
+  read(slug: string, targetReplyId: string | null): Promise<unknown | null>;
 }
 
 export function createThreadReader(options: {
@@ -253,6 +288,7 @@ export function createThreadReader(options: {
           slug,
           target: targetReplyId,
         });
+        if (response.status === 404) return null;
         throw new SpectrumStatusError(response.status);
       }
       return JSON.parse(await response.text()) as unknown;
@@ -314,7 +350,7 @@ export async function readThreads(
   const request = async (
     slug: string,
     target: string | null,
-  ): Promise<unknown> => {
+  ): Promise<unknown | null> => {
     for (;;) {
       // One request every five minutes to the endpoint, whatever the thread.
       if (requested) await sleep(POLL_SPACING_MS);
@@ -368,6 +404,16 @@ export async function readThreads(
       if (requests >= maxRequests) break;
       const answer = await request(thread.slug, target);
       requests += 1;
+      if (answer === null) {
+        // The thread is gone from Spectrum, or its slug changed: its posts keep the search's
+        // text and are recorded as missing, so the run moves on rather than backs off.
+        log({
+          event: "spectrum.thread.gone",
+          thread: thread.id,
+          slug: thread.slug,
+        });
+        break;
+      }
       const posts = postsInAnswer(answer);
       let gained = 0;
       for (const [id, item] of wanted) {
@@ -377,16 +423,25 @@ export async function readThreads(
         found.add(id);
         gained += 1;
         if (post.erased) continue;
-        if (post.blocks === null) {
+        if (post.blocks === null || post.blocks.length === 0) {
+          // A post with no blocks and Lexical content is the new editor: a shape of its own,
+          // not an empty post (CLAUDE.md section 5). One with neither keeps the search's text.
           if (post.lexical !== null) {
             throw new UnknownBlockError(
               `post ${id} has lexical_content and no content_blocks`,
               post.lexical,
             );
           }
+          log({ event: "spectrum.thread.empty", thread: thread.id, post: id });
           continue;
         }
         const parsed = htmlFromBlocks(post.blocks as ContentBlock[]);
+        if (parsed.html.trim() === "" || !withinAllowlist(parsed.html)) {
+          throw new UnknownBlockError(
+            `post ${id} parsed to ${parsed.html.trim() === "" ? "nothing" : "HTML outside the allowlist"}`,
+            post.blocks,
+          );
+        }
         pending.push({ item, parsed });
         seenUploads.push(...parsed.uploads);
       }

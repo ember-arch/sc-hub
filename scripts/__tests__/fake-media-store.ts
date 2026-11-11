@@ -1,4 +1,4 @@
-// An in-memory media store for the publish tests (ADR-034, ADR-048): keys, sizes, ETags that
+// An in-memory media store for the publish tests (ADR-034, ADR-051): keys, sizes, ETags that
 // change on every write, and conditional writes that fail with a 412 like the real store's.
 import type { MediaStore, PutOptions, StoredObject } from "../media/blob.js";
 

@@ -13,7 +13,7 @@
  *   --concurrency <n> parallel uploads (default 8)
  *   --allow-cover-drop let the new manifest lack Comm-Link covers the live one has; refused
  *                     otherwise, since the News workflow adds covers to the live manifest that a
- *                     checkout may not have yet (ADR-048): run fetch-covers.ts and prepare.ts first
+ *                     checkout may not have yet (ADR-051): run fetch-covers.ts and prepare.ts first
  *
  * Credentials come from `.env.local` (then `.env`) at the repository root, never from arguments:
  * either BLOB_READ_WRITE_TOKEN, or VERCEL_OIDC_TOKEN with BLOB_STORE_ID (what `vercel env pull`

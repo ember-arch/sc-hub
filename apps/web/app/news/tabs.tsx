@@ -4,7 +4,7 @@ type Tab = "/news" | "/news/dev" | "/news/videos";
 
 const TABS: readonly { href: Tab; label: string; spectrum?: true }[] = [
   { href: "/news", label: "Dispatches" },
-  { href: "/news/dev", label: "Developer posts", spectrum: true },
+  { href: "/news/dev", label: "Developer gold posts", spectrum: true },
   { href: "/news/videos", label: "Videos" },
 ];
 

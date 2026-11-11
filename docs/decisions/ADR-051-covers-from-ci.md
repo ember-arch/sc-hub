@@ -1,6 +1,7 @@
-# ADR-048: New Comm-Links get their cover from the News workflow, merged into the live manifest
+# ADR-051: New Comm-Links get their cover from the News workflow, merged into the live manifest
 
-- Status: accepted (the secret is the owner's to add; until it exists the step is a dry run)
+- Status: accepted; the secret `BLOB_READ_WRITE_TOKEN` was added by the owner on 2026-11-11
+- Number: merged as ADR-048 (PR 65), the same number the lowercase c had taken an hour earlier (PR 64); renumbered ADR-051 the same day, with every reference to it
 - Date: 2026-11-11
 - Deciders: owner (reported on 2026-11-11 that the dispatch "Monthly Store Bundle 2026", Comm-Link 20943, had no picture; a session of the same day asked that new Comm-Links get their cover without a hand publish), Claude Code session 2026-11-11
 - Amends: ADR-029 ("a cover appears after a local run of the fetch"), ADR-034 ("publishing is run by hand ... never from CI"; the manifest's last writer wins), CLAUDE.md sections 4 and 9

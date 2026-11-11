@@ -140,8 +140,7 @@ test("the front page carries the latest videos as a row, the newest first, with 
   ).toBeVisible();
   const cards = section.locator("article[data-video]");
   const count = await cards.count();
-  expect(count).toBeGreaterThanOrEqual(5);
-  expect(count).toBeLessThanOrEqual(7);
+  expect(count).toBe(5);
   await expect(
     section.getByRole("link", { name: "All videos" }),
   ).toHaveAttribute("href", "/news/videos");
@@ -150,6 +149,54 @@ test("the front page carries the latest videos as a row, the newest first, with 
     as.map((a) => Math.round(a.getBoundingClientRect().top)),
   );
   expect(new Set(tops).size).toBe(1);
+});
+
+test("the dispatches and the videos are carousels of the same card width, moved by overlaid arrows, with no scroll bar", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/");
+  const width = async (id: string) =>
+    page
+      .locator(`section[aria-labelledby='${id}'] li`)
+      .first()
+      .evaluate((li) => Math.round(li.getBoundingClientRect().width));
+  expect(await width("videos")).toBe(await width("dispatches"));
+  for (const id of ["dispatches", "videos"]) {
+    const section = page.locator(`section[aria-labelledby='${id}']`);
+    const row = section.locator("ul").first();
+    // No scroll bar (headless Chromium draws none either way, so the style itself is checked).
+    expect(
+      await row.evaluate((ul) => getComputedStyle(ul).scrollbarWidth),
+      id,
+    ).toBe("none");
+    // Three whole cards across at 1280: the last one ends inside the row.
+    const ends = await row.evaluate((ul) => {
+      const right = ul.getBoundingClientRect().right;
+      const third = ul.querySelectorAll("li")[2]?.getBoundingClientRect().right;
+      return third === undefined ? null : right - third;
+    });
+    expect(ends, id).not.toBeNull();
+    expect(ends!, id).toBeGreaterThanOrEqual(-1);
+    const name =
+      id === "videos" ? "Latest videos" : "Dispatches from the Verse";
+    const next = section.getByRole("button", { name: `${name}: next` });
+    const previous = section.getByRole("button", { name: `${name}: previous` });
+    await expect(previous).toHaveAttribute("aria-disabled", "true");
+    const before = await row.evaluate((ul) => ul.scrollLeft);
+    await next.click();
+    await expect
+      .poll(() => row.evaluate((ul) => ul.scrollLeft), { message: id })
+      .toBeGreaterThan(before);
+    await expect(previous).toHaveAttribute("aria-disabled", "false");
+    // The arrows sit over the row, not beside it.
+    const rowBox = await row.boundingBox();
+    const arrowBox = await next.boundingBox();
+    expect(arrowBox!.y).toBeGreaterThan(rowBox!.y);
+    expect(arrowBox!.y + arrowBox!.height).toBeLessThan(
+      rowBox!.y + rowBox!.height,
+    );
+  }
 });
 
 test("on a phone the front page's sections are rows to swipe, and the page does not scroll sideways", async ({

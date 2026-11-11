@@ -32,7 +32,7 @@ test("the sections run dispatches, featured ships, developers (with Spectrum on)
     ? [
         "Dispatches from the Verse",
         "Featured vehicles and ships",
-        "Featured developer posts",
+        "Developer gold posts",
         "Funding this year",
       ]
     : [
@@ -44,18 +44,18 @@ test("the sections run dispatches, featured ships, developers (with Spectrum on)
   // The entries A to Z left the front page.
   expect(heads).not.toContain("Entries, A to Z");
   if (!on) {
-    await expect(page.getByText("Featured developer posts")).toHaveCount(0);
+    await expect(page.getByText("Developer gold posts")).toHaveCount(0);
   }
 });
 
-test("the dispatches come first, three of them, each linked to its source, and none from Spectrum", async ({
+test("the dispatches come first, five of them in a carousel, each linked to its source, and none from Spectrum", async ({
   page,
 }) => {
   await page.goto("/");
   const section = page.locator("section[aria-labelledby=dispatches]");
-  await expect(section.locator("article")).toHaveCount(3);
+  await expect(section.locator("article")).toHaveCount(5);
   const links = section.getByRole("link", { name: "Read on the source site" });
-  await expect(links).toHaveCount(3);
+  await expect(links).toHaveCount(5);
   for (const href of await links.evaluateAll((as) =>
     as.map((a) => a.getAttribute("href")),
   )) {

@@ -1,6 +1,6 @@
 /**
  * The web copies of one Comm-Link cover (ADR-029), shared by `prepare.ts` on the owner's machine
- * and `publish-covers.ts` in CI (ADR-048), so both build the same bytes and therefore the same
+ * and `publish-covers.ts` in CI (ADR-051), so both build the same bytes and therefore the same
  * content-addressed keys (ADR-034). WebP at each of `COVER_WIDTHS` the picture is wide enough
  * for, never upscaled; resized and re-encoded only.
  */

@@ -2,9 +2,10 @@
  * The news pollers (spec 03, ADR-027): one run reads every source and writes what is new to the
  * news pack in `fixtures/news/`. Run from the news workflow every thirty minutes until the
  * pollers move to Fly; by hand with `pnpm workers:poll-news [--source comm_link|roadmap|video]`.
- * One YouTube feed is read on the hour's first scheduled run only (ADR-050, `videosDue`). A
- * failed video read is logged and leaves the videos as they were; it never discards the run's
- * other sources, whose news would otherwise wait an hour for a channel's feed. Logs
+ * One YouTube feed is read on the hour's first scheduled run only (ADR-050, `videosDue`). A feed
+ * YouTube does not answer is logged and leaves the videos as they were without discarding the
+ * run's other sources; a feed of an unknown shape halts the run like any source (CLAUDE.md
+ * section 5). Logs
  * are JSON lines on stderr; the summary line goes to stdout. The Comm-Link archive backfill
  * (`--backfill <pages>`, the wiki's list) is refused since ADR-031: the news window admits
  * nothing before 14 May 2026, the hub carries everything newer, and the wiki's older records
@@ -14,7 +15,7 @@ import { randomUUID } from "node:crypto";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { createClient } from "./client.js";
+import { FetchError, createClient } from "./client.js";
 import {
   CommLinkState,
   backfillCommLinks,
@@ -44,7 +45,7 @@ async function main(): Promise<void> {
           "comm_link",
           "roadmap",
           // Once an hour (CLAUDE.md section 9): the workflow's :07 schedule only.
-          ...(videosDue(process.env) ? ["video"] : []),
+          ...(videosDue(process.env, new Date()) ? ["video"] : []),
         ]
       : [only];
   const backfillPages = Number(flag(args, "--backfill") ?? 0);
@@ -122,9 +123,10 @@ async function main(): Promise<void> {
         throw new Error(`unknown source ${source}`);
       }
     } catch (error) {
-      if (source === "video") {
-        // Nothing of the feed was recorded (pollVideos parses before it records); the run's other
-        // sources still go live, and the next hour's run reads the other channel.
+      if (source === "video" && error instanceof FetchError) {
+        // YouTube did not answer: nothing of the feed was asked to be recorded, the run's other
+        // sources still go live, and the next hour's run reads the other channel. A shape error
+        // is not this: it halts the run below.
         log({
           event: "news.source.failed",
           source,

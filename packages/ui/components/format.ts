@@ -60,8 +60,10 @@ export function withoutEmoji(text: string): string {
   return (
     text
       // The trademark signs are typography, though Unicode files them with the pictographs.
-      .replace(/[\p{Extended_Pictographic}\u{1F1E6}-\u{1F1FF}]/gu, (c) =>
-        TYPOGRAPHIC.has(c) ? c : "",
+      // Skin tones and the tags of subdivision flags are not pictographs themselves; they go too.
+      .replace(
+        /\p{Extended_Pictographic}|[\u{1F1E6}-\u{1F1FF}]|\p{Emoji_Modifier}|[\u{E0020}-\u{E007F}]/gu,
+        (c) => (TYPOGRAPHIC.has(c) ? c : ""),
       )
       // The joiner, the two presentation selectors and the keycap mark, each on its own.
       .replace(/\u200D|\uFE0E|\uFE0F|\u20E3/gu, "")

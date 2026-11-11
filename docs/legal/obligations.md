@@ -26,8 +26,7 @@ See `takedown.md`. The contact address is published on the about page and in the
 
 ## Privacy
 
-- No accounts, no cookies beyond strictly necessary ones, no third-party trackers in v1.
-- The one third party a page loads is YouTube, for CIG's videos, on the owner's direction of 2026-11-11 (ADR-050): the cards' thumbnails from YouTube's image servers with no referrer, and the privacy-enhanced player (youtube-nocookie.com) only when a reader presses a video, unloaded when they close it. The privacy page says so.
+- No accounts, no cookies beyond strictly necessary ones, no third-party trackers in v1, with one exception for the owner's confirmation: YouTube, for CIG's videos (ADR-050). The video cards' thumbnails load from YouTube's image servers on arrival, with no referrer; the privacy-enhanced player (youtube-nocookie.com), with its own cookies, storage and any advertising YouTube shows, loads only when a reader presses a video and is unloaded when they close it. The owner asked for the thumbnails and the player in place on 2026-11-11; the privacy page says what loads and when.
 - Analytics is Umami, self-hosted, cookieless.
 - Error tracking (Sentry) scrubs IPs and request bodies.
 - A privacy page exists from Phase 0 even though it is short.

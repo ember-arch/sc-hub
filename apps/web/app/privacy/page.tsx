@@ -16,10 +16,12 @@ export default function PrivacyPage() {
         <div className="flex flex-col gap-4">
           <h1 className="text-title text-primary">Privacy</h1>
           <p className="text-body text-secondary">
-            {SITE_NAME} has no accounts and sets no cookies. There are no
-            third-party trackers, no advertising and no sale of data. The one
-            third party a page loads is YouTube, for CIG&apos;s videos; see
-            below.
+            {SITE_NAME} has no accounts, sets no cookies of its own, shows no
+            advertising of its own and sells no data. It adds no trackers. The
+            one third party a page loads is YouTube, for CIG&apos;s videos: its
+            thumbnails on the front page and the videos page, and its player
+            when you press a video, which has cookies and may show advertising
+            of YouTube&apos;s own; see below.
           </p>
         </div>
         <Section id="browser" title="What stays in your browser">

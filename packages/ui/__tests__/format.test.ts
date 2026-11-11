@@ -62,6 +62,21 @@ describe("withoutEmoji", () => {
       "Crew night",
     );
   });
+  it("drops skin tones and the tags of subdivision flags with their emoji", () => {
+    expect(withoutEmoji(`Thanks ${e(0x1f44d, 0x1f3fd)} all`)).toBe(
+      "Thanks all",
+    );
+    const england = e(
+      0x1f3f4,
+      0xe0067,
+      0xe0062,
+      0xe0065,
+      0xe006e,
+      0xe0067,
+      0xe007f,
+    );
+    expect(withoutEmoji(`London ${england} meetup`)).toBe("London meetup");
+  });
   it("leaves words, numbers and punctuation as they are", () => {
     expect(withoutEmoji("IAE 2956 - Save The Date | Star Citizen")).toBe(
       "IAE 2956 - Save The Date | Star Citizen",

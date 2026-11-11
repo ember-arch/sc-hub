@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Icon, TextLink } from "ui";
+import { TextLink } from "ui";
 
 interface Playing {
   readonly embed: string;
@@ -15,7 +15,8 @@ interface Playing {
  * reader presses a `VideoCard`'s thumbnail or title. It listens on the document, so the cards stay
  * server-rendered links to YouTube: without script, or with a modifier key or a middle click, they
  * go to YouTube as links do. The player is YouTube's privacy-enhanced embed, loaded only now, on
- * the reader's own press, and unloaded on close so playback stops. Escape, the close button and a
+ * the reader's own press, and unloaded on close so playback stops; the reader starts the video
+ * in it (spec 03: never embed autoplay). Escape, the close button and a
  * press on the dimmed page close it; focus goes back to the card. "Watch on YouTube" in the
  * player and on every card is the source link (obligations.md).
  */
@@ -93,10 +94,9 @@ export function VideoPlayer() {
               type="button"
               onClick={close}
               aria-label="Close the video"
-              className="flex shrink-0 items-center gap-1 rounded-pill px-3 py-1 text-ui text-secondary transition-colors duration-hover hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+              className="shrink-0 rounded-pill px-3 py-1 text-ui text-secondary transition-colors duration-hover hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
               autoFocus
             >
-              <Icon name="close" />
               Close
             </button>
           </div>

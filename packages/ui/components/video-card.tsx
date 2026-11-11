@@ -1,5 +1,4 @@
 import { formatTime, withoutEmoji } from "./format";
-import { Icon } from "./icon";
 import { TextLink } from "./text-link";
 
 export interface VideoCardProps {
@@ -30,8 +29,8 @@ export interface VideoCardProps {
 }
 
 /**
- * A video as a card (ADR-050): YouTube's thumbnail at 16:9 to the card's edges with a play mark
- * (the one icon on a card, ADR-044's line for it), the title without its emoji,
+ * A video as a card (ADR-050): YouTube's thumbnail at 16:9 to the card's edges with "Play" over it
+ * (a word, not an icon: ADR-044 keeps icons off the cards), the title without its emoji,
  * then the channel and the time as a label, the title, and the link to YouTube. The thumbnail and
  * the title are links to the video on YouTube, so the card works without script and a middle
  * click opens a new tab; on a page with a `VideoPlayer`, a plain press on either opens the player
@@ -87,8 +86,8 @@ export function VideoCard({
           </span>
         ) : null}
         <span className="absolute inset-0 flex items-center justify-center">
-          <span className="flex h-12 w-12 items-center justify-center rounded-pill bg-page/80 text-primary shadow-soft">
-            <Icon name="play" size={24} className="ml-1" />
+          <span className="lab rounded-pill bg-page/80 px-3 py-1 text-primary shadow-soft">
+            Play
           </span>
         </span>
       </a>

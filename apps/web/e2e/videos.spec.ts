@@ -38,7 +38,10 @@ test("the videos tab lists the uploads newest first, each linked to YouTube, wit
   ).toBeVisible();
   // CLAUDE.md section 2: no emoji anywhere in the UI, though some of CIG's titles carry them.
   const text = (await page.locator("main").textContent()) ?? "";
-  expect(text).not.toMatch(/\p{Extended_Pictographic}/u);
+  // The trademark signs are typography, kept as `withoutEmoji` keeps them.
+  expect(text.replace(/[\u00A9\u00AE\u2122]/gu, "")).not.toMatch(
+    /\p{Extended_Pictographic}/u,
+  );
   const channels = page.getByRole("navigation", { name: "Channels" });
   await channels.getByRole("link", { name: "Squadron 42" }).click();
   await expect(page).toHaveURL(/channel=Squadron(%20|\+)42$/);
@@ -62,7 +65,7 @@ test("a press on a video opens the player in place; Escape closes it and unloads
   await expect(player).toBeVisible();
   await expect(player.locator("iframe")).toHaveAttribute(
     "src",
-    /^https:\/\/www\.youtube-nocookie\.com\/embed\/[A-Za-z0-9_-]{11}\?autoplay=1/,
+    /^https:\/\/www\.youtube-nocookie\.com\/embed\/[A-Za-z0-9_-]{11}\?rel=0/,
   );
   await expect(
     player.getByRole("button", { name: "Close the video" }),

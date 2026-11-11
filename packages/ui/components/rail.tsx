@@ -8,7 +8,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { Icon } from "./icon";
 
 /** How wide each card is, as a share of the rail: a peek of the next card always shows. */
 export type RailSize = "video" | "post" | "plate";
@@ -46,8 +45,8 @@ export interface RailProps {
  * cards per section. Scroll snapping lands each card at the edge; the next card always peeks in
  * so the row reads as one that continues. From tablet width two buttons page the row by its own
  * width (a jump, not a glide: CLAUDE.md section 7 keeps motion for viewer transitions), marked
- * unavailable at either end and hidden when the row fits; they are arrows alone, named for
- * assistive tech (ADR-044's line for them). Keyboard readers move through the cards' own links,
+ * unavailable at either end and hidden when the row fits; they are words ("Back", "More"), named
+ * in full for assistive tech, since ADR-044 keeps icons beside labels, never in their place. Keyboard readers move through the cards' own links,
  * which scroll the row as they take focus. The row is a list named for its section, not a
  * landmark of its own.
  */
@@ -92,7 +91,7 @@ export function Rail({ label, size, phoneOnly, children }: RailProps) {
       ? ""
       : `md:mx-0 md:grid md:snap-none md:overflow-visible md:px-0 md:pb-0 ${GRID[phoneOnly.columns]}`;
   const button =
-    "flex h-8 w-8 items-center justify-center rounded-pill bg-surface text-primary shadow-soft transition-colors duration-hover hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent aria-disabled:cursor-default aria-disabled:text-muted aria-disabled:shadow-none aria-disabled:hover:text-muted";
+    "flex items-center rounded-pill bg-surface px-3 py-1 text-ui text-primary shadow-soft transition-colors duration-hover hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent aria-disabled:cursor-default aria-disabled:text-muted aria-disabled:shadow-none aria-disabled:hover:text-muted";
 
   return (
     <div className="flex flex-col gap-2">
@@ -107,7 +106,7 @@ export function Rail({ label, size, phoneOnly, children }: RailProps) {
             aria-disabled={edges.start}
             aria-label={`${label}: scroll back`}
           >
-            <Icon name="next" className="rotate-180" />
+            Back
           </button>
           <button
             type="button"
@@ -116,7 +115,7 @@ export function Rail({ label, size, phoneOnly, children }: RailProps) {
             aria-disabled={edges.end}
             aria-label={`${label}: scroll on`}
           >
-            <Icon name="next" />
+            More
           </button>
         </div>
       ) : null}

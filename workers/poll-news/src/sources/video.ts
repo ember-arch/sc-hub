@@ -85,6 +85,7 @@ export function parseFeed(xml: string, channel: Channel): FeedEntry[] {
       videoId === undefined ||
       !VIDEO_ID.test(videoId) ||
       title === undefined ||
+      decodeEntities(title).trim() === "" ||
       published === undefined ||
       Number.isNaN(Date.parse(published)) ||
       link === undefined
@@ -149,12 +150,16 @@ export function toIncoming(entry: FeedEntry, channel: Channel) {
 /**
  * Whether this run reads a feed (CLAUDE.md section 9: YouTube RSS, one request an hour). The News
  * workflow has two schedules, at 7 and at 37 minutes past the hour (ADR-027), and passes
- * `NEWS_VIDEO_SLOT=due` from the first one only, whatever time GitHub starts it; a run started
- * by hand or by `workflow_dispatch` reads no feed unless asked for with `--source video`.
+ * `NEWS_VIDEO_SLOT=due` from the first one only; and the read happens only in the hour's first
+ * half, so a run GitHub starts late reads nothing rather than a second time beside the next
+ * hour's. Reads are then one per clock hour at most and at least 38 minutes apart, and the same
+ * channel's at least an hour and 38 minutes apart. A run started by hand or by
+ * `workflow_dispatch` reads no feed unless asked for with `--source video`.
  */
 export const videosDue = (
   env: Readonly<Record<string, string | undefined>>,
-): boolean => env["NEWS_VIDEO_SLOT"] === "due";
+  now: Date,
+): boolean => env["NEWS_VIDEO_SLOT"] === "due" && now.getUTCMinutes() < 30;
 
 /** The hour's channel: the two take turns, so one feed is asked each hour. */
 export function channelForHour(

@@ -76,6 +76,11 @@ describe("parseFeed", () => {
       "<yt:channelId></yt:channelId>",
     );
     expect(() => parseFeed(unnamed, starCitizen)).toThrow(FeedShapeError);
+    const blank = squadronXml.replace(
+      "<title>Squadron 42 | Inside CIG: Community Gameplay Event</title>",
+      "<title>   </title>",
+    );
+    expect(() => parseFeed(blank, squadron)).toThrow(/lacks its id, title/);
   });
 
   it("reads an entry whose tag carries attributes", () => {
@@ -107,10 +112,14 @@ describe("toIncoming", () => {
 });
 
 describe("videosDue and channelForHour", () => {
-  it("reads a feed only when the workflow's :07 schedule says so", () => {
-    expect(videosDue({ NEWS_VIDEO_SLOT: "due" })).toBe(true);
-    expect(videosDue({ NEWS_VIDEO_SLOT: "" })).toBe(false);
-    expect(videosDue({})).toBe(false);
+  it("reads a feed only from the :07 schedule, and only in the hour's first half", () => {
+    const at = (t: string) => new Date(`2026-11-11T${t}:00Z`);
+    expect(videosDue({ NEWS_VIDEO_SLOT: "due" }, at("18:07"))).toBe(true);
+    expect(videosDue({ NEWS_VIDEO_SLOT: "due" }, at("18:29"))).toBe(true);
+    // A :07 run GitHub starts late reads nothing, rather than a second time beside the next hour's.
+    expect(videosDue({ NEWS_VIDEO_SLOT: "due" }, at("18:55"))).toBe(false);
+    expect(videosDue({ NEWS_VIDEO_SLOT: "" }, at("18:07"))).toBe(false);
+    expect(videosDue({}, at("18:07"))).toBe(false);
   });
 
   it("takes the channels in turn, one an hour", () => {
@@ -146,6 +155,24 @@ describe("pollVideos", () => {
     expect(run.entries).toBe(2);
     expect(client.requests).toBe(1);
     expect(store.latest().every((r) => r.forum === "Squadron 42")).toBe(true);
+  });
+
+  it("asks YouTube once when it answers 503 or the network fails", async () => {
+    for (const fail of [
+      async () => ({ ok: false, status: 503, text: async () => "" }),
+      async () => {
+        throw new Error("socket hang up");
+      },
+    ]) {
+      const dir = mkdtempSync(join(tmpdir(), "news-"));
+      const store = openStore(join(dir, "ContentItem.json"));
+      const client = createClient({ fetch: fail, ...quiet });
+      await expect(
+        pollVideos(client, store, () => new Date("2026-11-11T18:07:00Z")),
+      ).rejects.toThrow();
+      expect(client.requests).toBe(1);
+      expect(store.added).toBe(0);
+    }
   });
 
   it("asks YouTube once even when it answers 429, and records nothing", async () => {

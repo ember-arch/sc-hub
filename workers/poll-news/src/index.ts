@@ -1,7 +1,8 @@
 /**
  * The news pollers (spec 03, ADR-027): one run reads every source and writes what is new to the
- * news pack in `fixtures/news/`. Run from the news workflow every fifteen minutes until the
- * pollers move to Fly; by hand with `pnpm workers:poll-news [--source comm_link|roadmap]`. Logs
+ * news pack in `fixtures/news/`. Run from the news workflow every thirty minutes until the
+ * pollers move to Fly; by hand with `pnpm workers:poll-news [--source comm_link|roadmap|video]`.
+ * The YouTube feeds are read on the hour's first run only (ADR-050, `videosDue`). Logs
  * are JSON lines on stderr; the summary line goes to stdout. The Comm-Link archive backfill
  * (`--backfill <pages>`, the wiki's list) is refused since ADR-031: the news window admits
  * nothing before 14 May 2026, the hub carries everything newer, and the wiki's older records
@@ -18,6 +19,7 @@ import {
   pollCommLinks,
 } from "./sources/comm-link.js";
 import { BoardState, pollRoadmap } from "./sources/roadmap.js";
+import { pollVideos, videosDue } from "./sources/video.js";
 import { openStore } from "./store.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -34,7 +36,15 @@ async function main(): Promise<void> {
   const started = Date.now();
   const args = process.argv.slice(2);
   const only = flag(args, "--source");
-  const sources = only === undefined ? ["comm_link", "roadmap"] : [only];
+  const sources =
+    only === undefined
+      ? [
+          "comm_link",
+          "roadmap",
+          // Once an hour (CLAUDE.md section 9): the first of the workflow's two runs.
+          ...(videosDue(new Date()) ? ["video"] : []),
+        ]
+      : [only];
   const backfillPages = Number(flag(args, "--backfill") ?? 0);
   if (backfillPages > 0) {
     throw new Error(
@@ -104,6 +114,8 @@ async function main(): Promise<void> {
           null,
         );
         summary["roadmap"] = await pollRoadmap(client, store, state, now);
+      } else if (source === "video") {
+        summary["video"] = await pollVideos(client, store, now);
       } else {
         throw new Error(`unknown source ${source}`);
       }

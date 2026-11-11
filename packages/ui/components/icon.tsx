@@ -20,6 +20,8 @@ export const ICON_NAMES = [
   "yaw",
   "roll",
   "next",
+  "play",
+  "close",
 ] as const;
 export type IconName = (typeof ICON_NAMES)[number];
 
@@ -78,6 +80,10 @@ const GLYPHS: Readonly<Record<IconName, readonly string[]>> = {
   ],
   // The next stage, centred on the grid.
   next: ["M9 6l6 6-6 6"],
+  // Play: a triangle, nose to the right (ADR-050).
+  play: ["M8 5.5v13l10.5-6.5z"],
+  // Close: a cross.
+  close: ["M6 6l12 12", "M18 6 6 18"],
 };
 
 export function Icon({

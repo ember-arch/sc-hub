@@ -30,6 +30,8 @@ export interface ClientOptions {
 export const SPACING_MS: Readonly<Record<string, number>> = {
   "robertsspaceindustries.com": 5_000,
   "api.star-citizen.wiki": 2_000,
+  // Two channel feeds a run, each once an hour (ADR-050); spaced like every other host.
+  "www.youtube.com": 5_000,
 };
 const RSI_HOSTS = new Set(["robertsspaceindustries.com"]);
 const BACKOFF_MS: readonly number[] = [30_000, 120_000];

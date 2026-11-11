@@ -23,6 +23,7 @@ export const ContentItem = z.strictObject({
   author_id: Uuid.nullable(),
   thread_id: z.string().nullable(),
   thread_title: z.string().nullable(),
+  /** Where on its source the item was published: a Spectrum forum, or a video's YouTube channel (ADR-050). */
   forum: z.string().nullable(),
   /** Kill switch: when true the item returns 410 and is purged from search. */
   takedown: z.boolean(),

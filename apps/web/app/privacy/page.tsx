@@ -27,6 +27,18 @@ export default function PrivacyPage() {
             sent anywhere; clearing site data removes it.
           </p>
         </Section>
+        <Section id="videos" title="Videos">
+          <p className="text-ui text-secondary">
+            The videos on the front page and the news page are CIG's uploads on
+            YouTube. Their thumbnails load from YouTube's image servers, which
+            then see your IP address as with any image; no referrer is sent with
+            them. The player loads from youtube-nocookie.com, YouTube's
+            privacy-enhanced mode, only when you press a video, and is unloaded
+            when you close it; while it plays, YouTube's own privacy policy
+            applies. Every video also links to YouTube, if you would rather
+            watch it there.
+          </p>
+        </Section>
         <Section id="later" title="Planned">
           <ul className="m-0 flex list-none flex-col gap-2 p-0 text-ui text-secondary">
             <li>

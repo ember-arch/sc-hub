@@ -14,6 +14,9 @@ import { Badge } from "../components/badge";
 import { Card } from "../components/card";
 import { CommandPalette } from "../components/command-palette";
 import { DevPost } from "../components/dev-post";
+import { DevPostCard } from "../components/dev-post-card";
+import { Rail } from "../components/rail";
+import { VideoCard } from "../components/video-card";
 import {
   EmptyState,
   EntityPage,
@@ -69,6 +72,31 @@ export interface Story {
   readonly width: number;
   readonly render: (sample: StorySample) => ReactNode;
 }
+
+/** The pack's videos as card props, newest first (ADR-050); the same addresses the site builds. */
+const videosOf = (s: StorySample) =>
+  s.news
+    .filter((n) => n.source === "video")
+    .sort((a, b) => b.published_at.localeCompare(a.published_at))
+    .map((n) => {
+      const base = `https://i.ytimg.com/vi/${n.external_id}`;
+      return {
+        id: n.external_id,
+        title: n.title,
+        channel: n.forum ?? "YouTube",
+        publishedAt: n.published_at,
+        now: new Date(s.now),
+        url: n.url,
+        embed: `https://www.youtube-nocookie.com/embed/${n.external_id}`,
+        short: n.url.includes("/shorts/"),
+        thumbnail: {
+          src: `${base}/mqdefault.jpg`,
+          srcSet: `${base}/mqdefault.jpg 320w, ${base}/hqdefault.jpg 480w`,
+          width: 320,
+          height: 180,
+        },
+      };
+    });
 
 const versions = (sample: StorySample) =>
   sample.versions
@@ -321,6 +349,57 @@ const renderers: Record<string, { title: string; render: Story["render"] }> = {
         sourceUrl={s.devPost.url}
         open
       />
+    ),
+  },
+  "dev-post-card": {
+    title: "DevPostCard",
+    render: (s) => (
+      <div className="max-w-sm">
+        <DevPostCard
+          title={s.devPost.thread_title ?? s.devPost.title}
+          author={{
+            name: s.author.display_name,
+            role: s.author.role,
+            href: "/news/dev",
+          }}
+          publishedAt={s.devPost.published_at}
+          now={new Date(s.now)}
+          excerpt={s.devPost.body_html.replace(/<[^>]+>/g, " ").trim()}
+          sourceUrl={s.devPost.url}
+        />
+      </div>
+    ),
+  },
+  "video-card": {
+    title: "VideoCard",
+    // A video from the pack (ADR-050), its thumbnail from YouTube's image host as on the site.
+    render: (s) => {
+      const video = videosOf(s)[0];
+      return video === undefined ? null : <VideoCard {...video} />;
+    },
+  },
+  rail: {
+    title: "Rail",
+    render: (s) => (
+      <Rail label="Latest videos" size="video">
+        {videosOf(s)
+          .slice(0, 7)
+          .map((v) => (
+            <VideoCard key={v.id} {...v} />
+          ))}
+      </Rail>
+    ),
+  },
+  "rail-phone": {
+    title: "Rail (phone)",
+    render: (s) => (
+      <Rail label="Latest videos" size="video">
+        {videosOf(s)
+          .slice(0, 3)
+          .map((v) => (
+            <VideoCard key={v.id} {...v} />
+          ))}
+      </Rail>
     ),
   },
   "patch-strip": {

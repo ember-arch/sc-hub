@@ -99,3 +99,23 @@ describe("the dispatches", () => {
     expect(off.dispatches.map((n) => n.external_id)).toEqual(["1"]);
   });
 });
+
+describe("the videos", () => {
+  it("are their tab's, never a dispatch (ADR-050)", () => {
+    const video = item(4, {
+      source: "video",
+      external_id: "aaaaaaaaaaa",
+      url: "https://www.youtube.com/watch?v=aaaaaaaaaaa",
+      forum: "Star Citizen",
+    });
+    const r = buildRepository(
+      bootstrapPack(),
+      visibleNews([...rows, video], {
+        spectrum: false,
+        hiddenAuthors: new Set(),
+      }),
+    );
+    expect(r.dispatches.map((n) => n.external_id)).toEqual(["1"]);
+    expect(r.videos.map((n) => n.external_id)).toEqual(["aaaaaaaaaaa"]);
+  });
+});

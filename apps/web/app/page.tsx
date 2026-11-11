@@ -1,22 +1,18 @@
 import type { Metadata } from "next";
 import {
-  DevPost,
+  DevPostCard,
   DispatchCard,
   EmptyState,
   formatNumber,
+  Rail,
   type ResponsiveImage,
   TextLink,
+  VideoCard,
 } from "ui";
 import { SITE_NAME, SITE_TAGLINE } from "ui/brand";
-import { RSI_IMAGE_CREDIT, WIKI_CREDIT } from "ui/legal";
+import { RSI_IMAGE_CREDIT, VIDEO_CREDIT, WIKI_CREDIT } from "ui/legal";
 import { repo, spectrumOn } from "../lib/data";
-import {
-  authorOf,
-  devPosts,
-  excerptOf,
-  renderBody,
-  threadUrl,
-} from "../lib/dev-posts";
+import { authorOf, devPosts, excerptOf, threadUrl } from "../lib/dev-posts";
 import { SOURCE_LABEL, coverOf } from "../lib/dispatches";
 import {
   dailyLine,
@@ -44,6 +40,7 @@ import { shipTally, tallyNote } from "../lib/ship-count";
 import { withoutFixed } from "../lib/component-filters";
 import { conceptShips, showcaseFor } from "../lib/showcase";
 import { Site, now } from "../lib/site";
+import { FRONT_VIDEOS, videoCard, videosOf } from "../lib/videos";
 import {
   Contents,
   type Counter,
@@ -54,6 +51,7 @@ import {
   RunningHead,
 } from "./front";
 import { FundingNow } from "./funding-now";
+import { VideoPlayer } from "./news/videos/player";
 
 export const metadata: Metadata = {
   title: { absolute: SITE_NAME },
@@ -88,11 +86,13 @@ const LIVE_EXAMPLE = "perseus";
 const DAILY_PLATES = 3;
 
 /**
- * The front page (ADR-020, ADR-021, ADR-038, ADR-042): the date line, the daily line composed
- * from the pack as the title, the contents, the counters; then the newest dispatches, the featured ships (the showcase pair and
+ * The front page (ADR-020, ADR-021, ADR-038, ADR-042, ADR-050): the date line, the daily line composed
+ * from the pack as the title, the contents, the counters; then the newest dispatches, CIG's latest
+ * videos as a row that scrolls sideways with the player opening in place, the featured ships (the showcase pair and
  * three that change daily, with the register's count), the developers' latest posts from Spectrum
- * (only with the module on), and this year's funding against last year's in one drawing with two
- * views, the site's one funding surface since ADR-040. Without media the bento's cards hold their captions alone and the dispatch cards their
+ * (only with the module on, a row of small cards), and this year's funding against last year's in one drawing with two
+ * views, the site's one funding surface since ADR-040. On a phone the dispatches and the featured
+ * ships are rows to swipe too, so no section is a column of tall cards (ADR-050). Without media the bento's cards hold their captions alone and the dispatch cards their
  * words.
  */
 export default function HomePage() {
@@ -219,7 +219,9 @@ export default function HomePage() {
   const devOn = spectrumOn();
   const posts = devOn ? devPosts(r.news) : [];
   const featured = featuredPosts(posts, at);
-  const pictures = media();
+
+  // CIG's latest on YouTube (ADR-050): the newest of both channels, the player opening in place.
+  const latestVideos = videosOf(r.videos, undefined).slice(0, FRONT_VIDEOS);
 
   // The daily line (ADR-042): composed from what the pack says today, never written.
   const staffWord = freshestStaffWord(posts, at);
@@ -299,23 +301,27 @@ export default function HomePage() {
             </EmptyState>
           ) : (
             <div className="flex flex-col gap-2">
-              <ul className="m-0 grid list-none grid-cols-1 gap-4 p-0 md:grid-cols-3">
+              {/* A row to swipe on a phone, three across from tablet width (ADR-050). */}
+              <Rail
+                label="Dispatches from the Verse"
+                size="post"
+                phoneOnly={{ columns: 3 }}
+              >
                 {feed.map((item, i) => (
-                  <li key={item.id}>
-                    <DispatchCard
-                      source={SOURCE_LABEL[item.source]}
-                      title={item.title}
-                      sourceUrl={item.url}
-                      publishedAt={item.published_at}
-                      now={at}
-                      excerpt={item.summary}
-                      picture={feedPictures[i] ?? null}
-                      // The page's first picture, and usually its largest paint.
-                      priority={i === 0}
-                    />
-                  </li>
+                  <DispatchCard
+                    key={item.id}
+                    source={SOURCE_LABEL[item.source]}
+                    title={item.title}
+                    sourceUrl={item.url}
+                    publishedAt={item.published_at}
+                    now={at}
+                    excerpt={item.summary}
+                    picture={feedPictures[i] ?? null}
+                    // The page's first picture, and usually its largest paint.
+                    priority={i === 0}
+                  />
                 ))}
-              </ul>
+              </Rail>
               {feedPictures.some((p) => p !== null) ? (
                 <p className="m-0 text-caption text-muted">
                   {RSI_IMAGE_CREDIT.text}
@@ -324,6 +330,28 @@ export default function HomePage() {
             </div>
           )}
         </section>
+
+        {latestVideos.length === 0 ? null : (
+          <section aria-labelledby="videos" className="flex flex-col gap-4">
+            <RunningHead
+              id="videos"
+              title="Latest videos"
+              aside={
+                <TextLink href="/news/videos" className="text-secondary">
+                  All videos
+                </TextLink>
+              }
+            />
+            <div className="flex flex-col gap-2">
+              <Rail label="Latest videos" size="video">
+                {latestVideos.map((item) => (
+                  <VideoCard key={item.id} {...videoCard(item, at)} />
+                ))}
+              </Rail>
+              <p className="m-0 text-caption text-muted">{VIDEO_CREDIT.text}</p>
+            </div>
+          </section>
+        )}
 
         <section aria-labelledby="featured" className="flex flex-col gap-4">
           <RunningHead
@@ -351,11 +379,11 @@ export default function HomePage() {
                 No developer posts yet. The tracker has not read Spectrum.
               </EmptyState>
             ) : (
-              <div className="flex flex-col gap-4">
+              <Rail label="Featured developer posts" size="post">
                 {featured.map((post) => {
                   const who = authorOf(post, r.authors);
                   return (
-                    <DevPost
+                    <DevPostCard
                       key={post.id}
                       title={post.thread_title ?? post.title}
                       author={
@@ -369,18 +397,13 @@ export default function HomePage() {
                       }
                       publishedAt={post.published_at}
                       now={at}
-                      bodyHtml={renderBody(
-                        post.body_html,
-                        (id) => pictures.spectrumUpload(id),
-                        post.url,
-                      )}
                       excerpt={excerptOf(post.body_html)}
                       sourceUrl={post.url}
                       threadUrl={threadUrl(post)}
                     />
                   );
                 })}
-              </div>
+              </Rail>
             )}
           </section>
         ) : null}
@@ -418,6 +441,7 @@ export default function HomePage() {
           </section>
         )}
       </div>
+      {latestVideos.length === 0 ? null : <VideoPlayer />}
     </Site>
   );
 }

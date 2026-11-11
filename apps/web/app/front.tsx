@@ -67,7 +67,8 @@ export interface PlateEntry {
 
 /**
  * The front page's bento (ADR-021, ADR-038): the live example large, the concept hero tall beside
- * it, then three more across that change daily; each an image card with the ship's name over a scrim. Without a picture a
+ * it, then three more across that change daily; on a phone the five as a row to swipe, one shape
+ * each (ADR-050); each an image card with the ship's name over a scrim. Without a picture a
  * card is a toned panel with the name, so the layout keeps its shape on CI and a deployment.
  */
 export function Bento({ cards }: { readonly cards: readonly PlateEntry[] }) {
@@ -78,18 +79,26 @@ export function Bento({ cards }: { readonly cards: readonly PlateEntry[] }) {
       : i === 1
         ? "md:col-span-4 md:row-span-2"
         : "md:col-span-4";
+  // One shape across the phone's row; the bento's own shapes from tablet width.
   const aspect = (i: number): string =>
     i === 0
-      ? "aspect-[2/1]"
+      ? "aspect-[4/3] md:aspect-[2/1]"
       : i === 1
-        ? "aspect-square md:aspect-auto"
-        : "aspect-video";
+        ? "aspect-[4/3] md:aspect-auto"
+        : "aspect-[4/3] md:aspect-video";
   const anyPicture = cards.some((c) => c.picture !== null);
   return (
     <div className="flex flex-col gap-2">
-      <ul className="m-0 grid list-none grid-cols-1 gap-3 p-0 md:grid-cols-12">
+      {/* A row to swipe on a phone (ADR-050), the bento from tablet width. */}
+      <ul
+        aria-label="Featured vehicles and ships"
+        className="-mx-4 m-0 flex list-none snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto overscroll-x-contain px-4 pb-2 [scrollbar-width:thin] md:mx-0 md:grid md:snap-none md:grid-cols-12 md:overflow-visible md:px-0 md:pb-0"
+      >
         {cards.map((c, i) => (
-          <li key={c.slug} className={place(i)}>
+          <li
+            key={c.slug}
+            className={`shrink-0 basis-4/5 snap-start sm:basis-1/2 md:basis-auto ${place(i)}`}
+          >
             <NextLink
               href={`/ships/${c.slug}`}
               className={`group relative block h-full overflow-hidden rounded-card bg-inset no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent ${i === 0 ? "shadow-lift" : "shadow-soft"}`}
@@ -102,8 +111,8 @@ export function Bento({ cards }: { readonly cards: readonly PlateEntry[] }) {
                   srcSet={c.picture.srcSet}
                   sizes={
                     i === 0
-                      ? "(min-width: 768px) 66vw, 100vw"
-                      : "(min-width: 768px) 33vw, 100vw"
+                      ? "(min-width: 768px) 66vw, 80vw"
+                      : "(min-width: 768px) 33vw, 80vw"
                   }
                   width={c.picture.width}
                   height={c.picture.height}

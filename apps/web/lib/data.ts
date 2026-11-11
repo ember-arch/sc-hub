@@ -251,10 +251,13 @@ export interface Repository {
   readonly manufacturers: readonly Manufacturer[];
   readonly news: readonly ContentItem[];
   /**
-   * The dispatches (ADR-029): what CIG publishes, newest first, with no developer post among
-   * them; the Spectrum items are the dev tracker's (`lib/dev-posts.ts`).
+   * The dispatches (ADR-029): what CIG publishes, newest first, with no developer post or video
+   * among them; the Spectrum items are the dev tracker's (`lib/dev-posts.ts`), the videos the
+   * videos tab's (ADR-050).
    */
   readonly dispatches: readonly ContentItem[];
+  /** CIG's YouTube uploads, newest first (ADR-050); `lib/videos.ts` turns them into cards. */
+  readonly videos: readonly ContentItem[];
   /** CIG staff seen on Spectrum; empty with the module off. */
   readonly authors: readonly Author[];
   readonly searchEntries: readonly SearchEntry[];
@@ -461,7 +464,10 @@ export function buildRepository(
     components,
     manufacturers,
     news,
-    dispatches: news.filter((n) => n.source !== "spectrum"),
+    dispatches: news.filter(
+      (n) => n.source !== "spectrum" && n.source !== "video",
+    ),
+    videos: news.filter((n) => n.source === "video"),
     authors,
     searchEntries,
     shipBySlug: (slug) => ships.find((s) => s.vehicle.slug === slug),

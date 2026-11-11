@@ -27,6 +27,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     entry("/components", 0.8, lastModified),
     entry("/news", 0.8),
     entry("/news/dev", 0.6),
+    entry("/news/videos", 0.6),
     entry("/titles", 0.6),
     entry("/about", 0.3),
     entry("/privacy", 0.2),

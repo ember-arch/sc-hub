@@ -104,11 +104,16 @@ export function plainText(html: string): string {
 
 /** The post's paragraphs and list items, in order, as text. */
 export function paragraphs(html: string): string[] {
-  const out: string[] = [];
+  return blocks(html).map((b) => b.text);
+}
+
+/** The post's blocks in order, each with whether it was a list item (never a heading). */
+export function blocks(html: string): { text: string; item: boolean }[] {
+  const out: { text: string; item: boolean }[] = [];
   const re = /<(p|li|h[1-6]|blockquote)\b[^>]*>([\s\S]*?)<\/\1>/gi;
   for (const m of html.matchAll(re)) {
     const t = plainText(m[2] ?? "");
-    if (t !== "") out.push(t);
+    if (t !== "") out.push({ text: t, item: m[1]?.toLowerCase() === "li" });
   }
   return out;
 }
@@ -181,7 +186,11 @@ function looksLikeHeading(line: string, next: string | undefined): boolean {
 }
 
 /** CIG's sections, recovered from the paragraphs. */
-export function noteSections(lines: readonly string[]): {
+export function noteSections(
+  lines: readonly string[],
+  /** Which lines were list items in the post; a list item is never a heading. */
+  listItems: ReadonlySet<number> = new Set(),
+): {
   facts: { label: string; value: string }[];
   sections: NoteSection[];
 } {
@@ -207,11 +216,13 @@ export function noteSections(lines: readonly string[]): {
     const next = lines[i + 1];
     // Fix lists use a few set headings; the testing focus is a plain list; features have
     // a heading per feature.
-    const heading = isFixSection(section.title)
-      ? FIX_HEADINGS.has(norm(line)) || CRASH_TALLY.test(line)
-      : /testing|feedback/i.test(section.title)
-        ? false
-        : looksLikeHeading(line, next) && !TOP.has(norm(next ?? ""));
+    const heading = listItems.has(i)
+      ? false
+      : isFixSection(section.title)
+        ? FIX_HEADINGS.has(norm(line)) || CRASH_TALLY.test(line)
+        : /testing|feedback/i.test(section.title)
+          ? false
+          : looksLikeHeading(line, next) && !TOP.has(norm(next ?? ""));
     if (heading) {
       groups.push({ title: line, items: [] });
       return;
@@ -309,10 +320,12 @@ export function patchNotes(news: readonly ContentItem[]): PatchNote[] {
     ) {
       const head = readTitle(item.title);
       if (head === null) continue;
-      const lines = paragraphs(item.body_html ?? "");
+      const parts = blocks(item.body_html ?? "");
+      const lines = parts.map((b) => b.text);
+      const listItems = new Set(parts.flatMap((b, i) => (b.item ? [i] : [])));
       const { facts, sections } = head.hotfix
         ? hotfixSections(lines)
-        : noteSections(lines);
+        : noteSections(lines, listItems);
       note = {
         id: item.id,
         kind: head.hotfix ? "hotfix" : head.channel === "PTU" ? "ptu" : "live",

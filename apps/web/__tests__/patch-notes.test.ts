@@ -104,6 +104,25 @@ describe("noteSections", () => {
   });
 });
 
+describe("noteSections with the post's list items", () => {
+  it("never makes a heading of a list item, however short", () => {
+    const lines = [
+      "Features & Updates",
+      "Ship Balance",
+      "Reduced the Gladius spool time",
+      "Shorter line",
+      "A longer line that follows the short list item above it",
+    ];
+    const { sections } = noteSections(lines, new Set([2, 3]));
+    expect(sections[0]?.groups.map((g) => g.title)).toEqual(["Ship Balance"]);
+    expect(sections[0]?.groups[0]?.items).toEqual([
+      "Reduced the Gladius spool time",
+      "Shorter line",
+      "A longer line that follows the short list item above it",
+    ]);
+  });
+});
+
 describe("hotfixSections", () => {
   it("makes the status lines facts and each dated entry a group, dropping bare addresses", () => {
     const { facts, sections } = hotfixSections([

@@ -32,8 +32,7 @@ export default function PatchesPage() {
       <div className="flex flex-col gap-8 pt-8">
         {data === null || to === null || from === null ? (
           <EmptyState>
-            Two LIVE builds are needed for a comparison and fewer are on record.
-            Run scripts/patches/fetch.ts to record them.
+            A comparison needs two LIVE builds, and fewer are on record yet.
           </EmptyState>
         ) : (
           <PatchView

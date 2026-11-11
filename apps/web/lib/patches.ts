@@ -1,5 +1,6 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
+import { gunzipSync } from "node:zlib";
 import {
   type Channel,
   type PatchFigures,
@@ -79,11 +80,13 @@ export function snapshots(dir: string = PATCHES_DIR): readonly PatchSnapshot[] {
   if (cached !== undefined && cached.dir === dir) return cached.snapshots;
   const list = existsSync(dir)
     ? readdirSync(dir)
-        .filter((f) => f.endsWith(".json") && /^\d/.test(f))
+        .filter((f) => f.endsWith(".json.gz") && /^\d/.test(f))
         .map((f) =>
           decodeSnapshot(
             PatchSnapshotFile.parse(
-              JSON.parse(readFileSync(join(dir, f), "utf8")) as unknown,
+              JSON.parse(
+                gunzipSync(readFileSync(join(dir, f))).toString("utf8"),
+              ) as unknown,
             ),
           ),
         )
@@ -118,10 +121,12 @@ export function buildsOf(list: readonly PatchSnapshot[]): Build[] {
           },
         ];
   });
-  // The newest build of a version takes the plain address; an earlier one adds its number.
+  // The first build of a version takes the plain address and keeps it; a later build of the same
+  // version (a hotfix) adds its number. Builds only ever arrive newer, so no address moves
+  // (CLAUDE.md section 5: an address never changes after first publish).
   return builds.map((b, i) => {
     const later = builds
-      .slice(i + 1)
+      .slice(0, i)
       .some((o) => o.version === b.version && o.channel === b.channel);
     const base =
       b.channel === "LIVE"
@@ -137,6 +142,14 @@ export function builds(): Build[] {
 
 export function snapshotOf(code: string): PatchSnapshot | null {
   return snapshots().find((s) => s.game_version === code) ?? null;
+}
+
+/**
+ * How a comparison names a build: its version, and its build number too when the other build is
+ * of the same version (a hotfix against its patch).
+ */
+export function buildLabel(b: Build, other: Build): string {
+  return b.version === other.version ? `${b.version} (${b.number})` : b.version;
 }
 
 /** The build before this one on the same channel. */
@@ -271,6 +284,8 @@ function figureChanges(
     const a = from[key];
     const b = to[key];
     if (a === b) continue;
+    // A "formatted" figure is a text twin of the number beside it ("1m 2s" for 62).
+    if (key.endsWith(".formatted")) continue;
     if (a === undefined && !fromStated.has(key)) {
       unrecorded.count += 1;
       continue;
@@ -514,10 +529,18 @@ export function compareSnapshots(
   }
 
   // Parts, by family.
-  const partStated = {
-    from: statedKeys(Object.values(from.parts)),
-    to: statedKeys(Object.values(to.parts)),
+  // What a build states is judged per part type: a shield's figure is not a gun's.
+  const statedBy = (parts: PatchSnapshot["parts"]) => {
+    const byType = new Map<string, PatchSnapshot["parts"][string][]>();
+    for (const p of Object.values(parts)) {
+      const list = byType.get(p.type) ?? [];
+      list.push(p);
+      byType.set(p.type, list);
+    }
+    return new Map([...byType].map(([t, list]) => [t, statedKeys(list)]));
   };
+  const partStated = { from: statedBy(from.parts), to: statedBy(to.parts) };
+  const none = new Set<string>();
   const families = new Map<
     string,
     {
@@ -573,8 +596,8 @@ export function compareSnapshots(
       const figures = figureChanges(
         a.figures,
         b.figures,
-        partStated.from,
-        partStated.to,
+        partStated.from.get(a.type) ?? none,
+        partStated.to.get(b.type) ?? none,
         partFigureLabel,
         PART_GROUPS,
         unrecorded,

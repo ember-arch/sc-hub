@@ -99,6 +99,8 @@ interface Step {
   readonly files: readonly string[];
   /** The script to run, relative to the repository. */
   readonly script: string;
+  /** Arguments for the script. */
+  readonly args?: readonly string[];
   readonly needsRsi?: boolean;
   /** Runs only when this earlier step changed something. */
   readonly after?: string;
@@ -111,7 +113,11 @@ interface Step {
     | string;
 }
 
-/** Every file under the paths, as text, keyed by repository-relative path. */
+/**
+ * Every file under the paths, keyed by repository-relative path, read byte for byte (latin1 maps
+ * each byte to one character and back): the patch snapshots are gzip (ADR-049), and a UTF-8
+ * round trip would corrupt them on a restore. JSON compares the same either way.
+ */
 function snapshot(paths: readonly string[]): Map<string, string> {
   const out = new Map<string, string>();
   const walk = (abs: string): void => {
@@ -122,7 +128,7 @@ function snapshot(paths: readonly string[]): Map<string, string> {
     }
     out.set(
       relative(repoRoot, abs).replaceAll("\\", "/"),
-      readFileSync(abs, "utf8"),
+      readFileSync(abs, "latin1"),
     );
   };
   for (const p of paths) walk(join(repoRoot, p));
@@ -139,7 +145,7 @@ function restore(
     if (only !== undefined && !only.has(path)) continue;
     const abs = join(repoRoot, path);
     mkdirSync(dirname(abs), { recursive: true });
-    writeFileSync(abs, text, "utf8");
+    writeFileSync(abs, text, "latin1");
   }
   for (const path of after.keys()) {
     if (before.has(path)) continue;
@@ -148,8 +154,11 @@ function restore(
   }
 }
 
-function runScript(script: string): { code: number; stderr: string } {
-  const result = spawnSync("pnpm", ["exec", "tsx", script], {
+function runScript(
+  script: string,
+  args: readonly string[] = [],
+): { code: number; stderr: string } {
+  const result = spawnSync("pnpm", ["exec", "tsx", script, ...args], {
     cwd: repoRoot,
     encoding: "utf8",
     env: process.env,
@@ -242,7 +251,8 @@ function cargoBoxesGate(outcomes: readonly Outcome[]): { run: true } | string {
 
 /**
  * The patch snapshots (ADR-049) run when the Wiki API lists a build that has no file in
- * fixtures/patches yet: one request for the list, then about 300 for the new build.
+ * fixtures/patches yet: one request for the list, then about 300 for the newest such build (one
+ * build a run).
  */
 async function patchesGate(): Promise<{ run: true; note?: string } | string> {
   const client = createWikiClient({
@@ -263,8 +273,8 @@ async function patchesGate(): Promise<{ run: true; note?: string } | string> {
   const filed = new Set(
     existsSync(dir)
       ? readdirSync(dir)
-          .filter((f) => /^\d.*\.json$/.test(f))
-          .map((f) => f.slice(0, -".json".length))
+          .filter((f) => /^\d.*\.json\.gz$/.test(f))
+          .map((f) => f.slice(0, -".json.gz".length))
       : [],
   );
   const missing = listed.filter((c) => !filed.has(c));
@@ -300,6 +310,9 @@ const STEPS: readonly Step[] = [
     label: "patch snapshots",
     files: ["fixtures/patches"],
     script: "scripts/patches/fetch.ts",
+    // One build a run: a backlog (a first run, or days the wiki was down) is worked off a
+    // build a day instead of outrunning the job (ADR-049).
+    args: ["--max-builds", "1"],
     gate: patchesGate,
   },
   {
@@ -392,7 +405,7 @@ async function runStep(
   const before = snapshot(step.files);
   log({ event: "refresh.step", id, script: step.script });
   const started = Date.now();
-  const result = runScript(step.script);
+  const result = runScript(step.script, step.args);
   // The fetcher's whole log, for the job's summary; the issue quotes its last lines.
   outFile(`${id}.log`, result.stderr);
   const after = snapshot(step.files);

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { pairFor, patchPageData } from "../../../lib/patch-page";
-import { builds, latestLive } from "../../../lib/patches";
+import { buildLabel, builds, latestLive } from "../../../lib/patches";
 import { Site } from "../../../lib/site";
 import { AgainstControl, PatchMasthead } from "../patch-masthead";
 import { PatchView } from "../patch-view";
@@ -29,9 +29,9 @@ export async function generateMetadata({
   // The newest patch is also /patches; that address is its canonical one.
   const latest = pair.to.code === latestLive()?.code;
   return {
-    title: `What changed in ${pair.to.version}`,
+    title: `What changed in ${buildLabel(pair.to, pair.from)}`,
     alternates: { canonical: latest ? "/patches" : `/patches/${pair.to.slug}` },
-    description: `Every Star Citizen ship, part and blueprint figure that changed in ${pair.to.version} (${pair.to.code}) since ${pair.from.version}, with CIG's patch notes.`,
+    description: `Every Star Citizen ship, part and blueprint figure that changed in ${buildLabel(pair.to, pair.from)} (${pair.to.code}) since ${buildLabel(pair.from, pair.to)}, with CIG's patch notes.`,
   };
 }
 
@@ -52,8 +52,8 @@ export default async function PatchPage({
       stage={
         <PatchMasthead
           tab="history"
-          title={`What changed in ${pair.to.version}`}
-          lede={`Every ship, part and blueprint figure that moved between ${pair.from.version} and ${pair.to.version}, with CIG's notes for the builds between.`}
+          title={`What changed in ${buildLabel(pair.to, pair.from)}`}
+          lede={`Every ship, part and blueprint figure that moved between ${buildLabel(pair.from, pair.to)} and ${buildLabel(pair.to, pair.from)}, with CIG's notes for the builds between.`}
         />
       }
     >

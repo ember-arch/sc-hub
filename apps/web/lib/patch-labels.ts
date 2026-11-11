@@ -226,6 +226,15 @@ const SHIP: Readonly<Record<string, FigureLabel>> = {
     unit: "SCU",
     group: "Fuel and quantum",
   },
+  "quantum.port_olisar_to_arccorp_time": {
+    label: "Port Olisar to ArcCorp, time",
+    unit: "s",
+    group: "Fuel and quantum",
+  },
+  "quantum.port_olisar_to_arccorp_fuel": {
+    label: "Port Olisar to ArcCorp, fuel",
+    group: "Fuel and quantum",
+  },
   "quantum.quantum_range": {
     label: "Quantum range",
     unit: "m",

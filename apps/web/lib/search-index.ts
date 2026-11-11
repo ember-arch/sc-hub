@@ -35,7 +35,9 @@ export function patchSearchEntries(): SearchEntry[] {
     .reverse()
     .map((b) => ({
       type: "patch" as const,
-      name: `What changed in ${b.version}`,
+      name: b.slug.includes("-")
+        ? `What changed in ${b.version} (${b.number})`
+        : `What changed in ${b.version}`,
       href: b.code === newest?.code ? "/patches" : `/patches/${b.slug}`,
       meta: `LIVE ${b.code}${b.releasedAt === null ? "" : `, ${day.format(new Date(b.releasedAt))}`}`,
     }));

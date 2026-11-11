@@ -8,8 +8,8 @@ import { expect, test } from "@playwright/test";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const codes = readdirSync(join(here, "../../../fixtures/patches"))
-  .filter((f) => /^\d.*-LIVE\.\d+\.json$/.test(f))
-  .map((f) => f.slice(0, -".json".length));
+  .filter((f) => /^\d.*-LIVE\.\d+\.json\.gz$/.test(f))
+  .map((f) => f.slice(0, -".json.gz".length));
 const version = (code: string) => code.split("-")[0]!;
 const order = (a: string, b: string) => {
   const pa = version(a).split(".").map(Number);

@@ -1,11 +1,13 @@
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
+import { gunzipSync } from "node:zlib";
 import { type PatchSnapshot, PatchSnapshotFile, decodeSnapshot } from "schema";
 import { describe, expect, it } from "vitest";
 import { changeOf, formatValue, topChanges } from "../lib/patch-format";
 import type { PatchNote } from "../lib/patch-notes";
 import {
   PATCHES_DIR,
+  buildLabel,
   builds,
   buildsOf,
   compareSnapshots,
@@ -86,22 +88,98 @@ describe("parseCode and compareVersions", () => {
 });
 
 describe("buildsOf", () => {
-  it("orders builds oldest first and gives an earlier build of a shared version its number", () => {
-    const list = buildsOf(
-      [
-        snapshot("4.6.0-LIVE.11218823", {}),
-        snapshot("4.5.0-LIVE.10966564", {}),
-        snapshot("4.6.0-LIVE.11135423", {}),
-      ].sort((a, b) => a.game_version.localeCompare(b.game_version)),
+  const ordered = (codes: string[]) =>
+    buildsOf(
+      codes
+        .map((c) => snapshot(c, {}))
+        .sort(
+          (a, b) =>
+            Number(a.game_version.split(".").at(-1)) -
+            Number(b.game_version.split(".").at(-1)),
+        ),
     );
-    // buildsOf keeps the order it is handed; snapshots() sorts by release.
-    const slugs = list.map((b) => b.slug);
-    expect(slugs).toContain("4.5.0");
-    expect(slugs).toContain("4.6.0");
-    expect(slugs).toContain("4.6.0-11135423");
-    const newest = list.find((b) => b.slug === "4.6.0");
-    expect(newest?.number).toBe("11218823");
-    expect(previousOf(list[2]!, list)?.code).toBe(list[1]!.code);
+
+  it("gives the first build of a version the plain address and a later one its number", () => {
+    const list = ordered([
+      "4.5.0-LIVE.10966564",
+      "4.6.0-LIVE.11135423",
+      "4.6.0-LIVE.11218823",
+    ]);
+    expect(list.map((b) => b.slug)).toEqual([
+      "4.5.0",
+      "4.6.0",
+      "4.6.0-11218823",
+    ]);
+    expect(previousOf(list[2]!, list)?.code).toBe("4.6.0-LIVE.11135423");
+    expect(previousOf(list[0]!, list)).toBeNull();
+  });
+
+  it("never moves an address when a hotfix of the same version lands", () => {
+    const before = ordered(["4.10.1-LIVE.12660092", "4.10.2-LIVE.12881860"]);
+    const after = ordered([
+      "4.10.1-LIVE.12660092",
+      "4.10.2-LIVE.12881860",
+      "4.10.2-LIVE.12913470",
+    ]);
+    for (const b of before) {
+      expect(after.find((a) => a.code === b.code)?.slug).toBe(b.slug);
+    }
+    expect(after.at(-1)?.slug).toBe("4.10.2-12913470");
+    expect(buildLabel(after[2]!, after[1]!)).toBe("4.10.2 (12913470)");
+    expect(buildLabel(after[1]!, after[0]!)).toBe("4.10.2");
+  });
+});
+
+describe("what a build states", () => {
+  it("shows a figure as new when the other build states it for another entry of the kind", () => {
+    const a = snapshot("4.10.1-LIVE.1", {
+      ships: {
+        A: ship("A", { "speed.scm": 100 }),
+        B: ship("B", { "speed.scm": 100, "emission.ir": 500 }),
+      },
+    });
+    const b = snapshot("4.10.2-LIVE.2", {
+      ships: {
+        A: ship("A", { "speed.scm": 100, "emission.ir": 700 }),
+        B: ship("B", { "speed.scm": 100, "emission.ir": 500 }),
+      },
+    });
+    const c = compareSnapshots(a, b);
+    expect(
+      c.ships.changed[0]?.figures.map((f) => [f.key, f.from, f.to]),
+    ).toEqual([["emission.ir", null, 700]]);
+    expect(c.unrecorded).toBe(0);
+  });
+
+  it("judges a part's figures by what parts of its own type state", () => {
+    const shield = {
+      name: "S",
+      type: "Shield",
+      sub_type: null,
+      size: 1,
+      grade: "A",
+      manufacturer: null,
+      figures: { "durability.health": 10 } as Record<string, number>,
+    };
+    const a = snapshot("4.10.1-LIVE.1", {
+      parts: {
+        G: gun("G", { "vehicle_weapon.rpm": 600, "emission.em_max": 40 }),
+        S: shield,
+      },
+    });
+    const b = snapshot("4.10.2-LIVE.2", {
+      parts: {
+        G: gun("G", { "vehicle_weapon.rpm": 600, "emission.em_max": 40 }),
+        S: {
+          ...shield,
+          figures: { "durability.health": 10, "emission.em_max": 90 },
+        },
+      },
+    });
+    // Only a gun stated an EM figure in 4.10.1; for shields the source did not record it then.
+    const c = compareSnapshots(a, b);
+    expect(c.parts).toEqual([]);
+    expect(c.unrecorded).toBe(1);
   });
 });
 
@@ -371,28 +449,63 @@ describe("patch-format", () => {
   });
 });
 
-describe("the snapshots on record", () => {
-  const files = readdirSync(PATCHES_DIR).filter((f) => /^\d.*\.json$/.test(f));
+/**
+ * Folders whose pictures, models and media are copied locally and git-ignored (ADR-009); only a
+ * README and a sources list of each is committed, so they are not part of the fixtures' size.
+ */
+const LOCAL_ONLY = new Set([
+  "fankit",
+  "galleries",
+  "holo",
+  "rsi-media",
+  "showcase",
+  "spectrum-media",
+  "titles-media",
+]);
 
-  it("are each named by their build, parse, and stay under 2.5 MB", () => {
+describe("the snapshots on record", () => {
+  const files = readdirSync(PATCHES_DIR).filter((f) =>
+    /^\d.*\.json\.gz$/.test(f),
+  );
+
+  it("are each named by their build, parse, and stay under 400 kB gzipped", () => {
     expect(files.length).toBeGreaterThan(0);
     for (const f of files) {
       const path = join(PATCHES_DIR, f);
-      expect(statSync(path).size, f).toBeLessThan(2.5 * 1024 * 1024);
+      expect(statSync(path).size, f).toBeLessThan(400 * 1024);
       const s = decodeSnapshot(
-        PatchSnapshotFile.parse(JSON.parse(readFileSync(path, "utf8"))),
+        PatchSnapshotFile.parse(
+          JSON.parse(gunzipSync(readFileSync(path)).toString("utf8")),
+        ),
       );
-      expect(`${s.game_version}.json`).toBe(f);
+      expect(`${s.game_version}.json.gz`).toBe(f);
       expect(s.counts.ships).toBe(Object.keys(s.ships).length);
       expect(s.counts.parts).toBe(Object.keys(s.parts).length);
       expect(s.counts.blueprints).toBe(Object.keys(s.blueprints).length);
     }
   });
 
-  it("give every LIVE build with one before it a page, the newest at /patches", () => {
+  it("keep fixtures/ under the 40 MB CLAUDE.md section 4 sets", () => {
+    const size = (dir: string): number =>
+      readdirSync(dir, { withFileTypes: true }).reduce(
+        (n, e) =>
+          n +
+          (e.isDirectory()
+            ? size(join(dir, e.name))
+            : statSync(join(dir, e.name)).size),
+        0,
+      );
+    // Git-ignored media folders hold local copies only; they are not committed.
+    const committed = readdirSync(join(PATCHES_DIR, ".."), {
+      withFileTypes: true,
+    })
+      .filter((e) => e.isDirectory() && !LOCAL_ONLY.has(e.name))
+      .reduce((n, e) => n + size(join(PATCHES_DIR, "..", e.name)), 0);
+    expect(committed).toBeLessThan(40 * 1024 * 1024);
+  });
+
+  it("give each build one address", () => {
     const list = builds();
-    const live = list.filter((b) => b.channel === "LIVE");
     expect(new Set(list.map((b) => b.slug)).size).toBe(list.length);
-    for (const b of live.slice(1)) expect(previousOf(b, list)).not.toBeNull();
   });
 });

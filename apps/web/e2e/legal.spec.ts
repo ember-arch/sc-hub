@@ -23,6 +23,8 @@ const ROUTES = [
   "/news",
   "/titles",
   "/patches",
+  "/patches/ptu",
+  "/patches/compare",
   "/about",
 ] as const;
 

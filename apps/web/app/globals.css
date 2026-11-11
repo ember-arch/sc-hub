@@ -122,3 +122,46 @@
 [data-theme="dark"] .theme-on-dark {
   display: block;
 }
+
+/*
+ * The patch pages' tables (ADR-049), set once here from the tokens rather than on every cell:
+ * a patch that touches hundreds of entries stays a light page. Figure, the two builds, the change.
+ */
+.patch-table {
+  @apply w-full border-collapse text-ui;
+}
+.patch-table caption {
+  @apply text-label pb-1 text-left text-secondary;
+}
+.patch-table thead th {
+  @apply text-label py-2 text-left text-muted;
+}
+.patch-table tbody th,
+.patch-table td {
+  @apply border-t border-hairline py-2 align-baseline;
+}
+.patch-table tbody th {
+  @apply pr-3 text-left font-regular text-secondary;
+}
+.patch-table td {
+  @apply pl-2 text-primary;
+}
+.patch-table .num {
+  @apply text-right font-mono;
+}
+.patch-table .old {
+  @apply text-secondary;
+}
+.patch-table .unit,
+.patch-table .pct {
+  @apply text-caption text-muted;
+}
+.patch-table .pct {
+  @apply pl-2;
+}
+.patch-table .path {
+  @apply block font-mono text-caption text-muted;
+}
+.patch-table tr.group th {
+  @apply text-label border-t border-hairline-strong pb-1 pt-3 text-left text-secondary;
+}

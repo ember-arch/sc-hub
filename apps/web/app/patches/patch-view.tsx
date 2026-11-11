@@ -1,5 +1,13 @@
 import type { ReactNode } from "react";
-import { Badge, EmptyState, SegmentedLinks, TextLink, formatNumber } from "ui";
+import {
+  Badge,
+  EmptyState,
+  SegmentedLinks,
+  StatList,
+  StatRow,
+  TextLink,
+  formatNumber,
+} from "ui";
 import {
   changeOf,
   formatIngredient,
@@ -15,6 +23,7 @@ import {
   type FamilyChanges,
   type FigureChange,
   type Mention,
+  buildLabel,
   countOf,
 } from "../../lib/patches";
 import { FigureStrip } from "../strip";
@@ -38,6 +47,12 @@ const plural = (n: number, one: string, many: string): string =>
 
 /** How many entries a block lists before folding the rest away. */
 const SHOWN = 40;
+
+/**
+ * How many entries a block draws with their folds and tables; past this, each is one line. A patch
+ * that changes a whole system stays a page a phone can load.
+ */
+const FULL = 60;
 
 export type PatchTab = "live" | "ptu" | "compare" | "history";
 
@@ -162,17 +177,17 @@ export function PatchFigures({ data }: { readonly data: PatchPageData }) {
 function ChangeCell({ f }: { readonly f: FigureChange }) {
   const c = changeOf(f.from, f.to);
   return (
-    <span className="flex flex-wrap items-baseline justify-end gap-x-2">
+    <>
       <span aria-label={c.spoken}>{c.text}</span>
-      {c.percent === null ? null : (
-        <span className="text-caption text-secondary">{c.percent}</span>
-      )}
-    </span>
+      {c.percent === null ? null : <span className="pct">{c.percent}</span>}
+    </>
   );
 }
 
-const th = "lab py-2 text-left text-muted";
-const td = "border-t border-hairline py-2 align-baseline";
+/*
+ * The tables below are styled once, in globals.css (`.patch-table`), from the tokens: a patch
+ * with hundreds of entries would otherwise repeat the same classes on every cell (ADR-049).
+ */
 
 /** An entry's figures, grouped, the old build's value, the new one's and the change. */
 function FigureTable({
@@ -191,19 +206,17 @@ function FigureTable({
     else groups.push({ group: f.group, rows: [f] });
   }
   return (
-    <table className="w-full border-collapse text-ui">
+    <table className="patch-table">
       <thead>
         <tr>
-          <th scope="col" className={th}>
-            Figure
-          </th>
-          <th scope="col" className={`${th} text-right`}>
+          <th scope="col">Figure</th>
+          <th scope="col" className="num">
             {from}
           </th>
-          <th scope="col" className={`${th} text-right`}>
+          <th scope="col" className="num">
             {to}
           </th>
-          <th scope="col" className={`${th} text-right`}>
+          <th scope="col" className="num">
             Change
           </th>
         </tr>
@@ -211,34 +224,23 @@ function FigureTable({
       {groups.map((g) => (
         <tbody key={g.group}>
           {groups.length > 1 ? (
-            <tr>
-              <th
-                scope="colgroup"
-                colSpan={4}
-                className="lab border-t border-hairline-strong pb-1 pt-3 text-left text-secondary"
-              >
+            <tr className="group">
+              <th scope="colgroup" colSpan={4}>
                 {g.group}
               </th>
             </tr>
           ) : null}
           {g.rows.map((f) => (
             <tr key={f.key}>
-              <th
-                scope="row"
-                className={`${td} pr-3 text-left font-regular text-secondary`}
-              >
+              <th scope="row">
                 {f.label}
                 {f.unit === undefined ? null : (
-                  <span className="text-caption text-muted"> ({f.unit})</span>
+                  <span className="unit"> ({f.unit})</span>
                 )}
               </th>
-              <td className={`${td} pl-2 text-right font-mono text-secondary`}>
-                {formatValue(f.from)}
-              </td>
-              <td className={`${td} pl-2 text-right font-mono text-primary`}>
-                {formatValue(f.to)}
-              </td>
-              <td className={`${td} pl-2 text-right font-mono text-primary`}>
+              <td className="num old">{formatValue(f.from)}</td>
+              <td className="num">{formatValue(f.to)}</td>
+              <td className="num">
                 <ChangeCell f={f} />
               </td>
             </tr>
@@ -254,7 +256,7 @@ function PartName({
 }: {
   readonly part: EntryChange["loadout"][number]["from"];
 }) {
-  if (part === null) return <span className="text-muted">Empty</span>;
+  if (part === null) return <span className="old">Empty</span>;
   return part.href === null ? (
     <span>{part.name}</span>
   ) : (
@@ -292,39 +294,26 @@ function LoadoutTable({
   readonly to: string;
 }) {
   return (
-    <table className="w-full border-collapse text-ui">
-      <caption className="lab pb-1 text-left text-secondary">
-        Stock loadout
-      </caption>
+    <table className="patch-table">
+      <caption>Stock loadout</caption>
       <thead>
         <tr>
-          <th scope="col" className={th}>
-            Port
-          </th>
-          <th scope="col" className={th}>
-            {from}
-          </th>
-          <th scope="col" className={th}>
-            {to}
-          </th>
+          <th scope="col">Port</th>
+          <th scope="col">{from}</th>
+          <th scope="col">{to}</th>
         </tr>
       </thead>
       <tbody>
         {rows.map((r) => (
           <tr key={r.port}>
-            <th
-              scope="row"
-              className={`${td} pr-3 text-left font-regular text-secondary`}
-            >
+            <th scope="row">
               {portLabel(r)}
-              <span className="block font-mono text-caption text-muted">
-                {breakable(r.port)}
-              </span>
+              <span className="path">{breakable(r.port)}</span>
             </th>
-            <td className={`${td} pr-3`}>
+            <td>
               <PartName part={r.from} />
             </td>
-            <td className={td}>
+            <td>
               <PartName part={r.to} />
             </td>
           </tr>
@@ -346,22 +335,18 @@ function IngredientTable({
   readonly status: EntryChange["status"];
 }) {
   return (
-    <table className="w-full border-collapse text-ui">
-      <caption className="lab pb-1 text-left text-secondary">
-        What one craft takes
-      </caption>
+    <table className="patch-table">
+      <caption>What one craft takes</caption>
       <thead>
         <tr>
-          <th scope="col" className={th}>
-            Ingredient
-          </th>
+          <th scope="col">Ingredient</th>
           {status === "added" ? null : (
-            <th scope="col" className={`${th} text-right`}>
+            <th scope="col" className="num">
               {from}
             </th>
           )}
           {status === "removed" ? null : (
-            <th scope="col" className={`${th} text-right`}>
+            <th scope="col" className="num">
               {to}
             </th>
           )}
@@ -370,21 +355,12 @@ function IngredientTable({
       <tbody>
         {rows.map((r) => (
           <tr key={r.name}>
-            <th
-              scope="row"
-              className={`${td} pr-3 text-left font-regular text-secondary`}
-            >
-              {r.name}
-            </th>
+            <th scope="row">{r.name}</th>
             {status === "added" ? null : (
-              <td className={`${td} text-right font-mono text-secondary`}>
-                {formatIngredient(r.from)}
-              </td>
+              <td className="num old">{formatIngredient(r.from)}</td>
             )}
             {status === "removed" ? null : (
-              <td className={`${td} text-right font-mono text-primary`}>
-                {formatIngredient(r.to)}
-              </td>
+              <td className="num">{formatIngredient(r.to)}</td>
             )}
           </tr>
         ))}
@@ -392,7 +368,6 @@ function IngredientTable({
     </table>
   );
 }
-
 function Mentions({ list }: { readonly list: readonly Mention[] }) {
   return (
     <div className="flex flex-col gap-2">
@@ -401,7 +376,7 @@ function Mentions({ list }: { readonly list: readonly Mention[] }) {
         {list.map((m) => (
           <li
             key={`${m.note.id}:${m.text}`}
-            className="border-l-2 border-hairline-strong pl-3 text-ui text-primary"
+            className="rounded-control bg-inset px-3 py-2 text-ui text-primary"
           >
             {m.text}
             <span className="block text-caption text-secondary">
@@ -471,8 +446,12 @@ function Entry({
     entry.figures.length +
     entry.loadout.length +
     (changed ? entry.ingredients.length : 0);
-  const pageWord =
-    kind === "ship" ? "ship" : kind === "part" ? "part" : "part this makes";
+  const pageLink =
+    kind === "ship"
+      ? "Open the ship's page"
+      : kind === "part"
+        ? "Open the part's page"
+        : "Open the page of the part it makes";
   return (
     <details
       data-patch-entry=""
@@ -538,9 +517,23 @@ function Entry({
         </span>
       </summary>
       <div className="flex flex-col gap-4 pb-6 pl-6">
-        {entry.figures.length > 0 ? (
+        {entry.figures.length === 0 ? null : changed ? (
           <FigureTable figures={entry.figures} from={from} to={to} />
-        ) : null}
+        ) : (
+          // A new or removed entry has one side only: its figures, not a table of dashes.
+          <div className="md:max-w-prose">
+            <StatList>
+              {entry.figures.map((f) => (
+                <StatRow
+                  key={f.key}
+                  label={f.label}
+                  value={formatValue(entry.status === "added" ? f.to : f.from)}
+                  unit={f.unit}
+                />
+              ))}
+            </StatList>
+          </div>
+        )}
         {entry.loadout.length > 0 ? (
           <LoadoutTable rows={entry.loadout} from={from} to={to} />
         ) : null}
@@ -555,11 +548,73 @@ function Entry({
         {mentions.length > 0 ? <Mentions list={mentions} /> : null}
         {entry.href === null ? null : (
           <p className="m-0 text-ui">
-            <TextLink href={entry.href}>Open the {pageWord} page</TextLink>
+            <TextLink href={entry.href}>{pageLink}</TextLink>
           </p>
         )}
       </div>
     </details>
+  );
+}
+
+/**
+ * A new or removed entry past the first forty, on one line: its name, its headline figures and
+ * what a craft takes, written out, with no fold to open. A patch that adds a whole system (1,600
+ * blueprints when crafting arrived) stays a page, not megabytes of tables.
+ */
+function CompactEntry({
+  entry,
+  kind,
+  tags,
+}: {
+  readonly entry: EntryChange;
+  readonly kind: "ship" | "part" | "blueprint";
+  readonly tags?: string | undefined;
+}) {
+  const side = entry.status === "added" ? "to" : "from";
+  const bits =
+    entry.status === "changed"
+      ? [
+          ...topChanges(entry.figures, 3).map(
+            (f) => `${f.label} ${formatValue(f.from)} → ${formatValue(f.to)}`,
+          ),
+          ...(entry.loadout.length > 0
+            ? [plural(entry.loadout.length, "port refitted", "ports refitted")]
+            : []),
+          ...(entry.figures.length > 3
+            ? [`${formatNumber(entry.figures.length - 3)} more figures`]
+            : []),
+        ]
+      : [
+          ...entry.figures
+            .slice(0, 3)
+            .map(
+              (f) =>
+                `${f.label} ${formatValue(f[side])}${f.unit === undefined ? "" : ` ${f.unit}`}`,
+            ),
+          ...entry.ingredients.map(
+            (i) => `${i.name} ${formatIngredient(i[side])}`,
+          ),
+        ];
+  return (
+    <div
+      data-patch-entry=""
+      data-name={`${entry.name} ${entry.detail ?? ""} ${entry.id} ${KIND_WORDS[kind]} ${tags ?? ""}`.toLowerCase()}
+      className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-hairline py-2 pl-6"
+    >
+      <span className="flex min-w-0 flex-col">
+        {entry.href === null ? (
+          <span className="text-ui text-primary">{entry.name}</span>
+        ) : (
+          <TextLink href={entry.href} className="text-ui">
+            {entry.name}
+          </TextLink>
+        )}
+        {entry.detail === null ? null : (
+          <span className="text-caption text-secondary">{entry.detail}</span>
+        )}
+      </span>
+      <span className="text-caption text-secondary">{bits.join(" · ")}</span>
+    </div>
   );
 }
 
@@ -614,7 +669,15 @@ function Entries({
               Show the other {formatNumber(list.length - SHOWN)}
             </span>
           </summary>
-          {list.slice(SHOWN).map(render)}
+          {list
+            .slice(SHOWN)
+            .map((e, i) =>
+              e.status === "changed" && SHOWN + i < FULL ? (
+                render(e)
+              ) : (
+                <CompactEntry key={e.id} entry={e} kind={kind} tags={tags} />
+              ),
+            )}
         </details>
       ) : null}
     </div>
@@ -826,8 +889,8 @@ function Note({
             ))}
           </dl>
         ) : null}
-        {note.sections.map((s) => (
-          <div key={s.title} className="flex flex-col gap-3">
+        {note.sections.map((s, i) => (
+          <div key={i} className="flex flex-col gap-3">
             <h3 className="lab m-0 border-b border-hairline-strong pb-1 text-secondary">
               {s.title}
             </h3>
@@ -931,26 +994,48 @@ function Rail({
       <div className="hidden flex-col gap-2 lg:flex">
         <p className="lab m-0 text-muted">Patch history</p>
         <ul className="m-0 flex list-none flex-col gap-1 p-0">
-          {live.map((b) => (
-            <li key={b.code}>
-              <a
-                href={
-                  b.code === live.at(0)?.code
-                    ? "/patches"
-                    : `/patches/${b.slug}`
-                }
-                aria-current={b.code === current.code ? "page" : undefined}
-                className={`${link} ${b.code === current.code ? "text-primary" : ""}`}
-              >
-                <span>{b.version}</span>
-                <span className="text-caption text-muted">
-                  {b.releasedAt === null
-                    ? ""
-                    : day.format(new Date(b.releasedAt))}
-                </span>
-              </a>
-            </li>
-          ))}
+          {live.map((b, i) => {
+            const when = (
+              <span className="text-caption text-muted">
+                {b.releasedAt === null
+                  ? ""
+                  : day.format(new Date(b.releasedAt))}
+              </span>
+            );
+            // The oldest build on record has none before it, so no page of its own.
+            if (i === live.length - 1) {
+              return (
+                <li
+                  key={b.code}
+                  className="flex items-baseline justify-between gap-2 text-ui text-muted"
+                >
+                  <span>
+                    {b.slug.includes("-")
+                      ? `${b.version} (${b.number})`
+                      : b.version}
+                    , first on record
+                  </span>
+                  {when}
+                </li>
+              );
+            }
+            return (
+              <li key={b.code}>
+                <a
+                  href={i === 0 ? "/patches" : `/patches/${b.slug}`}
+                  aria-current={b.code === current.code ? "page" : undefined}
+                  className={`${link} ${b.code === current.code ? "text-primary" : ""}`}
+                >
+                  <span>
+                    {b.slug.includes("-")
+                      ? `${b.version} (${b.number})`
+                      : b.version}
+                  </span>
+                  {when}
+                </a>
+              </li>
+            );
+          })}
         </ul>
       </div>
     </nav>
@@ -1007,8 +1092,8 @@ export function PatchView({
   readonly compare?: ReactNode;
 }) {
   const c = data.comparison;
-  const from = c.from.version;
-  const to = c.to.version;
+  const from = buildLabel(c.from, c.to);
+  const to = buildLabel(c.to, c.from);
   const anything =
     data.totals.ships + data.totals.parts + data.totals.blueprints > 0;
   return (
@@ -1116,6 +1201,20 @@ export function PatchView({
               first, in CIG&apos;s own sections: the PTU waves that led to the
               patch, the LIVE release and its hotfixes.
             </p>
+            {data.spectrum ? null : (
+              <p className="m-0 max-w-prose text-ui text-secondary">
+                CIG posts the PTU waves and the hotfixes on Spectrum, which this
+                site shows only while its developer posts are on; until then
+                they are in{" "}
+                <TextLink
+                  href="https://robertsspaceindustries.com/spectrum/community/SC/forum/190048"
+                  external
+                >
+                  Spectrum&apos;s Patch Notes channel
+                </TextLink>
+                , and RSI&apos;s own notes are linked here.
+              </p>
+            )}
             <NotesList notes={data.notes} />
           </Section>
 

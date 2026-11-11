@@ -4,13 +4,13 @@ Some game data via the Star Citizen Wiki API (api.star-citizen.wiki).
 
 One snapshot per game build, for the "What changed" patch pages (ADR-049, spec 08): every ship and vehicle with its stock loadout, every part of twenty types and every crafting blueprint the Wiki API serves for that build, each with its figures as the API states them, flattened to dotted paths (`speed.scm`, `vehicle_weapon.damage.burst`). The API keeps every LIVE build it has imported and answers any record as of any of them (`?version=<build>`); it lists no PTU build.
 
-**Do not edit these files by hand.** A build's file is written once and never rewritten (CLAUDE.md section 5). To add the builds the API lists that are not here:
+**Do not edit these files by hand.** A build's file is written once and never rewritten, whatever the flags (CLAUDE.md section 5). Each is gzipped JSON, `<build>.json.gz`, about 180 kB; read one with `zcat`. To add the builds the API lists that are not here:
 
 ```
 pnpm --filter schema build && pnpm exec tsx scripts/patches/fetch.ts
 ```
 
-`--build <code>` fetches one build; `--refetch` rewrites it (only for a broken file). About 300 requests a build at 2.5 s apart. The daily refresh (ADR-023) runs the same fetch when the API lists a build that has no file.
+`--build <code>` limits the run to one build; `--max-builds <n>` to the newest n missing. About 300 requests a build at 2.5 s apart. The daily refresh (ADR-023) runs the same fetch with `--max-builds 1` when the API lists a build that has no file, and halts on a new build that holds under nine tenths of the newest file's ships or parts (the wiki is still importing it).
 
 ## The file
 

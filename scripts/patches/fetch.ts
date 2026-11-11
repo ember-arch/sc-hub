@@ -39,11 +39,16 @@ import {
  * Star Citizen Wiki API keeps, and for each build without a file in `fixtures/patches/` fetches
  * that build's ships (each with its loadout), parts and blueprints with the API's `version`
  * parameter, keeps the figures a comparison reads (`snapshot.ts`), validates the result against
- * `PatchSnapshot` and writes `fixtures/patches/<build>.json`. A file already written is never
- * rewritten (CLAUDE.md section 5: a published version does not change); `--build <code>` fetches
- * one build, `--refetch` rewrites it on purpose.
+ * `PatchSnapshot` and writes `fixtures/patches/<build>.json.gz` (gzip: twelve builds of JSON
+ * would pass the fixtures' 40 MB budget, CLAUDE.md section 4). A file already written is never
+ * rewritten (CLAUDE.md section 5: a published version does not change), whatever the flags.
  *
- *   pnpm --filter schema build && pnpm exec tsx scripts/patches/fetch.ts [--build <code>] [--refetch]
+ *   pnpm --filter schema build && pnpm exec tsx scripts/patches/fetch.ts [--build <code>] [--max-builds <n>]
+ *
+ * `--build <code>` limits the run to that build; `--max-builds <n>` to the newest n builds not on
+ * file (the daily refresh passes 1, so a backlog never outruns the job). A build newer than every
+ * build on file that holds fewer than nine tenths of the newest file's ships or parts halts the
+ * run: the wiki is still importing it, and a file written now would freeze the gap.
  *
  * About 300 requests a build at the client's 2.5 s spacing (CLAUDE.md section 9). Any problem
  * halts with a JSON report on stderr and exit code 1; a build is written only when all of it
@@ -61,7 +66,19 @@ const args = process.argv.slice(2);
 const only = args.flatMap((a, i) =>
   a === "--build" && args[i + 1] !== undefined ? [args[i + 1]!] : [],
 );
-const refetch = args.includes("--refetch");
+const maxFlag = args.indexOf("--max-builds");
+const maxBuilds =
+  maxFlag >= 0 ? Number.parseInt(args[maxFlag + 1] ?? "", 10) : Infinity;
+if (Number.isNaN(maxBuilds) || maxBuilds < 1) {
+  throw new Error("--max-builds takes a whole number of at least 1");
+}
+
+/** A snapshot's file name: the build string, gzipped JSON. */
+export const SNAPSHOT_SUFFIX = ".json.gz";
+
+/** The build number at the end of a build string, which only grows from build to build. */
+const buildNumber = (code: string): number =>
+  Number(/\.(\d+)$/.exec(code)?.[1] ?? 0);
 
 function log(event: Record<string, unknown>): void {
   process.stderr.write(
@@ -127,9 +144,25 @@ export function filedBuilds(dir: string = PATCHES_DIR): Set<string> {
   if (!existsSync(dir)) return new Set();
   return new Set(
     readdirSync(dir)
-      .filter((f) => f.endsWith(".json") && /\d/.test(f.charAt(0)))
-      .map((f) => f.slice(0, -".json".length)),
+      .filter((f) => f.endsWith(SNAPSHOT_SUFFIX) && /\d/.test(f.charAt(0)))
+      .map((f) => f.slice(0, -SNAPSHOT_SUFFIX.length)),
   );
+}
+
+/** The newest build on file and its counts, or null with none. */
+function newestFiled(
+  filed: ReadonlySet<string>,
+): { code: string; ships: number; parts: number } | null {
+  const code = [...filed].sort((a, b) => buildNumber(b) - buildNumber(a))[0];
+  if (code === undefined) return null;
+  const file = PatchSnapshotFile.parse(
+    JSON.parse(
+      gunzipSync(
+        readFileSync(join(PATCHES_DIR, `${code}${SNAPSHOT_SUFFIX}`)),
+      ).toString("utf8"),
+    ),
+  );
+  return { code, ships: file.counts.ships, parts: file.counts.parts };
 }
 
 /** ISO with offset as the schema wants it; the API writes "+00:00". */
@@ -172,9 +205,14 @@ async function main(): Promise<void> {
     await get("/api/game-versions?limit=100"),
   ).data;
   const filed = filedBuilds();
-  const todo = versions.filter((v) =>
-    only.length > 0 ? only.includes(v.code) : refetch || !filed.has(v.code),
-  );
+  const newest = newestFiled(filed);
+  // Newest first, so a cap fetches the patch readers are waiting for before the backlog.
+  const todo = versions
+    .filter(
+      (v) => !filed.has(v.code) && (only.length === 0 || only.includes(v.code)),
+    )
+    .sort((a, b) => buildNumber(b.code) - buildNumber(a.code))
+    .slice(0, maxBuilds);
   for (const code of only) {
     if (!versions.some((v) => v.code === code)) {
       throw new MapError(`the API lists no build ${code}`, {
@@ -191,8 +229,8 @@ async function main(): Promise<void> {
 
   mkdirSync(PATCHES_DIR, { recursive: true });
   for (const version of todo) {
-    const out = join(PATCHES_DIR, `${version.code}.json`);
-    if (existsSync(out) && !refetch && only.length === 0) continue;
+    const out = join(PATCHES_DIR, `${version.code}${SNAPSHOT_SUFFIX}`);
+    if (existsSync(out)) continue;
     const q = `version=${encodeURIComponent(version.code)}`;
     const skipped = { ships: 0, unlisted: 0, parts: 0, blueprints: 0 };
 
@@ -318,16 +356,30 @@ async function main(): Promise<void> {
         Object.entries(blueprints).sort(([a], [b]) => a.localeCompare(b)),
       ),
     });
+    // A new build the wiki has only begun to import would be frozen with its gaps.
+    if (
+      newest !== null &&
+      buildNumber(version.code) > buildNumber(newest.code) &&
+      (snapshot.counts.ships < newest.ships * 0.9 ||
+        snapshot.counts.parts < newest.parts * 0.9)
+    ) {
+      throw new MapError(
+        `${version.code} holds ${snapshot.counts.ships} ships and ${snapshot.counts.parts} parts against ${newest.ships} and ${newest.parts} in ${newest.code}; the wiki looks to be importing it still, so nothing is written`,
+        { build: version.code, counts: snapshot.counts, newest },
+      );
+    }
     const text = renderSnapshot(
       PatchSnapshotFile.parse(encodeSnapshot(snapshot)),
     );
-    writeFileSync(out, text, "utf8");
+    const gz = gzipSync(text, { level: 9 });
+    writeFileSync(out, gz);
     log({
       event: "patches.written",
       build: version.code,
       counts: snapshot.counts,
       skipped,
       bytes: Buffer.byteLength(text),
+      gzipped: gz.length,
     });
   }
 

@@ -3,10 +3,12 @@ import { EmptyState, TextLink, formatNumber } from "ui";
 import { currentPtu, patchPageData, siteLinks } from "../../../lib/patch-page";
 import {
   builds,
+  compareVersions,
   latestLive,
   shipMentions,
   snapshotOf,
 } from "../../../lib/patches";
+import { spectrumOn } from "../../../lib/data";
 import { Site } from "../../../lib/site";
 import { FigureStrip } from "../../strip";
 import { PatchMasthead } from "../patch-masthead";
@@ -27,9 +29,14 @@ export const metadata: Metadata = {
 export default function PtuPage() {
   const ptu = currentPtu();
   const live = latestLive();
+  // A PTU snapshot counts only while it is ahead of LIVE: an older one has gone LIVE since.
   const recorded =
     builds()
-      .filter((b) => b.channel === "PTU")
+      .filter(
+        (b) =>
+          b.channel === "PTU" &&
+          (live === null || compareVersions(b.version, live.version) > 0),
+      )
       .at(-1) ?? null;
   const data =
     recorded !== null && live !== null ? patchPageData(live, recorded) : null;
@@ -56,15 +63,30 @@ export default function PtuPage() {
     return (
       <Site current="patches" stage={masthead}>
         <div className="flex flex-col gap-8 pt-8">
-          <EmptyState>
-            No PTU build is in testing ahead of LIVE{" "}
-            {live === null ? "" : live.version} as far as CIG&apos;s notes on
-            record say.{" "}
-            <TextLink href="/patches">
-              See what changed in the latest patch
-            </TextLink>
-            .
-          </EmptyState>
+          {spectrumOn() ? (
+            <EmptyState>
+              No PTU build is in testing ahead of LIVE{" "}
+              {live === null ? "" : live.version} as far as CIG&apos;s notes on
+              record say.{" "}
+              <TextLink href="/patches">
+                See what changed in the latest patch
+              </TextLink>
+              .
+            </EmptyState>
+          ) : (
+            <EmptyState>
+              CIG posts the PTU&apos;s patch notes on Spectrum, which this site
+              shows only while its developer posts are on. Until then they are
+              in{" "}
+              <TextLink
+                href="https://robertsspaceindustries.com/spectrum/community/SC/forum/190048"
+                external
+              >
+                Spectrum&apos;s Patch Notes channel
+              </TextLink>
+              .
+            </EmptyState>
+          )}
         </div>
       </Site>
     );
@@ -195,7 +217,7 @@ export default function PtuPage() {
                     {s.list.map((m) => (
                       <li
                         key={`${m.note.id}:${m.text}`}
-                        className="border-l-2 border-hairline-strong pl-3 text-ui text-secondary"
+                        className="rounded-control bg-inset px-3 py-2 text-ui text-secondary"
                       >
                         {m.text}
                         <span className="block text-caption text-muted">

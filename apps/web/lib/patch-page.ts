@@ -1,4 +1,4 @@
-import { repo } from "./data";
+import { repo, spectrumOn } from "./data";
 import { type PatchNote, patchNotes } from "./patch-notes";
 import {
   type Build,
@@ -56,7 +56,10 @@ export function allPatchNotes(): PatchNote[] {
   return notes;
 }
 
-/** The PTU build CIG's latest PTU notes name, ahead of the newest LIVE patch; null when none. */
+/**
+ * The PTU build CIG's latest PTU notes name, ahead of the newest LIVE patch; null when none, and
+ * always null with the Spectrum module off, since the PTU notes are Spectrum posts.
+ */
 export function currentPtu(): {
   version: string;
   build: string | null;
@@ -81,23 +84,41 @@ export interface PatchPageData {
   readonly mentions: ReadonlyMap<string, readonly Mention[]>;
   readonly totals: ReturnType<typeof totals>;
   readonly history: readonly Build[];
+  /** Whether CIG's Spectrum posts can show (ADR-027); off, only RSI's notes are listed. */
+  readonly spectrum: boolean;
 }
 
 export function patchPageData(from: Build, to: Build): PatchPageData | null {
   const comparison = compareBuilds(from, to, siteLinks());
   if (comparison === null) return null;
-  const notes = notesBetween(allPatchNotes(), from.version, to.version);
+  // A hotfix against its own patch: the LIVE posts for that version (Hotfix Central, the
+  // release notes); otherwise every post for the versions after the older build up to the newer.
+  const notes =
+    from.version === to.version
+      ? allPatchNotes().filter(
+          (n) => n.version === to.version && n.channel === "LIVE",
+        )
+      : notesBetween(allPatchNotes(), from.version, to.version);
+  // Editions share their base's name (ADR-022); a note line names the ship, not every copy.
+  const editions = new Set(
+    repo()
+      .ships.filter((s) => s.editionOf !== null)
+      .map((s) => s.vehicle.class_name),
+  );
   const ships = [
     ...comparison.ships.changed,
     ...comparison.ships.added,
     ...comparison.ships.removed,
-  ].map((s) => ({ id: s.id, name: s.name, gameName: s.gameName }));
+  ]
+    .filter((s) => !editions.has(s.id))
+    .map((s) => ({ id: s.id, name: s.name, gameName: s.gameName }));
   return {
     comparison,
     notes,
     mentions: shipMentions(notes, ships),
     totals: totals(comparison),
     history: [...builds()].reverse(),
+    spectrum: spectrumOn(),
   };
 }
 

@@ -3,12 +3,13 @@ import type { FigureChange } from "./patches";
 
 /**
  * How the patch pages write a figure and its change (ADR-049). Figures are shown as the source
- * states them, to as many digits as it gives (up to seven significant), never rounded to look
+ * states them, to every digit it gives (up to 15 significant, all a stored number holds), never rounded to look
  * tidy: a drive's fuel use of 0.036064 stays 0.036064.
  */
 
 const figures = new Intl.NumberFormat("en-GB", {
-  maximumSignificantDigits: 7,
+  // As many digits as a stored figure carries; 15 also hides the binary tail of a decimal.
+  maximumSignificantDigits: 15,
 });
 
 export function formatValue(v: PatchValue | null): string {

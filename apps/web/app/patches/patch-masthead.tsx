@@ -1,4 +1,5 @@
 import { FilterBar, FilterSelect, formatNumber } from "ui";
+import { spectrumOn } from "../../lib/data";
 import { currentPtu } from "../../lib/patch-page";
 import { type Build, builds, latestLive } from "../../lib/patches";
 import { Masthead } from "../masthead";
@@ -24,7 +25,11 @@ export function PatchMasthead({
     live === null
       ? "No LIVE build on record"
       : `LIVE ${live.version}${live.releasedAt === null ? "" : `, ${day.format(new Date(live.releasedAt))}`}`,
-    ptu === null ? "No PTU build announced" : `PTU ${ptu.version} in testing`,
+    ptu !== null
+      ? `PTU ${ptu.version} in testing`
+      : spectrumOn()
+        ? "No PTU build in testing"
+        : "PTU notes on Spectrum",
     `${formatNumber(list.length)} ${list.length === 1 ? "build" : "builds"} on record`,
   ];
   return (

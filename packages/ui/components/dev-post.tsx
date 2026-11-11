@@ -75,7 +75,7 @@ export function DevPost({
               {excerpt}
             </p>
           ) : null}
-          {/* The cue reads like the site's other summaries (the ledger's, the ship file's), not like a link. */}
+          {/* The cue reads like the site's other summaries (the ship file's, the front page's funding card's), not like a link. */}
           <p className="m-0 text-caption text-secondary group-hover:text-primary">
             <span className="group-open:hidden">Show the whole post</span>
             <span className="hidden group-open:inline">Fold the post</span>

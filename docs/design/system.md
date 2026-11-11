@@ -97,7 +97,7 @@ Added by spec 02 (ADR-006):
 Added with the design lift (ADR-019):
 
 - `Masthead` (in `apps/web`) — every index page's opening in the shell's `stage` slot: a label line of facts, the title in the display face, a one-line deck and the page's control on the right (ADR-020, softened by ADR-021: no rule under it). The current nav section is a filled pill.
-- `Counters`, `Contents`, `Bento`, `RegisterLink`, `RunningHead` (in `apps/web/app/front.tsx`) — the front page's parts (ADR-020, ADR-021, ADR-038): the headline figures as the figure strip (each a link; no rules), the numbered sections, the five image cards (two fixed, three drawn daily), the register link with the pack's count, and a label-sized heading with a link at the right. `FundingNow` and `MonthPairs` (in `apps/web/app/funding-now.tsx`) draw this year's funding against last year's; `ViewToggle` (in `apps/web/app/view-toggle.tsx`) is the client control between server-rendered views, buttons in the segmented control's classes with `aria-pressed`.
+- `Counters`, `Contents`, `Bento`, `RegisterLink`, `RunningHead` (in `apps/web/app/front.tsx`) — the front page's parts (ADR-020, ADR-021, ADR-038): the headline figures as the figure strip (each a link but citizens since ADR-040; no rules), the numbered sections, the five image cards (two fixed, three drawn daily), the register link with the pack's count, and a label-sized heading with a link or a note at the right. `FundingNow` and `MonthPairs` (in `apps/web/app/funding-now.tsx`) draw this year's funding against last year's; `ViewToggle` (in `apps/web/app/view-toggle.tsx`) is the client control between server-rendered views, buttons in the segmented control's classes with `aria-pressed`.
 
 Added with the ship file (ADR-008, ADR-012 to ADR-016):
 

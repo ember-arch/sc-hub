@@ -106,9 +106,32 @@ test("the ledger's old address lands on the home's funding card, which the count
   await expect(page.locator("section[aria-labelledby=funding]")).toBeVisible();
   await expect(
     page
-      .getByRole("navigation", { name: "Sections" })
+      .getByRole("navigation", { name: "Primary" })
       .getByRole("link", { name: "Funding" }),
   ).toHaveCount(0);
+  // The other funding counter points at the card too; Citizens, no longer drawn, links nowhere.
+  const thisYear = page.locator("dl div", { hasText: /^This year/ });
+  await expect(thisYear.locator("dd a").first()).toHaveAttribute(
+    "href",
+    "#funding",
+  );
+  await expect(
+    page.locator("dl div", { hasText: /^Citizens/ }).locator("dd a"),
+  ).toHaveCount(0);
+  // The sources line names RSI's page and the copy date.
+  const sources = page.locator("section[aria-labelledby=funding] p", {
+    hasText: /^Daily snapshots/,
+  });
+  await expect(
+    sources.getByRole("link", { name: "robertsspaceindustries.com" }),
+  ).toBeVisible();
+  await expect(sources).toContainText(/copied \d+ \w+ \d{4}\./);
+  // The old measure address lands on the card too; Next keeps the query, which the home ignores.
+  const citizens = await request.get("/funding?measure=citizens", {
+    maxRedirects: 0,
+  });
+  expect(citizens.status()).toBe(308);
+  expect(citizens.headers()["location"]).toMatch(/#funding$/);
 });
 
 test("the funding card shows the year's three figures and toggles between the two views", async ({

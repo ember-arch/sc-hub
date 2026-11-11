@@ -12,7 +12,7 @@ import {
   yearRows,
 } from "../lib/funding";
 
-// ADR-018: the funding page's numbers, on the committed fixture and on small synthetic series.
+// ADR-018, ADR-040: the funding figures, on the committed fixture and on small synthetic series.
 
 const series = loadFunding();
 if (series === null)

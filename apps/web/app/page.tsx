@@ -342,7 +342,11 @@ export default function HomePage() {
             <RunningHead
               id="funding"
               title="Funding this year"
-              aside={`as of ${formatDay(pledges.at(-1)?.day ?? "")}`}
+              aside={
+                money === null
+                  ? undefined
+                  : `as of ${formatDay(money.latest.day)}`
+              }
             />
             <FundingNow list={pledges} measure="pledges" />
             {/* The ledger's sources line, now the card's (ADR-040); the wiki's credit is in every footer. */}

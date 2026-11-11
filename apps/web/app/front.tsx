@@ -7,7 +7,7 @@ import { type Figure, FigureStrip } from "./strip";
 
 export type Counter = Figure;
 
-/** The front page's counters: the figure strip, every figure a link. */
+/** The front page's counters: the figure strip, every figure a link but citizens (ADR-040). */
 export function Counters({
   counters,
 }: {

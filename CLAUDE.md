@@ -50,7 +50,7 @@ packages/
   db/            Drizzle schema, migrations, seed from fixtures
 pipeline/        Windows-only: detect, extract, normalize, optimize, publish
 apps/web/        Next.js app
-workers/         pollers (news, spectrum), import job, link-entities job (poll-news runs from CI every two hours until Fly; poll-spectrum only with SPECTRUM_MODE on, ADR-027)
+workers/         pollers (news, spectrum), import job, link-entities job (poll-news runs from CI every thirty minutes until Fly; poll-spectrum only with SPECTRUM_MODE on, ADR-027)
 fixtures/        real extracted records per game version; committed (the whole catalog since ADR-022, under 40 MB)
 scripts/         one-off dev scripts; nothing here runs in production (one orchestrator, scripts/refresh, runs daily in CI to refresh the fixtures from their sources and land real changes on main, ADR-023; and scripts/media/publish-covers.ts runs in the News workflow to put new Comm-Links' covers in the live media manifest, ADR-048)
 ```

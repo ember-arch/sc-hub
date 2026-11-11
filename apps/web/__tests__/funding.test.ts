@@ -323,6 +323,8 @@ describe("monthPairs", () => {
     expect(pairs[1]?.change).toBeCloseTo(280 / 290 - 1);
     expect(pairs[2]?.current).toBe(true);
     expect(pairs[2]?.thisYear).toBe(150);
+    // A month that is not over is not read against a whole one.
+    expect(pairs[2]?.change).toBeNull();
   });
 
   it("gives null where a month is unknown and nothing without two years", () => {

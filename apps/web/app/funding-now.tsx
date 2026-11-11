@@ -110,7 +110,8 @@ function formatDayShort(day: string): string {
  * Each month so far as a pair of bars on the ledger's graph paper: last year's month in the ink's
  * tint, this year's in the accent (the current month at half strength, as the ledger draws a
  * period that is not over), the change on last year's month under each pair from `md` and in
- * every bar's title. The top band of the plot is kept clear for the labels.
+ * every bar's title; the current month, not over, carries no change. The top band of the plot is
+ * kept clear for the labels.
  */
 export function MonthPairs({
   pairs,

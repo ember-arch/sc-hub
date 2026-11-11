@@ -483,7 +483,10 @@ export interface MonthPair {
   readonly month: number;
   readonly thisYear: number | null;
   readonly lastYear: number | null;
-  /** thisYear against lastYear, as a fraction; null when either is unknown. */
+  /**
+   * thisYear against lastYear, as a fraction; null when either is unknown, and for the current
+   * month, which is not over and would be read against a whole one.
+   */
   readonly change: number | null;
   /** The month the latest reading falls in, which is not over. */
   readonly current: boolean;
@@ -505,15 +508,16 @@ export function monthPairs(
   for (let m = 0; m <= currentMonth; m += 1) {
     const thisYear = latest.months[m] ?? null;
     const lastYear = before.months[m] ?? null;
+    const current = m === currentMonth;
     out.push({
       month: m,
       thisYear,
       lastYear,
       change:
-        thisYear === null || lastYear === null || lastYear === 0
+        current || thisYear === null || lastYear === null || lastYear === 0
           ? null
           : thisYear / lastYear - 1,
-      current: m === currentMonth,
+      current,
     });
   }
   return out;

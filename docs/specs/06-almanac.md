@@ -28,13 +28,19 @@ The owner's feedback on the finished almanac: softer, more contemporary, a theme
 - [x] **Gallery foundation.** Manrope as the one face; the lighter palette; radii 10 and 20 px and pills; cards and panels by tone and soft shadow with no frames; hairlines only between rows and under section heads; labels as small sentence-case text; the shell with pill nav, pill search and a theme switch whose choice is kept and applied before the first paint; no page forces a scheme; `system.md` reads as the gallery; token, contrast and e2e tests pass.
 - [x] **Gallery pages.** The front page as a bento of image cards with airy counters; the entry's key art as a rounded cover with the name over it, the holomodel and the particulars in rounded panels, the sections' lead figures as cards; the ledger, honours, parts and dispatches softened to match.
 
+## The hero home page (ADR-038)
+
+The owner's direction of 2026-11-10: a front page that is current every time it is built and leads into every section.
+
+- [x] **Hero home page.** Under the masthead and the figure strip: "Dispatches from the Verse" (the three newest, linked to the dispatches); "Featured vehicles and ships" (the bento, its three outer cards drawn afresh each day, and one link to the whole register with the pack's count; the entries A to Z are gone); "Featured developer posts" (the last 48 hours, one folded post per thread, three to five, only with Spectrum on, linked to the tracker); "Funding this year" (the year so far, the share of last year's total and the same-days change, with a toggle between this year against last year and month by month, drawn as the ledger draws, linked to the ledger). Records at 390 and 1280 px, light and dark, with Spectrum off and on; Lighthouse on the home at 90 or more.
+
 ## Verification
 
 - `pnpm typecheck && pnpm lint && pnpm test`, then `pnpm test:e2e`.
-- Screenshots at 390 px and 1280 px, light and dark, of every page the PR touches, taken with the media folder aside so they match what CI and a deployment render.
+- Screenshots at 390 px and 1280 px, light and dark, of every page the PR touches. Since ADR-034 a deployment serves its pictures from the CDN, so a record may be taken from a build with `CDN_BASE_URL` set to the live store, which shows what the site shows; CI's own run has no media.
 - A fresh-context audit (`KICKOFF.md`, Audit prompt) per PR; findings fixed or deferred in the PR description.
 
 ## Notes
 
-- Imagery and models stay git-ignored and local (ADR-009, ADR-019); CI and deployments render the front page's plates as frames with their captions and no picture inside, and the entry's opening without its figure, the head at a reading width. The ink holomodel can only be seen with the models built locally, so its evidence is the owner's local preview and the session's review screenshots, not the committed ones.
+- Imagery and models stay git-ignored and local (ADR-009, ADR-019) and reach a deployment from the CDN (ADR-034); CI, which has neither, renders the front page's cards as toned panels with their captions and no picture inside, and the entry's opening without its figure, the head at a reading width. The ink holomodel can only be seen with the models built locally, so its evidence is the owner's local preview and the session's review screenshots, not the committed ones.
 - Branch prefix: `spec/06-almanac/…`. The foundation shipped from `spec/03-almanac/foundation` before this spec existed.

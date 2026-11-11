@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import {
-  Card,
-  type CardProps,
+  DevPost,
   DispatchCard,
   EmptyState,
   type ResponsiveImage,
@@ -9,10 +8,23 @@ import {
 } from "ui";
 import { SITE_NAME, SITE_TAGLINE } from "ui/brand";
 import { RSI_IMAGE_CREDIT } from "ui/legal";
-import { pricesFor } from "../lib/acquisition";
-import { repo } from "../lib/data";
+import { repo, spectrumOn } from "../lib/data";
+import {
+  authorOf,
+  devPosts,
+  excerptOf,
+  renderBody,
+  threadUrl,
+} from "../lib/dev-posts";
 import { SOURCE_LABEL, coverOf } from "../lib/dispatches";
-import { formatFrontDate, pickPlates, signed } from "../lib/front";
+import {
+  dailyPicks,
+  featuredPosts,
+  formatFrontDate,
+  pickPlates,
+  signed,
+  utcDayNumber,
+} from "../lib/front";
 import {
   formatChange,
   formatCompact,
@@ -26,16 +38,16 @@ import {
 import { media, shipCardImage } from "../lib/media";
 import { conceptShips, showcaseFor } from "../lib/showcase";
 import { Site, now } from "../lib/site";
-import { crewRange, shipCard } from "../lib/views";
 import {
   Contents,
   type Counter,
   Counters,
   Bento,
   type PlateEntry,
+  RegisterLink,
   RunningHead,
 } from "./front";
-import { PriceCredit } from "./price-credit";
+import { FundingNow } from "./funding-now";
 
 export const metadata: Metadata = {
   title: { absolute: SITE_NAME },
@@ -58,9 +70,6 @@ function conceptImage(
   };
 }
 
-/** How many entry cards the front shows; two rows of five on a wide screen. */
-const FRONT_ENTRIES = 10;
-
 /** The year of the first reading, for the counter's label. */
 const firstYear = (list: readonly Reading[] | null): string =>
   list?.[0]?.day.slice(0, 4) ?? "the start";
@@ -69,10 +78,16 @@ const firstYear = (list: readonly Reading[] | null): string =>
 const CONCEPT_HERO = "odin";
 const LIVE_EXAMPLE = "perseus";
 
+/** How many ships join the pair in the bento, drawn afresh each day (ADR-038). */
+const DAILY_PLATES = 3;
+
 /**
- * The front page of the almanac (ADR-020, spec 06): the date and build line, the title and the
- * contents, the counters, the plates, the entries A to Z, then the dispatches. Without media the
- * plates hold their captions alone and the entry cards their particulars.
+ * The front page (ADR-020, ADR-021, ADR-038): the date and build line, the title and the
+ * contents, the counters; then the newest dispatches, the featured ships (the showcase pair and
+ * three that change daily, with the register's count), the developers' latest posts from Spectrum
+ * (only with the module on), and this year's funding against last year's in one drawing with two
+ * views. Without media the bento's cards hold their captions alone and the dispatch cards their
+ * words.
  */
 export default function HomePage() {
   const r = repo();
@@ -91,6 +106,7 @@ export default function HomePage() {
     (s) => s.vehicle.status === "flight_ready",
   ).length;
   const partTypes = new Set(r.components.map((c) => c.item.type)).size;
+  const shipsOnRecord = r.entries.length + concepts.length;
   const counters: Counter[] = [
     ...(money === null
       ? []
@@ -130,7 +146,7 @@ export default function HomePage() {
         ]),
     {
       label: "Ships on record",
-      value: String(r.entries.length + concepts.length),
+      value: String(shipsOnRecord),
       note: `${flightReady} flight ready · ${concepts.length} in concept`,
       href: "/ships",
     },
@@ -143,7 +159,11 @@ export default function HomePage() {
     },
   ];
 
-  // The bento: the live example, the concept hero, then the three longest other ships with pictures.
+  // The three newest dispatches as cards (ADR-029), first on the page (ADR-038).
+  const feed = r.dispatches.slice(0, 3);
+  const feedPictures = feed.map((item) => coverOf(item));
+
+  // The bento: the showcase pair, then three ships drawn for the day from those with pictures.
   const candidates = [
     ...concepts.map((c) => ({
       slug: c.slug,
@@ -156,12 +176,13 @@ export default function HomePage() {
       hasPicture: shipCardImage(s) !== null,
     })),
   ];
-  const plates: PlateEntry[] = pickPlates(
-    candidates,
-    LIVE_EXAMPLE,
-    CONCEPT_HERO,
-    3,
-  ).map((pick) => {
+  const pair = pickPlates(candidates, LIVE_EXAMPLE, CONCEPT_HERO, 0);
+  const daily = dailyPicks(
+    candidates.filter((c) => !pair.some((p) => p.slug === c.slug)),
+    utcDayNumber(at),
+    DAILY_PLATES,
+  );
+  const plates: PlateEntry[] = [...pair, ...daily].map((pick) => {
     const concept = concepts.find((c) => c.slug === pick.slug);
     if (concept !== undefined) {
       return {
@@ -189,41 +210,10 @@ export default function HomePage() {
     };
   });
 
-  // Entries, A to Z: a concept ship's card shows its crew and pledge (it has no game data).
-  const entries: CardProps[] = [
-    ...concepts.map((c) => ({
-      href: `/ships/${c.slug}`,
-      name: c.name,
-      manufacturer: makerName(c.manufacturer_code),
-      role: c.focus,
-      stats: [
-        {
-          label: "Crew",
-          value:
-            c.crew_min === null || c.crew_max === null
-              ? null
-              : crewRange(c.crew_min, c.crew_max),
-        },
-        {
-          label: "Pledge",
-          value: pricesFor(c.slug, null).pledge?.price_usd ?? null,
-          unit: "USD",
-        },
-      ],
-      image: conceptImage(c.slug, c.name, c.page_url),
-    })),
-    ...r.entries.map((ship) => shipCard(ship, shipCardImage(ship))),
-  ].sort((a, b) => a.name.localeCompare(b.name, "en"));
-  // The front shows the first entries A to Z; the register has them all (ADR-020). With a full
-  // pack the home stays a front page, not a catalogue.
-  const shown = entries.slice(0, FRONT_ENTRIES);
-  const showsPrices = shown.some((e) =>
-    e.stats.some((s) => s.label === "Pledge" && s.value !== null),
-  );
-
-  // The three newest dispatches as cards (ADR-029); developer posts are the tracker's.
-  const feed = r.dispatches.slice(0, 3);
-  const feedPictures = feed.map((item) => coverOf(item));
+  // The developers' latest (ADR-038): only with the Spectrum module on, like every Spectrum surface.
+  const devOn = spectrumOn();
+  const featured = devOn ? featuredPosts(devPosts(r.news), at) : [];
+  const pictures = media();
 
   return (
     <Site>
@@ -242,34 +232,10 @@ export default function HomePage() {
 
         <Counters counters={counters} />
 
-        <Bento cards={plates} />
-
-        <section aria-labelledby="entries" className="flex flex-col gap-4">
-          <RunningHead
-            id="entries"
-            title="Entries, A to Z"
-            aside={
-              <TextLink href="/ships" className="text-secondary">
-                {entries.length > shown.length
-                  ? `All ${entries.length} in the register`
-                  : "The register"}
-              </TextLink>
-            }
-          />
-          <ul className="m-0 grid list-none grid-cols-2 gap-3 p-0 md:grid-cols-3 lg:grid-cols-5">
-            {shown.map((entry) => (
-              <li key={entry.href}>
-                <Card {...entry} />
-              </li>
-            ))}
-          </ul>
-          {showsPrices ? <PriceCredit inGame={false} /> : null}
-        </section>
-
         <section aria-labelledby="dispatches" className="flex flex-col gap-4">
           <RunningHead
             id="dispatches"
-            title="Dispatches"
+            title="Dispatches from the Verse"
             aside={
               <TextLink href="/news" className="text-secondary">
                 All dispatches
@@ -294,6 +260,8 @@ export default function HomePage() {
                       now={at}
                       excerpt={item.summary}
                       picture={feedPictures[i] ?? null}
+                      // The page's first picture, and usually its largest paint.
+                      priority={i === 0}
                     />
                   </li>
                 ))}
@@ -306,6 +274,81 @@ export default function HomePage() {
             </div>
           )}
         </section>
+
+        <section aria-labelledby="featured" className="flex flex-col gap-4">
+          <RunningHead
+            id="featured"
+            title="Featured vehicles and ships"
+            aside="Changes daily"
+          />
+          <Bento cards={plates} />
+          <RegisterLink count={shipsOnRecord} />
+        </section>
+
+        {devOn ? (
+          <section aria-labelledby="developers" className="flex flex-col gap-4">
+            <RunningHead
+              id="developers"
+              title="Featured developer posts"
+              aside={
+                <TextLink href="/news/dev" className="text-secondary">
+                  All developer posts
+                </TextLink>
+              }
+            />
+            {featured.length === 0 ? (
+              <EmptyState>
+                No developer posts yet. The tracker has not read Spectrum.
+              </EmptyState>
+            ) : (
+              <div className="flex flex-col gap-4">
+                {featured.map((post) => {
+                  const who = authorOf(post, r.authors);
+                  return (
+                    <DevPost
+                      key={post.id}
+                      title={post.thread_title ?? post.title}
+                      author={
+                        who === undefined
+                          ? { name: "CIG staff", role: null }
+                          : {
+                              name: who.display_name,
+                              role: who.role,
+                              href: `/news/dev/${encodeURIComponent(who.handle)}`,
+                            }
+                      }
+                      publishedAt={post.published_at}
+                      now={at}
+                      bodyHtml={renderBody(
+                        post.body_html,
+                        (id) => pictures.spectrumUpload(id),
+                        post.url,
+                      )}
+                      excerpt={excerptOf(post.body_html)}
+                      sourceUrl={post.url}
+                      threadUrl={threadUrl(post)}
+                    />
+                  );
+                })}
+              </div>
+            )}
+          </section>
+        ) : null}
+
+        {pledges === null || pledges.length < 2 ? null : (
+          <section aria-labelledby="funding" className="flex flex-col gap-4">
+            <RunningHead
+              id="funding"
+              title="Funding this year"
+              aside={
+                <TextLink href="/funding" className="text-secondary">
+                  The ledger of pledges
+                </TextLink>
+              }
+            />
+            <FundingNow list={pledges} measure="pledges" />
+          </section>
+        )}
       </div>
     </Site>
   );

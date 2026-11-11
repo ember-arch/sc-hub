@@ -26,7 +26,9 @@ The publish prints one summary line: how many objects the plan has, how many wer
 
 Then redeploy the site: a push to `main` does it, or Deployments → Redeploy in the Vercel dashboard. The build fetches `manifest.json` from the CDN; until that build, the live site keeps the manifest it was built with. If the publish's CDN check said `previous`, the edge still holds the older manifest for up to five minutes: wait that long before the redeploy.
 
-A schema change that adds a field to `MediaManifest` merges to `main` before the media built with it are published: the build validates the fetched manifest against the schema it has, and `main` fails to build on a manifest it does not know.
+A new `MediaManifest` field carries a `.default(...)`, as every field added since ADR-009 does: the build validates the fetched manifest against the schema it has (`MediaManifest` is strict), so without a default either order of merging the schema and publishing the media fails a build. With one, merge the schema first, then publish.
+
+An expired `VERCEL_OIDC_TOKEN` (about twelve hours after `vercel env pull`) shows as "Access denied, please provide a valid token": pull again and rerun; the run resumes by key.
 
 ## Checks after a deploy
 

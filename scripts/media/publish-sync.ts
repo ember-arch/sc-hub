@@ -4,7 +4,7 @@
  * store and the file reader as parameters, so the unit tests run it against an in-memory store.
  */
 import { createHash } from "node:crypto";
-import type { MediaStore, StoredObject } from "./blob.js";
+import { type MediaStore, type StoredObject, storeBaseUrl } from "./blob.js";
 import {
   IMMUTABLE_MAX_AGE,
   MANIFEST_KEY,
@@ -58,7 +58,11 @@ export async function inParallel<T>(
   await Promise.all(lanes);
 }
 
-/** Retries a store call on anything but a plain refusal; a 4xx-style error names itself `status`. */
+/**
+ * Retries a store call on anything but a refusal. The store adapter puts a 4xx `status` on an error
+ * that will not pass until something changes (`classifyBlobError`), 429 with the store's own wait
+ * on rate limiting; a network error or a 5xx has neither and is retried with backoff.
+ */
 export async function withRetries<T>(
   label: string,
   attempt: () => Promise<T>,
@@ -72,6 +76,7 @@ export async function withRetries<T>(
       return await attempt();
     } catch (error) {
       const status = (error as { status?: unknown }).status;
+      const retryAfter = (error as { retryAfter?: unknown }).retryAfter;
       // A refusal (bad token, no such store) is a decision, not weather: stop at once. A timeout
       // (408) or rate limiting (429) means "later".
       if (
@@ -83,7 +88,10 @@ export async function withRetries<T>(
       )
         throw error;
       if (n >= attempts) throw error;
-      const ms = 1000 * 2 ** (n - 1);
+      const ms =
+        typeof retryAfter === "number" && retryAfter > 0
+          ? retryAfter * 1000
+          : 1000 * 2 ** (n - 1);
       log({ retry: label, attempt: n, wait_ms: ms });
       await wait(ms);
     }
@@ -156,6 +164,9 @@ export async function syncToStore(
     const current = existing.has(MANIFEST_KEY)
       ? await withRetries("read manifest", () => store.read(MANIFEST_KEY), log)
       : null;
+    // `read` comes back through the CDN, so inside the manifest's TTL this compares against the
+    // edge's copy; a stale "changed" only re-uploads, and a false "unchanged" would need a plan
+    // identical to a previous one, which `generated_at` rules out.
     if (current !== null && sameBytes(current, body)) manifest = "unchanged";
     else {
       const stored = await withRetries(
@@ -201,7 +212,7 @@ export async function syncToStore(
     pruned,
     pruneNote,
     storeBaseUrl:
-      first === undefined ? null : first.url.slice(0, -(first.key.length + 1)),
+      first === undefined ? null : storeBaseUrl(first.url, first.key),
     sampleKey: plan.objects[0]?.key ?? null,
   };
 }

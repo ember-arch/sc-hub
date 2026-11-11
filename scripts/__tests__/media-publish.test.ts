@@ -2,7 +2,7 @@ import type { MediaManifest } from "schema";
 import { createHash } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import type { MediaStore, StoredObject } from "../media/blob.js";
-import { storeBaseUrl } from "../media/blob.js";
+import { classifyBlobError, storeBaseUrl } from "../media/blob.js";
 import {
   IMMUTABLE_MAX_AGE,
   MANIFEST_KEY,
@@ -440,5 +440,55 @@ describe("the store's base address", () => {
     expect(() => storeBaseUrl("https://x/y", "media/a.webp")).toThrow(
       /end with/,
     );
+  });
+});
+
+describe("the store's errors, as the retry logic reads them", () => {
+  it("marks a refusal with a 4xx, rate limiting with 429 and the store's wait, and leaves the rest", async () => {
+    const blob = await import("@vercel/blob");
+    const status = (error: unknown) => (error as { status?: number }).status;
+    expect(status(classifyBlobError(new blob.BlobAccessError()))).toBe(403);
+    expect(status(classifyBlobError(new blob.BlobStoreNotFoundError()))).toBe(
+      404,
+    );
+    expect(
+      status(classifyBlobError(new blob.BlobContentTypeNotAllowedError("x"))),
+    ).toBe(400);
+    expect(status(classifyBlobError(new blob.BlobUnknownError()))).toBe(400);
+    const limited = classifyBlobError(new blob.BlobServiceRateLimited(7)) as {
+      status?: number;
+      retryAfter?: number;
+    };
+    expect(limited.status).toBe(429);
+    expect(limited.retryAfter).toBe(7);
+    const network = new TypeError("fetch failed");
+    expect(classifyBlobError(network)).toBe(network);
+    expect(
+      status(classifyBlobError(new blob.BlobServiceNotAvailable())),
+    ).toBeUndefined();
+  });
+
+  it("waits the store's own time on rate limiting", async () => {
+    const waits: number[] = [];
+    let n = 0;
+    const result = await withRetries(
+      "x",
+      async () => {
+        n += 1;
+        if (n === 1)
+          throw Object.assign(new Error("slow down"), {
+            status: 429,
+            retryAfter: 3,
+          });
+        return "ok";
+      },
+      () => {},
+      3,
+      async (ms) => {
+        waits.push(ms);
+      },
+    );
+    expect(result).toBe("ok");
+    expect(waits).toEqual([3000]);
   });
 });

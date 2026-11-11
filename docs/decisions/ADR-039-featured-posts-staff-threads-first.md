@@ -1,6 +1,6 @@
-# ADR-039: Featured developer posts: the threads staff opened first, then the threads they answered in, by likes
+# ADR-039: Featured developer posts: the threads staff opened first, then the threads they answered in
 
-- Status: accepted
+- Status: accepted; amended 2026-11-11 by the owner ("Skip likes"): the second tier is newest first and likes are not recorded or read
 - Date: 2026-11-10
 - Deciders: owner ("For the featured spectrum posts -- favor threads authored by CIG staff first -- then when there aren't 5 of those in the past 48-72 hours move to posts within threads that they didn't author ranked by most interactions/likes on the comments/post", 2026-11-10), Claude Code session 2026-11-10
 - Amends: ADR-038 (the featured-post rule), system.md's Home row
@@ -15,9 +15,9 @@ What the pack can tell: a thread staff opened has its opening post on the pack, 
 
 | Concern | Choice | Reason |
 | --- | --- | --- |
-| Tiers | `featuredPosts` in `apps/web/lib/front.ts` picks one post per thread (the thread's newest), five at most: first the threads staff opened with a staff post in the last 48 hours, newest first; when fewer than five, the same reaching back to 72 hours; then the threads staff only answered in, within 72 hours, by likes where the pack records them and newest first otherwise; when fewer than three in all, the newest remaining threads fill the list to three, as before | The owner's order, with ADR-038's floor kept so the section never empties |
+| Tiers | `featuredPosts` in `apps/web/lib/front.ts` picks one post per thread (the thread's newest), five at most: first the threads staff opened with a staff post in the last 48 hours, newest first; when fewer than five, the same reaching back to 72 hours; then the threads staff only answered in, within 72 hours, newest first; when fewer than three in all, the newest remaining threads fill the list to three, as before | The owner's order, with ADR-038's floor kept so the section never empties |
 | Staff-opened | A thread whose opening post is on the pack, however old the opening is: a post whose address has no post number. The pack holds only staff posts, so an opening post on it was staff's; the thread's newest staff post, opener or reply, is what dates it | The same reading of the address as `threadUrl`; nothing new on the pack |
-| Likes | `FeaturedCandidate.likes`, optional, read when present and ignored when null or absent. Until the worker records likes the second tier is by recency; recording them is a worker change in its own PR (CLAUDE.md section 6: pipeline or worker and web are two PRs), as a side file keyed by post id next to `thread-state.json`, not a revision of the content item | The rule is ready for the data; the data path is decided when it is built |
+| Likes | Not used. The owner first asked for the second tier by likes; the pack carries none (ADR-037 strips Spectrum's votes), and recording them would need a worker change reading the thread endpoint's votes, as a side file next to `thread-state.json` rather than a content-item revision. Asked on 2026-11-11 whether to build that once the backfill freed the endpoint, the owner said "Skip likes". The optional `likes` field and its ordering, built ahead of the data, are removed | The owner's call; a rule that reads data nobody records is dead code |
 
 ## Alternatives considered
 
@@ -29,8 +29,8 @@ What the pack can tell: a thread staff opened has its opening post on the pack, 
 
 ## Consequences
 
-- `featuredPosts` gains `FEATURED_REACH_HOURS` (72) and the tiers; `FeaturedCandidate` gains optional `likes`. Unit tests cover each tier and the fill. The page does not change: it hands the same rows in.
+- `featuredPosts` gains `FEATURED_REACH_HOURS` (72) and the tiers. Unit tests cover each tier and the fill. The page does not change: it hands the same rows in.
 - system.md's Home row says what the featured posts are now; ADR-038's row stands as the first version.
 - The Spectrum-on home records change where the order does.
-- Follow-up, its own PR: the Spectrum worker records likes (and reply counts) per post in a side file the site reads into `likes`; until then the second tier is by recency. That PR decides whether a thread's likes are its newest staff post's or the most-liked staff post's, and how a post with no count recorded ranks beside one with none, during the transition (today a recorded zero outranks an unrecorded post).
-- Deferred from the audit: a `kind` (opening post or reply) on `ContentItem`, a schema change of its own, so feed mode (`SPECTRUM_MODE=feed`, whose addresses are CIG's) does not depend on the address's shape; tests for likes of zero or null, an answered thread between 48 and 72 hours, the exact boundaries and equal timestamps.
+- No follow-up for likes: the owner skipped it (2026-11-11). Revisiting it means a worker PR that records votes per post, and an amendment of this record.
+- Deferred from the audit: a `kind` (opening post or reply) on `ContentItem`, a schema change of its own, so feed mode (`SPECTRUM_MODE=feed`, whose addresses are CIG's) does not depend on the address's shape; tests for the exact boundaries and equal timestamps (an answered thread between 48 and 72 hours is now tested).

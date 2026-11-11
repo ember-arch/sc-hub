@@ -128,11 +128,7 @@ describe("featuredPosts", () => {
   const post = (
     hoursAgo: number,
     thread: string | null,
-    {
-      opener = false,
-      likes,
-      url,
-    }: { opener?: boolean; likes?: number; url?: string } = {},
+    { opener = false, url }: { opener?: boolean; url?: string } = {},
   ) => ({
     published_at: new Date(now.getTime() - hoursAgo * 3_600_000).toISOString(),
     thread_id: thread,
@@ -141,7 +137,6 @@ describe("featuredPosts", () => {
       (opener
         ? `https://example.test/thread/${thread}`
         : `https://example.test/thread/${thread ?? "none"}/${(n += 1)}`),
-    ...(likes === undefined ? {} : { likes }),
   });
 
   it("takes the threads staff opened in the window first, one post per thread, newest first, five at most", () => {
@@ -202,22 +197,21 @@ describe("featuredPosts", () => {
     ]);
   });
 
-  it("ranks threads staff only answered in by likes where recorded, newest first otherwise", () => {
+  it("orders the threads staff only answered in newest first, including one between 48 and 72 hours", () => {
     const posts = [
       post(1, "a", { opener: true }),
-      post(2, "x", { likes: 3 }),
-      post(3, "y", { likes: 40 }),
+      post(2, "x"),
+      post(60, "late"),
+      post(3, "y"),
       post(4, "z"),
-      post(5, "w", { likes: 40 }),
-      post(6, "v"),
-      post(7, "u"),
+      post(80, "old"),
     ];
     expect(featuredPosts(posts, now).map((p) => p.thread_id)).toEqual([
       "a",
-      "y",
-      "w",
       "x",
+      "y",
       "z",
+      "late",
     ]);
   });
 

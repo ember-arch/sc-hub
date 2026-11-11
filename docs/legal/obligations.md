@@ -33,7 +33,7 @@ See `takedown.md`. The contact address is published on the about page and in the
 
 ## Rate limits and identification
 
-All fetchers send a User-Agent of the form `<site name>/<version> (+<about-page URL>; <contact email>)`, followed by the job's name as a second product token (built once, in `packages/schema/site.ts`, ADR-036; the name is written as a token, `SC-Hub`), and respect the limits in `CLAUDE.md` section 9. If a source returns 429 or asks us to stop, the worker backs off to 30 minutes and pages the owner.
+All fetchers send a User-Agent of the form `<site name>/<version> (+<about-page URL>; <contact email>)`, followed by the job's name as a second product token (built once, in `packages/schema/site.ts`, ADR-036; the name is written as a token, `SC-Hub`), and respect the limits in `CLAUDE.md` section 9. The address is `SC_HUB_CONTACT_EMAIL` (`CLAUDE.md` section 9), set in CI and on Vercel; a request to robertsspaceindustries.com is refused without it, and a run on a machine without it reaches the other sources with the about page alone in the header. If a source returns 429 or asks us to stop, the worker backs off to 30 minutes and pages the owner.
 
 ## Source links
 

@@ -42,7 +42,8 @@ describe("userAgent", () => {
   });
 
   it("refuses a tool name that is not a token", () => {
-    expect(() => userAgent("poll news", null)).toThrow(/not a token/);
-    expect(() => userAgent("", null)).toThrow(/not a token/);
+    expect(() => userAgent("poll news", null)).toThrow(/not an HTTP token/);
+    expect(() => userAgent("", null)).toThrow(/not an HTTP token/);
+    expect(() => userAgent('poll"news', null)).toThrow(/not an HTTP token/);
   });
 });

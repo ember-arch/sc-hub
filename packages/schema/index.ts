@@ -18,7 +18,6 @@ export * from "./entities/paint.js";
 export * from "./entities/model.js";
 export * from "./entities/content-item.js";
 export * from "./news-window.js";
-export * from "./site.js";
 export * from "./entities/author.js";
 export * from "./entities/entity-link.js";
 export * from "./entities/title.js";

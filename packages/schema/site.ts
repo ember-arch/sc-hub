@@ -1,6 +1,7 @@
 /**
- * The site's public identity, in the one package every runtime already depends on (ADR-036):
- * the name, the production origin, the about page, and the User-Agent every fetcher sends.
+ * The site's public identity, in the one package every runtime already depends on (ADR-036),
+ * imported as `schema/site` (not from the package root, which stays the data contract): the
+ * name, the production origin, the about page, and the User-Agent every fetcher sends.
  * `packages/ui/brand.ts` re-exports the name for the pages; the dev scripts, the daily refresh
  * and the news workers build their User-Agent here, so the three cannot drift. No environment
  * is read in this module: callers pass the contact address they were given.
@@ -44,7 +45,7 @@ export const SITE_PRODUCT = SITE_NAME.replace(/\s+/g, "-");
 export function userAgent(tool: string, contact: string | null): string {
   if (!TOKEN.test(tool)) {
     throw new Error(
-      `User-Agent tool name ${JSON.stringify(tool)} is not a token: letters, digits and -._ only`,
+      `User-Agent tool name ${JSON.stringify(tool)} is not an HTTP token (RFC 9110): no spaces, quotes, brackets or separators`,
     );
   }
   const comment =

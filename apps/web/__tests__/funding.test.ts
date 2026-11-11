@@ -260,3 +260,87 @@ describe("totalSegments and firstCrossing", () => {
     expect(firstCrossing(list, 1000)).toBeNull();
   });
 });
+
+// ADR-038: the front page's funding card, this year against last year and month by month.
+
+import { formatShare, monthPairs, yearAgainstLastYear } from "../lib/funding";
+
+describe("yearAgainstLastYear", () => {
+  it("reads the year so far, the share of last year's whole total and the same-days change", () => {
+    // 10 a day through 2024 (a leap year, 3660), then 20 a day into 2025.
+    const list = [
+      ...synthetic("2023-12-31", 367, 10),
+      ...synthetic("2025-01-01", 100, 20).map((r) => ({
+        ...r,
+        value: 1000 + 366 * 10 + (r.value - 1000) + 20,
+      })),
+    ];
+    const a = yearAgainstLastYear(list);
+    expect(a?.year).toBe(2025);
+    expect(a?.lastYearTotal).toBe(3660);
+    expect(a?.yearToDate).toBe(20 + 99 * 20);
+    expect(a?.shareOfLastYear).toBeCloseTo((20 + 99 * 20) / 3660);
+    // 10 April is day 101 of a leap year: last year had added 1010 by the same day.
+    expect(a?.change).toBeCloseTo((20 + 99 * 20) / (101 * 10) - 1);
+  });
+
+  it("leaves the share unknown when last year's total is unknown, and gives real figures on the fixture", () => {
+    // No reading within three days of 31 December: neither year is known at that end.
+    const list = synthetic("2024-06-01", 300, 10, [
+      "2024-12-28",
+      "2024-12-29",
+      "2024-12-30",
+      "2024-12-31",
+      "2025-01-01",
+    ]);
+    const a = yearAgainstLastYear(list);
+    expect(a?.year).toBe(2025);
+    expect(a?.yearToDate).toBeNull();
+    expect(a?.lastYearTotal).toBeNull();
+    expect(a?.shareOfLastYear).toBeNull();
+    const real = yearAgainstLastYear(pledges);
+    expect(real?.year).toBe(2026);
+    expect(real?.lastYearTotal).toBeGreaterThan(1e8);
+    expect(real?.shareOfLastYear).toBeGreaterThan(0);
+    expect(real?.change).not.toBeNull();
+    expect(yearAgainstLastYear([])).toBeNull();
+  });
+});
+
+describe("monthPairs", () => {
+  it("pairs each month so far with last year's, marks the current one and the change", () => {
+    const list = synthetic("2023-12-31", 366 + 75, 10);
+    const rows = yearRows(list);
+    const pairs = monthPairs(rows, list.at(-1)!.day);
+    expect(pairs.map((p) => p.month)).toEqual([0, 1, 2]);
+    expect(pairs[0]).toMatchObject({
+      thisYear: 310,
+      lastYear: 310,
+      change: 0,
+      current: false,
+    });
+    expect(pairs[1]).toMatchObject({ thisYear: 280, lastYear: 290 });
+    expect(pairs[1]?.change).toBeCloseTo(280 / 290 - 1);
+    expect(pairs[2]?.current).toBe(true);
+    expect(pairs[2]?.thisYear).toBe(150);
+  });
+
+  it("gives null where a month is unknown and nothing without two years", () => {
+    const list = synthetic("2024-06-01", 300, 10);
+    const rows = yearRows(list);
+    const pairs = monthPairs(rows, list.at(-1)!.day);
+    expect(pairs[0]?.lastYear).toBeNull();
+    expect(pairs[0]?.change).toBeNull();
+    expect(monthPairs(rows.slice(-1), list.at(-1)!.day)).toEqual([]);
+    const real = monthPairs(yearRows(pledges), pledges.at(-1)!.day);
+    expect(real).toHaveLength(11);
+    expect(real.every((p) => p.thisYear !== null && p.lastYear !== null)).toBe(
+      true,
+    );
+  });
+
+  it("formats a share as a whole percentage", () => {
+    expect(formatShare(0.784)).toBe("78%");
+    expect(formatShare(1.2)).toBe("120%");
+  });
+});

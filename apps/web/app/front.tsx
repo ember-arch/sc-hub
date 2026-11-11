@@ -17,8 +17,9 @@ export function Counters({
 }
 
 /**
- * The front page's parts (ADR-020): the contents list, the counters (the figure strip) and the
- * plates. Pure presentation; page.tsx reads the data and hands it in.
+ * The front page's parts (ADR-020, ADR-021, ADR-038): the contents list, the counters (the figure
+ * strip), the bento, the register link and the running heads. Pure presentation; page.tsx reads
+ * the data and hands it in.
  */
 
 const link =
@@ -61,8 +62,8 @@ export interface PlateEntry {
 }
 
 /**
- * The front page's bento (ADR-021): the live example large, the concept hero tall beside it, then
- * three more across; each an image card with the ship's name over a scrim. Without a picture a
+ * The front page's bento (ADR-021, ADR-038): the live example large, the concept hero tall beside
+ * it, then three more across that change daily; each an image card with the ship's name over a scrim. Without a picture a
  * card is a toned panel with the name, so the layout keeps its shape on CI and a deployment.
  */
 export function Bento({ cards }: { readonly cards: readonly PlateEntry[] }) {
@@ -103,7 +104,8 @@ export function Bento({ cards }: { readonly cards: readonly PlateEntry[] }) {
                   width={c.picture.width}
                   height={c.picture.height}
                   alt=""
-                  fetchPriority={i === 0 ? "high" : undefined}
+                  // The dispatches above carry the page's priority picture (ADR-038); the first
+                  // card still loads with the page, the rest as they come into view.
                   loading={i === 0 ? undefined : "lazy"}
                   decoding="async"
                   className={`block h-full w-full object-cover ${aspect(i)}`}
@@ -133,6 +135,23 @@ export function Bento({ cards }: { readonly cards: readonly PlateEntry[] }) {
         <p className="m-0 text-caption text-muted">{RSI_IMAGE_CREDIT.text}</p>
       ) : null}
     </div>
+  );
+}
+
+/**
+ * The one link under the featured ships (ADR-038): the whole register, with the pack's count of
+ * ships and ground vehicles, concept ships included.
+ */
+export function RegisterLink({ count }: { readonly count: number }) {
+  return (
+    <p className="m-0 text-ui">
+      <NextLink
+        href="/ships"
+        className={`${link} font-medium text-primary hover:text-accent`}
+      >
+        See all {count} ships and vehicles in the register
+      </NextLink>
+    </p>
   );
 }
 

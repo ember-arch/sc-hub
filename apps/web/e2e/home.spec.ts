@@ -1,0 +1,124 @@
+import { expect, test } from "@playwright/test";
+
+// The hero home page (ADR-038): dispatches first, the featured ships with the register's count,
+// the developers' latest only with Spectrum on, and this year's funding with its two views. Runs
+// over the committed packs; CI has Spectrum off, so the developers' section is checked absent here
+// and present in devtracker.spec.ts.
+
+const on = ["poll", "feed"].includes(process.env["SPECTRUM_MODE"] ?? "");
+
+test("the sections run dispatches, featured ships, developers (with Spectrum on), funding", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const heads = await page.locator("main h2.lab").allTextContents();
+  const expected = on
+    ? [
+        "Dispatches from the Verse",
+        "Featured vehicles and ships",
+        "Featured developer posts",
+        "Funding this year",
+      ]
+    : [
+        "Dispatches from the Verse",
+        "Featured vehicles and ships",
+        "Funding this year",
+      ];
+  expect(heads.filter((h) => expected.includes(h))).toEqual(expected);
+  // The entries A to Z left the front page.
+  expect(heads).not.toContain("Entries, A to Z");
+  if (!on) {
+    await expect(page.getByText("Featured developer posts")).toHaveCount(0);
+  }
+});
+
+test("the dispatches come first, three of them, each linked to its source, and none from Spectrum", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const section = page.locator("section[aria-labelledby=dispatches]");
+  await expect(section.locator("article")).toHaveCount(3);
+  const links = section.getByRole("link", { name: "Read on the source site" });
+  await expect(links).toHaveCount(3);
+  for (const href of await links.evaluateAll((as) =>
+    as.map((a) => a.getAttribute("href")),
+  )) {
+    expect(href).toMatch(/^https:\/\/robertsspaceindustries\.com\//);
+    expect(href).not.toMatch(/\/spectrum\//);
+  }
+  await expect(
+    section.getByRole("link", { name: "All dispatches" }),
+  ).toHaveAttribute("href", "/news");
+  // The dispatches sit above the featured ships.
+  const dispatchesTop = await section.evaluate(
+    (el) => el.getBoundingClientRect().top,
+  );
+  const featuredTop = await page
+    .locator("section[aria-labelledby=featured]")
+    .evaluate((el) => el.getBoundingClientRect().top);
+  expect(dispatchesTop).toBeLessThan(featuredTop);
+});
+
+test("the featured ships are five cards with the showcase pair, and the register link carries the pack's count", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const section = page.locator("section[aria-labelledby=featured]");
+  const cards = section.locator("ul li a[href^='/ships/']");
+  await expect(cards).toHaveCount(5);
+  const hrefs = await cards.evaluateAll((as) =>
+    as.map((a) => a.getAttribute("href")),
+  );
+  expect(hrefs[0]).toBe("/ships/perseus");
+  expect(hrefs[1]).toBe("/ships/odin");
+  expect(new Set(hrefs).size).toBe(5);
+  await expect(section.getByText("Changes daily")).toBeVisible();
+  // The strip's "Ships on record" figure and the register link agree.
+  const onRecord = await page
+    .locator("dl div", { hasText: "Ships on record" })
+    .locator("dd a")
+    .first()
+    .textContent();
+  const link = section.getByRole("link", { name: /^See all \d+ ships/ });
+  await expect(link).toHaveAttribute("href", "/ships");
+  await expect(link).toHaveText(
+    `See all ${onRecord?.trim()} ships and vehicles in the register`,
+  );
+});
+
+test("the funding card shows the year's three figures and toggles between the two views", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const section = page.locator("section[aria-labelledby=funding]");
+  await expect(section.getByText(/^Pledged in \d{4} so far$/)).toBeVisible();
+  await expect(section.getByText(/^Of \d{4}'s total$/)).toBeVisible();
+  await expect(section.getByText("Year on year")).toBeVisible();
+  await expect(
+    section.getByRole("link", { name: "The ledger of pledges" }),
+  ).toHaveAttribute("href", "/funding");
+  const group = section.getByRole("group", { name: "Funding view" });
+  const ytd = group.getByRole("button", { name: "Year to date" });
+  const months = group.getByRole("button", { name: "By month" });
+  await expect(ytd).toHaveAttribute("aria-pressed", "true");
+  await expect(months).toHaveAttribute("aria-pressed", "false");
+  // The year-to-date view draws this year against last year; the month view is in the document
+  // but hidden until pressed.
+  const figures = section.locator("figure");
+  await expect(figures.first()).toBeVisible();
+  await expect(figures.nth(1)).toBeHidden();
+  await months.click();
+  await expect(months).toHaveAttribute("aria-pressed", "true");
+  await expect(figures.nth(1)).toBeVisible();
+  await expect(figures.first()).toBeHidden();
+  // Every month bar carries a title with its figure; the legend names both years.
+  const titles = await figures
+    .nth(1)
+    .locator("svg rect title")
+    .allTextContents();
+  expect(titles.length).toBeGreaterThan(0);
+  for (const t of titles) expect(t).toMatch(/^[A-Z][a-z]{2} \d{4}/);
+  await expect(figures.nth(1).locator("figcaption")).toContainText(
+    /beside the same month of \d{4}/,
+  );
+});

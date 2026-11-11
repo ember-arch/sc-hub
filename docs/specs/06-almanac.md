@@ -28,6 +28,12 @@ The owner's feedback on the finished almanac: softer, more contemporary, a theme
 - [x] **Gallery foundation.** Manrope as the one face; the lighter palette; radii 10 and 20 px and pills; cards and panels by tone and soft shadow with no frames; hairlines only between rows and under section heads; labels as small sentence-case text; the shell with pill nav, pill search and a theme switch whose choice is kept and applied before the first paint; no page forces a scheme; `system.md` reads as the gallery; token, contrast and e2e tests pass.
 - [x] **Gallery pages.** The front page as a bento of image cards with airy counters; the entry's key art as a rounded cover with the name over it, the holomodel and the particulars in rounded panels, the sections' lead figures as cards; the ledger, honours, parts and dispatches softened to match.
 
+## The hero home page (ADR-038)
+
+The owner's direction of 2026-11-10: a front page that is current every time it is built and leads into every section.
+
+- [x] **Hero home page.** Under the masthead and the figure strip: "Dispatches from the Verse" (the three newest, linked to the dispatches); "Featured vehicles and ships" (the bento, its three outer cards drawn afresh each day, and one link to the whole register with the pack's count; the entries A to Z are gone); "Featured developer posts" (the last 48 hours, one folded post per thread, three to five, only with Spectrum on, linked to the tracker); "Funding this year" (the year so far, the share of last year's total and the same-days change, with a toggle between this year against last year and month by month, drawn as the ledger draws, linked to the ledger). Records at 390 and 1280 px, light and dark, with Spectrum off and on; Lighthouse on the home at 90 or more.
+
 ## Verification
 
 - `pnpm typecheck && pnpm lint && pnpm test`, then `pnpm test:e2e`.

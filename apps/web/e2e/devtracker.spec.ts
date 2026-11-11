@@ -145,7 +145,53 @@ test.describe("the dev tracker with Spectrum on", () => {
     await context.close();
   });
 
+  test("the home page features the developers' latest posts, three to five, one per thread, folded (ADR-038)", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    const section = page.locator("section[aria-labelledby=developers]");
+    await expect(
+      section.getByRole("heading", { name: "Featured developer posts" }),
+    ).toBeVisible();
+    await expect(
+      section.getByRole("link", { name: "All developer posts" }),
+    ).toHaveAttribute("href", "/news/dev");
+    const cards = section.locator("article");
+    const count = await cards.count();
+    expect(count).toBeGreaterThanOrEqual(3);
+    expect(count).toBeLessThanOrEqual(5);
+    // One card per thread: the thread links are distinct.
+    const threads = await cards.evaluateAll((articles) =>
+      articles.map((a) => {
+        const links = [...a.querySelectorAll("footer a")].map((l) =>
+          l.getAttribute("href"),
+        );
+        // The thread's own page is the post's address without the post number.
+        return (links[0] ?? "").replace(/\/\d+$/, "");
+      }),
+    );
+    expect(new Set(threads).size).toBe(count);
+    // Folded, with the Spectrum link visible, like the tracker's.
+    await expect(cards.first().locator(".dev-post-body")).toBeHidden();
+    await expect(
+      cards.first().getByRole("link", { name: "View on Spectrum" }),
+    ).toBeVisible();
+    // The developers' section sits under the featured ships and above the funding.
+    const tops = await page.evaluate(() =>
+      ["featured", "developers", "funding"].map(
+        (id) =>
+          document
+            .querySelector(`section[aria-labelledby=${id}]`)
+            ?.getBoundingClientRect().top ?? -1,
+      ),
+    );
+    expect(tops[0]).toBeLessThan(tops[1]!);
+    expect(tops[1]).toBeLessThan(tops[2]!);
+  });
+
   const SCREENS = [
+    // The home with the developers' section drawn (ADR-038).
+    { name: "home-populated", path: "/" },
     { name: "news-dev-populated", path: "/news/dev" },
     {
       name: "news-dev-author",
@@ -250,7 +296,10 @@ test.describe("the dev tracker with Spectrum on", () => {
           // of pixels tall and says nothing more.
           await page.screenshot({
             path: join(OUT, `${screen.name}-${viewport.name}-${scheme}.png`),
-            clip: { x: 0, y: 0, width: viewport.width, height: 1600 },
+            // The home is recorded whole (its posts are folded); the tracker's pages are cut.
+            ...(screen.name === "home-populated"
+              ? {}
+              : { clip: { x: 0, y: 0, width: viewport.width, height: 1600 } }),
             fullPage: true,
           });
           await context.close();

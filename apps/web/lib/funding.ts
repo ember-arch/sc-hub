@@ -439,3 +439,92 @@ const longDay = new Intl.DateTimeFormat("en-GB", {
 export function formatDay(day: string): string {
   return longDay.format(new Date(`${day}T00:00:00Z`));
 }
+
+export interface YearAgainstLastYear {
+  readonly year: number;
+  /** Added this calendar year so far; null when last year's end is unknown. */
+  readonly yearToDate: number | null;
+  /** Last year's whole total; null when either of its ends is unknown. */
+  readonly lastYearTotal: number | null;
+  /** yearToDate as a fraction of lastYearTotal; null when either is unknown. */
+  readonly shareOfLastYear: number | null;
+  /** yearToDate against the same days of last year, as a fraction. */
+  readonly change: number | null;
+}
+
+/**
+ * This year against last year, for the front page's funding card (ADR-038): the year so far, how
+ * much of last year's whole total it has reached, and the change on the same days of last year.
+ * Everything is a difference between snapshots, as on the ledger; nothing is estimated.
+ */
+export function yearAgainstLastYear(
+  list: readonly Reading[],
+): YearAgainstLastYear | null {
+  const head = headline(list);
+  if (head === null) return null;
+  const year = Number(head.latest.day.slice(0, 4));
+  const lastYear = yearRows(list).find((r) => r.year === year - 1);
+  const lastYearTotal =
+    lastYear === undefined || lastYear.partial ? null : lastYear.total;
+  return {
+    year,
+    yearToDate: head.yearToDate,
+    lastYearTotal,
+    shareOfLastYear:
+      head.yearToDate === null || lastYearTotal === null || lastYearTotal === 0
+        ? null
+        : head.yearToDate / lastYearTotal,
+    change: head.yearToDateChange,
+  };
+}
+
+export interface MonthPair {
+  /** January is 0. */
+  readonly month: number;
+  readonly thisYear: number | null;
+  readonly lastYear: number | null;
+  /** thisYear against lastYear, as a fraction; null when either is unknown. */
+  readonly change: number | null;
+  /** The month the latest reading falls in, which is not over. */
+  readonly current: boolean;
+}
+
+/**
+ * Each month of the latest year so far beside the same month of the year before (ADR-038), from
+ * January to the month of the latest reading. Empty when the rows hold fewer than two years.
+ */
+export function monthPairs(
+  rows: readonly YearRow[],
+  latestDay: string,
+): MonthPair[] {
+  const latest = rows.at(-1);
+  const before = rows.at(-2);
+  if (latest === undefined || before === undefined) return [];
+  const currentMonth = Number(latestDay.slice(5, 7)) - 1;
+  const out: MonthPair[] = [];
+  for (let m = 0; m <= currentMonth; m += 1) {
+    const thisYear = latest.months[m] ?? null;
+    const lastYear = before.months[m] ?? null;
+    out.push({
+      month: m,
+      thisYear,
+      lastYear,
+      change:
+        thisYear === null || lastYear === null || lastYear === 0
+          ? null
+          : thisYear / lastYear - 1,
+      current: m === currentMonth,
+    });
+  }
+  return out;
+}
+
+const wholePercent = new Intl.NumberFormat("en-US", {
+  style: "percent",
+  maximumFractionDigits: 0,
+});
+
+/** "78%": a share of a whole, no sign. */
+export function formatShare(fraction: number): string {
+  return wholePercent.format(fraction);
+}

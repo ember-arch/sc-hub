@@ -1,7 +1,8 @@
 /**
- * The front page's pure parts (ADR-020, spec 06 "Front page and register"): the contents list,
- * the date line, plate numerals and which ships take the plates. No data access here; page.tsx
- * hands in what it read so these can be tested on plain values.
+ * The front page's pure parts (ADR-020, ADR-038, spec 06): the contents list, the date line,
+ * plate numerals, which ships take the plates and change daily, and which developer posts are
+ * featured. No data access here; page.tsx hands in what it read so these can be tested on plain
+ * values.
  */
 
 export interface ContentsEntry {
@@ -95,4 +96,86 @@ export function pickPlates<T extends PlateCandidate>(
 export function signed(value: number, format: (abs: number) => string): string {
   if (value === 0) return format(0);
   return `${value > 0 ? "+" : "−"}${format(Math.abs(value))}`;
+}
+
+/** The window the featured developer posts are drawn from (ADR-038). */
+export const FEATURED_WINDOW_HOURS = 48;
+
+/** A post as the featured-post rule needs it: when it was published and which thread it is in. */
+export interface FeaturedCandidate {
+  readonly published_at: string;
+  readonly thread_id: string | null;
+}
+
+/**
+ * The front page's featured developer posts (ADR-038): the posts of the last `hours` before `now`,
+ * one per thread (the thread's newest post), newest thread first, `max` at most; when fewer than
+ * `min` threads posted in the window, the newest posts outside it fill the list to `min`, still one
+ * per thread. "Top" is recency by thread: the pack carries no votes or reply counts, and one busy
+ * thread must not fill the section. `posts` is expected newest first, as the repository keeps it.
+ */
+export function featuredPosts<T extends FeaturedCandidate>(
+  posts: readonly T[],
+  now: Date,
+  { hours = FEATURED_WINDOW_HOURS, min = 3, max = 5 } = {},
+): T[] {
+  const since = now.getTime() - hours * 3_600_000;
+  const sorted = [...posts].sort((a, b) =>
+    b.published_at.localeCompare(a.published_at),
+  );
+  const seen = new Set<string>();
+  const firstPerThread = sorted.filter((p) => {
+    // A post without a thread id stands for itself.
+    if (p.thread_id === null) return true;
+    if (seen.has(p.thread_id)) return false;
+    seen.add(p.thread_id);
+    return true;
+  });
+  const recent = firstPerThread.filter(
+    (p) => Date.parse(p.published_at) >= since,
+  );
+  if (recent.length >= min) return recent.slice(0, max);
+  return firstPerThread.slice(0, Math.min(min, max));
+}
+
+/** mulberry32: a small seeded generator, enough to shuffle a list the same way for one seed. */
+function seeded(seed: number): () => number {
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/**
+ * The bento's changing cards (ADR-038): `count` ships drawn from those with a picture (from all of
+ * them when none has one, so a build without media keeps the layout), by a shuffle seeded with the
+ * UTC day number, so every build on one day draws the same ships and the next day draws others.
+ * The showcase pair are not candidates; `pickPlates` places them.
+ */
+export function dailyPicks<T extends PlateCandidate>(
+  candidates: readonly T[],
+  dayNumber: number,
+  count: number,
+): T[] {
+  const pictured = candidates.filter((c) => c.hasPicture);
+  const pool = [...(pictured.length > 0 ? pictured : candidates)];
+  const next = seeded(dayNumber);
+  // A partial Fisher-Yates: only the first `count` positions need settling.
+  const n = Math.min(count, pool.length);
+  for (let i = 0; i < n; i += 1) {
+    const j = i + Math.floor(next() * (pool.length - i));
+    const a = pool[i]!;
+    pool[i] = pool[j]!;
+    pool[j] = a;
+  }
+  return pool.slice(0, n);
+}
+
+/** The UTC day number of a date: the seed of the day's draw, the same for every build on that day. */
+export function utcDayNumber(date: Date): number {
+  return Math.floor(date.getTime() / 86_400_000);
 }

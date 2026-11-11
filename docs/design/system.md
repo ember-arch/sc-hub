@@ -39,7 +39,7 @@ All tokens live in `packages/ui/tokens.ts`. Tailwind config is generated from th
 | `success` / `warning` / `danger` | `#2F6B3A` / `#8A5A00` / `#B3261E` | `#6FBF7F` / `#E0A94A` / `#EF7A6E` | Status only |
 | `spectrum.staff` | `#DEC342` | `#DEC342` | Spectrum's own yellow for a staff post (ADR-032): the rule and the role tag on a developer post, never text on the light wall |
 
-Rules: one accent. Manufacturer brand colors may appear only as a 3 px rule on the manufacturer page hero, never as fills. Semantic colors are for status (flight-ready, concept, PTU-only), never decoration.
+Rules: one accent. Manufacturer brand colors may appear only as a 3 px rule on the manufacturer page hero, never as fills. The site's own brand colour, copper (`--brand-copper`, `#A8652F` light and `#D08A4F` dark, set in the app's stylesheet), appears only in the mark and the favicon (ADR-041). Semantic colors are for status (flight-ready, concept, PTU-only), never decoration.
 
 ### Type
 
@@ -74,7 +74,8 @@ Faces: Manrope (ADR-021, replacing the almanac's serifs) for everything: text, i
 
 `packages/ui` ships these, each with light and dark stories and a Playwright screenshot:
 
-- `PageShell` — the brand, the sections as pills (the current one filled), the search field as a pill and the theme switch (ADR-021); the footer on every page.
+- `PageShell` — the mark and the name (ADR-041), the sections as pills (the current one filled), the search field as a pill and the theme switch (ADR-021); the footer on every page.
+- `Logo` — the Coppercork mark (ADR-041): a cork stopper in copper with an ink band, decorative beside the name in the header; the favicon is the same drawing.
 - `ThemeToggle` — a switch between light and dark; the choice is kept in localStorage and applied as `data-theme` on `<html>` before the first paint, and the site follows the system until it is used (ADR-021).
 - `CommandPalette` — ⌘K on desktop, persistent button on phone; results grouped by entity type; keyboard navigable; shows recent entities.
 - `EntityPage` — the template: `Hero` (name, manufacturer, status badge, one image or the viewer slot), `KeyFacts` (4 to 8 label/value pairs), `Section`s, `Related`.

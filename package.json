@@ -2,7 +2,7 @@
   "name": "sc-hub",
   "version": "0.0.0",
   "private": true,
-  "description": "SC Hub (working title): a non-commercial fan reference for Star Citizen. Monorepo root.",
+  "description": "Coppercork: a non-commercial fan reference for Star Citizen. Monorepo root.",
   "type": "module",
   "packageManager": "pnpm@12.18.0",
   "engines": {

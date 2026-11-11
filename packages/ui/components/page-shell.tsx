@@ -1,6 +1,7 @@
 import NextLink from "next/link";
 import type { ReactNode } from "react";
 import { SITE_NAME } from "../brand";
+import { Logo } from "./logo";
 import { CommandPalette, type SearchEntry } from "./command-palette";
 import { Footer } from "./footer";
 import type { ChannelVersion } from "./patch-strip";
@@ -29,7 +30,7 @@ export interface PageShellProps {
 }
 
 /**
- * The shell (ADR-021): the brand, the sections as pills with the current one filled, the search
+ * The shell (ADR-021, ADR-041): the mark and the name, the sections as pills with the current one filled, the search
  * field as a pill and the theme switch at the right; the footer on every page. The scheme is the
  * reader's (the switch) or the system's; no page forces its own.
  */
@@ -54,8 +55,9 @@ export function PageShell({
         <div className="mx-auto flex w-full max-w-content flex-wrap items-center justify-between gap-x-6 gap-y-3 px-4 py-4">
           <NextLink
             href="/"
-            className="whitespace-nowrap text-ui font-medium text-primary no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+            className="flex items-center gap-2 whitespace-nowrap text-ui font-medium text-primary no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
           >
+            <Logo />
             {SITE_NAME}
           </NextLink>
           {/* Below lg the nav takes its own row (ADR-017): the three do not fit in one. */}

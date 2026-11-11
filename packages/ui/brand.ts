@@ -1,16 +1,15 @@
 import { SITE_NAME } from "schema/site";
 
 /**
- * The project name is undecided (CLAUDE.md section 12); "SC Hub" is the working title. It is
- * written once, in `packages/schema/site.ts`, so the fetchers' User-Agent carries the same name
- * as the pages (ADR-036); the pages import it from here. Page titles read "<entity> — <site name>"
- * (docs/legal/obligations.md).
+ * The site is Coppercork (ADR-041). The name is written once, in `packages/schema/site.ts`, so
+ * the fetchers' User-Agent carries the same name as the pages (ADR-036); the pages import it from
+ * here. Page titles read "<entity> — <site name>" (docs/legal/obligations.md).
  */
 export { SITE_NAME };
 
-/** Short line under the name on the home page and in the metadata description. */
+/** What the site is, in one sentence (ADR-041): the metadata description, and the about page's first line follows it. */
 export const SITE_TAGLINE =
-  "A fan reference for Star Citizen ships, components, news and developer posts.";
+  "Star Citizen, on record: every ship and part, the dispatches, what the developers say and how the funding grows, kept current.";
 
 export const OFFICIAL_SITE_URL = "https://robertsspaceindustries.com/";
 

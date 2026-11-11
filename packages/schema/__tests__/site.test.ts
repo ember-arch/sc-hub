@@ -16,8 +16,8 @@ describe("the site's identity (ADR-036)", () => {
   });
 
   it("writes the name as a product token without spaces", () => {
-    expect(SITE_NAME).toBe("SC Hub");
-    expect(SITE_PRODUCT).toBe("SC-Hub");
+    expect(SITE_NAME).toBe("Coppercork");
+    expect(SITE_PRODUCT).toBe("Coppercork");
     expect(SITE_PRODUCT).toMatch(/^[!#$%&'*+.^_`|~0-9A-Za-z-]+$/);
     expect(SITE_VERSION).toMatch(/^\d+\.\d+$/);
   });
@@ -26,13 +26,13 @@ describe("the site's identity (ADR-036)", () => {
 describe("userAgent", () => {
   it("follows docs/legal/obligations.md: <site name>/<version> (+<about-page URL>; <contact email>)", () => {
     expect(userAgent("poll-news", "ventures@coppercork.com")).toBe(
-      "SC-Hub/1.0 (+https://coppercork.com/about; ventures@coppercork.com) poll-news",
+      "Coppercork/1.0 (+https://coppercork.com/about; ventures@coppercork.com) poll-news",
     );
   });
 
   it("leaves the address out when none was given, and keeps the about page", () => {
     expect(userAgent("bootstrap", null)).toBe(
-      "SC-Hub/1.0 (+https://coppercork.com/about) bootstrap",
+      "Coppercork/1.0 (+https://coppercork.com/about) bootstrap",
     );
   });
 

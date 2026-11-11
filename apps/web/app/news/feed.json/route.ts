@@ -1,4 +1,5 @@
 import { repo } from "../../../lib/data";
+import { SITE_NAME } from "ui/brand";
 import { siteUrl } from "../../../lib/seo";
 
 /** The feed as JSON Feed 1.1 (spec 03, "Feed UI"): the latest fifty items, each linking its original. */
@@ -21,7 +22,7 @@ export function GET(): Response {
   return Response.json(
     {
       version: "https://jsonfeed.org/version/1.1",
-      title: "SC Hub news",
+      title: `${SITE_NAME} news`,
       home_page_url: `${base}/news`,
       feed_url: `${base}/news/feed.json`,
       description:

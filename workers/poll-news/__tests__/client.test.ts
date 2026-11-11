@@ -28,7 +28,7 @@ describe("the news client's User-Agent (ADR-036)", () => {
       userAgent("poll-news", "ops@example.org"),
     );
     expect(calls[0]?.headers["User-Agent"]).toBe(
-      "SC-Hub/1.0 (+https://coppercork.com/about; ops@example.org) poll-news",
+      "Coppercork/1.0 (+https://coppercork.com/about; ops@example.org) poll-news",
     );
   });
 
@@ -42,7 +42,7 @@ describe("the news client's User-Agent (ADR-036)", () => {
     });
     await client.text("https://api.star-citizen.wiki/api/v2/comm-links");
     expect(calls[0]?.headers["User-Agent"]).toBe(
-      "SC-Hub/1.0 (+https://coppercork.com/about) poll-news",
+      "Coppercork/1.0 (+https://coppercork.com/about) poll-news",
     );
   });
 });

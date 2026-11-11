@@ -34,6 +34,7 @@ import { StatList, StatRow } from "../components/stat-row";
 import { StatsByChannel } from "../components/stats-by-channel";
 import { ThemeToggle } from "../components/theme-toggle";
 import { Logo } from "../components/logo";
+import { ICON_NAMES, Icon } from "../components/icon";
 import { SITE_NAME } from "../brand";
 import { channelBadge, vehicleStatusBadge } from "../components/status";
 import { DataTableStory } from "./data-table-story";
@@ -421,6 +422,23 @@ const renderers: Record<string, { title: string; render: Story["render"] }> = {
           <Logo size={16} />
         </p>
       </div>
+    ),
+  },
+  icon: {
+    title: "Icon",
+    render: () => (
+      <ul className="m-0 grid list-none grid-cols-2 gap-3 p-4">
+        {ICON_NAMES.map((name) => (
+          <li
+            key={name}
+            className="flex items-center gap-2 text-ui text-secondary"
+          >
+            <Icon name={name} className="text-primary" />
+            <Icon name={name} size={24} className="text-primary" />
+            {name}
+          </li>
+        ))}
+      </ul>
     ),
   },
   "page-shell": {

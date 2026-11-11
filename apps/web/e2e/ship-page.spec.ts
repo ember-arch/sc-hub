@@ -96,6 +96,27 @@ test("the ship page has every section in order, each stat with its unit and vers
   }
 });
 
+// ADR-044: the glyphs stand beside their labels and are hidden; the names are the labels'.
+test("the damage path's glyphs leave every head its own name and expose no picture", async ({
+  page,
+}) => {
+  await page.goto("/ships/gladius");
+  const combat = page.locator("#combat");
+  await expect(
+    combat.getByRole("columnheader", { name: "Physical", exact: true }),
+  ).toBeVisible();
+  await expect(
+    combat.getByRole("rowheader", { name: "Hull takes", exact: true }),
+  ).toBeVisible();
+  const exposed = await page
+    .locator("svg[data-icon]")
+    .evaluateAll(
+      (svgs) =>
+        svgs.filter((s) => s.closest("[aria-hidden=true]") === null).length,
+    );
+  expect(exposed).toBe(0);
+});
+
 // ADR-043: pitch, yaw and roll in Mobility, each with its rate in degrees per second and a rank bar.
 test("Mobility gives the Gladius its pitch, yaw and roll, as its record does", async ({
   page,

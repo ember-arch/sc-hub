@@ -1,3 +1,4 @@
+import type { IconName } from "ui";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { type PortType, ShipClaim } from "schema";
@@ -32,6 +33,8 @@ export function claimsFor(slug: string): readonly ShipClaim[] {
 
 export interface Fact {
   readonly label: string;
+  /** A glyph beside the label, where it helps the eye (ADR-044); never in place of it. */
+  readonly icon?: IconName | undefined;
   readonly value: string;
   readonly unit?: string | undefined;
   readonly numeric?: boolean | undefined;

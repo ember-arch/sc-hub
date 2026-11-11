@@ -941,19 +941,33 @@ export function packShipFile(ship: ShipView): ShipFileProps {
     },
     ...(s?.hull_hp == null
       ? []
-      : [{ label: "Hull", value: `${n0(s.hull_hp)} HP`, numeric: true }]),
+      : [
+          {
+            label: "Hull",
+            icon: "hull" as const,
+            value: `${n0(s.hull_hp)} HP`,
+            numeric: true,
+          },
+        ]),
     ...(shieldFigures === null
       ? []
       : [
           {
             label: "Shield strength",
+            icon: "shield" as const,
             value: `${n0(shieldFigures.hp)} HP${shieldFigures.regen === null ? "" : `, regenerating ${n0(shieldFigures.regen)} HP/s`}`,
             numeric: true,
           },
         ]),
     ...(armour === null
       ? []
-      : [{ label: "Armour", value: armourBrief(armour) }]),
+      : [
+          {
+            label: "Armour",
+            icon: "armour" as const,
+            value: armourBrief(armour),
+          },
+        ]),
   ];
 
   // Pitch, yaw and roll from the record (ADR-043); none for a vehicle without turn rates.
@@ -981,6 +995,7 @@ export function packShipFile(ship: ShipView): ShipFileProps {
       ? []
       : AXES.map((axis) => ({
           label: AXIS_LABEL[axis],
+          icon: axis,
           value: formatTurn(agility[axis]),
           numeric: true,
         }))),

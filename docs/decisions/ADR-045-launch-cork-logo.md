@@ -1,6 +1,6 @@
 # ADR-045: The Launch Cork logo
 
-- Status: accepted
+- Status: accepted; the artwork and colours are replaced by the designer's revision (ADR-047), the rest stands
 - Date: 2026-11-11
 - Deciders: owner (sent the designer's four logo boards, "new logo here for the site, please implement"; chose "2. Launch Cork"; told that its wide lettering is the kind of display face CLAUDE.md section 2 rules out, answered "go ahead and use # 2 the cork blasting off and wordmark as we have it in the files", 2026-11-11), Claude Code session 2026-11-11
 - Amends: ADR-041 (the stopper mark it replaces; the name and the tagline stand), CLAUDE.md section 2 (the display-face rule, for the logo's own lettering), system.md sections 2 and 3

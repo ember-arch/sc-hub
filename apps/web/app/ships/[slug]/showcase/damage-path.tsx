@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
+import { Icon, type IconName } from "ui";
 import {
   DAMAGE_KIND_LABEL,
   type DamageKind,
@@ -42,6 +43,13 @@ const n0 = (v: number): string =>
 const n1 = (v: number): string =>
   v.toLocaleString("en-US", { maximumFractionDigits: v < 100 ? 1 : 0 });
 const pct = (share: number): string => `${Math.round(share * 100)}%`;
+
+/** The glyph beside each kind the guns deal, and beside each stage of the path (ADR-044). */
+const KIND_ICON: Partial<Readonly<Record<DamageKind, IconName>>> = {
+  physical: "physical",
+  energy: "energy",
+  distortion: "distortion",
+};
 
 /** The kinds the mitigation table shows: the three the game's guns deal. */
 const SHOWN_KINDS: readonly DamageKind[] = ["physical", "energy", "distortion"];
@@ -87,52 +95,72 @@ export function DamagePath({
     value === null ? "" : how(value);
   const rows: {
     label: string;
+    icon: IconName;
     value: (kind: DamageKind) => string;
   }[] = [
     {
       label: "Shield absorption",
+      icon: "shield",
       value: (k) =>
         m.shieldAbsorption === null ? "" : pct(m.shieldAbsorption[k].max),
     },
     {
       label: "Shield resistance",
+      icon: "shield",
       value: (k) =>
         m.shieldResistance === null ? "" : pct(m.shieldResistance[k].max),
     },
     {
       label: "Deflection figure, per shot",
+      icon: "armour",
       value: (k) =>
         cell(m.deflection?.[k] ?? null, (v) => (v === 0 ? "" : n0(v))),
     },
     {
       label: "Armour pool takes",
+      icon: "armour",
       value: (k) => cell(m.armourDurability?.[k] ?? null, times),
     },
-    { label: "Hull takes", value: (k) => times(m.hull[k]) },
+    { label: "Hull takes", icon: "hull", value: (k) => times(m.hull[k]) },
     {
       label: "Components take, no armour left",
+      icon: "components",
       value: () => cell(m.components, times),
     },
   ];
 
   const stageCells = (p: PathStage) =>
-    [
-      { name: "Per shot", value: n1(p.shot) },
-      {
-        name: shieldsUp || !shares ? "To the shields" : "To the shields (down)",
-        value: n1(p.shields),
-      },
-      { name: "Through to the ship", value: n1(p.passed) },
-      {
-        name: "Armour pool takes",
-        value: p.armour === null ? "" : n1(p.armour),
-      },
-      { name: "Hull takes", value: n1(p.hull) },
-      {
-        name: "Components, no armour left",
-        value: p.components === null ? "" : n1(p.components),
-      },
-    ].filter((c) => c.value !== "");
+    (
+      [
+        {
+          name: "Per shot",
+          icon: KIND_ICON[p.kind] ?? "shot",
+          value: n1(p.shot),
+        },
+        {
+          name:
+            shieldsUp || !shares ? "To the shields" : "To the shields (down)",
+          icon: "shield",
+          value: n1(p.shields),
+        },
+        { name: "Through to the ship", icon: "through", value: n1(p.passed) },
+        {
+          name: "Armour pool takes",
+          icon: "armour",
+          value: p.armour === null ? "" : n1(p.armour),
+        },
+        { name: "Hull takes", icon: "hull", value: n1(p.hull) },
+        {
+          name: "Components, no armour left",
+          icon: "components",
+          value: p.components === null ? "" : n1(p.components),
+        },
+      ] as const satisfies readonly {
+        name: string;
+        icon: IconName;
+        value: string;
+      }[]
+    ).filter((c) => c.value !== "");
 
   return (
     <figure className="m-0 flex flex-col gap-3" aria-describedby={captionId}>
@@ -213,7 +241,12 @@ export function DamagePath({
                   scope="col"
                   className="py-1 pl-3 text-right font-normal"
                 >
-                  {DAMAGE_KIND_LABEL[k]}
+                  <span className="inline-flex items-center gap-1">
+                    {KIND_ICON[k] === undefined ? null : (
+                      <Icon name={KIND_ICON[k]!} />
+                    )}
+                    {DAMAGE_KIND_LABEL[k]}
+                  </span>
                 </th>
               ))}
             </tr>
@@ -225,7 +258,10 @@ export function DamagePath({
                   scope="row"
                   className="py-1 pr-3 text-left font-normal text-secondary"
                 >
-                  {row.label}
+                  <span className="inline-flex items-center gap-2">
+                    <Icon name={row.icon} />
+                    {row.label}
+                  </span>
                 </th>
                 {SHOWN_KINDS.map((k) => (
                   <td
@@ -247,20 +283,33 @@ export function DamagePath({
         ) : (
           stages.map((p) => (
             <div key={p.kind} className="flex flex-col gap-2">
-              <p className="m-0 text-caption text-secondary">
+              <p className="m-0 flex items-center gap-2 text-caption text-secondary">
+                {KIND_ICON[p.kind] === undefined ? null : (
+                  <Icon name={KIND_ICON[p.kind]!} className="text-primary" />
+                )}
                 One {DAMAGE_KIND_LABEL[p.kind].toLowerCase()} shot of the{" "}
                 {weapon.name}
                 {p.belowDeflection === null
                   ? ""
                   : `, below the record's deflection figure of ${n0(p.belowDeflection)}`}
               </p>
+              {/* The stages in order, each with its glyph; from md a chevron leads to the next. */}
               <dl className="m-0 grid grid-cols-2 gap-x-4 gap-y-2 sm:grid-cols-3 md:grid-cols-6">
-                {stageCells(p).map((c) => (
+                {stageCells(p).map((c, i, all) => (
                   <div
                     key={c.name}
-                    className="flex flex-col gap-1 border-t border-hairline pt-2"
+                    className="relative flex flex-col gap-1 border-t border-hairline pt-2"
                   >
-                    <dt className="text-caption text-secondary">{c.name}</dt>
+                    {i === all.length - 1 ? null : (
+                      <Icon
+                        name="next"
+                        className="absolute -right-4 top-2 hidden text-muted md:inline-block"
+                      />
+                    )}
+                    <dt className="flex items-center gap-1 text-caption text-secondary">
+                      <Icon name={c.icon} className="text-primary" />
+                      {c.name}
+                    </dt>
                     <dd className="m-0 font-mono text-ui text-primary">
                       {c.value}
                     </dd>

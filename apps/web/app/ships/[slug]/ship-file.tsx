@@ -7,6 +7,7 @@ import {
   Mark,
   TextLink,
   sentence,
+  Icon,
 } from "ui";
 import type { Fact, ShipClaim } from "../../../lib/ship-file";
 import type { FigureView, Picture } from "../../../lib/showcase";
@@ -478,7 +479,10 @@ export function Facts({ facts }: { readonly facts: readonly Fact[] }) {
           key={f.label}
           className="flex items-baseline justify-between gap-4 border-b border-hairline py-2"
         >
-          <dt className="text-ui text-secondary">{f.label}</dt>
+          <dt className="flex items-center gap-2 text-ui text-secondary">
+            {f.icon === undefined ? null : <Icon name={f.icon} />}
+            {f.label}
+          </dt>
           <dd
             className={`m-0 text-right text-ui text-primary ${f.numeric === true ? "font-mono" : ""}`}
           >

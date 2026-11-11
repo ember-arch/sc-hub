@@ -111,3 +111,4 @@ export {
 export { channelBadge, vehicleStatusBadge } from "./components/status";
 export { TextLink, type TextLinkProps } from "./components/text-link";
 export { Logo } from "./components/logo";
+export { ICON_NAMES, Icon, type IconName } from "./components/icon";

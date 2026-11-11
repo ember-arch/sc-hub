@@ -14,6 +14,7 @@ Numbered rules are the ones the design-review prompt checks by number.
 6. Tables earn their density: fixed columns, sticky header, units in the header, sort on tap; rows expand on phone instead of the table scrolling sideways.
 7. Motion is functional only.
 8. Performance is a design rule: LCP under 1.5 s on throttled 4G for every non-3D page.
+9. Icons are rare and quiet (ADR-044): one line set in the text's own colour, beside a label and never in place of it, marking a kind, a stage or an axis the reader compares; never decoration.
 
 ## 2. Tokens
 
@@ -76,6 +77,7 @@ Faces: Manrope (ADR-021, replacing the almanac's serifs) for everything: text, i
 `packages/ui` ships these, each with light and dark stories and a Playwright screenshot:
 
 - `PageShell` — the mark and the name (ADR-041), the sections as pills (the current one filled), the search field as a pill and the theme switch (ADR-021); the footer on every page.
+- `Icon` — the site's line glyphs (ADR-044): damage kinds, the damage path's stages and the three axes, at 16 or 24 px in `currentColor`, hidden beside their labels.
 - `Logo` — the Coppercork mark (ADR-041): a cork stopper in copper with an ink band, decorative beside the name in the header; the favicon is the same drawing.
 - `ThemeToggle` — a switch between light and dark; the choice is kept in localStorage and applied as `data-theme` on `<html>` before the first paint, and the site follows the system until it is used (ADR-021).
 - `CommandPalette` — ⌘K on desktop, persistent button on phone; results grouped by entity type; keyboard navigable; shows recent entities.
@@ -147,7 +149,7 @@ Added with the ship file (ADR-008, ADR-012 to ADR-016):
 
 1. Any color outside the token table? (The mark's copper is in the table, for the mark and the favicon alone, ADR-041.)
 2. Any type size or weight outside the type table?
-3. Any decoration: gradient, glow, texture, emoji, icon used as ornament? (One gradient is allowed because it keeps text legible over CIG's art, never as decoration: the scrim under text over CIG's art, on the entry's cover and the bento's cards, ADR-021.)
+3. Any decoration: gradient, glow, texture, emoji, icon used as ornament (an icon stands beside a label and marks something compared, ADR-044)? (One gradient is allowed because it keeps text legible over CIG's art, never as decoration: the scrim under text over CIG's art, on the entry's cover and the bento's cards, ADR-021.)
 4. Any page element the reader could lose without losing meaning?
 5. Does the ship page key-facts block read in one glance at 390 px?
 6. Does every table pass the phone rule (no sideways scroll)?

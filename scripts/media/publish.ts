@@ -1,25 +1,27 @@
 /**
- * Publishes the built media to the Cloudflare R2 bucket behind the CDN (ADR-034): everything
+ * Publishes the built media to the Vercel Blob store behind the CDN (ADR-034): everything
  * `prepare.ts` wrote to `apps/web/public/media/`, manifest included. Run by hand on the owner's
- * machine, where the complete media lives; never from CI, which has no media and no credentials.
+ * machine, where the complete media lives; never from CI, which has no media.
  *
  *   pnpm --filter schema build && pnpm exec tsx scripts/media/publish.ts [options]
  *
  *   --media <dir>     the built media folder (default apps/web/public/media)
  *   --dry-run         plan and list only; upload nothing (plans without credentials too)
- *   --prune           delete objects the new manifest no longer names (default: count them)
- *   --no-cors         skip setting the bucket's CORS rule
+ *   --prune           delete objects the new manifest no longer names (default: count them);
+ *                     refused in a run that changed the manifest, since the live site still
+ *                     names the old keys until its next build
  *   --concurrency <n> parallel uploads (default 8)
  *
  * Credentials come from `.env.local` (then `.env`) at the repository root, never from arguments:
- * R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET, CDN_BASE_URL. The summary line
- * names the bucket and the CDN address, neither of which is a secret; the account id and the
- * token never appear in anything this prints.
+ * either BLOB_READ_WRITE_TOKEN, or VERCEL_OIDC_TOKEN with BLOB_STORE_ID (what `vercel env pull`
+ * writes). CDN_BASE_URL, when set, is read back through at the end. The summary line names the
+ * store's public address, which is not a secret; no token appears in anything this prints.
  *
- * Every file goes up under a content-addressed key (`publish-plan.ts`) with a one-year immutable
- * Cache-Control, so a run uploads only what the bucket lacks and never overwrites a key; the
- * manifest, rewritten to those keys, goes up last with a five-minute TTL. The run ends by reading
- * the manifest back through the CDN and asking it for one picture with CORS, and says what it saw.
+ * Every file goes up under a content-addressed key (`publish-plan.ts`) cached for a year, so a run
+ * uploads only what the store lacks and never changes a key's bytes; the manifest, rewritten to
+ * those keys, goes up last with a five-minute TTL (`publish-sync.ts`). The run ends by reading the
+ * manifest back through the CDN and asking it for one picture with an `Origin`, as a browser would,
+ * and says what it saw.
  */
 import { createHash, randomUUID } from "node:crypto";
 import {
@@ -33,13 +35,9 @@ import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { MediaManifest } from "schema";
 import { envSchema } from "schema/env";
-import {
-  type LocalFile,
-  MANIFEST_CACHE,
-  MANIFEST_KEY,
-  planPublish,
-} from "./publish-plan.js";
-import { CORS_RULES, R2Client, R2Error } from "./r2.js";
+import { type BlobAuth, vercelBlobStore } from "./blob.js";
+import { type LocalFile, MANIFEST_KEY, planPublish } from "./publish-plan.js";
+import { syncToStore } from "./publish-sync.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(here, "..", "..");
@@ -48,7 +46,6 @@ interface Options {
   mediaDir: string;
   dryRun: boolean;
   prune: boolean;
-  cors: boolean;
   concurrency: number;
 }
 
@@ -57,7 +54,6 @@ function parseArgs(argv: readonly string[]): Options {
     mediaDir: join(repoRoot, "apps", "web", "public", "media"),
     dryRun: false,
     prune: false,
-    cors: true,
     concurrency: 8,
   };
   for (let i = 0; i < argv.length; i += 1) {
@@ -71,7 +67,6 @@ function parseArgs(argv: readonly string[]): Options {
     if (arg === "--media") options.mediaDir = next();
     else if (arg === "--dry-run") options.dryRun = true;
     else if (arg === "--prune") options.prune = true;
-    else if (arg === "--no-cors") options.cors = false;
     else if (arg === "--concurrency") options.concurrency = Number(next());
     else throw new Error(`unknown argument ${arg}`);
   }
@@ -81,32 +76,33 @@ function parseArgs(argv: readonly string[]): Options {
   return options;
 }
 
-const R2_KEYS = [
-  "R2_ACCOUNT_ID",
-  "R2_ACCESS_KEY_ID",
-  "R2_SECRET_ACCESS_KEY",
-  "R2_BUCKET",
-  "CDN_BASE_URL",
-] as const;
-
 interface Settings {
-  accountId: string;
-  accessKeyId: string;
-  secretAccessKey: string;
-  bucket: string;
-  cdnBaseUrl: string;
+  auth: BlobAuth;
+  cdnBaseUrl: string | null;
 }
 
-/** `.env.local` then `.env` at the repository root; a variable already set wins over both. */
-function loadSettings(): Settings | { missing: string[] } {
+/**
+ * `.env.local` then `.env` at the repository root; a variable already set wins over both. Either
+ * credential form is enough; `vercel env pull` writes the OIDC pair and marks the read-write token
+ * sensitive.
+ */
+function loadSettings(): Settings | { missing: string } {
   for (const file of [".env.local", ".env"]) {
     const path = join(repoRoot, file);
     if (existsSync(path)) process.loadEnvFile(path);
   }
   const source: Record<string, string> = {};
-  for (const key of R2_KEYS) {
+  for (const key of [
+    "BLOB_READ_WRITE_TOKEN",
+    "BLOB_STORE_ID",
+    "VERCEL_OIDC_TOKEN",
+    "CDN_BASE_URL",
+  ]) {
     const value = process.env[key];
-    if (value !== undefined && value !== "") source[key] = value;
+    // `vercel env pull` writes "[SENSITIVE]" for a value it may not read back: that is no value.
+    if (value !== undefined && value !== "" && value !== "[SENSITIVE]") {
+      source[key] = value;
+    }
   }
   const parsed = envSchema.safeParse(source);
   if (!parsed.success) {
@@ -115,14 +111,20 @@ function loadSettings(): Settings | { missing: string[] } {
     );
   }
   const env = parsed.data;
-  const missing = R2_KEYS.filter((key) => env[key] === undefined);
-  if (missing.length > 0) return { missing: [...missing] };
+  const cdnBaseUrl = env.CDN_BASE_URL?.replace(/\/+$/, "") ?? null;
+  if (env.BLOB_READ_WRITE_TOKEN !== undefined) {
+    return { auth: { token: env.BLOB_READ_WRITE_TOKEN }, cdnBaseUrl };
+  }
+  const oidc = source["VERCEL_OIDC_TOKEN"];
+  if (oidc !== undefined && env.BLOB_STORE_ID !== undefined) {
+    return {
+      auth: { oidcToken: oidc, storeId: env.BLOB_STORE_ID },
+      cdnBaseUrl,
+    };
+  }
   return {
-    accountId: env.R2_ACCOUNT_ID!,
-    accessKeyId: env.R2_ACCESS_KEY_ID!,
-    secretAccessKey: env.R2_SECRET_ACCESS_KEY!,
-    bucket: env.R2_BUCKET!,
-    cdnBaseUrl: env.CDN_BASE_URL!.replace(/\/+$/, ""),
+    missing:
+      "BLOB_READ_WRITE_TOKEN, or VERCEL_OIDC_TOKEN with BLOB_STORE_ID (vercel env pull .env.local)",
   };
 }
 
@@ -147,9 +149,8 @@ async function scanMedia(mediaDir: string): Promise<LocalFile[]> {
         await walk(path);
         continue;
       }
-      const src = `/media/${relative(mediaDir, path).split("\\").join("/")}`;
       out.push({
-        src,
+        src: `/media/${relative(mediaDir, path).split("\\").join("/")}`,
         sha256: await sha256File(path),
         bytes: statSync(path).size,
       });
@@ -159,64 +160,11 @@ async function scanMedia(mediaDir: string): Promise<LocalFile[]> {
   return out;
 }
 
-async function withRetries<T>(
-  label: string,
-  attempt: () => Promise<T>,
-  attempts = 4,
-): Promise<T> {
-  for (let n = 1; ; n += 1) {
-    try {
-      return await attempt();
-    } catch (error) {
-      // A 4xx is a decision (bad credentials, no such bucket), not weather: stop at once. The two
-      // exceptions are the ones that mean "later": a timeout (408) and rate limiting (429).
-      if (
-        error instanceof R2Error &&
-        error.status < 500 &&
-        error.status !== 408 &&
-        error.status !== 429
-      )
-        throw error;
-      if (n >= attempts) throw error;
-      const wait = 1000 * 2 ** (n - 1);
-      console.error(
-        JSON.stringify({
-          job: "media:publish",
-          retry: label,
-          attempt: n,
-          wait_ms: wait,
-        }),
-      );
-      await new Promise((r) => setTimeout(r, wait));
-    }
-  }
-}
-
-/** Runs `work` over `items`, at most `limit` at a time, in order of submission. */
-async function inParallel<T>(
-  items: readonly T[],
-  limit: number,
-  work: (item: T) => Promise<void>,
-): Promise<void> {
-  let next = 0;
-  const lanes = Array.from(
-    { length: Math.min(limit, items.length) },
-    async () => {
-      while (next < items.length) {
-        const item = items[next]!;
-        next += 1;
-        await work(item);
-      }
-    },
-  );
-  await Promise.all(lanes);
-}
-
 /** Reads the manifest back through the CDN and asks for one object with CORS, as a browser would. */
 async function checkCdn(
   cdnBaseUrl: string,
   generatedAt: string,
-  sampleKey: string | undefined,
+  sampleKey: string | null,
 ): Promise<Record<string, unknown>> {
   const out: Record<string, unknown> = {};
   try {
@@ -230,14 +178,14 @@ async function checkCdn(
       out["manifest"] =
         remote.generated_at === generatedAt
           ? "current"
-          : `previous (${remote.generated_at}); the CDN may hold it up to ${MANIFEST_CACHE}`;
+          : `previous (${remote.generated_at}); the CDN may hold it for its TTL`;
       out["manifest_cache_control"] = response.headers.get("cache-control");
     }
   } catch (error) {
     out["manifest"] =
       `unreachable: ${error instanceof Error ? error.message : String(error)}`;
   }
-  if (sampleKey !== undefined) {
+  if (sampleKey !== null) {
     try {
       const response = await fetch(`${cdnBaseUrl}/${sampleKey}`, {
         method: "HEAD",
@@ -265,6 +213,10 @@ async function main(): Promise<void> {
   const runId = randomUUID();
   const started = Date.now();
   const options = parseArgs(process.argv.slice(2));
+  const log = (fields: Record<string, unknown>): void =>
+    console.error(
+      JSON.stringify({ run_id: runId, job: "media:publish", ...fields }),
+    );
   const manifestPath = join(options.mediaDir, "manifest.json");
   if (!existsSync(manifestPath)) {
     throw new Error(
@@ -274,24 +226,20 @@ async function main(): Promise<void> {
   const manifest = MediaManifest.parse(
     JSON.parse(readFileSync(manifestPath, "utf8")),
   );
-  const files = await scanMedia(options.mediaDir);
-  const plan = planPublish(manifest, files);
-  const planned = new Set(plan.objects.map((o) => o.key));
+  const plan = planPublish(manifest, await scanMedia(options.mediaDir));
   const totalBytes = plan.objects.reduce((sum, o) => sum + o.bytes, 0);
 
   const settings = loadSettings();
   if ("missing" in settings) {
     if (!options.dryRun) {
-      throw new Error(
-        `missing in .env.local: ${settings.missing.join(", ")} (CLAUDE.md section 9)`,
-      );
+      throw new Error(`missing in .env.local: ${settings.missing}`);
     }
     console.log(
       JSON.stringify({
         run_id: runId,
         job: "media:publish",
         dry_run: true,
-        credentials: `missing ${settings.missing.join(", ")}; plan only`,
+        credentials: `missing ${settings.missing}; plan only`,
         objects: plan.objects.length,
         bytes: totalBytes,
         unreferenced: plan.unreferenced.length,
@@ -302,131 +250,44 @@ async function main(): Promise<void> {
     return;
   }
 
-  const client = new R2Client({
-    accountId: settings.accountId,
-    accessKeyId: settings.accessKeyId,
-    secretAccessKey: settings.secretAccessKey,
-    bucket: settings.bucket,
+  const result = await syncToStore(plan, vercelBlobStore(settings.auth), {
+    dryRun: options.dryRun,
+    prune: options.prune,
+    concurrency: options.concurrency,
+    readFile: (src) =>
+      readFileSync(join(options.mediaDir, ...src.split("/").slice(2))),
+    log,
   });
 
-  let cors: string = options.cors ? "set" : "skipped";
-  if (options.cors && !options.dryRun) {
-    try {
-      await withRetries("PutBucketCors", () => client.putCors());
-    } catch (error) {
-      if (error instanceof R2Error && error.status === 403) {
-        cors =
-          "not permitted for this token; paste this rule under the bucket's Settings → CORS policy";
-        console.error(JSON.stringify(CORS_RULES, null, 2));
-      } else throw error;
-    }
-  }
-
-  const existing = await withRetries("ListObjectsV2", () =>
-    client.list("media/"),
-  );
-  const toUpload = plan.objects.filter((o) => {
-    const held = existing.get(o.key);
-    // A key is its content, so one that is there is done; a size that differs means a half-written
-    // object from an interrupted run, which the new copy replaces.
-    return held === undefined || held.size !== o.bytes;
-  });
-  let uploaded = 0;
-  let uploadedBytes = 0;
-  if (!options.dryRun) {
-    await inParallel(toUpload, options.concurrency, async (object) => {
-      const body = readFileSync(
-        join(options.mediaDir, ...object.src.split("/").slice(2)),
-      );
-      // The key promises these exact bytes for a year: refuse to fill it with anything else, which
-      // is what a prepare.ts run in the same folder between the scan and now would do.
-      const sha256 = createHash("sha256").update(body).digest("hex");
-      if (sha256 !== object.sha256) {
-        throw new Error(
-          `${object.src} changed on disk since it was scanned (is prepare.ts running?); publish again when it has finished`,
+  const cdnBaseUrl = settings.cdnBaseUrl ?? result.storeBaseUrl;
+  const cdn =
+    options.dryRun || cdnBaseUrl === null
+      ? "not checked"
+      : await checkCdn(
+          cdnBaseUrl,
+          plan.manifest.generated_at,
+          result.sampleKey,
         );
-      }
-      await withRetries(object.key, () =>
-        client.put(object.key, body, {
-          contentType: object.contentType,
-          cacheControl: object.cacheControl,
-        }),
-      );
-      uploaded += 1;
-      uploadedBytes += object.bytes;
-      if (uploaded % 500 === 0) {
-        console.error(
-          JSON.stringify({
-            job: "media:publish",
-            progress: `${uploaded}/${toUpload.length}`,
-            mb: Number((uploadedBytes / 1e6).toFixed(1)),
-          }),
-        );
-      }
-    });
-  }
-
-  const manifestBody = `${JSON.stringify(plan.manifest, null, 2)}\n`;
-  const manifestMd5 = createHash("md5").update(manifestBody).digest("hex");
-  let manifestState: string;
-  if (options.dryRun) manifestState = "dry run";
-  else if (existing.get(MANIFEST_KEY)?.etag === manifestMd5)
-    manifestState = "unchanged";
-  else {
-    await withRetries(MANIFEST_KEY, () =>
-      client.put(MANIFEST_KEY, manifestBody, {
-        contentType: "application/json",
-        cacheControl: MANIFEST_CACHE,
-      }),
-    );
-    manifestState = "uploaded";
-  }
-
-  const orphans = [...existing.keys()].filter(
-    (key) => !planned.has(key) && key !== MANIFEST_KEY,
-  );
-  let pruned = 0;
-  let pruneNote: string | undefined;
-  if (options.prune && !options.dryRun && manifestState === "uploaded") {
-    // The live site still names the old keys until its next build fetches the new manifest, and
-    // the CDN may serve the old manifest for its TTL: deleting now would break pictures that are
-    // live. Prune on a later run, after the redeploy.
-    pruneNote =
-      "skipped: the manifest changed this run; prune on a later run, after the site has redeployed";
-  } else if (options.prune && !options.dryRun) {
-    await inParallel(orphans, options.concurrency, async (key) => {
-      await withRetries(`delete ${key}`, () => client.delete(key));
-      pruned += 1;
-    });
-  }
-
-  const cdn = options.dryRun
-    ? "dry run"
-    : await checkCdn(
-        settings.cdnBaseUrl,
-        plan.manifest.generated_at,
-        plan.objects[0]?.key,
-      );
 
   console.log(
     JSON.stringify({
       run_id: runId,
       job: "media:publish",
       dry_run: options.dryRun,
-      bucket: settings.bucket,
+      auth: "token" in settings.auth ? "read-write token" : "OIDC",
+      store_base_url: result.storeBaseUrl,
       cdn_base_url: settings.cdnBaseUrl,
-      cors,
-      objects: plan.objects.length,
-      bytes: totalBytes,
-      already_there: plan.objects.length - toUpload.length,
-      uploaded,
-      uploaded_bytes: uploadedBytes,
-      manifest: manifestState,
+      objects: result.objects,
+      bytes: result.bytes,
+      already_there: result.alreadyThere,
+      uploaded: result.uploaded,
+      uploaded_bytes: result.uploadedBytes,
+      manifest: result.manifest,
       manifest_generated_at: plan.manifest.generated_at,
       unreferenced_local: plan.unreferenced.length,
-      orphans: orphans.length,
-      pruned,
-      ...(pruneNote === undefined ? {} : { prune: pruneNote }),
+      orphans: result.orphans,
+      pruned: result.pruned,
+      ...(result.pruneNote === null ? {} : { prune: result.pruneNote }),
       cdn,
       errors: 0,
       duration_ms: Date.now() - started,

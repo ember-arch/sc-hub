@@ -12,6 +12,8 @@ const full: Record<string, string> = {
   R2_SECRET_ACCESS_KEY: "secret-for-tests",
   R2_BUCKET: "bucket-for-tests",
   CDN_BASE_URL: "https://cdn.example.test",
+  BLOB_READ_WRITE_TOKEN: "blob-token-for-tests",
+  BLOB_STORE_ID: "store_fortests",
   SPECTRUM_MODE: "off",
   SPECTRUM_FEED_URL: "https://feed.example.test/staff.json",
   SPECTRUM_STAFF_ROLE_ID: "11",

@@ -22,8 +22,8 @@ Tick only what is confirmed in writing. Quote the relevant sentence from the con
   - [x] The "Made By The Community" badge in every footer (ADR-009): covered by the Fankit Agreement the owner accepted on 2026-11-07 (clause 1, the kit's contents) and asked for by the Fankit Guidelines (page 6); the owner directed it on 2026-11-10. The rest of the box stays open.
   > quote: TBD
 
-- [ ] **RSI website images** — ship images copied from RSI's public ship matrix (ADR-009) and the Comm-Link covers copied from RSI's Comm-Link hub (ADR-029), shown on the public site with credit and a link back. Not covered by the fankit or by the Terms of Service fansite grant, which names only content RSI designates for fansite use. Local development only until ticked.
-  > quote: TBD
+- [x] **RSI website images** — ship images copied from RSI's public ship matrix (ADR-009) and the Comm-Link covers copied from RSI's Comm-Link hub (ADR-029), shown on the public site with credit and a link back. Not covered by the fankit or by the Terms of Service fansite grant, which names only content RSI designates for fansite use. Ticked on the owner's word on 2026-11-10; no written confirmation from CIG is on file (the owner's standing direction, ADR-019). Published to the CDN by ADR-034.
+  > quote: the owner, 2026-11-10, in the session doing the work: "In uploading all images to the site, use the Vercel Blob store instead, as agreed"; and, asked in his other session "Publish CIG's pictures and models on the live site, ticking the four imagery boxes on your word?": "Yes, publish them"
 
 - [ ] **Game-extracted 3D models and textures** — extraction from `Data.p4k`, conversion to glTF, hosting on the project CDN, in-browser display.
   > quote: TBD
@@ -31,14 +31,14 @@ Tick only what is confirmed in writing. Quote the relevant sentence from the con
   - Interiors: included / exteriors only — TBD
   - Resolution ceiling, if any — TBD
 
-- [ ] **RSI holoviewer models** — the OpenCTM model each ship's pledge page loads into its holoviewer, copied for every ship from the addresses the store's listing gives (ADR-015, ADR-025), packed and shown on the public site in the ship file and the Scale lineup with credit and a link back. Not covered by the fankit or by the Terms of Service fansite grant. Local development only until ticked; the owner directed the work to proceed as if approved (ADR-019).
-  > quote: TBD
+- [x] **RSI holoviewer models** — the OpenCTM model each ship's pledge page loads into its holoviewer, copied for every ship from the addresses the store's listing gives (ADR-015, ADR-025), packed and shown on the public site in the ship file and the Scale lineup with credit and a link back. Not covered by the fankit or by the Terms of Service fansite grant. Ticked on the owner's word on 2026-11-10; no written confirmation from CIG is on file (the owner's standing direction, ADR-019). Published to the CDN by ADR-034.
+  > quote: the owner, 2026-11-10: "Yes, publish them" and "In uploading all images to the site, use the Vercel Blob store instead, as agreed" (the same words as the RSI website images box)
 
-- [ ] **Wiki gallery pictures** — CIG's art for each ship, copied from the Star Citizen Wiki's gallery uploads, shown on the public ship pages with credit (ADR-024). Same footing as the RSI website images above. Local development only until ticked.
-  > quote: TBD
+- [x] **Wiki gallery pictures** — CIG's art for each ship, copied from the Star Citizen Wiki's gallery uploads, shown on the public ship pages with credit (ADR-024). Same footing as the RSI website images above. Ticked on the owner's word on 2026-11-10; no written confirmation from CIG is on file (the owner's standing direction, ADR-019). Published to the CDN by ADR-034.
+  > quote: the owner, 2026-11-10: "Yes, publish them" and "In uploading all images to the site, use the Vercel Blob store instead, as agreed" (the same words as the RSI website images box)
 
-- [ ] **Title icons** — CIG's title (badge) icons, copied from the Star Citizen Wiki's uploads because RSI publishes no list of them, shown on the public titles page with credit (ADR-017). The wiki labels them "Cloud Imperium IP"; neither the fankit nor the Terms of Service fansite grant covers them. Local development only until ticked; the owner allowed the local copy on 2026-11-08.
-  > quote: TBD
+- [x] **Title icons** — CIG's title (badge) icons, copied from the Star Citizen Wiki's uploads because RSI publishes no list of them, shown on the public titles page with credit (ADR-017). The wiki labels them "Cloud Imperium IP"; neither the fankit nor the Terms of Service fansite grant covers them. The owner allowed the local copy on 2026-11-08 and ticked the box on his word on 2026-11-10; no written confirmation from CIG is on file (the owner's standing direction, ADR-019). Published to the CDN by ADR-034.
+  > quote: the owner, 2026-11-10: "Yes, publish them" and "In uploading all images to the site, use the Vercel Blob store instead, as agreed" (the same words as the RSI website images box)
 
 - [ ] **DataCore game data** — extraction and publication of vehicle and item stats for LIVE and PTU.
   > quote: TBD

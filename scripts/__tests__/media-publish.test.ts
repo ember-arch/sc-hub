@@ -1,7 +1,12 @@
 import type { MediaManifest } from "schema";
+import { createHash } from "node:crypto";
 import { describe, expect, it } from "vitest";
+import type { MediaStore, StoredObject } from "../media/blob.js";
+import { storeBaseUrl } from "../media/blob.js";
 import {
-  IMMUTABLE_CACHE,
+  IMMUTABLE_MAX_AGE,
+  MANIFEST_KEY,
+  MANIFEST_MAX_AGE,
   contentTypeOf,
   hashedPath,
   mediaPathsIn,
@@ -9,17 +14,14 @@ import {
   rewriteMediaPaths,
 } from "../media/publish-plan.js";
 import {
-  R2Client,
-  R2Error,
-  corsXml,
-  encodeRfc3986,
-  parseListing,
-  sha256Hex,
-  signRequest,
-} from "../media/r2.js";
+  manifestBody,
+  syncToStore,
+  withRetries,
+} from "../media/publish-sync.js";
 
-// ADR-034: the media go to the bucket under content-addressed keys, the manifest is rewritten to
-// name them, and the client signs like S3. No network: the client takes a fetch of its own.
+// ADR-034: the media go to the store under content-addressed keys, the manifest is rewritten to
+// name them and goes up last, and a run uploads only what the store lacks. No network: the sync
+// runs against an in-memory store.
 
 const hashA = "a".repeat(64);
 const hashB = "b".repeat(64);
@@ -121,10 +123,17 @@ const manifest: MediaManifest = {
 };
 
 const paths = mediaPathsIn(manifest);
-const files = paths.map((src, i) => ({
+
+/** Bytes whose SHA-256 is what the plan expects: the plan is built from these same bytes. */
+const bytesOf = new Map<string, Uint8Array>(
+  paths.map((src, i) => [src, new TextEncoder().encode(`file ${i} ${src}`)]),
+);
+const sha256 = (bytes: Uint8Array): string =>
+  createHash("sha256").update(bytes).digest("hex");
+const files = paths.map((src) => ({
   src,
-  sha256: [hashA, hashB, hashC][i % 3]!,
-  bytes: 1000 + i,
+  sha256: sha256(bytesOf.get(src)!),
+  bytes: bytesOf.get(src)!.byteLength,
 }));
 
 describe("content-addressed keys", () => {
@@ -174,35 +183,33 @@ describe("content-addressed keys", () => {
 });
 
 describe("the publish plan", () => {
-  it("plans one immutable object per referenced file and a manifest that names the new keys", () => {
+  it("plans one year-cached object per referenced file and a manifest that names the new keys", () => {
     const plan = planPublish(manifest, [
       ...files,
       { src: "/media/manifest.json", sha256: hashA, bytes: 10 },
       { src: "/media/ships/stray.webp", sha256: hashB, bytes: 10 },
     ]);
     expect(plan.objects).toHaveLength(paths.length);
+    const first = files[0]!;
     expect(plan.objects[0]).toEqual({
-      key: "media/ships/aegs_gladius-1920-aaaaaaaaaaaa.webp",
+      key: `media/ships/aegs_gladius-1920-${first.sha256.slice(0, 12)}.webp`,
       src: "/media/ships/aegs_gladius-1920.webp",
-      bytes: 1000,
-      sha256: hashA,
+      bytes: first.bytes,
+      sha256: first.sha256,
       contentType: "image/webp",
-      cacheControl: IMMUTABLE_CACHE,
+      cacheMaxAge: IMMUTABLE_MAX_AGE,
     });
     expect(plan.manifest.ships[0]!.renditions[0]!.src).toBe(
-      "/media/ships/aegs_gladius-1920-aaaaaaaaaaaa.webp",
+      `/${plan.objects[0]!.key}`,
     );
-    expect(plan.manifest.ships[0]!.renditions[1]!.src).toBe(
-      "/media/ships/aegs_gladius-640-bbbbbbbbbbbb.webp",
+    expect(plan.manifest.holo[0]!.src).toMatch(
+      /^\/media\/holo\/p05ngl04o8ezx-[0-9a-f]{12}\.glb$/,
     );
-    expect(plan.manifest.holo[0]!.src).toBe(
-      "/media/holo/p05ngl04o8ezx-0123456789ab.glb",
+    expect(plan.manifest.showcase[0]!.videos[0]!.src).toMatch(
+      /^\/media\/showcase\/odin\/video-1-[0-9a-f]{12}\.mp4$/,
     );
-    expect(plan.manifest.showcase[0]!.videos[0]!.src).toBe(
-      "/media/showcase/odin/video-1-bbbbbbbbbbbb.mp4",
-    );
-    expect(plan.manifest.titles[0]!.renditions[0]!.src).toBe(
-      "/media/titles/title-x-png-128-bbbbbbbbbbbb.webp",
+    expect(plan.manifest.titles[0]!.renditions[0]!.src).toMatch(
+      /^\/media\/titles\/title-x-png-128-[0-9a-f]{12}\.webp$/,
     );
     expect(plan.manifest.ships[0]!.page_url).toBe(manifest.ships[0]!.page_url);
     expect(plan.manifest.generated_at).toBe(manifest.generated_at);
@@ -220,126 +227,218 @@ describe("the publish plan", () => {
   });
 });
 
-describe("Signature Version 4", () => {
-  it("reproduces the get-vanilla vector of AWS's test suite", () => {
-    const signed = signRequest({
-      method: "GET",
-      url: new URL("https://example.amazonaws.com/"),
-      headers: {},
-      payloadHash: sha256Hex(""),
-      now: new Date("2015-08-30T12:36:00Z"),
-      accessKeyId: "AKIDEXAMPLE",
-      secretAccessKey: "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY",
-      region: "us-east-1",
-      service: "service",
-    });
-    expect(signed["x-amz-date"]).toBe("20150830T123600Z");
-    expect(signed["authorization"]).toBe(
-      "AWS4-HMAC-SHA256 Credential=AKIDEXAMPLE/20150830/us-east-1/service/aws4_request, SignedHeaders=host;x-amz-date, Signature=5fa00fa31553b73ebf1942676e86291e8372ff2a2260956d9b8aae1d763fbf31",
-    );
+/** An in-memory store that records what was asked of it. */
+function fakeStore(initial: readonly { key: string; body: Uint8Array }[] = []) {
+  const base = "https://store.public.blob.vercel-storage.com";
+  const objects = new Map<string, Uint8Array>(
+    initial.map((o) => [o.key, o.body]),
+  );
+  const puts: {
+    key: string;
+    contentType: string;
+    cacheMaxAge: number;
+    overwrite: boolean;
+  }[] = [];
+  const deletes: string[] = [];
+  const stored = (key: string): StoredObject => ({
+    key,
+    size: objects.get(key)!.byteLength,
+    url: `${base}/${key}`,
+  });
+  const store: MediaStore = {
+    async list(prefix) {
+      return new Map(
+        [...objects.keys()]
+          .filter((k) => k.startsWith(prefix))
+          .map((k) => [k, stored(k)]),
+      );
+    },
+    async put(key, body, options) {
+      if (objects.has(key) && !options.overwrite) {
+        throw Object.assign(new Error("exists"), { status: 409 });
+      }
+      objects.set(key, body);
+      puts.push({ key, ...options });
+      return stored(key);
+    },
+    async delete(key) {
+      objects.delete(key);
+      deletes.push(key);
+    },
+    async read(key) {
+      return objects.get(key) ?? null;
+    },
+  };
+  return { store, objects, puts, deletes, base };
+}
+
+const plan = planPublish(manifest, files);
+const readFile = (src: string): Uint8Array => bytesOf.get(src)!;
+const sync = (
+  store: MediaStore,
+  extra: Partial<Parameters<typeof syncToStore>[2]> = {},
+) =>
+  syncToStore(plan, store, {
+    dryRun: false,
+    prune: false,
+    concurrency: 3,
+    readFile,
+    ...extra,
   });
 
-  it("encodes the five characters encodeURIComponent leaves", () => {
-    expect(encodeRfc3986("a b!'()*~")).toBe("a%20b%21%27%28%29%2A~");
+describe("bringing the store into line", () => {
+  it("uploads every object with its type and a year's cache, then the manifest with five minutes", async () => {
+    const fake = fakeStore();
+    const result = await sync(fake.store);
+    expect(result.uploaded).toBe(paths.length);
+    expect(result.alreadyThere).toBe(0);
+    expect(result.manifest).toBe("uploaded");
+    expect(fake.puts.at(-1)).toEqual({
+      key: MANIFEST_KEY,
+      contentType: "application/json",
+      cacheMaxAge: MANIFEST_MAX_AGE,
+      overwrite: true,
+    });
+    const glb = fake.puts.find((p) => p.key.endsWith(".glb"));
+    expect(glb).toMatchObject({
+      contentType: "model/gltf-binary",
+      cacheMaxAge: IMMUTABLE_MAX_AGE,
+      overwrite: false,
+    });
+    expect(fake.objects.get(MANIFEST_KEY)).toEqual(manifestBody(plan));
+    expect(result.storeBaseUrl).toBe(fake.base);
+    expect(result.sampleKey).toBe(plan.objects[0]!.key);
+  });
+
+  it("uploads only what the store lacks, and finds the manifest unchanged on a repeat", async () => {
+    const fake = fakeStore();
+    await sync(fake.store);
+    const before = fake.puts.length;
+    const again = await sync(fake.store);
+    expect(again.uploaded).toBe(0);
+    expect(again.alreadyThere).toBe(paths.length);
+    expect(again.manifest).toBe("unchanged");
+    expect(fake.puts.length).toBe(before);
+  });
+
+  it("replaces a half-written object whose size differs, and nothing else", async () => {
+    const full = fakeStore();
+    await sync(full.store);
+    const victim = plan.objects[2]!;
+    const fake = fakeStore(
+      [...full.objects.entries()]
+        .filter(([k]) => k !== MANIFEST_KEY)
+        .map(([key, body]) => ({
+          key,
+          body: key === victim.key ? body.slice(0, 1) : body,
+        })),
+    );
+    const result = await sync(fake.store);
+    expect(result.uploaded).toBe(1);
+    expect(fake.puts.map((p) => p.key)).toEqual([victim.key, MANIFEST_KEY]);
+    expect(fake.puts[0]!.overwrite).toBe(true);
+  });
+
+  it("refuses to fill a key with bytes that differ from the ones it was planned for", async () => {
+    const fake = fakeStore();
+    await expect(
+      sync(fake.store, {
+        readFile: (src) =>
+          src === paths[1]
+            ? new TextEncoder().encode("changed")
+            : readFile(src),
+      }),
+    ).rejects.toThrow(/changed on disk/);
+    expect(fake.objects.has(MANIFEST_KEY)).toBe(false);
+  });
+
+  it("counts orphans, and prunes them only when the manifest did not change this run", async () => {
+    const fake = fakeStore([
+      {
+        key: "media/ships/old-640-000000000000.webp",
+        body: new Uint8Array(3),
+      },
+    ]);
+    const first = await sync(fake.store, { prune: true });
+    expect(first.orphans).toBe(1);
+    expect(first.pruned).toBe(0);
+    expect(first.pruneNote).toMatch(/manifest changed this run/);
+    expect(fake.deletes).toEqual([]);
+    const second = await sync(fake.store, { prune: true });
+    expect(second.manifest).toBe("unchanged");
+    expect(second.pruned).toBe(1);
+    expect(fake.deletes).toEqual(["media/ships/old-640-000000000000.webp"]);
+    expect(fake.objects.has(MANIFEST_KEY)).toBe(true);
+  });
+
+  it("uploads nothing on a dry run and still reports the plan", async () => {
+    const fake = fakeStore();
+    const result = await sync(fake.store, { dryRun: true, prune: true });
+    expect(result.manifest).toBe("dry run");
+    expect(result.alreadyThere).toBe(0);
+    expect(fake.puts).toEqual([]);
+    expect(fake.objects.size).toBe(0);
   });
 });
 
-describe("the R2 client", () => {
-  const credentials = {
-    accountId: "acct",
-    accessKeyId: "AKID",
-    secretAccessKey: "secret",
-    bucket: "sc-hub-media",
+describe("retries", () => {
+  const noWait = async () => {};
+  const failing = (statuses: (number | null)[]) => {
+    let n = 0;
+    return async () => {
+      const status = statuses[n];
+      n += 1;
+      if (status === undefined) return "ok";
+      throw status === null
+        ? new Error("socket hang up")
+        : Object.assign(new Error(`HTTP ${status}`), { status });
+    };
   };
-  const clock = () => new Date("2026-01-01T00:00:00Z");
 
-  it("puts an object with its content type, cache header and signature, and no Host of its own", async () => {
-    const calls: { url: string; init: RequestInit }[] = [];
-    const fetchImpl = (async (
-      url: string | URL | Request,
-      init?: RequestInit,
-    ) => {
-      calls.push({ url: String(url), init: init ?? {} });
-      return new Response("", { status: 200 });
-    }) as typeof fetch;
-    const client = new R2Client(credentials, fetchImpl, clock);
-    const body = new TextEncoder().encode("RIFF");
-    await client.put("media/ships/a-640-aaaaaaaaaaaa.webp", body, {
-      contentType: "image/webp",
-      cacheControl: IMMUTABLE_CACHE,
-    });
-    expect(calls).toHaveLength(1);
-    expect(calls[0]!.url).toBe(
-      "https://acct.r2.cloudflarestorage.com/sc-hub-media/media/ships/a-640-aaaaaaaaaaaa.webp",
-    );
-    const headers = calls[0]!.init.headers as Record<string, string>;
-    expect(calls[0]!.init.method).toBe("PUT");
-    expect(headers["content-type"]).toBe("image/webp");
-    expect(headers["cache-control"]).toBe(IMMUTABLE_CACHE);
-    expect(headers["x-amz-content-sha256"]).toBe(sha256Hex(body));
-    expect(headers["x-amz-date"]).toBe("20260101T000000Z");
-    expect(headers["host"]).toBeUndefined();
-    expect(headers["authorization"]).toMatch(
-      /^AWS4-HMAC-SHA256 Credential=AKID\/20260101\/auto\/s3\/aws4_request, SignedHeaders=cache-control;content-type;host;x-amz-content-sha256;x-amz-date, Signature=[0-9a-f]{64}$/,
-    );
-  });
-
-  it("lists every page of the bucket, following the continuation token", async () => {
-    const urls: string[] = [];
-    const pages = [
-      `<ListBucketResult><IsTruncated>true</IsTruncated><NextContinuationToken>tok&amp;1</NextContinuationToken><Contents><Key>media/a.webp</Key><Size>10</Size><ETag>"abc"</ETag></Contents><Contents><Key>media/b.webp</Key><Size>20</Size><ETag>"def"</ETag></Contents></ListBucketResult>`,
-      `<ListBucketResult><IsTruncated>false</IsTruncated><Contents><Key>media/manifest.json</Key><Size>5</Size><ETag>"m"</ETag></Contents></ListBucketResult>`,
-    ];
-    const fetchImpl = (async (url: string | URL | Request) => {
-      urls.push(String(url));
-      return new Response(pages.shift() ?? "", { status: 200 });
-    }) as typeof fetch;
-    const client = new R2Client(credentials, fetchImpl, clock);
-    const listed = await client.list("media/");
-    expect([...listed.keys()]).toEqual([
-      "media/a.webp",
-      "media/b.webp",
-      "media/manifest.json",
-    ]);
-    expect(listed.get("media/b.webp")).toEqual({
-      key: "media/b.webp",
-      size: 20,
-      etag: "def",
-    });
-    expect(urls).toHaveLength(2);
-    expect(urls[0]).toBe(
-      "https://acct.r2.cloudflarestorage.com/sc-hub-media?list-type=2&prefix=media%2F&max-keys=1000",
-    );
-    expect(new URL(urls[1]!).searchParams.get("continuation-token")).toBe(
-      "tok&1",
-    );
-  });
-
-  it("parses an empty listing", () => {
+  it("retries network errors, 5xx, 408 and 429, then gives up", async () => {
     expect(
-      parseListing(
-        "<ListBucketResult><IsTruncated>false</IsTruncated></ListBucketResult>",
+      await withRetries(
+        "x",
+        failing([null, 503, 408, 429]),
+        () => {},
+        5,
+        noWait,
       ),
-    ).toEqual({ objects: [], next: null });
+    ).toBe("ok");
+    await expect(
+      withRetries("x", failing([500, 500, 500, 500]), () => {}, 4, noWait),
+    ).rejects.toThrow(/HTTP 500/);
   });
 
-  it("surfaces a refusal with its status", async () => {
-    const fetchImpl = (async () =>
-      new Response("<Error><Code>AccessDenied</Code></Error>", {
-        status: 403,
-      })) as typeof fetch;
-    const client = new R2Client(credentials, fetchImpl, clock);
-    await expect(client.putCors()).rejects.toMatchObject({
-      name: "R2Error",
-      status: 403,
-      operation: "PutBucketCors",
-    });
-    await expect(client.putCors()).rejects.toBeInstanceOf(R2Error);
+  it("stops at once on a refusal", async () => {
+    const calls: number[] = [];
+    const attempt = failing([403]);
+    await expect(
+      withRetries(
+        "x",
+        async () => {
+          calls.push(1);
+          return attempt();
+        },
+        () => {},
+        4,
+        noWait,
+      ),
+    ).rejects.toThrow(/HTTP 403/);
+    expect(calls).toHaveLength(1);
   });
+});
 
-  it("writes the CORS rule the holoviewer needs", () => {
-    expect(corsXml()).toBe(
-      "<CORSConfiguration><CORSRule><AllowedOrigin>*</AllowedOrigin><AllowedMethod>GET</AllowedMethod><AllowedMethod>HEAD</AllowedMethod><AllowedHeader>*</AllowedHeader><MaxAgeSeconds>86400</MaxAgeSeconds></CORSRule></CORSConfiguration>",
+describe("the store's base address", () => {
+  it("is the object's URL without its key", () => {
+    expect(
+      storeBaseUrl(
+        "https://abc.public.blob.vercel-storage.com/media/ships/a.webp",
+        "media/ships/a.webp",
+      ),
+    ).toBe("https://abc.public.blob.vercel-storage.com");
+    expect(() => storeBaseUrl("https://x/y", "media/a.webp")).toThrow(
+      /end with/,
     );
   });
 });

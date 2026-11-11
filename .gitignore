@@ -77,3 +77,5 @@ apps/web/*.local.*
 
 # the Vercel CLI writes the project link here (ADR-033)
 .vercel/
+
+.env*

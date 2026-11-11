@@ -15,10 +15,10 @@ export const MEDIA_PREFIX = "/media/";
 export const MANIFEST_KEY = "media/manifest.json";
 export const HASH_LENGTH = 12;
 
-/** Renditions, models and videos: content-addressed, so cacheable until the heat death. */
-export const IMMUTABLE_CACHE = "public, max-age=31536000, immutable";
+/** Renditions, models and videos: content-addressed, so cacheable for a year (in seconds). */
+export const IMMUTABLE_MAX_AGE = 31536000;
 /** The manifest: five minutes, so a publish reaches the next build soon and the CDN still helps. */
-export const MANIFEST_CACHE = "public, max-age=300, must-revalidate";
+export const MANIFEST_MAX_AGE = 300;
 
 /** By extension; a new kind of file is a decision, so an unknown one fails rather than guessing. */
 export const CONTENT_TYPES: Readonly<Record<string, string>> = {
@@ -103,7 +103,8 @@ export interface PlannedObject {
   /** Its content hash, which the key is built from; the upload checks the bytes against it. */
   readonly sha256: string;
   readonly contentType: string;
-  readonly cacheControl: string;
+  /** Seconds for the CDN and browsers; the store composes the Cache-Control header. */
+  readonly cacheMaxAge: number;
 }
 
 export interface PublishPlan {
@@ -145,7 +146,7 @@ export function planPublish(
       bytes: file.bytes,
       sha256: file.sha256,
       contentType: contentTypeOf(src),
-      cacheControl: IMMUTABLE_CACHE,
+      cacheMaxAge: IMMUTABLE_MAX_AGE,
     };
   });
   const wanted = new Set(referenced);

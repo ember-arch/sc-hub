@@ -26,7 +26,11 @@ import {
 import { Site } from "../../lib/site";
 import { crewRange, shipCard, shipRows } from "../../lib/views";
 import { conceptShips, showcaseFor } from "../../lib/showcase";
-import { CompareToggle, CompareTray } from "../compare/compare-controls";
+import {
+  CompareLink,
+  CompareToggle,
+  CompareTray,
+} from "../compare/compare-controls";
 import { shipTally, tallyNote } from "../../lib/ship-count";
 import { PriceCredit } from "../price-credit";
 import { ShipTable } from "./ship-table";
@@ -96,10 +100,12 @@ export default async function ShipsPage({
                 ? `${ships.length + concepts.length} of ${tally.total} ships`
                 : `${tally.total} ships`}
             </span>,
-            tallyNote(tally),
+            // The tally describes the whole register, so it stands only beside the whole count.
+            ...(filtered ? [] : [tallyNote(tally)]),
             r.liveVersion ?? "no LIVE build",
           ]}
           title="The register of ships"
+          aside={<CompareLink />}
           lede="Every ship and vehicle on record, one entry each: its plate, its maker and role, and the figures that matter by build. Sort on any column; the name opens the entry."
         />
       }
@@ -140,13 +146,13 @@ export default async function ShipsPage({
             />
           </div>
         </div>
-        {ships.length === 0 ? (
+        {ships.length + concepts.length === 0 ? (
           <EmptyState>
             No ships match these filters.{" "}
             <TextLink href={clearHref}>Clear filters</TextLink> to see every
             ship.
           </EmptyState>
-        ) : state.view === "table" ? (
+        ) : ships.length === 0 ? null : state.view === "table" ? (
           <div className="flex flex-col gap-3">
             <ShipTable
               rows={shipRows(ships, shipCardImage)}

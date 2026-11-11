@@ -3,6 +3,7 @@ import {
   DevPost,
   DispatchCard,
   EmptyState,
+  formatNumber,
   type ResponsiveImage,
   TextLink,
 } from "ui";
@@ -158,7 +159,7 @@ export default function HomePage() {
       label: "Parts on record",
       value: String(fitted.length),
       // The build stays in the footer's patch strip (ADR-007: one strip per page).
-      note: `${partTypes} types · ${r.components.length - fitted.length} built-in thrusters and intakes aside`,
+      note: `${partTypes} types, not counting ${formatNumber(r.components.length - fitted.length)} built-in thrusters and fuel intakes`,
       href: "/components",
     },
   ];

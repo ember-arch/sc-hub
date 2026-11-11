@@ -1,4 +1,4 @@
-import type { Item, Manufacturer } from "schema";
+import type { Item, ItemType, Manufacturer } from "schema";
 import type { FacetOption, Query } from "./ship-filters";
 
 /**
@@ -83,7 +83,7 @@ export function componentFacetOptions(
  * Parts a ship comes with and players do not swap (owner, 2026-11-11, ADR-046): thrusters and fuel
  * intakes, over 40% of the parts on record. The index leaves them out unless `?fixed=shown`.
  */
-export const FIXED_TYPES: ReadonlySet<string> = new Set([
+export const FIXED_TYPES: ReadonlySet<ItemType> = new Set<ItemType>([
   "thruster",
   "fuel_intake",
 ]);

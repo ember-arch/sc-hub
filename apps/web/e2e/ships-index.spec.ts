@@ -349,11 +349,17 @@ test("the parts index leaves out thrusters and fuel intakes until asked, and kee
     .click();
   await expect(page).toHaveURL(/\/components\?fixed=shown$/);
   await expect(page.locator("section#thruster")).toHaveCount(1);
-  await page.getByLabel("Size").selectOption({ index: 1 });
-  await expect(page).toHaveURL(/\/components\?size=\d+&fixed=shown$/);
+  // A size that has thrusters, so the line and its link stay under the filter.
+  const thrusterSize = String(
+    fixture<{ type: string; size: number }[]>("Item.json").find(
+      (i) => i.type === "thruster",
+    )?.size,
+  );
+  await page.getByLabel("Size").selectOption(thrusterSize);
+  await expect(page).toHaveURL(`/components?size=${thrusterSize}&fixed=shown`);
   await page
     .getByTestId("fixed-parts")
     .getByRole("link", { name: "Hide them" })
     .click();
-  await expect(page).toHaveURL(/\/components\?size=\d+$/);
+  await expect(page).toHaveURL(`/components?size=${thrusterSize}`);
 });

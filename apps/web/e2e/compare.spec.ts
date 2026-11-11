@@ -158,15 +158,16 @@ test("the index's compare bar appears with a pick, leads to the comparison, and 
   const tray = page.getByRole("complementary", { name: "Ships to compare" });
   await expect(tray).toHaveCount(0);
   const toggle = page.getByRole("button", { name: `Compare ${a.name}` });
-  await expect(toggle).toHaveText("Add to compare");
+  await expect(toggle).toHaveText(`Add to compare ${a.name}`);
   await toggle.click();
-  await expect(toggle).toHaveText("In compare");
+  await expect(toggle).toHaveText(`In compare ${a.name}`);
   await expect(tray).toBeInViewport();
   await expect(tray.getByTestId("compare-tray")).toContainText("1 ship picked");
   await expect(
-    tray.getByRole("link", { name: "Compare 1 ship" }),
+    tray.getByRole("link", { name: "See them side by side" }),
   ).toHaveAttribute("href", `/compare?ships=${a.slug}`);
-  await tray.getByRole("button", { name: "Clear" }).click();
+  await tray.getByRole("button", { name: "Clear picks" }).click();
+  await expect(page.getByRole("heading", { level: 1 })).toBeFocused();
   await expect(tray).toHaveCount(0);
   await expect(toggle).toHaveAttribute("aria-pressed", "false");
 });

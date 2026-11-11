@@ -1,4 +1,4 @@
-import { readdirSync } from "node:fs";
+import { mkdirSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { expect, test } from "@playwright/test";
@@ -38,7 +38,7 @@ test.describe("the patch pages", () => {
       "aria-current",
       "page",
     );
-    await expect(page.getByText(newest!, { exact: true })).toBeVisible();
+    await expect(page.locator("main [data-build]").first()).toHaveText(newest!);
     const headings = await page
       .getByRole("heading", { level: 2 })
       .allTextContents();
@@ -62,11 +62,18 @@ test.describe("the patch pages", () => {
     const entry = page.locator("[data-patch-entry]").first();
     test.skip((await entry.count()) === 0, "no entry changed");
     await entry.locator("summary").click();
-    const table = entry.locator("table").first();
-    await expect(table).toBeVisible();
-    await expect(table.getByRole("columnheader")).toContainText([
-      /Figure|Port|Ingredient/,
-    ]);
+    // A changed entry opens on a table of both builds; a new or removed one on its figures.
+    await expect(entry.locator("table, dl").first()).toBeVisible();
+    const changed = page.locator("#ships details[data-patch-entry]").filter({
+      hasText: /changes?$/,
+    });
+    if ((await changed.count()) > 0) {
+      await changed.first().locator("summary").click();
+      const table = changed.first().locator("table").first();
+      await expect(table.getByRole("columnheader")).toContainText([
+        /Figure|Port|Ingredient/,
+      ]);
+    }
   });
 
   test("the filter narrows the entries by name and says how many match", async ({
@@ -142,3 +149,40 @@ test.describe("the patch pages", () => {
     expect(response?.status()).toBe(404);
   });
 });
+
+// Spec 08's verification: an entry opened, at 390 px and 1280 px, light and dark.
+const SHOTS = join(here, "__screenshots__");
+for (const viewport of [
+  { name: "phone", width: 390, height: 844 },
+  { name: "desktop", width: 1280, height: 800 },
+] as const) {
+  for (const scheme of ["light", "dark"] as const) {
+    test(`an opened entry at ${viewport.width} px, ${scheme}`, async ({
+      browser,
+    }) => {
+      test.skip(previous === undefined, "two LIVE builds are needed");
+      const context = await browser.newContext({
+        viewport: { width: viewport.width, height: viewport.height },
+        colorScheme: scheme,
+        deviceScaleFactor: 1,
+      });
+      const page = await context.newPage();
+      await page.goto("/patches");
+      const entry = page.locator("#ships details[data-patch-entry]").last();
+      await entry.locator("summary").click();
+      await expect(entry.locator("table, dl").first()).toBeVisible();
+      const overflow = await page.evaluate(
+        () =>
+          document.documentElement.scrollWidth >
+          document.documentElement.clientWidth,
+      );
+      expect(overflow, "page scrolls sideways").toBe(false);
+      await entry.scrollIntoViewIfNeeded();
+      mkdirSync(SHOTS, { recursive: true });
+      await entry.screenshot({
+        path: join(SHOTS, `patches-entry-open-${viewport.name}-${scheme}.png`),
+      });
+      await context.close();
+    });
+  }
+}

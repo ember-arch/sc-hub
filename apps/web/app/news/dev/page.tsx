@@ -7,8 +7,9 @@ import {
   authorOf,
   authorsWithPosts,
   devPosts,
-  groupThreads,
+  excerptOf,
   postsBy,
+  threadUrl,
 } from "../../../lib/dev-posts";
 import { Site, now } from "../../../lib/site";
 import { Chip } from "../chip";
@@ -23,14 +24,14 @@ interface Props {
   readonly searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
-/** Threads per page. */
+/** Posts per page. */
 export const PAGE_SIZE = 20;
 
 /**
- * The dev tracker (spec 03, "Dev tracker UI"): CIG staff posts from Spectrum, newest first, a
- * developer's posts in one thread under the thread's title with the newest open and the rest
- * folded, an author filter, the full text as the worker sanitized it, and the source link on
- * every post. Empty, with the reason, while the Spectrum module is off or has not run.
+ * The dev tracker (spec 03, "Dev tracker UI"; ADR-035): CIG staff posts from Spectrum, newest
+ * first, one folded card per post with the thread's title, the author, the time and the first
+ * lines, opened with a tap to the whole post; an author filter; the links to the post and its
+ * thread always visible. Empty, with the reason, while the Spectrum module is off or has not run.
  */
 export default async function DevTrackerPage({ searchParams }: Props) {
   const params = await searchParams;
@@ -42,11 +43,10 @@ export default async function DevTrackerPage({ searchParams }: Props) {
   const author =
     handle === undefined ? undefined : authorByHandle(authors, handle);
   const shown = author === undefined ? posts : postsBy(posts, author);
-  const threads = groupThreads(shown);
   const pageRaw = typeof params.page === "string" ? Number(params.page) : 1;
   const page = Number.isInteger(pageRaw) && pageRaw > 1 ? pageRaw : 1;
-  const pages = Math.max(1, Math.ceil(threads.length / PAGE_SIZE));
-  const slice = threads.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const pages = Math.max(1, Math.ceil(shown.length / PAGE_SIZE));
+  const slice = shown.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
   const pageHref = (p: number): string => {
     const q = new URLSearchParams();
     if (author !== undefined) q.set("author", author.handle);
@@ -69,7 +69,7 @@ export default async function DevTrackerPage({ searchParams }: Props) {
             "CIG staff on Spectrum",
           ]}
           title="Developer posts"
-          lede="What CIG's developers say on Spectrum, newest first, each post in full with a link to the original."
+          lede="What CIG's developers say on Spectrum, newest first; open a post for the whole of it, each linked to its original."
         />
       }
     >
@@ -102,48 +102,29 @@ export default async function DevTrackerPage({ searchParams }: Props) {
                   : "No more posts. Go back a page."}
           </EmptyState>
         ) : (
-          <div className="flex flex-col gap-10">
-            {slice.map((thread) => {
-              const [newest, ...older] = thread.posts;
+          <div className="flex flex-col gap-4">
+            {slice.map((post) => {
+              const who = authorOf(post, r.authors);
               return (
-                <section
-                  key={thread.id}
-                  aria-label={thread.title}
-                  className="flex flex-col gap-3"
-                >
-                  <h2 className="m-0 flex flex-wrap items-baseline gap-x-3 text-heading text-primary">
-                    <span>{thread.title}</span>
-                    <TextLink
-                      href={thread.url}
-                      external
-                      className="text-caption font-normal text-secondary"
-                    >
-                      Thread on Spectrum
-                    </TextLink>
-                  </h2>
-                  {newest === undefined ? null : (
-                    <Post post={newest} at={at} authors={r.authors} />
-                  )}
-                  {older.length > 0 ? (
-                    <details className="rounded-card border border-hairline">
-                      <summary className="cursor-pointer px-4 py-3 text-ui text-secondary">
-                        {older.length === 1
-                          ? "1 earlier post in this thread"
-                          : `${older.length} earlier posts in this thread`}
-                      </summary>
-                      <div className="flex flex-col gap-3 px-4 pb-4">
-                        {older.map((post) => (
-                          <Post
-                            key={post.id}
-                            post={post}
-                            at={at}
-                            authors={r.authors}
-                          />
-                        ))}
-                      </div>
-                    </details>
-                  ) : null}
-                </section>
+                <DevPost
+                  key={post.id}
+                  title={post.thread_title ?? post.title}
+                  author={
+                    who === undefined
+                      ? { name: "CIG staff", role: null }
+                      : {
+                          name: who.display_name,
+                          role: who.role,
+                          href: `/news/dev/${encodeURIComponent(who.handle)}`,
+                        }
+                  }
+                  publishedAt={post.published_at}
+                  now={at}
+                  bodyHtml={post.body_html}
+                  excerpt={excerptOf(post.body_html)}
+                  sourceUrl={post.url}
+                  threadUrl={threadUrl(post)}
+                />
               );
             })}
           </div>
@@ -168,35 +149,5 @@ export default async function DevTrackerPage({ searchParams }: Props) {
         ) : null}
       </div>
     </Site>
-  );
-}
-
-function Post({
-  post,
-  at,
-  authors,
-}: {
-  readonly post: Parameters<typeof authorOf>[0];
-  readonly at: Date;
-  readonly authors: Parameters<typeof authorOf>[1];
-}) {
-  const author = authorOf(post, authors);
-  return (
-    <DevPost
-      author={
-        author === undefined
-          ? { name: "CIG staff", role: null }
-          : {
-              name: author.display_name,
-              role: author.role,
-              href: `/news/dev/${encodeURIComponent(author.handle)}`,
-            }
-      }
-      thread={null}
-      publishedAt={post.published_at}
-      now={at}
-      bodyHtml={post.body_html}
-      sourceUrl={post.url}
-    />
   );
 }

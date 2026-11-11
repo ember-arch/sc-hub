@@ -5,6 +5,7 @@ import {
   authorOf,
   authorsWithPosts,
   devPosts,
+  excerptOf,
   groupThreads,
   postsBy,
   threadUrl,
@@ -115,5 +116,20 @@ describe("the dev tracker's grouping", () => {
     expect(postsBy(posts, authors[1]!).map((p) => p.external_id)).toEqual([
       "2",
     ]);
+  });
+});
+
+describe("excerptOf", () => {
+  it("gives the post's first lines as plain text, entities decoded, cut on a word", () => {
+    expect(
+      excerptOf("<p>Hey y&#39;all,</p><p>It&amp;s time &lt;again&gt;.</p>"),
+    ).toBe("Hey y'all, It&s time <again>.");
+    expect(excerptOf("")).toBeNull();
+    expect(excerptOf("<p> </p>")).toBeNull();
+    const long = `<p>${"word ".repeat(100)}</p>`;
+    const cut = excerptOf(long)!;
+    expect(cut.length).toBeLessThanOrEqual(281);
+    expect(cut.endsWith("…")).toBe(true);
+    expect(cut).not.toMatch(/ …$/);
   });
 });

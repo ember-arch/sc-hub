@@ -53,6 +53,30 @@ export function groupThreads(posts: readonly ContentItem[]): Thread[] {
     );
 }
 
+/**
+ * The post's first lines as plain text, for the folded card (ADR-035): the sanitized body with
+ * its tags removed and its entities decoded, whitespace collapsed, cut at 280 characters on a
+ * word; null for an empty post. Nothing is written that the post does not say.
+ */
+export function excerptOf(bodyHtml: string): string | null {
+  const text = bodyHtml
+    .replace(/<\/(p|div|li|blockquote|h[1-6])>/gi, " ")
+    .replace(/<br\s*\/?>/gi, " ")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (text === "") return null;
+  if (text.length <= 280) return text;
+  const cut = text.slice(0, 280);
+  const at = cut.lastIndexOf(" ");
+  return `${at > 120 ? cut.slice(0, at) : cut}…`;
+}
+
 /** The author of a post, by the id the worker wrote on it. */
 export function authorOf(
   post: ContentItem,

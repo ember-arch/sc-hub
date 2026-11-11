@@ -1,8 +1,8 @@
-# SC Hub — Claude Code handoff kit
+# Coppercork — Claude Code handoff kit
 
 This folder is the starting state of the repo. Copy its contents into a fresh git repository and open Claude Code there. Everything Claude Code needs to begin Phase 0 is in these files; nothing else has to be explained in chat.
 
-Working title: **SC Hub**. The real name and the license are open decisions (see `CLAUDE.md` → Open decisions). Both are plain-text placeholders that get replaced once decided.
+The site is **Coppercork** (ADR-041; "SC Hub" was the working title). The license is still an open decision (see `CLAUDE.md` → Open decisions).
 
 ## Order of operations
 

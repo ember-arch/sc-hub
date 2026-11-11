@@ -42,7 +42,7 @@ test("every page kind carries a canonical URL, a title and a description", async
   page,
 }) => {
   const cases: readonly [string, string, RegExp][] = [
-    ["/", "/", /SC Hub/],
+    ["/", "/", /Coppercork/],
     ["/ships?size=small&view=table", "/ships", /^Ships — /],
     [`/ships/${ship.slug}`, `/ships/${ship.slug}`, new RegExp(ship.name)],
     ["/components?size=1", "/components", /^Components — /],

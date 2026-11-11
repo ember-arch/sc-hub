@@ -38,8 +38,9 @@ All tokens live in `packages/ui/tokens.ts`. Tailwind config is generated from th
 | `accent.bg` | `#E3E6FA` | `#2A2E4A` | Accent tint |
 | `success` / `warning` / `danger` | `#2F6B3A` / `#8A5A00` / `#B3261E` | `#6FBF7F` / `#E0A94A` / `#EF7A6E` | Status only |
 | `spectrum.staff` | `#DEC342` | `#DEC342` | Spectrum's own yellow for a staff post (ADR-032): the rule and the role tag on a developer post, never text on the light wall |
+| `brand.copper` | `#A8652F` | `#D08A4F` | The site's own colour (ADR-041): the Coppercork mark and the favicon alone, never text, border or fill elsewhere |
 
-Rules: one accent. Manufacturer brand colors may appear only as a 3 px rule on the manufacturer page hero, never as fills. Semantic colors are for status (flight-ready, concept, PTU-only), never decoration.
+Rules: one accent. Manufacturer brand colors may appear only as a 3 px rule on the manufacturer page hero, never as fills. The site's own colour, `brand.copper`, appears only in the mark and the favicon (ADR-041). Semantic colors are for status (flight-ready, concept, PTU-only), never decoration.
 
 ### Type
 
@@ -74,7 +75,8 @@ Faces: Manrope (ADR-021, replacing the almanac's serifs) for everything: text, i
 
 `packages/ui` ships these, each with light and dark stories and a Playwright screenshot:
 
-- `PageShell` — the brand, the sections as pills (the current one filled), the search field as a pill and the theme switch (ADR-021); the footer on every page.
+- `PageShell` — the mark and the name (ADR-041), the sections as pills (the current one filled), the search field as a pill and the theme switch (ADR-021); the footer on every page.
+- `Logo` — the Coppercork mark (ADR-041): a cork stopper in copper with an ink band, decorative beside the name in the header; the favicon is the same drawing.
 - `ThemeToggle` — a switch between light and dark; the choice is kept in localStorage and applied as `data-theme` on `<html>` before the first paint, and the site follows the system until it is used (ADR-021).
 - `CommandPalette` — ⌘K on desktop, persistent button on phone; results grouped by entity type; keyboard navigable; shows recent entities.
 - `EntityPage` — the template: `Hero` (name, manufacturer, status badge, one image or the viewer slot), `KeyFacts` (4 to 8 label/value pairs), `Section`s, `Related`.
@@ -144,7 +146,7 @@ Added with the ship file (ADR-008, ADR-012 to ADR-016):
 
 ## 7. Review checklist (used by the design-review prompt)
 
-1. Any color outside the token table?
+1. Any color outside the token table? (The mark's copper is in the table, for the mark and the favicon alone, ADR-041.)
 2. Any type size or weight outside the type table?
 3. Any decoration: gradient, glow, texture, emoji, icon used as ornament? (One gradient is allowed because it keeps text legible over CIG's art, never as decoration: the scrim under text over CIG's art, on the entry's cover and the bento's cards, ADR-021.)
 4. Any page element the reader could lose without losing meaning?

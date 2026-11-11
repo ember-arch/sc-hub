@@ -110,3 +110,4 @@ export {
 } from "./components/stats-by-channel";
 export { channelBadge, vehicleStatusBadge } from "./components/status";
 export { TextLink, type TextLinkProps } from "./components/text-link";
+export { Logo } from "./components/logo";

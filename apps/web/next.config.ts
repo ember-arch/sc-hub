@@ -20,9 +20,13 @@ const nextConfig: NextConfig = {
       "../../fixtures/titles/Titles.json",
       "../../fixtures/funding/Funding.json",
       "../../pnpm-workspace.yaml",
+      // The media manifest fetched from the CDN at build (ADR-034), read per request by the same
+      // routes for their card pictures; absent when CDN_BASE_URL is unset.
+      "generated/media-manifest.json",
     ],
   },
-  // No image optimizer in Phase 0: the only images will be fankit renders served from the CDN later.
+  // No image optimizer: the pictures are pre-sized WebP renditions (scripts/media/prepare.ts)
+  // served as static files locally and from the CDN in a deploy (ADR-009, ADR-034).
   images: { unoptimized: true },
   poweredByHeader: false,
 };

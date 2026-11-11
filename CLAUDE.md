@@ -29,7 +29,7 @@ The full scope and plan live in `docs/scope.md`. Phase specs live in `docs/specs
 
 ## 3. Architecture in one paragraph
 
-Three runtimes. The **Windows PC** (owner's machine, Star Citizen installed) runs `pipeline/` on patch days: StarBreaker extracts DataCore records and ship models from `Data.p4k`, TypeScript normalizers map them onto the shared Zod schema, gltf-transform compresses models into two tiers, and a publish step uploads a versioned data pack and models to Cloudflare R2. **Fly.io** runs the long-lived pollers (news, Spectrum), the import job (reads the R2 manifest, upserts Postgres, rebuilds the search index, flips the channel pointer), and Meilisearch. **Vercel** serves the Next.js site, which reads Postgres (Neon) and Meilisearch, and sends the browser straight to the CDN for models. `packages/schema` is the contract between pipeline and web; nothing crosses that boundary without validating against it.
+Three runtimes. The **Windows PC** (owner's machine, Star Citizen installed) runs `pipeline/` on patch days: StarBreaker extracts DataCore records and ship models from `Data.p4k`, TypeScript normalizers map them onto the shared Zod schema, gltf-transform compresses models into two tiers, and a publish step uploads a versioned data pack to Cloudflare R2 (the site's pictures and RSI's holoviewer models go to a Vercel Blob store instead, ADR-034). **Fly.io** runs the long-lived pollers (news, Spectrum), the import job (reads the R2 manifest, upserts Postgres, rebuilds the search index, flips the channel pointer), and Meilisearch. **Vercel** serves the Next.js site, which reads Postgres (Neon) and Meilisearch, and sends the browser straight to the CDN for models. `packages/schema` is the contract between pipeline and web; nothing crosses that boundary without validating against it.
 
 ## 4. Repository layout
 
@@ -43,7 +43,7 @@ docs/
   legal/cig-approval.md, obligations.md, takedown.md, attribution.md
   decisions/ADR-NNN-*.md
   specs/0N-*.md
-  runbooks/patch-day.md, refresh.md, launch.md
+  runbooks/patch-day.md, refresh.md, launch.md, media.md
 packages/
   schema/        Zod types + JSON schema export; the pipeline↔web contract
   ui/            design tokens + components (no app logic)
@@ -119,14 +119,16 @@ A spec item is done when all of these are true:
 | Owner's laptop or a cloud Claude Code session | `apps/web`, `packages/*`, `workers/*` development, all tests | Fixtures only; no game files |
 | Windows PC (Star Citizen LIVE and PTU installed) | `pipeline/*` on patch days; hero-ship model export | Game installs, StarBreaker, R2 write credentials |
 | Fly.io | Workers, import job, Meilisearch | Postgres and R2 credentials, Spectrum credentials |
-| Vercel | `apps/web` | Postgres read, Meilisearch read |
+| Vercel | `apps/web` | Postgres read, Meilisearch read, `CDN_BASE_URL` (the media store's public address, ADR-034); the connected Blob store's token is on the project but nothing in the site reads it |
 
 Environment variables (validated in `packages/schema/env.ts`; a missing required variable fails startup for any runtime that calls `loadEnv`; the Vercel site does not yet, since it serves the committed packs without a database or search service, ADR-033):
 
 ```
 DATABASE_URL
 MEILI_HOST, MEILI_MASTER_KEY, MEILI_SEARCH_KEY
-R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET, CDN_BASE_URL
+R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET (the data pack's object store, spec 01: the Windows PC for the pipeline, Fly for the import job; not yet provisioned)
+BLOB_READ_WRITE_TOKEN, BLOB_STORE_ID (the media store on Vercel Blob, ADR-034: scripts/media/publish.ts on the owner's machine, from .env.local, where `vercel env pull` writes the store id and a short-lived VERCEL_OIDC_TOKEN that stands in for the sensitive token; never the site, never CI)
+CDN_BASE_URL (the media store's public address; the site resolves every /media/ path against it and fetches manifest.json from it at build when no media is built locally, ADR-034)
 SPECTRUM_MODE (feed | poll | off), SPECTRUM_FEED_URL (feed mode), SPECTRUM_STAFF_ROLE_ID (optional; poll mode resolves the staff role from Spectrum's own role list each run and needs no sign-in, ADR-027)
 SENTRY_DSN
 SITE_URL (the public origin; canonical URLs, sitemap.xml and Open Graph resolve against it)

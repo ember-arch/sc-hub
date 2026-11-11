@@ -20,7 +20,18 @@ export const envSchema = z.object({
   R2_ACCESS_KEY_ID: nonEmpty.optional(),
   R2_SECRET_ACCESS_KEY: nonEmpty.optional(),
   R2_BUCKET: nonEmpty.optional(),
+  /**
+   * The media bucket's public address (ADR-034): the site resolves every `/media/` path against it
+   * and fetches the media manifest from it at build when no media is built locally.
+   */
   CDN_BASE_URL: url.optional(),
+  /**
+   * Vercel Blob read-write token for the media store (ADR-034): `scripts/media/publish.ts` on the
+   * owner's machine only; Vercel sets it on the project, where nothing reads it.
+   */
+  BLOB_READ_WRITE_TOKEN: nonEmpty.optional(),
+  /** The media store's id; with VERCEL_OIDC_TOKEN it stands in for the token locally (ADR-034). */
+  BLOB_STORE_ID: nonEmpty.optional(),
   SPECTRUM_MODE: SpectrumMode.default("off"),
   SPECTRUM_FEED_URL: url.optional(),
   /**

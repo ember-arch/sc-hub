@@ -499,8 +499,9 @@ export async function readThreads(
     options.uploads.value.splice(
       0,
       options.uploads.value.length,
-      ...[...byId.values()].sort(
-        (a, b) => Number(a.upload_id) - Number(b.upload_id),
+      // Numeric collation: upload numbers in order, an embed's "e-" ids after them, stable.
+      ...[...byId.values()].sort((a, b) =>
+        a.upload_id.localeCompare(b.upload_id, "en", { numeric: true }),
       ),
     );
     const missing = [...wanted.keys()].filter((id) => !found.has(id));

@@ -19,6 +19,8 @@ const read = (name: string) =>
   ) as unknown;
 const redesign = postsInAnswer(read("thread-nested.sample.json"));
 const ironclad = postsInAnswer(read("thread-nested-target.sample.json"));
+// "Day of the Vara 2956", read 2026-11-11: its opening post embeds an image by address.
+const vara = postsInAnswer(read("thread-nested-embed.sample.json"));
 
 const html = (posts: typeof redesign, id: string) => {
   const post = posts.get(id);
@@ -335,6 +337,23 @@ describe("htmlFromBlocks on made-up blocks", () => {
     expect(ok.html).toBe('<img data-upload="9" width="1" height="1" alt="">');
   });
 
+  it("reads the real Vara post: its text, and the embedded picture keyed e- and its slug", () => {
+    const parsed = html(vara, "571353");
+    expect(withinAllowlist(parsed.html)).toBe(true);
+    expect(parsed.uploads).toEqual([
+      {
+        id: "e-tgcvmgrkzycyy",
+        url: "https://media.robertsspaceindustries.com/3l2owd4euw4r9/channel_item_full.png",
+        width: 1119,
+        height: 600,
+      },
+    ]);
+    expect(parsed.html).toContain(
+      '<img data-upload="e-tgcvmgrkzycyy" width="1119" height="600" alt="">',
+    );
+    expect(parsed.first_paragraph).not.toBeNull();
+  });
+
   it("takes an image embedded by address from RSI's media host as a picture keyed e- and its slug, and makes a link of any other embed", () => {
     // The entry as Spectrum's answer of 2026-11-11 carries it, in "Day of the Vara 2956".
     const vara = {
@@ -414,6 +433,69 @@ describe("htmlFromBlocks on made-up blocks", () => {
         },
       ]),
     ).toThrow();
+  });
+
+  it("halts on an embed whose address is not http(s), whose id is not its slug, or whose picture slug has another shape, and drops one with no address", () => {
+    const embed = (
+      over: Record<string, unknown>,
+      data: Record<string, unknown>,
+    ) => [
+      {
+        id: 1,
+        type: "image",
+        data: [
+          {
+            id: "embed:abc",
+            slug: "abc",
+            type: "embed",
+            data: {
+              embed_type: "photo",
+              url: "https://media.robertsspaceindustries.com/a/b.png",
+              ...data,
+            },
+            ...over,
+          },
+        ],
+      },
+    ];
+    expect(() =>
+      htmlFromBlocks(
+        embed({}, { embed_type: "link", url: "javascript:alert(1)" }),
+      ),
+    ).toThrow(UnknownBlockError);
+    expect(() =>
+      htmlFromBlocks(embed({}, { url: "data:image/png;base64,AAAA" })),
+    ).toThrow(UnknownBlockError);
+    expect(() => htmlFromBlocks(embed({ id: "embed:zzz" }, {}))).toThrow();
+    expect(() =>
+      htmlFromBlocks(embed({ id: "embed:Ab-c", slug: "Ab-c" }, {})),
+    ).toThrow(UnknownBlockError);
+    // A failed fetch leaves no address: nothing to show, no halt, no picture.
+    for (const url of [null, undefined, ""]) {
+      const dead = htmlFromBlocks(embed({}, { url }));
+      expect(dead.html).toBe("");
+      expect(dead.uploads).toEqual([]);
+    }
+    // A link embed's size is not read: a zero or a fraction does not stop it.
+    const link = htmlFromBlocks(
+      embed(
+        { id: "embed:x_y", slug: "x_y" },
+        {
+          embed_type: "video",
+          url: "https://www.youtube.com/watch?v=x",
+          image_width: 0,
+          image_height: 12.5,
+          title: null,
+        },
+      ),
+    );
+    expect(link.html).toContain('href="https://www.youtube.com/watch?v=x"');
+    // A picture with no usable size is an img without one.
+    const sizeless = htmlFromBlocks(
+      embed({}, { image_width: 0, image_height: null }),
+    );
+    expect(sizeless.html).toBe('<img data-upload="e-abc" alt="">');
+    expect(withinAllowlist(sizeless.html)).toBe(true);
   });
 
   it("joins blocks with a newline and takes the first paragraph from the first text block with one", () => {

@@ -97,7 +97,9 @@ export function wantedUploads(
   const byId = new Map(uploads.map((u) => [u.upload_id, u] as const));
   const wanted: UploadRow[] = [];
   const unrecorded: string[] = [];
-  for (const id of [...named].sort((a, b) => Number(a) - Number(b))) {
+  for (const id of [...named].sort((a, b) =>
+    a.localeCompare(b, "en", { numeric: true }),
+  )) {
     const row = byId.get(id);
     if (row === undefined) unrecorded.push(id);
     else wanted.push(row);

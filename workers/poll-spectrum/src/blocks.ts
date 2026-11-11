@@ -16,9 +16,15 @@
  * or a supplementary-plane letter, is cut on code points here; cutting on UTF-16 units would shift
  * every range after it by one.
  */
+import { SPECTRUM_PICTURE_ID_SOURCE } from "schema";
 import { z } from "zod";
 
 const str = z.string();
+
+/** An `img` as the worker writes it: a picture id, the size when known, an empty alt; nothing else. */
+const IMG_ATTRS = new RegExp(
+  `^data-upload="(?:${SPECTRUM_PICTURE_ID_SOURCE})"( width="\\d+" height="\\d+")? alt=""$`,
+);
 const key = z.union([z.string(), z.number()]);
 
 const StyleRange = z.object({
@@ -79,24 +85,33 @@ const UploadEntry = z
  * Spectrum fetched the address and keeps what it found. A `photo` on RSI's own media host is a
  * picture like an upload, keyed "e-" and its slug; any other embed (a video, a page, a picture on
  * someone else's host) becomes a plain link to its address, so nothing from a third-party host is
- * copied (ADR-009).
+ * copied (ADR-009). An embed whose fetch failed carries no address and adds nothing to the post.
+ * The id must be "embed:" and the slug; a size is read only for a picture, and anything else
+ * (an address that is not http(s), a picture slug of another shape) halts the run.
  */
 const EmbedEntry = z
   .object({
-    id: str.regex(/^embed:[a-z0-9]+$/),
-    slug: str.regex(/^[a-z0-9]+$/),
+    id: str,
+    slug: str,
     type: z.literal("embed"),
     data: z
       .object({
-        embed_type: str,
-        url: z.url(),
+        embed_type: str.nullable().optional(),
+        url: str.nullable().optional(),
         title: str.nullable().optional(),
-        image_width: z.number().int().positive().nullable().optional(),
-        image_height: z.number().int().positive().nullable().optional(),
+        image_width: z.number().nullable().optional(),
+        image_height: z.number().nullable().optional(),
       })
       .loose(),
   })
-  .loose();
+  .loose()
+  .refine((e) => e.id === `embed:${e.slug}`, {
+    message: 'an embed\'s id must be "embed:" and its slug',
+  });
+
+/** A whole positive number, or null: an embed's size, read only for a picture. */
+const sizeOf = (n: number | null | undefined): number | null =>
+  typeof n === "number" && Number.isInteger(n) && n > 0 ? n : null;
 export const ImageData = z.array(z.union([UploadEntry, EmbedEntry]));
 
 export const ContentBlock = z
@@ -447,33 +462,52 @@ export function htmlFromBlocks(
         const entries = ImageData.parse(block.data);
         if (!options.pictures) break;
         for (const entry of entries) {
+          let id: string;
+          let url: string;
+          let width: number | null;
+          let height: number | null;
           if (entry.type === "embed") {
+            const address = entry.data.url ?? null;
+            // A failed fetch leaves no address: the embed shows nothing on Spectrum either.
+            if (address === null || address.trim() === "") continue;
+            if (!/^https?:\/\/\S+$/.test(address)) {
+              throw new UnknownBlockError(
+                "an embed whose address is not http(s)",
+                entry,
+              );
+            }
             const picture =
-              entry.data.embed_type === "photo" &&
-              UPLOAD_HOST.test(entry.data.url);
+              entry.data.embed_type === "photo" && UPLOAD_HOST.test(address);
             if (!picture) {
               // Not a picture this site copies: a link to it, in the post's own words or its address.
-              if (/^https?:\/\/\S+$/i.test(entry.data.url)) {
-                const label = entry.data.title?.trim() || entry.data.url;
-                parts.push(
-                  `<p><a href="${escapeHtml(entry.data.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a></p>`,
-                );
-              }
+              const label = entry.data.title?.trim() || address;
+              parts.push(
+                `<p><a href="${escapeHtml(address)}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a></p>`,
+              );
               continue;
             }
+            if (!/^[a-z0-9]+$/.test(entry.slug)) {
+              throw new UnknownBlockError(
+                "a picture embed whose slug is not lowercase letters and digits",
+                entry,
+              );
+            }
+            id = `e-${entry.slug}`;
+            url = address;
+            width = sizeOf(entry.data.image_width);
+            height = sizeOf(entry.data.image_height);
+          } else {
+            id = entry.id.slice("upload:".length);
+            url = entry.data.url;
+            width = entry.data.image_width ?? null;
+            height = entry.data.image_height ?? null;
           }
-          const id =
-            entry.type === "embed"
-              ? `e-${entry.slug}`
-              : entry.id.slice("upload:".length);
-          const width = entry.data.image_width ?? null;
-          const height = entry.data.image_height ?? null;
           const size =
             width !== null && height !== null
               ? ` width="${width}" height="${height}"`
               : "";
           parts.push(`<img data-upload="${id}"${size} alt="">`);
-          uploads.push({ id, url: entry.data.url, width, height });
+          uploads.push({ id, url, width, height });
         }
         break;
       }
@@ -521,12 +555,7 @@ export function withinAllowlist(html: string): boolean {
       )
         return false;
     } else if (tag === "img") {
-      if (
-        !/^data-upload="(?:\d+|e-[a-z0-9]+)"( width="\d+" height="\d+")? alt=""$/.test(
-          attrs,
-        )
-      )
-        return false;
+      if (!IMG_ATTRS.test(attrs)) return false;
     } else return false;
   }
   return true;

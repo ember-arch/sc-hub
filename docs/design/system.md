@@ -39,8 +39,8 @@ All tokens live in `packages/ui/tokens.ts`. Tailwind config is generated from th
 | `accent.bg` | `#E3E6FA` | `#2A2E4A` | Accent tint |
 | `success` / `warning` / `danger` | `#2F6B3A` / `#8A5A00` / `#B3261E` | `#6FBF7F` / `#E0A94A` / `#EF7A6E` | Status only |
 | `spectrum.staff` | `#DEC342` | `#DEC342` | Spectrum's own yellow for a staff post (ADR-032): the rule and the role tag on a developer post, never text on the light wall |
-| `brand.copper` | `#A85E27` | `#C97A40` | The logo's copper (ADR-041, ADR-045): the cork's plates and the rule over the wordmark, the logo and the favicon alone, never text, border or fill elsewhere |
-| `brand.flame` | `#A85E27` | `#E9A46E` | The logo's flames (ADR-045): one copper with the plates on light, as the light board draws them; lighter on dark. The logo and the favicon alone |
+| `brand.copper` | `#C97A40` | `#C97A40` | The logo's copper (ADR-041, ADR-045, ADR-047): the cork's plates, the logo and the favicon alone, never text, border or fill elsewhere |
+| `brand.flame` | `#B5652E` | `#E9A46E` | The logo's flames (ADR-045, ADR-047): darker than the plates on light, lighter on dark, as the board draws them. The logo and the favicon alone |
 
 Rules: one accent. Manufacturer brand colors may appear only as a 3 px rule on the manufacturer page hero, never as fills. The logo's coppers, `brand.copper` and `brand.flame`, appear only in the logo and the favicon (ADR-041, ADR-045). Semantic colors are for status (flight-ready, concept, PTU-only), never decoration.
 
@@ -79,7 +79,7 @@ Faces: Manrope (ADR-021, replacing the almanac's serifs) for everything: text, i
 
 - `PageShell` — the logo with the name as visually hidden text (ADR-045), the sections as pills (the current one filled), the search field as a pill and the theme switch (ADR-021); the footer on every page.
 - `Icon` — the site's line glyphs (ADR-044): damage kinds, the damage path's stages and the three axes, at 16 or 24 px in `currentColor`, hidden beside their labels.
-- `Logo` — the Coppercork logo (ADR-045): the owner's "Launch Cork", the cork lifting off beside the wordmark under a copper rule, two static SVG files (light and dark) swapped by the theme like a maker's mark, in the header at 32 px; the favicon is the cork alone.
+- `Logo` — the Coppercork logo (ADR-045, ADR-047): the owner's "Launch Cork", the cork lifting off beside the "CopperCork" wordmark, two static SVG files (light and dark) swapped by the theme like a maker's mark, in the header at 32 px; the favicon is the cork alone.
 - `ThemeToggle` — a switch between light and dark; the choice is kept in localStorage and applied as `data-theme` on `<html>` before the first paint, and the site follows the system until it is used (ADR-021).
 - `CommandPalette` — ⌘K on desktop, persistent button on phone; results grouped by entity type; keyboard navigable; shows recent entities.
 - `EntityPage` — the template: `Hero` (name, manufacturer, status badge, one image or the viewer slot), `KeyFacts` (4 to 8 label/value pairs), `Section`s, `Related`.

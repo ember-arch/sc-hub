@@ -18,7 +18,7 @@ import { Chip } from "../chip";
 import { NewsTabs } from "../tabs";
 
 export const metadata: Metadata = {
-  title: "Developer posts",
+  title: "Developer gold posts",
   alternates: { canonical: "/news/dev" },
 };
 
@@ -71,7 +71,7 @@ export default async function DevTrackerPage({ searchParams }: Props) {
                 : `${posts.length} posts by ${authors.length} ${authors.length === 1 ? "developer" : "developers"}`,
             "CIG staff on Spectrum",
           ]}
-          title="Developer posts"
+          title="Developer gold posts"
           lede="What CIG's developers say on Spectrum, newest first; open a post for the whole of it, each linked to its original."
         />
       }
@@ -97,9 +97,9 @@ export default async function DevTrackerPage({ searchParams }: Props) {
         {slice.length === 0 ? (
           <EmptyState>
             {!on
-              ? "No developer posts yet. Posts by CIG staff on Spectrum appear here once the tracker is connected."
+              ? "No developer gold posts yet. Posts by CIG staff on Spectrum appear here once the tracker is connected."
               : posts.length === 0
-                ? "No developer posts yet. The tracker has not read Spectrum."
+                ? "No developer gold posts yet. The tracker has not read Spectrum."
                 : shown.length === 0
                   ? "No posts by this developer. Choose another above."
                   : "No more posts. Go back a page."}

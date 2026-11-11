@@ -13,7 +13,7 @@
 # The site shows Spectrum items only when its own SPECTRUM_MODE is set; docs/legal/cig-approval.md
 # records the owner's decisions on the collection and the republication.
 #
-# The cover step (ADR-048) then puts the cover of each new Comm-Link on the live site: it reads the
+# The cover step (ADR-051) then puts the cover of each new Comm-Link on the live site: it reads the
 # live media manifest from the store, finds the Comm-Links of the last fortnight it has no cover
 # for, takes their covers from RSI's hub, uploads their web copies and adds them to the manifest,
 # leaving every other entry as it was. It adds a row per cover to
@@ -36,7 +36,7 @@ on:
   workflow_dispatch:
     inputs:
       rehearse_covers:
-        description: "Comm-Link ids whose covers are already up, to rehearse the cover step on (a dry run; ADR-048)"
+        description: "Comm-Link ids whose covers are already up, to rehearse the cover step on (a dry run; ADR-051)"
         required: false
         default: ""
 
@@ -56,7 +56,7 @@ jobs:
     runs-on: ubuntu-latest
     # Forty for the thread step, which sleeps five minutes between its requests (up to three
     # threads, a page each as a rule) and thirty on a refusal (ADR-037), and up to twelve more for
-    # the cover step (ADR-048); a timeout would lose the run's news too.
+    # the cover step (ADR-051); a timeout would lose the run's news too.
     timeout-minutes: 55
     steps:
       - uses: actions/checkout@v4
@@ -87,7 +87,7 @@ jobs:
         run: pnpm workers:poll-spectrum
       # After the polls, so a Comm-Link collected in this run is looked for in this run; before the
       # commit, so the push that redeploys the site comes once the CDN serves the new manifest.
-      # A failure here never holds back the news commit (ADR-048).
+      # A failure here never holds back the news commit (ADR-051).
       - name: Publish new Comm-Link covers (a dry run until BLOB_READ_WRITE_TOKEN is set)
         continue-on-error: true
         timeout-minutes: 12

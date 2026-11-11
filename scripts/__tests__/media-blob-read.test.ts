@@ -1,7 +1,7 @@
 import type * as VercelBlob from "@vercel/blob";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-// ADR-048: the store adapter's read takes the strong ETag from the store's API and the bytes from
+// ADR-051: the store adapter's read takes the strong ETag from the store's API and the bytes from
 // the public URL (the edge), and gives them back only when the two agree; otherwise it waits for
 // the edge's purge. The SDK is replaced, so nothing here reaches the network.
 

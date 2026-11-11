@@ -39,7 +39,7 @@ export interface PutOptions {
   /** Whether an object already at the key may be replaced; the store refuses otherwise. */
   readonly overwrite: boolean;
   /**
-   * Write only if the object's current ETag is this one (ADR-048): the manifest's read-modify-write
+   * Write only if the object's current ETag is this one (ADR-051): the manifest's read-modify-write
    * fails with a 412 instead of overwriting a manifest another writer put up since it was read.
    */
   readonly ifMatch?: string;
@@ -62,7 +62,7 @@ export interface MediaStore {
   delete(key: string): Promise<void>;
   /**
    * The bytes at `key` from the store itself, never an edge copy, with their ETag; null when
-   * there is none (ADR-048).
+   * there is none (ADR-051).
    */
   read(key: string): Promise<CurrentObject | null>;
 }
@@ -106,7 +106,7 @@ export function classifyBlobError(error: unknown): unknown {
     return withStatus(403);
   }
   if (error instanceof BlobStoreNotFoundError) return withStatus(404);
-  // Another writer changed the object since it was read (ADR-048): read again, never retry blind.
+  // Another writer changed the object since it was read (ADR-051): read again, never retry blind.
   if (error instanceof BlobPreconditionFailedError) return withStatus(412);
   if (
     error instanceof BlobStoreSuspendedError ||
@@ -138,7 +138,7 @@ export type BlobAuth =
   | { readonly token: string }
   | { readonly oidcToken: string; readonly storeId: string };
 
-/** How often, and how far apart, `read` tries for the store's current copy (ADR-048). */
+/** How often, and how far apart, `read` tries for the store's current copy (ADR-051). */
 export const READ_ATTEMPTS = 12;
 export const READ_WAIT_MS = 10_000;
 
@@ -215,7 +215,7 @@ export function vercelBlobStore(
       }),
     read: (key) =>
       call(async () => {
-        // The manifest's read-modify-write (ADR-048) needs the bytes and the ETag a conditional
+        // The manifest's read-modify-write (ADR-051) needs the bytes and the ETag a conditional
         // write is checked against. `head` asks the store's API and gives its own, strong ETag.
         // There is no way to the bytes but the public URL, which is the edge: `useCache: false`
         // works for private stores only, and the edge ignores query strings. It keeps an object

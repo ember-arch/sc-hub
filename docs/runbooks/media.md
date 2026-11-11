@@ -8,7 +8,7 @@ How the media reach the CDN and the site, and what to do after a refresh. The de
 | --- | --- |
 | Store | Vercel Blob `sc-hub-media` (public), connected to the `sc-hub` project; keys under `media/` |
 | Public address | `CDN_BASE_URL` = `https://eieovaxp8q6yustn.public.blob.vercel-storage.com` (the store's id, lower-cased, without `store_`); set on Vercel for production and preview; not a secret |
-| Credentials | In `.env.local` at the root of the checkout that holds the complete media, written by `vercel env pull .env.local`: `BLOB_STORE_ID`, a `VERCEL_OIDC_TOKEN` good for about twelve hours and, since the connection includes Development, the read-write token too, because the owner made the store's variables non-sensitive on 2026-11-10 ("Yes, make readable", in the session that built ADR-034); the script prefers the token and falls back to the OIDC pair. The store's connection to the project must include the Development environment or the pull yields a token the store refuses ("OIDC is enabled for this project, but not for the development environment"); it was added on 2026-11-10 (Storage → the store → Projects → `sc-hub` → environments). `.env.local` is git-ignored; never on Vercel's side for the site. In CI only the News workflow's cover step has the token, as the repository secret `BLOB_READ_WRITE_TOKEN` (ADR-048) |
+| Credentials | In `.env.local` at the root of the checkout that holds the complete media, written by `vercel env pull .env.local`: `BLOB_STORE_ID`, a `VERCEL_OIDC_TOKEN` good for about twelve hours and, since the connection includes Development, the read-write token too, because the owner made the store's variables non-sensitive on 2026-11-10 ("Yes, make readable", in the session that built ADR-034); the script prefers the token and falls back to the OIDC pair. The store's connection to the project must include the Development environment or the pull yields a token the store refuses ("OIDC is enabled for this project, but not for the development environment"); it was added on 2026-11-10 (Storage → the store → Projects → `sc-hub` → environments). `.env.local` is git-ignored; never on Vercel's side for the site. In CI only the News workflow's cover step has the token, as the repository secret `BLOB_READ_WRITE_TOKEN` (ADR-051) |
 | Keys | Content-addressed: `media/ships/aegs_gladius-1280-<hash12>.webp`, cached for a year. The one mutable object is `media/manifest.json`, cached five minutes |
 
 ## The order that cannot be reversed
@@ -17,7 +17,7 @@ The build from ADR-034 on fetches `manifest.json` from `CDN_BASE_URL` and fails 
 
 ## After a media refresh
 
-From the checkout whose `fixtures/` hold the complete copies (RSI images and covers, galleries, holoviewer models, title icons, the fankit). Pull main and fetch the covers first: the News workflow publishes new Comm-Links' covers from CI (ADR-048, below), and `publish.ts` refuses a manifest that lacks any of them.
+From the checkout whose `fixtures/` hold the complete copies (RSI images and covers, galleries, holoviewer models, title icons, the fankit). Pull main and fetch the covers first: the News workflow publishes new Comm-Links' covers from CI (ADR-051, below), and `publish.ts` refuses a manifest that lacks any of them.
 
 ```
 git pull
@@ -43,7 +43,7 @@ An expired `VERCEL_OIDC_TOKEN` (about twelve hours after `vercel env pull`) show
 | 2026-11-10 | first publish, from the complete media built on 2026-11-10T05:43:49Z plus the Comm-Link covers | 12,861 objects, 1,726,316,255 bytes, all uploaded, manifest uploaded and read back `current` (max-age 300), sample rendition 200 `image/webp` with a year's cache and CORS `*`, 0 errors, 273 s. The evidence for the object-store part of spec 00's infrastructure criterion |
 | 2026-11-11 | second publish, from the ADR-034 session's own `prepare.ts` build on `main` (`C:\Users\trliv\sc-hub-cdn`), overlapping the first | 12,309 objects named, 11,029 already in the store from the first run, 1,280 uploaded (405 MB), manifest `generated_at` 2026-11-11T00:13:23.580Z with the 109 Comm-Link covers of the news window; it overwrote the first manifest at the origin and is the one the site builds from. Both manifests' objects stay in the store until a `--prune` run; two publishes should not overlap again, one writer at a time |
 
-## New Comm-Link covers, from CI (ADR-048)
+## New Comm-Link covers, from CI (ADR-051)
 
 The News workflow's step "Publish new Comm-Link covers" puts each new Comm-Link's cover on the site by itself: every run it reads the live manifest from the store, looks on RSI's hub for the Comm-Links of the last fortnight that have no cover, uploads their web copies, adds them to the manifest (nothing else in it changes, and the write is refused if the manifest changed since it was read), and adds a row per cover to `fixtures/rsi-media/cover-sources.json`. That row's commit to main redeploys the site on the new manifest. The step's log ends with one summary line: the candidates, what was planned and uploaded, `manifest` (`uploaded`, `nothing to do`, `dry run`), each list's count before and after, and whether the CDN served the new manifest.
 

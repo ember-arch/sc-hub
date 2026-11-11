@@ -37,7 +37,7 @@ What was found on 2026-11-11:
 | Dispatches from the Verse | a carousel of five, one across | a carousel of five, two across on a tablet, three on a desktop |
 | Latest videos | a carousel of five, one across | the same as the dispatches, at their widths |
 | Featured vehicles and ships | a row of the five, one shape (4:3) | the bento, as before |
-| Featured developer posts | a carousel of small cards, one across | the same widths as the dispatches |
+| Developer gold posts (ADR-052) | a carousel of small cards, one across | the same widths as the dispatches |
 | Funding this year | as before | as before |
 
 The developer posts' row uses `DevPostCard`: `DevPost`'s marks (Spectrum's yellow rule, the role tag's ring) with the time, the thread's title (linked to the post on Spectrum), the author, four lines of the post and the post and thread links; it does not unfold, since a whole post across a card a third of the page wide reads badly, and the whole post is one link away on Spectrum and on the developer posts page, where `DevPost` still unfolds it. On a 390 by 844 phone with Spectrum on, the front page measured 6,399 px tall on the live site on 2026-11-11 and 3,822 px with this change, the new videos section included: the dispatches went from 1,277 px to 466, the featured ships from 1,295 to 328 and the developer posts from 1,497 to 303.

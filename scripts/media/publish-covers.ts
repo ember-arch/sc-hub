@@ -1,5 +1,5 @@
 /**
- * Publishes the covers of new Comm-Links to the media store from the News workflow (ADR-048): only
+ * Publishes the covers of new Comm-Links to the media store from the News workflow (ADR-051): only
  * the covers the live manifest lacks for Comm-Links of the last fortnight, merged into the live
  * manifest without touching anything else (`cover-publish.ts`). Adds a row per new cover to
  * `fixtures/rsi-media/cover-sources.json`, whose commit to main redeploys the site, which then

@@ -18,7 +18,7 @@ import { MANIFEST_KEY, hashedPath } from "../media/publish-plan.js";
 import { COMM_LINK_HUB_URL, type CoverSource } from "../media/sources.js";
 import { type FakeStore, fakeStore } from "./fake-media-store.js";
 
-// ADR-048: CI publishes the covers of new Comm-Links by merging them into the live manifest, and
+// ADR-051: CI publishes the covers of new Comm-Links by merging them into the live manifest, and
 // changes nothing else in it. The hub page is the committed sample; the store is in memory; RSI and
 // the CDN are a fake fetch. No network.
 
@@ -603,7 +603,7 @@ describe("a run", () => {
   });
 });
 
-describe("what the audit of ADR-048 asked for", () => {
+describe("what the audit of ADR-051 asked for", () => {
   it("waits the RSI spacing before its first request, since the polls just asked RSI", async () => {
     const h = harness();
     await h.run();

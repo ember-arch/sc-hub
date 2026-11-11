@@ -133,7 +133,7 @@ describe("renderBody", () => {
     const out = renderBody(body, picture, THREAD);
     expect(out).toContain("<p>Hi everyone,</p>");
     expect(out).toContain(
-      `<figure class="dev-post-plate"><img src="/media/spectrum/3463136-1280.webp" srcset="/media/spectrum/3463136-1280.webp 1280w, /media/spectrum/3463136-640.webp 640w" sizes="(min-width: 1024px) 896px, calc(100vw - 2rem)" width="1280" height="720" alt="" loading="lazy" decoding="async"><figcaption><a href="${THREAD}" target="_blank" rel="noopener noreferrer" class="lab">Image: Cloud Imperium Games, via Spectrum</a></figcaption></figure>`,
+      `<figure class="dev-post-plate"><img src="/media/spectrum/3463136-1280.webp" srcset="/media/spectrum/3463136-1280.webp 1280w, /media/spectrum/3463136-640.webp 640w" sizes="(min-width: 1400px) 1320px, (min-width: 768px) calc(100vw - 5rem), calc(100vw - 4rem)" width="1280" height="720" alt="" loading="lazy" decoding="async"><figcaption><a href="${THREAD}" target="_blank" rel="noopener noreferrer" class="lab">Image: Cloud Imperium Games, via Spectrum</a></figcaption></figure>`,
     );
     expect(out).toContain(
       `<figure class="dev-post-plate dev-post-plate-pending"><figcaption><span>Picture on Spectrum, not yet copied here</span><a href="${THREAD}" target="_blank" rel="noopener noreferrer" class="lab">Image: Cloud Imperium Games, via Spectrum</a></figcaption></figure>`,

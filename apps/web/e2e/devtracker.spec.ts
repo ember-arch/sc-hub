@@ -68,6 +68,45 @@ test.describe("the dev tracker with Spectrum on", () => {
     ).toBeVisible();
   });
 
+  test("a post's pictures are plates served by the site or captioned placeholders, never hotlinks to Spectrum (ADR-036)", async ({
+    page,
+  }) => {
+    await page.goto("/news/dev");
+    // No img anywhere in a post body points at RSI's hosts; no bare upload marker is left.
+    const sources = await page
+      .locator(".dev-post-body img")
+      .evaluateAll((imgs) =>
+        imgs.map((img) => ({
+          src: img.getAttribute("src"),
+          upload: img.getAttribute("data-upload"),
+          inPlate: img.closest("figure.dev-post-plate") !== null,
+          alt: img.getAttribute("alt"),
+        })),
+      );
+    for (const img of sources) {
+      expect(img.src, JSON.stringify(img)).toMatch(/^(\/media\/|https?:\/\/)/);
+      expect(img.src).not.toMatch(/robertsspaceindustries\.com/);
+      expect(img.upload).toBeNull();
+      expect(img.inPlate).toBe(true);
+      expect(img.alt).toBe("");
+    }
+    // Every plate, with a picture or pending one, carries CIG's credit linked to the post.
+    const plates = page.locator(".dev-post-body figure.dev-post-plate");
+    for (const credit of await plates
+      .locator("figcaption a")
+      .evaluateAll((as) =>
+        as.map((a) => ({ text: a.textContent, href: a.getAttribute("href") })),
+      )) {
+      expect(credit.text).toBe("Image: Cloud Imperium Games, via Spectrum");
+      expect(credit.href).toMatch(
+        /^https:\/\/robertsspaceindustries\.com\/spectrum\//,
+      );
+    }
+    expect(await plates.count()).toBe(
+      await plates.locator("figcaption a").count(),
+    );
+  });
+
   test("an author page pages by twenty, carries the disclaimer, and a wide post never scrolls sideways", async ({
     browser,
   }) => {

@@ -57,6 +57,13 @@ const escapeHtml = (text: string): string =>
 const UPLOAD_IMG = /<img\b([^>]*)\bdata-upload="(\d+)"([^>]*)>/g;
 
 /**
+ * How wide a plate is drawn, for `sizes`: the content column (1400 px, `layout.contentMaxWidth`)
+ * less the page's padding and the card's (16 px a side on phones, 24 px from md).
+ */
+export const PLATE_SIZES =
+  "(min-width: 1400px) 1320px, (min-width: 768px) calc(100vw - 5rem), calc(100vw - 4rem)";
+
+/**
  * The post's body as the page shows it (ADR-036): every picture the worker left as an `img` with
  * Spectrum's upload id becomes a plate across the card, the picture's web copies from the media
  * manifest with their credit under it, or, where the picture has not been copied yet, a captioned
@@ -75,7 +82,9 @@ export function renderBody(
     if (found === null) {
       return `<figure class="dev-post-plate dev-post-plate-pending"><figcaption><span>${escapeHtml(SPECTRUM_IMAGE_PENDING)}</span>${credit}</figcaption></figure>`;
     }
-    return `<figure class="dev-post-plate"><img src="${escapeHtml(found.src)}" srcset="${escapeHtml(found.srcSet)}" sizes="(min-width: 1024px) 896px, calc(100vw - 2rem)" width="${found.width}" height="${found.height}" alt="" loading="lazy" decoding="async"><figcaption>${credit}</figcaption></figure>`;
+    // The post runs across its card (ADR-035): the content column less the page's and the
+    // card's padding, 1320 px at the widest.
+    return `<figure class="dev-post-plate"><img src="${escapeHtml(found.src)}" srcset="${escapeHtml(found.srcSet)}" sizes="${PLATE_SIZES}" width="${found.width}" height="${found.height}" alt="" loading="lazy" decoding="async"><figcaption>${credit}</figcaption></figure>`;
   });
 }
 

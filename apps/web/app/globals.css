@@ -4,23 +4,6 @@
 @source "../../../packages/ui/components";
 @source "../../../packages/ui/stories";
 
-/*
- * The one brand colour (ADR-041): copper, for the mark and the favicon alone, never text, border
- * or fill elsewhere. Set under the theme's own selectors so the mark follows the scheme.
- */
-:root,
-[data-theme="light"] {
-  --brand-copper: #a8652f;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --brand-copper: #d08a4f;
-  }
-}
-[data-theme="dark"] {
-  --brand-copper: #d08a4f;
-}
-
 /* Dev post bodies arrive sanitized with quotes preserved; style the quote with tokens only. */
 .dev-post-body {
   /* A pasted address or a build string has no break in it; it wraps rather than widen the page. */

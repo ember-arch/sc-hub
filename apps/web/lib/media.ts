@@ -6,14 +6,22 @@ import {
   MediaManifest,
   type Showcase,
 } from "schema";
+import { envSchema } from "schema/env";
 import type { MakerMark, ResponsiveImage } from "ui";
 import { RSI_IMAGE_CREDIT, WIKI_GALLERY_CREDIT } from "ui/legal";
 import { REPO_ROOT, type ShipView } from "./data";
 
 /**
  * Which images exist for which entities (ADR-009), from the manifest `scripts/media/prepare.ts`
- * writes beside the web copies in `public/media/`. Both are git-ignored, so a fresh clone, CI and
- * a deploy have none: every lookup then returns null and pages render without images.
+ * writes beside the web copies in `public/media/`. Both are git-ignored, so a fresh clone and CI
+ * have none: every lookup then returns null and pages render without images.
+ *
+ * A deploy gets them from the CDN instead (ADR-034): `scripts/media/publish.ts` uploads the built
+ * copies and their manifest to the media bucket, `apps/web/scripts/media-manifest.ts` fetches that
+ * manifest at build when `CDN_BASE_URL` is set and nothing is built locally, and every `/media/`
+ * path in it is resolved against `CDN_BASE_URL` here, so the browser fetches pictures and models
+ * from the CDN and never from the app server (CLAUDE.md section 2). A local build always wins
+ * over the fetched copy: its paths name the files under `public/media/`.
  */
 
 export const MEDIA_MANIFEST = join(
@@ -24,6 +32,58 @@ export const MEDIA_MANIFEST = join(
   "media",
   "manifest.json",
 );
+
+/** The manifest fetched from the CDN at build (ADR-034); git-ignored like everything generated. */
+export const CDN_MEDIA_MANIFEST = join(
+  REPO_ROOT,
+  "apps",
+  "web",
+  "generated",
+  "media-manifest.json",
+);
+
+/** Every rendition, model and video path in a manifest starts with this. */
+export const MEDIA_PREFIX = "/media/";
+
+/**
+ * `CDN_BASE_URL` without its trailing slash, or null when unset. Validated the way
+ * `packages/schema/env.ts` validates it, so a mistyped value fails the build instead of putting a
+ * broken address on every picture.
+ */
+export function cdnBaseUrl(
+  env: Readonly<Record<string, string | undefined>> = process.env,
+): string | null {
+  const raw = env["CDN_BASE_URL"];
+  if (raw === undefined || raw === "") return null;
+  const parsed = envSchema.shape.CDN_BASE_URL.safeParse(raw);
+  if (!parsed.success || parsed.data === undefined) {
+    throw new Error(`CDN_BASE_URL is not an http(s) URL: ${raw}`);
+  }
+  return parsed.data.replace(/\/+$/, "");
+}
+
+/**
+ * Prefixes every `/media/...` string anywhere in `value` with `base` and leaves everything else
+ * (page URLs, keys, slugs, numbers) as it is. Written against the shape of the data rather than
+ * a list of fields, so a new kind of media entry needs no change here.
+ */
+export function resolveMediaPaths<T>(value: T, base: string): T {
+  if (typeof value === "string") {
+    const resolved = value.startsWith(MEDIA_PREFIX) ? `${base}${value}` : value;
+    return resolved as unknown as T;
+  }
+  if (Array.isArray(value)) {
+    return value.map((item) => resolveMediaPaths(item, base)) as unknown as T;
+  }
+  if (value !== null && typeof value === "object") {
+    const out: Record<string, unknown> = {};
+    for (const [key, item] of Object.entries(value)) {
+      out[key] = resolveMediaPaths(item, base);
+    }
+    return out as T;
+  }
+  return value;
+}
 
 export interface Media {
   /** The ship's official image, described for the page that is about it. */
@@ -144,12 +204,21 @@ export function parseMediaManifest(text: string): MediaManifest {
 }
 
 /**
- * Reads the manifest; null when it has not been built. The path is a module constant, never a
- * parameter, so the build traces this one file rather than the whole project.
+ * Reads the manifest; null when there is none. A local build (`public/media/manifest.json`) wins
+ * and names local files; otherwise the copy fetched from the CDN at build is read and its paths
+ * resolved against `CDN_BASE_URL` (ADR-034). Both paths are module constants, never parameters,
+ * so the build traces these two files rather than the whole project.
  */
 export function loadMediaManifest(): MediaManifest | null {
-  if (!existsSync(MEDIA_MANIFEST)) return null;
-  return parseMediaManifest(readFileSync(MEDIA_MANIFEST, "utf8"));
+  if (existsSync(MEDIA_MANIFEST)) {
+    return parseMediaManifest(readFileSync(MEDIA_MANIFEST, "utf8"));
+  }
+  const base = cdnBaseUrl();
+  if (base === null || !existsSync(CDN_MEDIA_MANIFEST)) return null;
+  return resolveMediaPaths(
+    parseMediaManifest(readFileSync(CDN_MEDIA_MANIFEST, "utf8")),
+    base,
+  );
 }
 
 let cached: Media | undefined;

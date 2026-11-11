@@ -43,7 +43,7 @@ docs/
   legal/cig-approval.md, obligations.md, takedown.md, attribution.md
   decisions/ADR-NNN-*.md
   specs/0N-*.md
-  runbooks/patch-day.md, refresh.md, launch.md
+  runbooks/patch-day.md, refresh.md, launch.md, media.md
 packages/
   schema/        Zod types + JSON schema export; the pipeline↔web contract
   ui/            design tokens + components (no app logic)
@@ -119,14 +119,15 @@ A spec item is done when all of these are true:
 | Owner's laptop or a cloud Claude Code session | `apps/web`, `packages/*`, `workers/*` development, all tests | Fixtures only; no game files |
 | Windows PC (Star Citizen LIVE and PTU installed) | `pipeline/*` on patch days; hero-ship model export | Game installs, StarBreaker, R2 write credentials |
 | Fly.io | Workers, import job, Meilisearch | Postgres and R2 credentials, Spectrum credentials |
-| Vercel | `apps/web` | Postgres read, Meilisearch read |
+| Vercel | `apps/web` | Postgres read, Meilisearch read, `CDN_BASE_URL` (the media bucket's public address, ADR-034); no R2 credentials |
 
 Environment variables (validated in `packages/schema/env.ts`; a missing required variable fails startup for any runtime that calls `loadEnv`; the Vercel site does not yet, since it serves the committed packs without a database or search service, ADR-033):
 
 ```
 DATABASE_URL
 MEILI_HOST, MEILI_MASTER_KEY, MEILI_SEARCH_KEY
-R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET, CDN_BASE_URL
+R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET (an R2 API token and its bucket: the owner's .env.local for scripts/media/publish.ts, the Windows PC for the pipeline, Fly for the import job; never the site, never CI)
+CDN_BASE_URL (the media bucket's public address; the site resolves every /media/ path against it and fetches manifest.json from it at build when no media is built locally, ADR-034)
 SPECTRUM_MODE (feed | poll | off), SPECTRUM_FEED_URL (feed mode), SPECTRUM_STAFF_ROLE_ID (optional; poll mode resolves the staff role from Spectrum's own role list each run and needs no sign-in, ADR-027)
 SENTRY_DSN
 SITE_URL (the public origin; canonical URLs, sitemap.xml and Open Graph resolve against it)

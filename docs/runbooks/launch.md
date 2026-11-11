@@ -9,10 +9,10 @@ What exists, how it was set up, and what to do when something about the hosting 
 | Vercel team | "Rift" (slug `riftbound`), Pro plan since 2026-11-10 |
 | Project | `sc-hub`, Root Directory `apps/web`, framework Next.js, Node 24.x |
 | Production branch | `main`; every push deploys production once the GitHub connection is in place |
-| Build | Vercel runs the `build` script of `apps/web` (schema first, then the licence list, then `next build`). A bare `next build` fails: the schema package is consumed from its `dist/` |
+| Build | Vercel runs the `build` script of `apps/web` (schema first, then the licence list, then the media manifest from the CDN, then `next build`). A bare `next build` fails: the schema package is consumed from its `dist/` |
 | Domains | `coppercork.com` (canonical), `www.coppercork.com` (308 to the apex), `sc-hub-khaki.vercel.app` (Vercel's own) |
 | DNS | At the registrar (Squarespace): apex A records to Vercel, `www` CNAME `cname.vercel-dns.com`. Kept from the earlier site; nothing to change |
-| Media | None. `apps/web/public/media` is git-ignored and a deploy never has it; pages render without pictures (ADR-009, ADR-033) |
+| Media | From the CDN (ADR-034). `apps/web/public/media` is git-ignored and a deploy never has it; the build fetches `manifest.json` from `CDN_BASE_URL` and every picture and model loads from there. Without `CDN_BASE_URL` the pages render without pictures (ADR-009). See `docs/runbooks/media.md` |
 
 Environment variables on the project (none is a secret; `vercel env ls` shows them):
 
@@ -48,9 +48,9 @@ The GitHub connection (Settings → Git) needs the owner's GitHub account connec
 4. The footer on `/`, a ship page and `/news/dev` carries the verbatim disclaimer from `packages/ui/legal.ts` (CLAUDE.md section 2).
 5. `/news/dev` shows developer posts (the Spectrum module is on).
 
-## When the owner wants pictures live
+## The pictures
 
-Not a redeploy. The approval boxes in `docs/legal/cig-approval.md` are the gate, and then the media go to object storage behind a CDN with `CDN_BASE_URL` (CLAUDE.md section 2), never into the deploy. Separate ADR.
+Never in the deploy. The four imagery boxes in `docs/legal/cig-approval.md` were the gate; the media live in an R2 bucket behind `CDN_BASE_URL` (CLAUDE.md section 2, ADR-034), and `docs/runbooks/media.md` says how a refresh reaches the site.
 
 ## Rolling back
 

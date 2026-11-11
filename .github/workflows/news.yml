@@ -1,6 +1,6 @@
 # The news pollers (ADR-027, spec 03).
 #
-# Every two hours workers/poll-news reads RSI's Comm-Link hub (and the Star Citizen Wiki
+# Every thirty minutes workers/poll-news reads RSI's Comm-Link hub (and the Star Citizen Wiki
 # API's record of each new Comm-Link) and RSI's roadmap board, and appends what is new to the
 # news pack in fixtures/news. When anything changed, the change lands on main as one data commit;
 # when nothing did, the run ends with no commit. The unit suite guards the parsers; a source that
@@ -10,9 +10,8 @@
 # credential: Spectrum's search answers without a sign-in) or feed (with SPECTRUM_FEED_URL); in poll
 # mode it then reads the threads of the posts it just collected, up to three, five minutes apart,
 # for the posts' own blocks and pictures (ADR-037), which is why the job has twenty minutes.
-# What it reads lands in this private repository only; the site shows nothing from Spectrum until
-# its own SPECTRUM_MODE is set, once docs/legal/cig-approval.md ticks the box, and whether the
-# collection itself needs CIG's word is recorded there as the owner's call.
+# The site shows Spectrum items only when its own SPECTRUM_MODE is set; docs/legal/cig-approval.md
+# records the owner's decisions on the collection and the republication.
 #
 # The cover step (ADR-048) then puts the cover of each new Comm-Link on the live site: it reads the
 # live media manifest from the store, finds the Comm-Links of the last fortnight it has no cover
@@ -25,11 +24,12 @@ name: News
 
 on:
   schedule:
-    # Every two hours: Actions bills every job up to the minute, a private repository has two
-    # thousand minutes a month, and forty-eight runs a day took most of them (ADR-027, amended
-    # 2026-11-10 when the owner was warned the minutes were running out). Spec 03's
-    # fifteen-minute gate holds once the pollers run on Fly.
-    - cron: "0 */2 * * *"
+    # Every thirty minutes, at seven and thirty-seven past the hour (ADR-027, amended 2026-11-11):
+    # GitHub drops scheduled runs that fall on the top of the hour when its queues are busy (the
+    # two-hourly "0 */2" ran twice in twenty hours), and the repository is public, so Actions
+    # minutes no longer limit the cadence. Spec 03's fifteen-minute gate holds once the pollers
+    # run on Fly.
+    - cron: "7,37 * * * *"
   workflow_dispatch:
     inputs:
       rehearse_covers:

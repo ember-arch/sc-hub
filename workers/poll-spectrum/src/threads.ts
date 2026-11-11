@@ -22,7 +22,7 @@
  */
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import type { Store } from "poll-news/store";
-import type { ContentItem } from "schema";
+import { type ContentItem, SPECTRUM_PICTURE_ID } from "schema";
 import { z } from "zod";
 import {
   type ContentBlock,
@@ -144,7 +144,7 @@ export type ThreadStateFile = z.infer<typeof ThreadStateFile>;
 
 /** One row of `uploads.json`: a picture a post carries, for the media fetch. */
 export const UploadRow = z.strictObject({
-  upload_id: str.regex(/^\d+$/),
+  upload_id: str.regex(SPECTRUM_PICTURE_ID),
   url: z.url(),
   width: z.number().int().positive().nullable(),
   height: z.number().int().positive().nullable(),

@@ -3,6 +3,7 @@
  * Pure functions and constants only, so the unit tests run them with no network and no files.
  */
 
+import { SPECTRUM_PICTURE_ID } from "schema";
 import { z } from "zod";
 
 export const RSI_ORIGIN = "https://robertsspaceindustries.com";
@@ -254,8 +255,8 @@ export function spectrumRenditionPath(uploadId: string, width: number): string {
 
 /** One row of `fixtures/spectrum-media/sources.json`: where a copied post picture came from (ADR-037). */
 export const SpectrumSource = RsiSource.omit({ class_name: true }).extend({
-  /** Spectrum's upload id, the `data-upload` of the post's `img`. */
-  upload_id: z.string().regex(/^\d+$/),
+  /** Spectrum's picture id, the `data-upload` of the post's `img`: an upload's number or an embed's "e-" slug. */
+  upload_id: z.string().regex(SPECTRUM_PICTURE_ID),
   /** The post the picture was attached to, on Spectrum. */
   page_url: z.url(),
 });

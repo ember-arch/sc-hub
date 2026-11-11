@@ -335,6 +335,87 @@ describe("htmlFromBlocks on made-up blocks", () => {
     expect(ok.html).toBe('<img data-upload="9" width="1" height="1" alt="">');
   });
 
+  it("takes an image embedded by address from RSI's media host as a picture keyed e- and its slug, and makes a link of any other embed", () => {
+    // The entry as Spectrum's answer of 2026-11-11 carries it, in "Day of the Vara 2956".
+    const vara = {
+      id: "embed:tgcvmgrkzycyy",
+      slug: "tgcvmgrkzycyy",
+      type: "embed",
+      data: {
+        embed_type: "photo",
+        url: "https://media.robertsspaceindustries.com/3l2owd4euw4r9/channel_item_full.png",
+        provider_name: "robertsspaceindustries",
+        title:
+          "https://media.robertsspaceindustries.com/3l2owd4euw4r9/channel_item_full.png",
+        description: null,
+        image_width: 1119,
+        image_height: 600,
+        time_fetched: 1792600210,
+      },
+    };
+    const photo = htmlFromBlocks([{ id: 1, type: "image", data: [vara] }]);
+    expect(photo.html).toBe(
+      '<img data-upload="e-tgcvmgrkzycyy" width="1119" height="600" alt="">',
+    );
+    expect(photo.uploads).toEqual([
+      {
+        id: "e-tgcvmgrkzycyy",
+        url: "https://media.robertsspaceindustries.com/3l2owd4euw4r9/channel_item_full.png",
+        width: 1119,
+        height: 600,
+      },
+    ]);
+    expect(withinAllowlist(photo.html)).toBe(true);
+    // A picture on another host, and a video, are links; nothing is copied from them.
+    const elsewhere = htmlFromBlocks([
+      {
+        id: 2,
+        type: "image",
+        data: [
+          {
+            ...vara,
+            id: "embed:abc",
+            slug: "abc",
+            data: {
+              ...vara.data,
+              url: "https://i.imgur.com/a.png",
+              title: null,
+            },
+          },
+          {
+            ...vara,
+            id: "embed:def",
+            slug: "def",
+            data: {
+              ...vara.data,
+              embed_type: "video",
+              url: "https://www.youtube.com/watch?v=x",
+              title: "Inside Star Citizen",
+            },
+          },
+        ],
+      },
+    ]);
+    expect(elsewhere.uploads).toEqual([]);
+    expect(elsewhere.html).toContain(
+      '<p><a href="https://i.imgur.com/a.png" target="_blank" rel="noopener noreferrer">https://i.imgur.com/a.png</a></p>',
+    );
+    expect(elsewhere.html).toContain(
+      '<p><a href="https://www.youtube.com/watch?v=x" target="_blank" rel="noopener noreferrer">Inside Star Citizen</a></p>',
+    );
+    expect(withinAllowlist(elsewhere.html)).toBe(true);
+    // An entry of neither shape still halts.
+    expect(() =>
+      htmlFromBlocks([
+        {
+          id: 3,
+          type: "image",
+          data: [{ id: "gif:1", type: "gif", data: {} }],
+        },
+      ]),
+    ).toThrow();
+  });
+
   it("joins blocks with a newline and takes the first paragraph from the first text block with one", () => {
     const parsed = htmlFromBlocks([
       draft([{ text: "" }]),

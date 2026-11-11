@@ -203,8 +203,17 @@ export type CoverImage = z.infer<typeof CoverImage>;
  * upload id, which the post's `body_html` carries as `data-upload` on its `img`. Credited to Cloud
  * Imperium Games, via Spectrum, and linked to the post.
  */
+/**
+ * A Spectrum picture's id (ADR-037): an upload's number ("3481105"), or "e-" and the slug of an
+ * image embedded by address from RSI's media host ("e-tgcvmgrkzycyy"). The same shape names the
+ * post's `img`, the record of the copy and the web copies' files.
+ */
+export const SPECTRUM_PICTURE_ID = /^(?:\d+|e-[a-z0-9]+)$/;
+/** The same shape for a capture group inside a larger pattern. */
+export const SPECTRUM_PICTURE_ID_SOURCE = "\\d+|e-[a-z0-9]+";
+
 export const SpectrumImage = z.strictObject({
-  upload_id: z.string().regex(/^\d+$/),
+  upload_id: z.string().regex(SPECTRUM_PICTURE_ID),
   source: z.literal("spectrum_upload"),
   /** The post the picture was attached to, on Spectrum. */
   page_url: z.url(),

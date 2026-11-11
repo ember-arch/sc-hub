@@ -73,7 +73,31 @@ const UploadEntry = z
       .loose(),
   })
   .loose();
-export const ImageData = z.array(UploadEntry);
+
+/**
+ * An image embedded by address rather than uploaded (seen 2026-11-11 in "Day of the Vara 2956"):
+ * Spectrum fetched the address and keeps what it found. A `photo` on RSI's own media host is a
+ * picture like an upload, keyed "e-" and its slug; any other embed (a video, a page, a picture on
+ * someone else's host) becomes a plain link to its address, so nothing from a third-party host is
+ * copied (ADR-009).
+ */
+const EmbedEntry = z
+  .object({
+    id: str.regex(/^embed:[a-z0-9]+$/),
+    slug: str.regex(/^[a-z0-9]+$/),
+    type: z.literal("embed"),
+    data: z
+      .object({
+        embed_type: str,
+        url: z.url(),
+        title: str.nullable().optional(),
+        image_width: z.number().int().positive().nullable().optional(),
+        image_height: z.number().int().positive().nullable().optional(),
+      })
+      .loose(),
+  })
+  .loose();
+export const ImageData = z.array(z.union([UploadEntry, EmbedEntry]));
 
 export const ContentBlock = z
   .object({ id: key.optional(), type: str, data: z.unknown() })
@@ -423,7 +447,25 @@ export function htmlFromBlocks(
         const entries = ImageData.parse(block.data);
         if (!options.pictures) break;
         for (const entry of entries) {
-          const id = entry.id.slice("upload:".length);
+          if (entry.type === "embed") {
+            const picture =
+              entry.data.embed_type === "photo" &&
+              UPLOAD_HOST.test(entry.data.url);
+            if (!picture) {
+              // Not a picture this site copies: a link to it, in the post's own words or its address.
+              if (/^https?:\/\/\S+$/i.test(entry.data.url)) {
+                const label = entry.data.title?.trim() || entry.data.url;
+                parts.push(
+                  `<p><a href="${escapeHtml(entry.data.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a></p>`,
+                );
+              }
+              continue;
+            }
+          }
+          const id =
+            entry.type === "embed"
+              ? `e-${entry.slug}`
+              : entry.id.slice("upload:".length);
           const width = entry.data.image_width ?? null;
           const height = entry.data.image_height ?? null;
           const size =
@@ -479,7 +521,11 @@ export function withinAllowlist(html: string): boolean {
       )
         return false;
     } else if (tag === "img") {
-      if (!/^data-upload="\d+"( width="\d+" height="\d+")? alt=""$/.test(attrs))
+      if (
+        !/^data-upload="(?:\d+|e-[a-z0-9]+)"( width="\d+" height="\d+")? alt=""$/.test(
+          attrs,
+        )
+      )
         return false;
     } else return false;
   }

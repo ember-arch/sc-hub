@@ -22,6 +22,7 @@ export * from "./entities/author.js";
 export * from "./entities/entity-link.js";
 export * from "./entities/title.js";
 export * from "./entities/funding.js";
+export * from "./entities/patch.js";
 export * from "./registry.js";
 export * from "./manifest.js";
 export * from "./keys.js";

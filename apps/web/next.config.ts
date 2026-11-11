@@ -24,6 +24,8 @@ const nextConfig: NextConfig = {
       // routes for their card pictures; absent when CDN_BASE_URL is unset.
       "generated/media-manifest.json",
     ],
+    // The build snapshots (ADR-049), read per request by /patches/compare only.
+    "/patches/**": ["../../fixtures/patches/*.json.gz"],
   },
   // No image optimizer: the pictures are pre-sized WebP renditions (scripts/media/prepare.ts)
   // served as static files locally and from the CDN in a deploy (ADR-009, ADR-034).

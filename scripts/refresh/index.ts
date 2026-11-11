@@ -13,6 +13,8 @@
  *   3. ship matrix, 4. loaners, 5. prices (pledge and shop): RSI sources, which need
  *      SC_HUB_CONTACT_EMAIL (CLAUDE.md section 9); skipped, and said so, without it.
  *   6. titles, 7. funding: the wiki's article and counters.
+ *   Between 2 and 3, patches: a snapshot of every build the Wiki API lists and fixtures/patches
+ *   lacks (ADR-049).
  *
  * The out folder holds summary.md, commit.txt, issue-title.txt, issue.md, needs-contact.txt,
  * build.txt (the build the API served) and one <step>.log per fetcher run; placeholders are
@@ -37,6 +39,7 @@ import { tmpdir } from "node:os";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createWikiClient } from "../bootstrap-fixtures/fetch.js";
+import { buildNumber } from "../patches/plan.js";
 import { WikiGameVersionResponse } from "../bootstrap-fixtures/types.js";
 import { userAgent } from "../user-agent.js";
 import {
@@ -97,6 +100,8 @@ interface Step {
   readonly files: readonly string[];
   /** The script to run, relative to the repository. */
   readonly script: string;
+  /** Arguments for the script. */
+  readonly args?: readonly string[];
   readonly needsRsi?: boolean;
   /** Runs only when this earlier step changed something. */
   readonly after?: string;
@@ -109,7 +114,11 @@ interface Step {
     | string;
 }
 
-/** Every file under the paths, as text, keyed by repository-relative path. */
+/**
+ * Every file under the paths, keyed by repository-relative path, read byte for byte (latin1 maps
+ * each byte to one character and back): the patch snapshots are gzip (ADR-049), and a UTF-8
+ * round trip would corrupt them on a restore. JSON compares the same either way.
+ */
 function snapshot(paths: readonly string[]): Map<string, string> {
   const out = new Map<string, string>();
   const walk = (abs: string): void => {
@@ -120,7 +129,7 @@ function snapshot(paths: readonly string[]): Map<string, string> {
     }
     out.set(
       relative(repoRoot, abs).replaceAll("\\", "/"),
-      readFileSync(abs, "utf8"),
+      readFileSync(abs, "latin1"),
     );
   };
   for (const p of paths) walk(join(repoRoot, p));
@@ -137,7 +146,7 @@ function restore(
     if (only !== undefined && !only.has(path)) continue;
     const abs = join(repoRoot, path);
     mkdirSync(dirname(abs), { recursive: true });
-    writeFileSync(abs, text, "utf8");
+    writeFileSync(abs, text, "latin1");
   }
   for (const path of after.keys()) {
     if (before.has(path)) continue;
@@ -146,8 +155,11 @@ function restore(
   }
 }
 
-function runScript(script: string): { code: number; stderr: string } {
-  const result = spawnSync("pnpm", ["exec", "tsx", script], {
+function runScript(
+  script: string,
+  args: readonly string[] = [],
+): { code: number; stderr: string } {
+  const result = spawnSync("pnpm", ["exec", "tsx", script, ...args], {
     cwd: repoRoot,
     encoding: "utf8",
     env: process.env,
@@ -238,6 +250,49 @@ function cargoBoxesGate(outcomes: readonly Outcome[]): { run: true } | string {
   return `the box shapes are for the pack's build, ${packVersion ?? "this build"}`;
 }
 
+/**
+ * The patch snapshots (ADR-049) run when the Wiki API lists a build that has no file in
+ * fixtures/patches yet: one request for the list, then about 300 for the oldest such build (one
+ * build a run, oldest first so no address moves).
+ */
+async function patchesGate(): Promise<{ run: true; note?: string } | string> {
+  const client = createWikiClient({
+    fetch: (url, init) => globalThis.fetch(url, init),
+    userAgent: userAgent("refresh"),
+    log,
+  });
+  const listed = (
+    (await client.getJson("/api/game-versions?limit=100")) as {
+      data?: { code?: unknown }[];
+    }
+  ).data
+    ?.map((v) => v.code)
+    .filter((c): c is string => typeof c === "string");
+  if (listed === undefined || listed.length === 0)
+    return "the Wiki API listed no builds";
+  const dir = join(repoRoot, "fixtures", "patches");
+  const filed = new Set(
+    existsSync(dir)
+      ? readdirSync(dir)
+          .filter((f) => /^\d.*\.json\.gz$/.test(f))
+          .map((f) => f.slice(0, -".json.gz".length))
+      : [],
+  );
+  // The fetch takes the oldest missing build (scripts/patches/plan.ts); the note names that one.
+  const missing = listed
+    .filter((c) => !filed.has(c))
+    .sort((a, b) => buildNumber(a) - buildNumber(b));
+  return missing[0] === undefined
+    ? "every build the Wiki API lists is on file"
+    : {
+        run: true,
+        note:
+          missing.length === 1
+            ? missing[0]
+            : `${missing[0]} (${missing.length - 1} more waiting)`,
+      };
+}
+
 const STEPS: readonly Step[] = [
   {
     id: "catalog",
@@ -259,6 +314,16 @@ const STEPS: readonly Step[] = [
     files: ["fixtures/cargo/CargoBox.json"],
     script: "scripts/bootstrap-fixtures/cargo-boxes.ts",
     gate: cargoBoxesGate,
+  },
+  {
+    id: "patches",
+    label: "patch snapshots",
+    files: ["fixtures/patches"],
+    script: "scripts/patches/fetch.ts",
+    // One build a run: a backlog (a first run, or days the wiki was down) is worked off a
+    // build a day instead of outrunning the job (ADR-049).
+    args: ["--max-builds", "1"],
+    gate: patchesGate,
   },
   {
     id: "ship-matrix",
@@ -350,7 +415,7 @@ async function runStep(
   const before = snapshot(step.files);
   log({ event: "refresh.step", id, script: step.script });
   const started = Date.now();
-  const result = runScript(step.script);
+  const result = runScript(step.script, step.args);
   // The fetcher's whole log, for the job's summary; the issue quotes its last lines.
   outFile(`${id}.log`, result.stderr);
   const after = snapshot(step.files);

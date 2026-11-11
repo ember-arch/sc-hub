@@ -1,0 +1,221 @@
+{
+  "data": [
+    {
+      "uuid": "280f47b7-8434-410c-b854-380768fdccec",
+      "key": "BP_CRAFT_AMRS_LaserCannon_S1",
+      "category_uuid": "61e576d2-f8b4-46b1-98e6-9205bb5de686",
+      "output_item_uuid": "26838ca7-418a-47d2-8429-7339ebbb8993",
+      "output_name": "Omnisky III Cannon",
+      "output_class": "amrs_lasercannon_s1",
+      "craft_time_seconds": 540,
+      "craft_time_label": "9 minutes",
+      "is_available_by_default": false,
+      "game_version": "4.10.2-LIVE.12881860",
+      "ingredient_count": 3,
+      "unlocking_missions_count": 1,
+      "ingredients": [
+        {
+          "name": "Agricium",
+          "kind": "resource",
+          "resource_type_uuid": "dc6fbcbb-5990-4ed5-82ee-93152dab7845",
+          "item_uuid": null,
+          "quantity_scu": 0.36,
+          "quantity": null,
+          "link": "https://api.star-citizen.wiki/api/commodities/fc1ec740-3047-48d8-81f0-396f4c9a90ef?version=4.10.2-LIVE.12881860",
+          "web_url": "https://api.star-citizen.wiki/commodities/fc1ec740-3047-48d8-81f0-396f4c9a90ef?version=4.10.2-LIVE.12881860"
+        },
+        {
+          "name": "Hadanite",
+          "kind": "item",
+          "resource_type_uuid": null,
+          "item_uuid": "125dd723-95ad-488d-830f-62c954445ca1",
+          "quantity_scu": null,
+          "quantity": 7,
+          "link": "https://api.star-citizen.wiki/api/items/125dd723-95ad-488d-830f-62c954445ca1?version=4.10.2-LIVE.12881860",
+          "web_url": "https://api.star-citizen.wiki/items/125dd723-95ad-488d-830f-62c954445ca1?version=4.10.2-LIVE.12881860"
+        },
+        {
+          "name": "Dolivine",
+          "kind": "item",
+          "resource_type_uuid": null,
+          "item_uuid": "20094ded-ad04-46a3-b734-9e37aa3154b3",
+          "quantity_scu": null,
+          "quantity": 7,
+          "link": "https://api.star-citizen.wiki/api/items/20094ded-ad04-46a3-b734-9e37aa3154b3?version=4.10.2-LIVE.12881860",
+          "web_url": "https://api.star-citizen.wiki/items/20094ded-ad04-46a3-b734-9e37aa3154b3?version=4.10.2-LIVE.12881860"
+        }
+      ],
+      "dismantle_returns": [
+        {
+          "name": "Agricium",
+          "resource_type_uuid": "dc6fbcbb-5990-4ed5-82ee-93152dab7845",
+          "quantity_scu": 0.18,
+          "link": "https://api.star-citizen.wiki/api/commodities/dc6fbcbb-5990-4ed5-82ee-93152dab7845?version=4.10.2-LIVE.12881860",
+          "web_url": "https://api.star-citizen.wiki/commodities/dc6fbcbb-5990-4ed5-82ee-93152dab7845?version=4.10.2-LIVE.12881860"
+        }
+      ],
+      "output": {
+        "uuid": "26838ca7-418a-47d2-8429-7339ebbb8993",
+        "name": "Omnisky III Cannon",
+        "class": "amrs_lasercannon_s1",
+        "type": "WeaponGun",
+        "type_label": "Weapon Gun",
+        "sub_type": "Gun",
+        "subtype": "Gun",
+        "grade": "1",
+        "item_web_url": "https://api.star-citizen.wiki/items/26838ca7-418a-47d2-8429-7339ebbb8993?version=4.10.2-LIVE.12881860"
+      },
+      "web_url": "https://api.star-citizen.wiki/blueprints/omnisky-iii-cannon?version=4.10.2-LIVE.12881860",
+      "output_item_web_url": "https://api.star-citizen.wiki/items/26838ca7-418a-47d2-8429-7339ebbb8993?version=4.10.2-LIVE.12881860",
+      "link": "https://api.star-citizen.wiki/api/blueprints/280f47b7-8434-410c-b854-380768fdccec?version=4.10.2-LIVE.12881860"
+    },
+    {
+      "uuid": "3e1831e2-fe5d-4383-9709-d1125cb2f174",
+      "key": "BP_CRAFT_AMRS_LaserCannon_S2",
+      "category_uuid": "3b758fdc-250d-4a15-bf4e-118d4a5b66bd",
+      "output_item_uuid": "1893e596-acaf-49bc-b367-e43e99c2925f",
+      "output_name": "Omnisky VI Cannon",
+      "output_class": "amrs_lasercannon_s2",
+      "craft_time_seconds": 960,
+      "craft_time_label": "16 minutes",
+      "is_available_by_default": false,
+      "game_version": "4.10.2-LIVE.12881860",
+      "ingredient_count": 3,
+      "unlocking_missions_count": 1,
+      "ingredients": [
+        {
+          "name": "Agricium",
+          "kind": "resource",
+          "resource_type_uuid": "dc6fbcbb-5990-4ed5-82ee-93152dab7845",
+          "item_uuid": null,
+          "quantity_scu": 0.64,
+          "quantity": null,
+          "link": "https://api.star-citizen.wiki/api/commodities/fc1ec740-3047-48d8-81f0-396f4c9a90ef?version=4.10.2-LIVE.12881860",
+          "web_url": "https://api.star-citizen.wiki/commodities/fc1ec740-3047-48d8-81f0-396f4c9a90ef?version=4.10.2-LIVE.12881860"
+        },
+        {
+          "name": "Hadanite",
+          "kind": "item",
+          "resource_type_uuid": null,
+          "item_uuid": "125dd723-95ad-488d-830f-62c954445ca1",
+          "quantity_scu": null,
+          "quantity": 13,
+          "link": "https://api.star-citizen.wiki/api/items/125dd723-95ad-488d-830f-62c954445ca1?version=4.10.2-LIVE.12881860",
+          "web_url": "https://api.star-citizen.wiki/items/125dd723-95ad-488d-830f-62c954445ca1?version=4.10.2-LIVE.12881860"
+        },
+        {
+          "name": "Dolivine",
+          "kind": "item",
+          "resource_type_uuid": null,
+          "item_uuid": "20094ded-ad04-46a3-b734-9e37aa3154b3",
+          "quantity_scu": null,
+          "quantity": 13,
+          "link": "https://api.star-citizen.wiki/api/items/20094ded-ad04-46a3-b734-9e37aa3154b3?version=4.10.2-LIVE.12881860",
+          "web_url": "https://api.star-citizen.wiki/items/20094ded-ad04-46a3-b734-9e37aa3154b3?version=4.10.2-LIVE.12881860"
+        }
+      ],
+      "dismantle_returns": [
+        {
+          "name": "Agricium",
+          "resource_type_uuid": "dc6fbcbb-5990-4ed5-82ee-93152dab7845",
+          "quantity_scu": 0.32,
+          "link": "https://api.star-citizen.wiki/api/commodities/dc6fbcbb-5990-4ed5-82ee-93152dab7845?version=4.10.2-LIVE.12881860",
+          "web_url": "https://api.star-citizen.wiki/commodities/dc6fbcbb-5990-4ed5-82ee-93152dab7845?version=4.10.2-LIVE.12881860"
+        }
+      ],
+      "output": {
+        "uuid": "1893e596-acaf-49bc-b367-e43e99c2925f",
+        "name": "Omnisky VI Cannon",
+        "class": "amrs_lasercannon_s2",
+        "type": "WeaponGun",
+        "type_label": "Weapon Gun",
+        "sub_type": "Gun",
+        "subtype": "Gun",
+        "grade": "1",
+        "item_web_url": "https://api.star-citizen.wiki/items/1893e596-acaf-49bc-b367-e43e99c2925f?version=4.10.2-LIVE.12881860"
+      },
+      "web_url": "https://api.star-citizen.wiki/blueprints/omnisky-vi-cannon?version=4.10.2-LIVE.12881860",
+      "output_item_web_url": "https://api.star-citizen.wiki/items/1893e596-acaf-49bc-b367-e43e99c2925f?version=4.10.2-LIVE.12881860",
+      "link": "https://api.star-citizen.wiki/api/blueprints/3e1831e2-fe5d-4383-9709-d1125cb2f174?version=4.10.2-LIVE.12881860"
+    },
+    {
+      "uuid": "8a4f43a8-5f3d-4557-9756-01e1e77fbc2c",
+      "key": "BP_CRAFT_RADR_GNRP_S03_Idris_TEMP",
+      "category_uuid": "a7a033d9-4dcb-4a8a-8ba6-077973f1d4aa",
+      "output_item_uuid": "944a73bb-974c-4e4c-ab0f-6f9cd062c5a5",
+      "output_name": null,
+      "output_class": "radr_gnrp_s03_idris_temp",
+      "craft_time_seconds": 960,
+      "craft_time_label": "16 minutes",
+      "is_available_by_default": false,
+      "game_version": "4.10.2-LIVE.12881860",
+      "ingredient_count": 3,
+      "unlocking_missions_count": 0,
+      "ingredients": [
+        {
+          "name": "Borase",
+          "kind": "resource",
+          "resource_type_uuid": "33bff393-42f1-4f70-85a1-71e695ed2a5a",
+          "item_uuid": null,
+          "quantity_scu": 2,
+          "quantity": null,
+          "link": "https://api.star-citizen.wiki/api/commodities/728a3d7e-9567-4e1c-87fd-2bd45b458aa6?version=4.10.2-LIVE.12881860",
+          "web_url": "https://api.star-citizen.wiki/commodities/728a3d7e-9567-4e1c-87fd-2bd45b458aa6?version=4.10.2-LIVE.12881860"
+        },
+        {
+          "name": "Bexalite",
+          "kind": "resource",
+          "resource_type_uuid": "999e3149-fd10-49ac-914f-8911e61c6122",
+          "item_uuid": null,
+          "quantity_scu": 0.8,
+          "quantity": null,
+          "link": "https://api.star-citizen.wiki/api/commodities/3848c27d-49cc-4fdb-9a18-e93770bc8bc2?version=4.10.2-LIVE.12881860",
+          "web_url": "https://api.star-citizen.wiki/commodities/3848c27d-49cc-4fdb-9a18-e93770bc8bc2?version=4.10.2-LIVE.12881860"
+        },
+        {
+          "name": "Stileron",
+          "kind": "resource",
+          "resource_type_uuid": "8cd317a3-df9b-4315-8ac3-0f1fca42dfd4",
+          "item_uuid": null,
+          "quantity_scu": 0.8,
+          "quantity": null,
+          "link": "https://api.star-citizen.wiki/api/commodities/32bafbd4-c52a-476d-b31c-97c4b3102471?version=4.10.2-LIVE.12881860",
+          "web_url": "https://api.star-citizen.wiki/commodities/32bafbd4-c52a-476d-b31c-97c4b3102471?version=4.10.2-LIVE.12881860"
+        }
+      ],
+      "dismantle_returns": [
+        {
+          "name": "Bexalite",
+          "resource_type_uuid": "999e3149-fd10-49ac-914f-8911e61c6122",
+          "quantity_scu": 0.4,
+          "link": "https://api.star-citizen.wiki/api/commodities/999e3149-fd10-49ac-914f-8911e61c6122?version=4.10.2-LIVE.12881860",
+          "web_url": "https://api.star-citizen.wiki/commodities/999e3149-fd10-49ac-914f-8911e61c6122?version=4.10.2-LIVE.12881860"
+        },
+        {
+          "name": "Borase",
+          "resource_type_uuid": "33bff393-42f1-4f70-85a1-71e695ed2a5a",
+          "quantity_scu": 1,
+          "link": "https://api.star-citizen.wiki/api/commodities/33bff393-42f1-4f70-85a1-71e695ed2a5a?version=4.10.2-LIVE.12881860",
+          "web_url": "https://api.star-citizen.wiki/commodities/33bff393-42f1-4f70-85a1-71e695ed2a5a?version=4.10.2-LIVE.12881860"
+        }
+      ],
+      "output": {
+        "uuid": "944a73bb-974c-4e4c-ab0f-6f9cd062c5a5",
+        "name": null,
+        "class": "radr_gnrp_s03_idris_temp",
+        "type": "Radar",
+        "type_label": "Radar",
+        "sub_type": "MidRangeRadar",
+        "subtype": "MidRangeRadar",
+        "grade": "1",
+        "item_web_url": "https://api.star-citizen.wiki/items/944a73bb-974c-4e4c-ab0f-6f9cd062c5a5?version=4.10.2-LIVE.12881860"
+      },
+      "web_url": "https://api.star-citizen.wiki/blueprints/bp-craft-radr-gnrp-s03-idris-temp?version=4.10.2-LIVE.12881860",
+      "output_item_web_url": "https://api.star-citizen.wiki/items/944a73bb-974c-4e4c-ab0f-6f9cd062c5a5?version=4.10.2-LIVE.12881860",
+      "link": "https://api.star-citizen.wiki/api/blueprints/8a4f43a8-5f3d-4557-9756-01e1e77fbc2c?version=4.10.2-LIVE.12881860"
+    }
+  ],
+  "meta": {
+    "last_page": 1
+  }
+}

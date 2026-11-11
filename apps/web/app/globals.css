@@ -21,6 +21,14 @@
 .dev-post-body a {
   color: var(--accent);
 }
+/* The folded post card (ADR-035): no disclosure marker, and a title or excerpt with no break in it wraps. */
+.dev-post-fold summary::-webkit-details-marker {
+  display: none;
+}
+.dev-post-fold h2,
+.dev-post-fold summary p {
+  overflow-wrap: anywhere;
+}
 
 /*
  * Maker logos come in two official versions (ADR-009): the dark mark for light pages, the light

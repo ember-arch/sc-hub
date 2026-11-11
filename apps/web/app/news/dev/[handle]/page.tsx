@@ -3,7 +3,13 @@ import { notFound } from "next/navigation";
 import { DevPost, EmptyState, TextLink, formatDate } from "ui";
 import { Masthead } from "../../../masthead";
 import { repo } from "../../../../lib/data";
-import { authorByHandle, devPosts, postsBy } from "../../../../lib/dev-posts";
+import {
+  authorByHandle,
+  devPosts,
+  excerptOf,
+  postsBy,
+  threadUrl,
+} from "../../../../lib/dev-posts";
 import { Site, now } from "../../../../lib/site";
 import { NewsTabs } from "../../tabs";
 
@@ -80,12 +86,14 @@ export default async function AuthorPage({ params, searchParams }: Params) {
             {shown.map((post) => (
               <DevPost
                 key={post.id}
+                title={post.thread_title ?? post.title}
                 author={{ name: author.display_name, role: author.role }}
-                thread={post.thread_title}
                 publishedAt={post.published_at}
                 now={at}
                 bodyHtml={post.body_html}
+                excerpt={excerptOf(post.body_html)}
                 sourceUrl={post.url}
+                threadUrl={threadUrl(post)}
               />
             ))}
           </div>

@@ -5,7 +5,7 @@ import {
   authorOf,
   authorsWithPosts,
   devPosts,
-  groupThreads,
+  excerptOf,
   postsBy,
   threadUrl,
 } from "../lib/dev-posts";
@@ -84,18 +84,9 @@ const news: ContentItem[] = [
   }),
 ];
 
-describe("the dev tracker's grouping", () => {
+describe("the dev tracker's reading", () => {
   it("keeps only Spectrum items", () => {
     expect(devPosts(news).map((p) => p.external_id)).toEqual(["3", "2", "1"]);
-  });
-
-  it("groups by thread, threads newest first, posts newest first within one", () => {
-    const threads = groupThreads(devPosts(news));
-    expect(threads.map((t) => t.id)).toEqual(["576489", "576637"]);
-    expect(threads[0]?.title).toBe("Changes for the Polaris");
-    expect(threads[0]?.posts.map((p) => p.external_id)).toEqual(["3", "1"]);
-    expect(threads[0]?.url).toBe(THREAD);
-    expect(threads[1]?.url).toBe(OTHER);
   });
 
   it("takes a reply's thread address without the post number and an opening post's as is", () => {
@@ -115,5 +106,22 @@ describe("the dev tracker's grouping", () => {
     expect(postsBy(posts, authors[1]!).map((p) => p.external_id)).toEqual([
       "2",
     ]);
+  });
+});
+
+describe("excerptOf", () => {
+  it("gives the post's first lines as plain text, entities decoded, cut on a word", () => {
+    expect(
+      excerptOf("<p>Hey y&#39;all,</p><p>It&amp;s time &lt;again&gt;.</p>"),
+    ).toBe("Hey y'all, It&s time <again>.");
+    // An escaped entity in the post's own text stays text.
+    expect(excerptOf("<p>say &amp;lt; here</p>")).toBe("say &lt; here");
+    expect(excerptOf("")).toBeNull();
+    expect(excerptOf("<p> </p>")).toBeNull();
+    const long = `<p>${"word ".repeat(100)}</p>`;
+    const cut = excerptOf(long)!;
+    expect(cut.length).toBeLessThanOrEqual(281);
+    expect(cut.endsWith("…")).toBe(true);
+    expect(cut).not.toMatch(/ …$/);
   });
 });

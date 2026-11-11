@@ -305,16 +305,18 @@ const renderers: Record<string, { title: string; render: Story["render"] }> = {
     title: "DevPost",
     render: (s) => (
       <DevPost
+        title={s.devPost.thread_title ?? s.devPost.title}
         author={{
           name: s.author.display_name,
           role: s.author.role,
           href: "/news/dev",
         }}
-        thread={s.devPost.thread_title}
         publishedAt={s.devPost.published_at}
         now={new Date(s.now)}
         bodyHtml={s.devPost.body_html}
+        excerpt={s.devPost.body_html.replace(/<[^>]+>/g, " ").trim()}
         sourceUrl={s.devPost.url}
+        open
       />
     ),
   },

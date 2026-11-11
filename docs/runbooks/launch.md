@@ -23,6 +23,7 @@ Environment variables on the project (none is a secret; `vercel env ls` shows th
 | `SPECTRUM_MODE` | `poll` | same | Turns the developer-post tab on (ADR-027); the box in `docs/legal/cig-approval.md` is ticked |
 | `NEXT_TELEMETRY_DISABLED` | `1` | same | No network from the build beyond the registry, as in CI |
 | `ENABLE_EXPERIMENTAL_COREPACK` | `1` | same | Vercel then honours `packageManager: pnpm@12.18.0`; the lockfile is version 9.0, which Vercel would otherwise install with an older pnpm that does not know `allowBuilds` in `pnpm-workspace.yaml` |
+| `CDN_BASE_URL` | `https://eieovaxp8q6yustn.public.blob.vercel-storage.com` | same | The Blob store's public address (ADR-034, `docs/runbooks/media.md`): the build fetches `manifest.json` from it and every picture and model loads from it. Set on 2026-11-10, after the store existed and before the first publish; the site code before ADR-034 ignores it, and the code from ADR-034 on fails the build when the manifest is missing, so the first publish must precede the first deploy of that code |
 
 ## How it was set up (2026-11-10)
 

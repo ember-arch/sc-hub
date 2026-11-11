@@ -63,6 +63,18 @@ for (const route of ROUTES) {
   });
 }
 
+test("the about page names the takedown address in its own section", async ({
+  page,
+}) => {
+  const response = await page.goto("/about");
+  expect(response?.status()).toBe(200);
+  // docs/legal/obligations.md: the address is published on the about page and in the footer.
+  const section = page.locator("#contact");
+  await expect(
+    section.getByRole("link", { name: CONTACT_EMAIL ?? "" }),
+  ).toHaveAttribute("href", "mailto:" + CONTACT_EMAIL);
+});
+
 test("a component page and a manufacturer page carry the footer too", async ({
   page,
 }) => {

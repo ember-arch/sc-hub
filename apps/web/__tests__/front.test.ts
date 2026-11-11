@@ -172,6 +172,20 @@ describe("featuredPosts", () => {
     expect(picked[0]).toBe(posts[0]);
   });
 
+  it("counts a thread staff opened long ago as theirs when they post in it again", () => {
+    // The live case: patch notes opened weeks ago, a staff reply today; the thread leads over a
+    // younger thread staff only answered in.
+    const posts = [
+      post(2, "answered"),
+      post(5, "notes"),
+      post(500, "notes", { opener: true }),
+    ];
+    expect(featuredPosts(posts, now).map((p) => p.thread_id)).toEqual([
+      "notes",
+      "answered",
+    ]);
+  });
+
   it("reaches back to 72 hours for staff-opened threads before taking threads staff only answered in", () => {
     const posts = [
       post(1, "a", { opener: true }),

@@ -19,6 +19,7 @@ What the worker has today is the search answer's text (ADR-027): paragraphs, no 
 | Folded by default | A `details` element: the summary holds the title, the author, the time and the first lines (`excerptOf`, the sanitized body as plain text, cut at 280 characters on a word) with a plain cue, "Show the whole post"; opened, the fold hides the first lines and shows the post. The links to the post and its thread stand in a footer under the fold, outside the `details`, so they are visible either way (obligations.md: the source link never collapses) | The owner's "collapsed by default"; a tap opens; the browser's own element, keyboard-operable without script |
 | The width | Open, the post runs across the card's width: `max-w-prose` is dropped on the post body, the one place the site lets prose exceed 68 characters. The posts are mostly lists, patch notes and short answers, which read as well wide; a long essay is rarer and the reader chose to open it | The owner's "utilize the full width"; recorded here as the exception to system.md's measure |
 | What stays | The yellow rule and the role tag (ADR-032), the author pages (same cards, the author's name unlinked), the author chips, the pager, the records with Spectrum on | |
+| Left as noted by the audit | The summary's accessible name is its whole content, title to first lines; the time sits under a title that wraps at 390 px; the first lines join a post's paragraphs with a space; an empty post's cue still offers to show it; CI runs the Spectrum-on records only locally | Each a small thing to take up with the pictures (ADR-036) |
 | Pictures and blocks | Not in this change: they need the post's own content from Spectrum's thread endpoint, one request per post, five minutes apart, and the pictures copied and served like every other picture (ADR-009, ADR-034). ADR-036 records that path when it is built | The data is not on the pack yet |
 
 ## Alternatives considered
@@ -31,6 +32,6 @@ What the worker has today is the search answer's text (ADR-027): paragraphs, no 
 
 ## Consequences
 
-- `packages/ui/components/dev-post.tsx` takes `title`, `excerpt`, `threadUrl` and `open`; `thread` goes. `apps/web/lib/dev-posts.ts` gains `excerptOf`; `groupThreads` stays as a helper, unused by the pages.
+- `packages/ui/components/dev-post.tsx` takes `title`, `excerpt`, `threadUrl` and `open`; `thread` goes. `apps/web/lib/dev-posts.ts` gains `excerptOf`; `groupThreads` and `Thread` go with the grouping. The fold's marker and wrapping rules live in `apps/web/app/globals.css` (`.dev-post-fold`), so the card carries no arbitrary class.
 - The tracker and author pages render the flat list; the records with Spectrum on change; the gallery's `DevPost` story opens its card so the record shows the post.
 - Spec 03's "Dev tracker UI" note says what the tracker is now.

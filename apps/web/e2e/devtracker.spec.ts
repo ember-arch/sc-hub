@@ -30,7 +30,7 @@ const busiest = [...authors].sort((a, b) => b.post_count - a.post_count)[0];
 test.describe("the dev tracker with Spectrum on", () => {
   test.skip(!on, "SPECTRUM_MODE is off: the tracker is its empty state");
 
-  test("shows the pack's developer posts in threads with the tabs drawn", async ({
+  test("shows the pack's developer posts as folded cards with the tabs drawn", async ({
     page,
   }) => {
     await page.goto("/news/dev");
@@ -48,6 +48,24 @@ test.describe("the dev tracker with Spectrum on", () => {
         /^https:\/\/robertsspaceindustries\.com\/spectrum\//,
       );
     }
+  });
+
+  test("a folded post keeps its Spectrum link visible and opens to the whole post on a tap", async ({
+    page,
+  }) => {
+    await page.goto("/news/dev");
+    const card = page.locator("article").first();
+    await expect(
+      card.getByRole("link", { name: "View on Spectrum" }),
+    ).toBeVisible();
+    const body = card.locator(".dev-post-body");
+    await expect(body).toBeHidden();
+    await card.locator("summary").click();
+    await expect(body).toBeVisible();
+    await expect(card.getByText("Fold the post")).toBeVisible();
+    await expect(
+      card.getByRole("link", { name: "View on Spectrum" }),
+    ).toBeVisible();
   });
 
   test("an author page pages by twenty, carries the disclaimer, and a wide post never scrolls sideways", async ({

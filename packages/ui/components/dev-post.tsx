@@ -29,6 +29,8 @@ export interface DevPostProps {
  * author, the time and the post's first lines, and opened with a tap to the whole post across
  * the card's width. The links to the post and its thread stand under the card's fold and are
  * always visible (obligations.md). The yellow is never text on the light wall (1.75:1); it marks.
+ * The fold is the browser's own `details`: no script, keyboard-operable; `.dev-post-fold` in the
+ * app's global CSS hides the marker and wraps a long title.
  */
 export function DevPost({
   title,
@@ -42,11 +44,11 @@ export function DevPost({
   open = false,
 }: DevPostProps) {
   return (
-    <article className="rounded-card border-l-[3px] border-spectrum-staff bg-surface shadow-soft">
+    <article className="dev-post-fold rounded-card border-l-[3px] border-spectrum-staff bg-surface shadow-soft">
       <details open={open} className="group">
-        <summary className="flex cursor-pointer list-none flex-col gap-2 p-4 [&::-webkit-details-marker]:hidden md:p-6">
+        <summary className="flex cursor-pointer list-none flex-col gap-2 rounded-card p-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent md:p-6">
           <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-            <h3 className="m-0 text-heading text-primary">{title}</h3>
+            <h2 className="m-0 min-w-0 text-heading text-primary">{title}</h2>
             <time
               dateTime={publishedAt}
               className="text-caption text-secondary"
@@ -68,12 +70,13 @@ export function DevPost({
               </span>
             ) : null}
           </p>
-          {excerpt !== null && excerpt !== "" ? (
-            <p className="m-0 line-clamp-3 text-body text-secondary [overflow-wrap:anywhere] group-open:hidden">
+          {excerpt !== null ? (
+            <p className="m-0 line-clamp-3 text-body text-secondary group-open:hidden">
               {excerpt}
             </p>
           ) : null}
-          <p className="m-0 text-caption text-accent">
+          {/* The cue reads like the site's other summaries (the ledger's, the ship file's), not like a link. */}
+          <p className="m-0 text-caption text-secondary group-hover:text-primary">
             <span className="group-open:hidden">Show the whole post</span>
             <span className="hidden group-open:inline">Fold the post</span>
           </p>

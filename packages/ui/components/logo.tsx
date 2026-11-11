@@ -8,12 +8,12 @@
  * the link around them carries the site's name as text.
  */
 
-/** The lockup's files and their shape (2696 by 542: the board's hero lockup at twice its size, the second c lowercase, ADR-048). */
+/** The lockup's files and their shape (2690 by 542: the board's hero lockup at twice its size, the second c lowercase, ADR-048). */
 export const LOGO_FILES = {
   light: "/brand/coppercork-light.svg",
   dark: "/brand/coppercork-dark.svg",
 } as const;
-export const LOGO_ASPECT = 2696 / 542;
+export const LOGO_ASPECT = 2690 / 542;
 
 export function Logo({ height = 32 }: { readonly height?: 24 | 32 | 48 }) {
   const width = Math.round(height * LOGO_ASPECT);

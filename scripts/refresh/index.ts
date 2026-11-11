@@ -13,6 +13,8 @@
  *   3. ship matrix, 4. loaners, 5. prices (pledge and shop): RSI sources, which need
  *      SC_HUB_CONTACT_EMAIL (CLAUDE.md section 9); skipped, and said so, without it.
  *   6. titles, 7. funding: the wiki's article and counters.
+ *   Between 2 and 3, patches: a snapshot of every build the Wiki API lists and fixtures/patches
+ *   lacks (ADR-049).
  *
  * The out folder holds summary.md, commit.txt, issue-title.txt, issue.md, needs-contact.txt,
  * build.txt (the build the API served) and one <step>.log per fetcher run; placeholders are
@@ -238,6 +240,39 @@ function cargoBoxesGate(outcomes: readonly Outcome[]): { run: true } | string {
   return `the box shapes are for the pack's build, ${packVersion ?? "this build"}`;
 }
 
+/**
+ * The patch snapshots (ADR-049) run when the Wiki API lists a build that has no file in
+ * fixtures/patches yet: one request for the list, then about 300 for the new build.
+ */
+async function patchesGate(): Promise<{ run: true; note?: string } | string> {
+  const client = createWikiClient({
+    fetch: (url, init) => globalThis.fetch(url, init),
+    userAgent: userAgent("refresh"),
+    log,
+  });
+  const listed = (
+    (await client.getJson("/api/game-versions?limit=100")) as {
+      data?: { code?: unknown }[];
+    }
+  ).data
+    ?.map((v) => v.code)
+    .filter((c): c is string => typeof c === "string");
+  if (listed === undefined || listed.length === 0)
+    return "the Wiki API listed no builds";
+  const dir = join(repoRoot, "fixtures", "patches");
+  const filed = new Set(
+    existsSync(dir)
+      ? readdirSync(dir)
+          .filter((f) => /^\d.*\.json$/.test(f))
+          .map((f) => f.slice(0, -".json".length))
+      : [],
+  );
+  const missing = listed.filter((c) => !filed.has(c));
+  return missing.length === 0
+    ? "every build the Wiki API lists is on file"
+    : { run: true, note: missing.join(", ") };
+}
+
 const STEPS: readonly Step[] = [
   {
     id: "catalog",
@@ -259,6 +294,13 @@ const STEPS: readonly Step[] = [
     files: ["fixtures/cargo/CargoBox.json"],
     script: "scripts/bootstrap-fixtures/cargo-boxes.ts",
     gate: cargoBoxesGate,
+  },
+  {
+    id: "patches",
+    label: "patch snapshots",
+    files: ["fixtures/patches"],
+    script: "scripts/patches/fetch.ts",
+    gate: patchesGate,
   },
   {
     id: "ship-matrix",

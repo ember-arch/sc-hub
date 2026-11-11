@@ -1,0 +1,678 @@
+{
+  "data": {
+    "uuid": "b6b59889-7226-458e-a6b0-1c9392128a3c",
+    "name": "Gladius",
+    "game_name": "Aegis Gladius",
+    "class_name": "AEGS_Gladius",
+    "manufacturer": {
+      "code": "AEGS",
+      "name": "Aegis Dynamics"
+    },
+    "version": "4.10.2-LIVE.12881860",
+    "sizes": {
+      "length": 21,
+      "beam": 17.5,
+      "height": 5.5
+    },
+    "mass_hull": 48552,
+    "mass_loadout": 7094,
+    "mass_total": 55646,
+    "cargo_capacity": 0,
+    "ore_capacity": null,
+    "vehicle_inventory": 650000,
+    "crew": {
+      "min": 1,
+      "max": 1,
+      "weapon": null,
+      "operation": null
+    },
+    "seating": {
+      "crew_stations": 1,
+      "ejection_seats": 1,
+      "escape_pods": null,
+      "jump_seats": null,
+      "beds": 0,
+      "medical_beds": null
+    },
+    "health": 6110,
+    "shield": {
+      "hp": 6336,
+      "regeneration": 1204,
+      "regeneration_time": 5.26,
+      "face_type": "Bubble",
+      "max_reallocation": 1,
+      "reconfiguration_cooldown": 2.5,
+      "max_electrical_charge_damage_rate": 100,
+      "resistance": {
+        "physical": {
+          "minimum": 0,
+          "maximum": 0.25
+        },
+        "energy": {
+          "minimum": 0,
+          "maximum": 0
+        },
+        "distortion": {
+          "minimum": 0.75,
+          "maximum": 0.95
+        },
+        "thermal": {
+          "minimum": 0,
+          "maximum": 0
+        },
+        "biochemical": {
+          "minimum": 0,
+          "maximum": 0
+        },
+        "stun": {
+          "minimum": 0,
+          "maximum": 0
+        }
+      },
+      "absorption": {
+        "physical": {
+          "minimum": 0,
+          "maximum": 0.45
+        },
+        "energy": {
+          "minimum": 1,
+          "maximum": 1
+        },
+        "distortion": {
+          "minimum": 1,
+          "maximum": 1
+        },
+        "thermal": {
+          "minimum": 1,
+          "maximum": 1
+        },
+        "biochemical": {
+          "minimum": 1,
+          "maximum": 1
+        },
+        "stun": {
+          "minimum": 1,
+          "maximum": 1
+        }
+      }
+    },
+    "speed": {
+      "scm": 226,
+      "max": 1193,
+      "boost_forward": 520,
+      "boost_backward": 268,
+      "zero_to_scm": 2.36,
+      "zero_to_max": 12.46,
+      "scm_to_zero": 57.22,
+      "max_to_zero": 302.03
+    },
+    "afterburner": {
+      "pitch_boost_multiplier": 1.2,
+      "roll_boost_multiplier": 1.2,
+      "yaw_boost_multiplier": 1.2,
+      "capacitor": 20,
+      "idle_cost": 1,
+      "linear_cost": 0,
+      "angular_cost": 0,
+      "regen_per_second": 0.75,
+      "regen_delay_after_use": 0.2,
+      "pre_delay_time": 0,
+      "ramp_up_time": 0.6,
+      "ramp_down_time": 0.3,
+      "regen_time": 26.9,
+      "regen_delay": 0.2
+    },
+    "fuel": {
+      "capacity": 1.6,
+      "intake_rate": 0,
+      "usage": {
+        "main": 29.89,
+        "retro": 1.23,
+        "vtol": 0,
+        "maneuvering": 32.81
+      }
+    },
+    "quantum": {
+      "quantum_speed": 161410900,
+      "quantum_spool_time": 4.4,
+      "quantum_fuel_capacity": 0.6,
+      "quantum_range": 32223415682,
+      "port_olisar_to_arccorp_time": 260,
+      "port_olisar_to_arccorp_fuel": 781
+    },
+    "agility": {
+      "pitch": 68,
+      "yaw": 52,
+      "roll": 200,
+      "pitch_boosted": 81.6,
+      "yaw_boosted": 62.4,
+      "roll_boosted": 240,
+      "acceleration": {
+        "vtol": 0
+      }
+    },
+    "armor": {
+      "uuid": "a1bde463-b3ce-4959-9bc2-6ef0f6fb1494",
+      "health": 3300,
+      "signal_infrared": 1.13,
+      "signal_electromagnetic": 1.13,
+      "signal_cross_section": 1.13,
+      "damage_physical": 0.75,
+      "damage_energy": 0.6,
+      "damage_distortion": 1,
+      "damage_thermal": 1,
+      "damage_biochemical": 1,
+      "damage_stun": 1,
+      "signal_multiplier": {
+        "cross_section": 1.13,
+        "cross_section_change": 0.13,
+        "infrared": 1.13,
+        "infrared_change": 0.13,
+        "electromagnetic": 1.13,
+        "electromagnetic_change": 0.13
+      },
+      "damage_multiplier": {
+        "physical": 0.75,
+        "physical_change": -0.25,
+        "energy": 0.6,
+        "energy_change": -0.4,
+        "distortion": 1,
+        "distortion_change": 0,
+        "thermal": 1,
+        "thermal_change": 0,
+        "biochemical": 1,
+        "biochemical_change": 0,
+        "stun": 1,
+        "stun_change": 0
+      },
+      "resistance_multiplier": {
+        "physical": 0.81,
+        "physical_change": -0.19,
+        "energy": 1.21,
+        "energy_change": 0.21,
+        "distortion": 1,
+        "distortion_change": 0,
+        "thermal": 1,
+        "thermal_change": 0,
+        "biochemical": 1,
+        "biochemical_change": 0,
+        "stun": 1,
+        "stun_change": 0
+      },
+      "penetration_resistance": {
+        "base": 1,
+        "physical": 1,
+        "energy": 1,
+        "distortion": 0,
+        "thermal": 1,
+        "biochemical": 1,
+        "stun": 1
+      },
+      "deflection": {
+        "physical": 11,
+        "energy": 9,
+        "distortion": 0,
+        "thermal": 0,
+        "biochemical": 0,
+        "stun": 0
+      },
+      "signal_multipliers": {
+        "cross_section": 1.13,
+        "infrared": 1.13,
+        "electromagnetic": 1.13
+      },
+      "damage_multipliers": {
+        "physical": 0.75,
+        "energy": 0.6,
+        "distortion": 1,
+        "thermal": 1,
+        "biochemical": 1,
+        "stun": 1
+      },
+      "resistance_multipliers": {
+        "physical": 0.81,
+        "energy": 1.21,
+        "distortion": 1,
+        "thermal": 1,
+        "biochemical": 1,
+        "stun": 1
+      }
+    },
+    "cross_section": {
+      "length": 6923,
+      "width": 1731,
+      "height": 8654
+    },
+    "emission": {
+      "ir": 8711,
+      "em_idle": 22078,
+      "em_max": 40520
+    },
+    "signature": {
+      "ir_quantum": 7263,
+      "ir_shields": 8711,
+      "em_quantum": 40520,
+      "em_shields": 22078,
+      "em_groups_quantum": {
+        "Radar": 2034,
+        "Cooler": 3367,
+        "WeaponGun": 41,
+        "PowerPlant": 13480,
+        "QuantumDrive": 21244,
+        "LifeSupportGenerator": 354
+      },
+      "em_groups_shields": {
+        "Radar": 2034,
+        "Cooler": 3367,
+        "Shield": 2802,
+        "WeaponGun": 41,
+        "PowerPlant": 13480,
+        "LifeSupportGenerator": 354
+      },
+      "em_segment_groups_quantum": {
+        "Radar": 5,
+        "Cooler": 6,
+        "Shield": 6,
+        "WeaponGun": 2.1,
+        "FlightController": 4,
+        "LifeSupportGenerator": 1
+      },
+      "em_segment_groups_shields": {
+        "Radar": 5,
+        "Cooler": 6,
+        "WeaponGun": 2.1,
+        "FlightController": 4,
+        "LifeSupportGenerator": 1
+      },
+      "em_per_segment": 495
+    },
+    "insurance": {
+      "claim_time": 5.83,
+      "expedite_time": 1.94,
+      "expedite_cost": 2335
+    },
+    "cooling": {
+      "generation_segments": 68,
+      "usage_shields_pct": 0.53,
+      "usage_quantum_pct": 0.44,
+      "used_segments_shields": 36.1,
+      "used_segments_quantum": 30.1,
+      "used_segments_shields_grouped": {
+        "Radar": 5,
+        "Shield": 6,
+        "PowerPlant": 24.1,
+        "LifeSupportGenerator": 1
+      },
+      "used_segments_quantum_grouped": {
+        "Radar": 5,
+        "PowerPlant": 18.1,
+        "QuantumDrive": 6,
+        "LifeSupportGenerator": 1
+      }
+    },
+    "power": {
+      "generation_segments": 16,
+      "used_segments_shields": 24.1,
+      "used_segments_quantum": 18.1,
+      "used_segments_grouped": {
+        "Radar": 5,
+        "Cooler": 6,
+        "Shield": 6,
+        "WeaponGun": 2.1,
+        "FlightController": 4,
+        "LifeSupportGenerator": 1
+      }
+    },
+    "penetration_multiplier": {
+      "fuse": 0,
+      "components": 0.4
+    },
+    "weapon_storage": {
+      "lockers": 1,
+      "slots_total": 3,
+      "slots_rifle": 2,
+      "slots_pistol": 1,
+      "by_locker": [
+        {
+          "name": "Weapon Rack",
+          "class_name": "weapon_rack_aegs_gladius",
+          "port": "hardpoint_weapon_rack",
+          "slots_total": 3,
+          "slots_rifle": 2,
+          "slots_pistol": 1,
+          "count": 1
+        }
+      ]
+    },
+    "size_class": 2,
+    "career": "Combat",
+    "role": "Light Fighter",
+    "ports": [
+      {
+        "name": "hardpoint_seat_access",
+        "type": "SeatAccess",
+        "equipped_item": {
+          "name": "Access",
+          "class_name": "AEGS_Gladius_SCItem_SeatAccess",
+          "type": "SeatAccess"
+        },
+        "ports": []
+      },
+      {
+        "name": "hardpoint_countermeasure_launcher_right",
+        "type": "WeaponDefensive",
+        "equipped_item": {
+          "name": "Aegis Gladius - Noise Launcher",
+          "class_name": "AEGS_Gladius_CML_Chaff",
+          "type": "WeaponDefensive"
+        },
+        "ports": []
+      },
+      {
+        "name": "hardpoint_countermeasure_launcher_left",
+        "type": "WeaponDefensive",
+        "equipped_item": {
+          "name": "Aegis Gladius - Decoy Launcher",
+          "class_name": "AEGS_Gladius_CML_Flare",
+          "type": "WeaponDefensive"
+        },
+        "ports": []
+      },
+      {
+        "name": "hardpoint_missilerack_left_wing_outer",
+        "type": "MissileLauncher",
+        "equipped_item": {
+          "name": "MSD-322 Missile Rack",
+          "class_name": "MRCK_S03_BEHR_Dual_S02",
+          "type": "MissileLauncher"
+        },
+        "ports": [
+          {
+            "name": "missile_01_attach",
+            "type": "Missile",
+            "equipped_item": {
+              "name": "Ignite II Missile",
+              "class_name": "MISL_S02_IR_FSKI_Ignite",
+              "type": "Missile"
+            },
+            "ports": []
+          },
+          {
+            "name": "missile_02_attach",
+            "type": "Missile",
+            "equipped_item": {
+              "name": "Ignite II Missile",
+              "class_name": "MISL_S02_IR_FSKI_Ignite",
+              "type": "Missile"
+            },
+            "ports": []
+          }
+        ]
+      },
+      {
+        "name": "hardpoint_missilerack_left_wing_inner",
+        "type": "MissileLauncher",
+        "equipped_item": {
+          "name": "MSD-313 Missile Rack",
+          "class_name": "MRCK_S03_BEHR_Single_S03",
+          "type": "MissileLauncher"
+        },
+        "ports": [
+          {
+            "name": "missile_01_attach",
+            "type": "Missile",
+            "equipped_item": {
+              "name": "Arrester III Missile",
+              "class_name": "MISL_S03_CS_FSKI_Arrester",
+              "type": "Missile"
+            },
+            "ports": []
+          }
+        ]
+      },
+      {
+        "name": "hardpoint_missilerack_right_wing_inner",
+        "type": "MissileLauncher",
+        "equipped_item": {
+          "name": "MSD-313 Missile Rack",
+          "class_name": "MRCK_S03_BEHR_Single_S03",
+          "type": "MissileLauncher"
+        },
+        "ports": [
+          {
+            "name": "missile_01_attach",
+            "type": "Missile",
+            "equipped_item": {
+              "name": "Arrester III Missile",
+              "class_name": "MISL_S03_CS_FSKI_Arrester",
+              "type": "Missile"
+            },
+            "ports": []
+          }
+        ]
+      },
+      {
+        "name": "hardpoint_missilerack_right_wing_outer",
+        "type": "MissileLauncher",
+        "equipped_item": {
+          "name": "MSD-322 Missile Rack",
+          "class_name": "MRCK_S03_BEHR_Dual_S02",
+          "type": "MissileLauncher"
+        },
+        "ports": [
+          {
+            "name": "missile_01_attach",
+            "type": "Missile",
+            "equipped_item": {
+              "name": "Ignite II Missile",
+              "class_name": "MISL_S02_IR_FSKI_Ignite",
+              "type": "Missile"
+            },
+            "ports": []
+          },
+          {
+            "name": "missile_02_attach",
+            "type": "Missile",
+            "equipped_item": {
+              "name": "Ignite II Missile",
+              "class_name": "MISL_S02_IR_FSKI_Ignite",
+              "type": "Missile"
+            },
+            "ports": []
+          }
+        ]
+      },
+      {
+        "name": "hardpoint_controller_cooler",
+        "type": "CoolerController",
+        "equipped_item": {
+          "name": "HEAT",
+          "class_name": "Controller_Cooler",
+          "type": "CoolerController"
+        },
+        "ports": []
+      },
+      {
+        "name": "hardpoint_controller_shield",
+        "type": "ShieldController",
+        "equipped_item": {
+          "name": "SHIELDS",
+          "class_name": "Controller_Shield_AEGS_Gladius",
+          "type": "ShieldController"
+        },
+        "ports": []
+      },
+      {
+        "name": "hardpoint_controller_weapon",
+        "type": "WeaponController",
+        "equipped_item": {
+          "name": "WEAPONS",
+          "class_name": "Controller_Weapon",
+          "type": "WeaponController"
+        },
+        "ports": []
+      },
+      {
+        "name": "hardpoint_quantum_fuel_tank",
+        "type": "QuantumFuelTank",
+        "equipped_item": {
+          "name": "Internal Tank",
+          "class_name": "QTNK_AEGS_Gladius",
+          "type": "QuantumFuelTank"
+        },
+        "ports": []
+      },
+      {
+        "name": "Hardpoint_cooler_left",
+        "type": "Cooler",
+        "equipped_item": {
+          "name": "Bracer",
+          "class_name": "COOL_AEGS_S01_Bracer_SCItem",
+          "type": "Cooler"
+        },
+        "ports": []
+      },
+      {
+        "name": "Hardpoint_cooler_right",
+        "type": "Cooler",
+        "equipped_item": {
+          "name": "Bracer",
+          "class_name": "COOL_AEGS_S01_Bracer_SCItem",
+          "type": "Cooler"
+        },
+        "ports": []
+      },
+      {
+        "name": "hardpoint_power_plant",
+        "type": "PowerPlant",
+        "equipped_item": {
+          "name": "Regulus",
+          "class_name": "POWR_AEGS_S01_Regulus_SCItem",
+          "type": "PowerPlant"
+        },
+        "ports": []
+      },
+      {
+        "name": "hardpoint_shield_generator_right",
+        "type": "Shield",
+        "equipped_item": {
+          "name": "AllStop",
+          "class_name": "SHLD_GODI_S01_AllStop_SCItem",
+          "type": "Shield"
+        },
+        "ports": []
+      },
+      {
+        "name": "hardpoint_shield_generator_left",
+        "type": "Shield",
+        "equipped_item": {
+          "name": "AllStop",
+          "class_name": "SHLD_GODI_S01_AllStop_SCItem",
+          "type": "Shield"
+        },
+        "ports": []
+      },
+      {
+        "name": "hardpoint_quantum_drive",
+        "type": "QuantumDrive",
+        "equipped_item": {
+          "name": "Beacon",
+          "class_name": "QDRV_WETK_S01_Beacon_SCItem",
+          "type": "QuantumDrive"
+        },
+        "ports": [
+          {
+            "name": "hardpoint_Jump_Drive",
+            "type": "JumpDrive",
+            "equipped_item": {
+              "name": "Explorer",
+              "class_name": "JDRV_TARS_S01_Explorer_SCItem",
+              "type": "JumpDrive"
+            },
+            "ports": []
+          }
+        ]
+      },
+      {
+        "name": "hardpoint_controller_missile",
+        "type": "MissileController",
+        "equipped_item": {
+          "name": "MISSILES",
+          "class_name": "Controller_Missile",
+          "type": "MissileController"
+        },
+        "ports": []
+      },
+      {
+        "name": "hardpoint_weapon_rack",
+        "type": "Door",
+        "equipped_item": {
+          "name": "Weapon Rack",
+          "class_name": "Weapon_Rack_AEGS_Gladius",
+          "type": "Door"
+        },
+        "ports": [
+          {
+            "name": "$IP_rifle_01",
+            "type": "",
+            "equipped_item": null,
+            "ports": []
+          },
+          {
+            "name": "$IP_rifle_02",
+            "type": "",
+            "equipped_item": null,
+            "ports": []
+          },
+          {
+            "name": "$IP_rack_addon_01",
+            "type": "",
+            "equipped_item": null,
+            "ports": []
+          },
+          {
+            "name": "$IP_rack_addon_02",
+            "type": "",
+            "equipped_item": null,
+            "ports": []
+          },
+          {
+            "name": "$IP_multitool",
+            "type": "",
+            "equipped_item": null,
+            "ports": []
+          }
+        ]
+      },
+      {
+        "name": "hardpoint_weapon_regen_pool",
+        "type": "",
+        "equipped_item": null,
+        "ports": []
+      },
+      {
+        "name": "hardpoint_weapon_regen_pool_turrets",
+        "type": "",
+        "equipped_item": null,
+        "ports": []
+      },
+      {
+        "name": "hardpoint_radar",
+        "type": "Radar",
+        "equipped_item": {
+          "name": "Ecouter",
+          "class_name": "RADR_GRNP_S01_Ecouter",
+          "type": "Radar"
+        },
+        "ports": [
+          {
+            "name": "BatteryPort",
+            "type": "",
+            "equipped_item": null,
+            "ports": []
+          }
+        ]
+      }
+    ]
+  }
+}

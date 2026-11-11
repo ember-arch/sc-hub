@@ -10,7 +10,7 @@ One snapshot per game build, for the "What changed" patch pages (ADR-049, spec 0
 pnpm --filter schema build && pnpm exec tsx scripts/patches/fetch.ts
 ```
 
-`--build <code>` limits the run to one build; `--max-builds <n>` to the newest n missing. About 300 requests a build at 2.5 s apart. The daily refresh (ADR-023) runs the same fetch with `--max-builds 1` when the API lists a build that has no file, and halts on a new build that holds under nine tenths of the newest file's ships or parts (the wiki is still importing it).
+`--build <code>` limits the run to one build; `--max-builds <n>` to the oldest n missing. About 300 requests a build at 2.5 s apart. The daily refresh (ADR-023) runs the same fetch with `--max-builds 1` when the API lists a build that has no file, and halts on a new build that lists under nine tenths of the newest file's vehicles or parts (the wiki is still importing it).
 
 ## The file
 

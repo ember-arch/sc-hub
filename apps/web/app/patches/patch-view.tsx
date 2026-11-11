@@ -83,13 +83,19 @@ export function PatchTabs({
   return <SegmentedLinks label="Patch views" links={links} current={href} />;
 }
 
-function BuildName({ build }: { readonly build: Build }) {
+/** A build as a heading; against a build of the same version (a hotfix), with its number. */
+function BuildName({
+  build,
+  other,
+}: {
+  readonly build: Build;
+  readonly other: Build;
+}) {
+  const name = buildLabel(build, other);
   return (
     <span className="flex flex-col">
       <span className="text-heading text-primary">
-        {build.channel === "LIVE"
-          ? build.version
-          : `${build.version} ${build.channel}`}
+        {build.channel === "LIVE" ? name : `${name} ${build.channel}`}
       </span>
       <span className="font-mono text-caption text-secondary">
         <span data-build={build.code}>{build.code}</span>
@@ -121,12 +127,12 @@ export function ComparisonHead({
   return (
     <div className="flex flex-wrap items-end justify-between gap-6 border-b border-hairline pb-4">
       <div className="flex flex-wrap items-end gap-x-6 gap-y-3">
-        <BuildName build={to} />
+        <BuildName build={to} other={from} />
         <span className="lab pb-1 text-muted">
           against
           {days === null ? "" : `, ${plural(days, "day", "days")} earlier`}
         </span>
-        <BuildName build={from} />
+        <BuildName build={from} other={to} />
       </div>
       {aside}
     </div>
@@ -1105,7 +1111,7 @@ export function Sources({
           ? ` ${plural(unrecorded, "figure", "figures")} one of the two builds does not record for any entry of its kind ${unrecorded === 1 ? "is" : "are"} left out rather than shown as new or gone.`
           : ""}{" "}
         {uncompared > 0
-          ? `${plural(uncompared, "ship", "ships")} one build lists without figures (off the ship matrix in that build's record) ${uncompared === 1 ? "is" : "are"} neither added nor removed. `
+          ? `${plural(uncompared, "ship", "ships")} one build lists without figures (off the ship matrix in that build's records, or not served) ${uncompared === 1 ? "is" : "are"} neither added nor removed. `
           : ""}
         Until the patch-day pipeline reads the game files, a figure the wiki has
         not recorded is not shown.
@@ -1113,7 +1119,8 @@ export function Sources({
       <p className="m-0 max-w-prose text-ui text-secondary">
         Patch notes are CIG&apos;s own, as posted in Spectrum&apos;s Patch Notes
         channel and on RSI&apos;s Comm-Link; each links to the original. A note
-        is matched to a ship only by the ship&apos;s full name.
+        line is matched to a ship by the ship&apos;s full name, or a name of two
+        words or more.
       </p>
       {extra}
     </section>

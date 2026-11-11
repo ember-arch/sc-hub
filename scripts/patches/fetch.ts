@@ -34,6 +34,12 @@ import {
   mapShip,
   renderSnapshot,
 } from "./snapshot.js";
+import {
+  type ListedCounts,
+  buildNumber,
+  looksIncomplete,
+  planBuilds,
+} from "./plan.js";
 
 /**
  * One-off dev script, also a step of the daily refresh (ADR-023, ADR-049). Reads the builds the
@@ -46,8 +52,9 @@ import {
  *
  *   pnpm --filter schema build && pnpm exec tsx scripts/patches/fetch.ts [--build <code>] [--max-builds <n>]
  *
- * `--build <code>` limits the run to that build; `--max-builds <n>` to the newest n builds not on
- * file (the daily refresh passes 1, so a backlog never outruns the job). A build newer than every
+ * `--build <code>` limits the run to that build; `--max-builds <n>` to the oldest n builds not on
+ * file (the daily refresh passes 1, so a backlog never outruns the job; oldest first, so no
+ * build takes the address an older build of its version will hold, `plan.ts`). A build newer than every
  * build on file that holds fewer than nine tenths of the newest file's ships or parts halts the
  * run: the wiki is still importing it, and a file written now would freeze the gap.
  *
@@ -76,10 +83,6 @@ if (Number.isNaN(maxBuilds) || maxBuilds < 1) {
 
 /** A snapshot's file name: the build string, gzipped JSON. */
 export const SNAPSHOT_SUFFIX = ".json.gz";
-
-/** The build number at the end of a build string, which only grows from build to build. */
-const buildNumber = (code: string): number =>
-  Number(/\.(\d+)$/.exec(code)?.[1] ?? 0);
 
 function log(event: Record<string, unknown>): void {
   process.stderr.write(
@@ -150,10 +153,8 @@ export function filedBuilds(dir: string = PATCHES_DIR): Set<string> {
   );
 }
 
-/** The newest build on file and its counts, or null with none. */
-function newestFiled(
-  filed: ReadonlySet<string>,
-): { code: string; ships: number; parts: number } | null {
+/** The newest build on file and what it lists, or null with none. */
+function newestFiled(filed: ReadonlySet<string>): ListedCounts | null {
   const code = [...filed].sort((a, b) => buildNumber(b) - buildNumber(a))[0];
   if (code === undefined) return null;
   const file = PatchSnapshotFile.parse(
@@ -163,7 +164,11 @@ function newestFiled(
       ).toString("utf8"),
     ),
   );
-  return { code, ships: file.counts.ships, parts: file.counts.parts };
+  return {
+    code,
+    vehicles: file.counts.ships + file.unrecorded_ships.length,
+    parts: file.counts.parts,
+  };
 }
 
 /** ISO with offset as the schema wants it; the API writes "+00:00". */
@@ -207,13 +212,8 @@ async function main(): Promise<void> {
   ).data;
   const filed = filedBuilds();
   const newest = newestFiled(filed);
-  // Newest first, so a cap fetches the patch readers are waiting for before the backlog.
-  const todo = versions
-    .filter(
-      (v) => !filed.has(v.code) && (only.length === 0 || only.includes(v.code)),
-    )
-    .sort((a, b) => buildNumber(b.code) - buildNumber(a.code))
-    .slice(0, maxBuilds);
+  // Oldest first, so no build takes an address an older build of its version should hold.
+  const todo = planBuilds(versions, filed, { only, max: maxBuilds });
   for (const code of only) {
     if (!versions.some((v) => v.code === code)) {
       throw new MapError(`the API lists no build ${code}`, {
@@ -229,6 +229,7 @@ async function main(): Promise<void> {
   });
 
   mkdirSync(PATCHES_DIR, { recursive: true });
+  let written = 0;
   for (const version of todo) {
     const out = join(PATCHES_DIR, `${version.code}${SNAPSHOT_SUFFIX}`);
     if (existsSync(out)) continue;
@@ -383,14 +384,14 @@ async function main(): Promise<void> {
       ),
     });
     // A new build the wiki has only begun to import would be frozen with its gaps.
-    if (
-      newest !== null &&
-      buildNumber(version.code) > buildNumber(newest.code) &&
-      (snapshot.counts.ships < newest.ships * 0.9 ||
-        snapshot.counts.parts < newest.parts * 0.9)
-    ) {
+    const listedNow: ListedCounts = {
+      code: version.code,
+      vehicles: snapshot.counts.ships + snapshot.unrecorded_ships.length,
+      parts: snapshot.counts.parts,
+    };
+    if (looksIncomplete(listedNow, newest)) {
       throw new MapError(
-        `${version.code} holds ${snapshot.counts.ships} ships and ${snapshot.counts.parts} parts against ${newest.ships} and ${newest.parts} in ${newest.code}; the wiki looks to be importing it still, so nothing is written`,
+        `${version.code} lists ${listedNow.vehicles} vehicles and ${listedNow.parts} parts against ${newest?.vehicles} and ${newest?.parts} in ${newest?.code}; the wiki looks to be importing it still, so nothing is written`,
         { build: version.code, counts: snapshot.counts, newest },
       );
     }
@@ -399,6 +400,7 @@ async function main(): Promise<void> {
     );
     const gz = gzipSync(text, { level: 9 });
     writeFileSync(out, gz);
+    written += 1;
     log({
       event: "patches.written",
       build: version.code,
@@ -411,7 +413,7 @@ async function main(): Promise<void> {
 
   log({
     event: "patches.summary",
-    written: todo.length,
+    written,
     requests: client.requests,
     duration_ms: Date.now() - startedAt,
   });

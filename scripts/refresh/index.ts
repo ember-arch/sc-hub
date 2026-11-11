@@ -39,6 +39,7 @@ import { tmpdir } from "node:os";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createWikiClient } from "../bootstrap-fixtures/fetch.js";
+import { buildNumber } from "../patches/plan.js";
 import { WikiGameVersionResponse } from "../bootstrap-fixtures/types.js";
 import { userAgent } from "../user-agent.js";
 import {
@@ -251,8 +252,8 @@ function cargoBoxesGate(outcomes: readonly Outcome[]): { run: true } | string {
 
 /**
  * The patch snapshots (ADR-049) run when the Wiki API lists a build that has no file in
- * fixtures/patches yet: one request for the list, then about 300 for the newest such build (one
- * build a run).
+ * fixtures/patches yet: one request for the list, then about 300 for the oldest such build (one
+ * build a run, oldest first so no address moves).
  */
 async function patchesGate(): Promise<{ run: true; note?: string } | string> {
   const client = createWikiClient({
@@ -277,10 +278,19 @@ async function patchesGate(): Promise<{ run: true; note?: string } | string> {
           .map((f) => f.slice(0, -".json.gz".length))
       : [],
   );
-  const missing = listed.filter((c) => !filed.has(c));
-  return missing.length === 0
+  // The fetch takes the oldest missing build (scripts/patches/plan.ts); the note names that one.
+  const missing = listed
+    .filter((c) => !filed.has(c))
+    .sort((a, b) => buildNumber(a) - buildNumber(b));
+  return missing[0] === undefined
     ? "every build the Wiki API lists is on file"
-    : { run: true, note: missing.join(", ") };
+    : {
+        run: true,
+        note:
+          missing.length === 1
+            ? missing[0]
+            : `${missing[0]} (${missing.length - 1} more waiting)`,
+      };
 }
 
 const STEPS: readonly Step[] = [

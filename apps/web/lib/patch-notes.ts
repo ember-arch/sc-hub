@@ -206,7 +206,7 @@ export function noteSections(
       facts.push({ label: fact[1]!, value: fact[2]!.trim() });
       return;
     }
-    if (TOP.has(norm(line))) {
+    if (!listItems.has(i) && TOP.has(norm(line))) {
       section = { title: line, groups: [{ title: null, items: [] }] };
       sections.push(section);
       return;

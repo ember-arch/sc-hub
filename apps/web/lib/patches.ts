@@ -235,6 +235,8 @@ export interface PatchComparison {
   readonly blueprints: ChangeSet;
   /** Figures one of the builds does not record for any entry of their kind, left out. */
   readonly unrecorded: number;
+  /** Ships one build lists without figures (ADR-049), neither added nor removed. */
+  readonly uncompared: number;
 }
 
 /** Where entries link to on this site; null for one the current pack does not list. */
@@ -461,6 +463,7 @@ export function compareSnapshots(
   links: Links = NO_LINKS,
 ): Omit<PatchComparison, "from" | "to"> {
   const unrecorded = { count: 0 };
+  let uncompared = 0;
 
   // Ships.
   const shipStated = {
@@ -485,6 +488,11 @@ export function compareSnapshots(
       ingredients: [],
     };
     if (a === undefined && b !== undefined) {
+      // Listed in the older build without figures: not new, just not recorded then.
+      if (from.unrecorded_ships.includes(id)) {
+        uncompared += 1;
+        continue;
+      }
       ships.added.push({
         ...base,
         name: b.name,
@@ -495,6 +503,11 @@ export function compareSnapshots(
         loadout: [],
       });
     } else if (a !== undefined && b === undefined) {
+      // Still in the build's list, without figures: not removed, just not recorded.
+      if (to.unrecorded_ships.includes(id)) {
+        uncompared += 1;
+        continue;
+      }
       ships.removed.push({
         ...base,
         name: a.name,
@@ -726,6 +739,7 @@ export function compareSnapshots(
       changed: sortedEntries(blueprints.changed),
     },
     unrecorded: unrecorded.count,
+    uncompared,
   };
 }
 

@@ -74,6 +74,11 @@ export const PatchSnapshot = z.strictObject({
     blueprints: z.number().int().nonnegative(),
   }),
   ships: z.record(ClassName, PatchShip),
+  /**
+   * Vehicles the build lists whose figures the file does not hold (not on the ship matrix in
+   * that build's record, or not served); a comparison neither adds nor removes them.
+   */
+  unrecorded_ships: z.array(ClassName),
   parts: z.record(ClassName, PatchPart),
   /** By the blueprint's key, for example `BP_CRAFT_AMRS_LaserCannon_S1`. */
   blueprints: z.record(z.string().min(1), PatchBlueprint),
@@ -99,6 +104,7 @@ export const PatchSnapshotFile = z.strictObject({
   source_url: z.url(),
   counts: PatchSnapshot.shape.counts,
   dictionary: z.array(z.string().min(1)),
+  unrecorded_ships: z.array(ClassName),
   ships: z.record(
     ClassName,
     z.strictObject({
@@ -155,6 +161,7 @@ export function encodeSnapshot(s: PatchSnapshot): PatchSnapshotFile {
     source_url: s.source_url,
     counts: s.counts,
     dictionary,
+    unrecorded_ships: s.unrecorded_ships,
     ships: Object.fromEntries(
       Object.entries(s.ships).map(([id, ship]) => [
         id,
@@ -215,6 +222,7 @@ export function decodeSnapshot(f: PatchSnapshotFile): PatchSnapshot {
     source: f.source,
     source_url: f.source_url,
     counts: f.counts,
+    unrecorded_ships: f.unrecorded_ships,
     ships: Object.fromEntries(
       Object.entries(f.ships).map(([id, ship]) => [
         id,

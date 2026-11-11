@@ -1076,9 +1076,12 @@ function Rail({
 
 export function Sources({
   unrecorded,
+  uncompared = 0,
   extra,
 }: {
   readonly unrecorded: number;
+  /** Ships one build lists without figures, neither added nor removed. */
+  readonly uncompared?: number;
   readonly extra?: ReactNode;
 }) {
   return (
@@ -1101,6 +1104,9 @@ export function Sources({
         {unrecorded > 0
           ? ` ${plural(unrecorded, "figure", "figures")} one of the two builds does not record for any entry of its kind ${unrecorded === 1 ? "is" : "are"} left out rather than shown as new or gone.`
           : ""}{" "}
+        {uncompared > 0
+          ? `${plural(uncompared, "ship", "ships")} one build lists without figures (off the ship matrix in that build's record) ${uncompared === 1 ? "is" : "are"} neither added nor removed. `
+          : ""}
         Until the patch-day pipeline reads the game files, a figure the wiki has
         not recorded is not shown.
       </p>
@@ -1250,7 +1256,7 @@ export function PatchView({
             <NotesList notes={data.notes} />
           </Section>
 
-          <Sources unrecorded={c.unrecorded} />
+          <Sources unrecorded={c.unrecorded} uncompared={c.uncompared} />
         </div>
       </div>
     </div>

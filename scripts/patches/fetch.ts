@@ -20,6 +20,7 @@ import {
 import { z } from "zod";
 import { MapError } from "../bootstrap-fixtures/errors.js";
 import {
+  FetchError,
   WIKI_BASE_URL,
   createWikiClient,
 } from "../bootstrap-fixtures/fetch.js";
@@ -236,6 +237,10 @@ async function main(): Promise<void> {
 
     // Ships: the list names them, each record carries the figures and the port tree.
     const listed: { class_name: string; uuid: string }[] = [];
+    // Vehicles the build lists whose figures the file does not hold: not on the ship matrix in
+    // that build's record, a record from another build, or one the API does not serve. The
+    // comparison skips them rather than call a ship new or removed (ADR-049).
+    const unrecorded = new Set<string>();
     for (let page = 1; ; page += 1) {
       const list = ShipPage.parse(
         await get(`/api/vehicles?page[size]=200&page[number]=${page}&${q}`),
@@ -245,6 +250,7 @@ async function main(): Promise<void> {
         // In-game reward and event variants the ship matrix does not list (ADR-022).
         if (entry.production_status == null) {
           skipped.unlisted += 1;
+          unrecorded.add(entry.class_name);
           continue;
         }
         if (!listed.some((l) => l.class_name === entry.class_name))
@@ -258,9 +264,21 @@ async function main(): Promise<void> {
     listed.sort((a, b) => a.class_name.localeCompare(b.class_name));
     const ships: Record<string, PatchShip> = {};
     for (const { class_name, uuid } of listed) {
-      const json = await get(
-        `/api/vehicles/${encodeURIComponent(uuid)}?include=hardpoints&${q}`,
-      );
+      let json: unknown;
+      try {
+        json = await get(
+          `/api/vehicles/${encodeURIComponent(uuid)}?include=hardpoints&${q}`,
+        );
+      } catch (error) {
+        // The list names it but the API serves no record of it for this build.
+        if (error instanceof FetchError && error.status === 404) {
+          skipped.ships += 1;
+          unrecorded.add(class_name);
+          log({ event: "patches.ship.missing", build: version.code, class_name });
+          continue;
+        }
+        throw error;
+      }
       const record = VehicleRecord.parse(json).data;
       if (record.class_name !== class_name) {
         throw new MapError(
@@ -271,6 +289,7 @@ async function main(): Promise<void> {
       // A record from another build is not this build's figure.
       if (record.version != null && record.version !== version.code) {
         skipped.ships += 1;
+        unrecorded.add(class_name);
         continue;
       }
       ships[class_name] = mapShip(
@@ -349,6 +368,9 @@ async function main(): Promise<void> {
         blueprints: Object.keys(blueprints).length,
       },
       ships,
+      unrecorded_ships: [...unrecorded]
+        .filter((c) => ships[c] === undefined)
+        .sort((a, b) => a.localeCompare(b)),
       parts: Object.fromEntries(
         Object.entries(parts).sort(([a], [b]) => a.localeCompare(b)),
       ),

@@ -24,7 +24,9 @@ import {
 
 function snapshot(
   code: string,
-  rows: Partial<Pick<PatchSnapshot, "ships" | "parts" | "blueprints">>,
+  rows: Partial<
+    Pick<PatchSnapshot, "ships" | "parts" | "blueprints" | "unrecorded_ships">
+  >,
   released = "2026-10-09T00:00:00.000Z",
 ): PatchSnapshot {
   const ships = rows.ships ?? {};
@@ -44,6 +46,7 @@ function snapshot(
       blueprints: Object.keys(blueprints).length,
     },
     ships,
+    unrecorded_ships: rows.unrecorded_ships ?? [],
     parts,
     blueprints,
   };
@@ -127,6 +130,34 @@ describe("buildsOf", () => {
     expect(after.at(-1)?.slug).toBe("4.10.2-12913470");
     expect(buildLabel(after[2]!, after[1]!)).toBe("4.10.2 (12913470)");
     expect(buildLabel(after[1]!, after[0]!)).toBe("4.10.2");
+  });
+});
+
+describe("ships a build lists without figures", () => {
+  it("are neither new nor removed", () => {
+    const a = snapshot("4.8.0-LIVE.1", {
+      ships: {
+        A: ship("A", { "speed.scm": 1 }),
+        B: ship("B", { "speed.scm": 1 }),
+      },
+    });
+    const b = snapshot("4.8.1-LIVE.2", {
+      ships: {
+        A: ship("A", { "speed.scm": 1 }),
+        C: ship("C", { "speed.scm": 1 }),
+      },
+      unrecorded_ships: ["B"],
+    });
+    const c = compareSnapshots(a, b);
+    expect(c.ships.removed).toEqual([]);
+    expect(c.ships.added.map((s) => s.id)).toEqual(["C"]);
+    expect(c.uncompared).toBe(1);
+    const back = compareSnapshots(
+      snapshot("1.0.0-LIVE.1", { ships: {}, unrecorded_ships: ["C"] }),
+      b,
+    );
+    expect(back.ships.added.map((s) => s.id)).toEqual(["A"]);
+    expect(back.uncompared).toBe(1);
   });
 });
 

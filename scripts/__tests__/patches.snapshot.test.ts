@@ -146,6 +146,7 @@ describe("the file", () => {
     source_url: "https://api.star-citizen.wiki",
     counts: { ships: 1, parts: items.length, blueprints: 2 },
     ships: { AEGS_Gladius: mapShip(vehicle) },
+    unrecorded_ships: ["AEGS_Gladius_Example"],
     parts: Object.fromEntries(
       items.map((r) => [String(r["class_name"]), mapPart(r)]),
     ),

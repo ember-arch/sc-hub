@@ -18,10 +18,13 @@ import {
 } from "../lib/dev-posts";
 import { SOURCE_LABEL, coverOf } from "../lib/dispatches";
 import {
+  dailyLine,
   dailyPicks,
   featuredPosts,
   formatFrontDate,
+  freshestStaffWord,
   pickPlates,
+  shortBuild,
   signed,
   utcDayNumber,
 } from "../lib/front";
@@ -82,8 +85,8 @@ const LIVE_EXAMPLE = "perseus";
 const DAILY_PLATES = 3;
 
 /**
- * The front page (ADR-020, ADR-021, ADR-038): the date and build line, the title and the
- * contents, the counters; then the newest dispatches, the featured ships (the showcase pair and
+ * The front page (ADR-020, ADR-021, ADR-038, ADR-042): the date line, the daily line composed
+ * from the pack as the title, the contents, the counters; then the newest dispatches, the featured ships (the showcase pair and
  * three that change daily, with the register's count), the developers' latest posts from Spectrum
  * (only with the module on), and this year's funding against last year's in one drawing with two
  * views, the site's one funding surface since ADR-040. Without media the bento's cards hold their captions alone and the dispatch cards their
@@ -211,19 +214,64 @@ export default function HomePage() {
 
   // The developers' latest (ADR-038): only with the Spectrum module on, like every Spectrum surface.
   const devOn = spectrumOn();
-  const featured = devOn ? featuredPosts(devPosts(r.news), at) : [];
+  const posts = devOn ? devPosts(r.news) : [];
+  const featured = featuredPosts(posts, at);
   const pictures = media();
+
+  // The daily line (ADR-042): composed from what the pack says today, never written.
+  const staffWord = freshestStaffWord(posts, at);
+  const newest = feed[0];
+  const line = dailyLine(
+    {
+      staffThread:
+        staffWord === null
+          ? null
+          : {
+              title: staffWord.thread_title ?? staffWord.title,
+              publishedAt: staffWord.published_at,
+              // A reply's address ends in its number; the thread's own page does not.
+              reply: /\/\d+$/.test(staffWord.url),
+            },
+      dispatch:
+        newest === undefined
+          ? null
+          : { title: newest.title, publishedAt: newest.published_at },
+      builds: {
+        live: shortBuild(
+          r.versions.find((v) => v.channel === "LIVE")?.version ?? null,
+        ),
+        ptu: shortBuild(
+          r.versions.find((v) => v.channel === "PTU")?.version ?? null,
+        ),
+      },
+      funding:
+        money === null || money.yearToDate === null
+          ? null
+          : {
+              year: Number(money.latest.day.slice(0, 4)),
+              yearToDate: formatCompact(money.yearToDate, "pledges"),
+              change:
+                money.yearToDateChange === null
+                  ? null
+                  : formatChange(money.yearToDateChange),
+            },
+    },
+    at,
+    utcDayNumber(at),
+  );
 
   return (
     <Site>
       <div className="flex flex-col gap-8 pt-8">
         <div className="flex flex-col gap-6">
           {/* The date alone: the builds stay in the footer's patch strip (ADR-007, one strip per page). */}
-          <p className="lab m-0 text-secondary">{formatFrontDate(at)}</p>
+          <p className="lab m-0 text-secondary">
+            {formatFrontDate(at)} · in the ’verse
+          </p>
           <div className="grid items-end gap-8 md:grid-cols-[3fr_2fr] md:gap-12">
-            <h1 className="m-0 text-display text-primary lg:text-hero">
-              Every ship, part and honour{" "}
-              <span className="font-medium">on record.</span>
+            {/* The daily line (ADR-042): what the pack says today, composed by rule. */}
+            <h1 className="m-0 max-w-prose text-title text-primary lg:text-display">
+              {line}
             </h1>
             <Contents />
           </div>

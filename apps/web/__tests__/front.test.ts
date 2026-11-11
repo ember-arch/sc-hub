@@ -295,3 +295,168 @@ describe("dailyPicks", () => {
     );
   });
 });
+
+// ADR-042: the daily line, composed from the pack by rule.
+
+import {
+  dailyLine,
+  freshestStaffWord,
+  headlineCut,
+  headlineTitle,
+  shortBuild,
+} from "../lib/front";
+
+describe("dailyLine", () => {
+  const now = new Date("2026-11-11T00:00:00Z");
+  const facts = {
+    staffThread: {
+      title:
+        "[All Waves] Star Citizen Alpha 4.10.3 PTU RC1 Patch Notes 13160301",
+      publishedAt: "2026-11-10T20:00:00Z",
+      reply: false,
+    },
+    dispatch: {
+      title: "Twitch Drops: IAE 2956",
+      publishedAt: "2026-11-09T21:00:00Z",
+    },
+    builds: { live: "4.10.2", ptu: "4.10.3" },
+    funding: { year: 2026, yearToDate: "$132.1M", change: "+19.9%" },
+  };
+
+  it("leads with the newer of the staff thread and the dispatch, then the funding on an even day", () => {
+    expect(dailyLine(facts, now, 20768)).toBe(
+      "CIG posted “Star Citizen Alpha 4.10.3 PTU RC1 Patch Notes” on Spectrum 4 h ago, and $132.1M pledged in 2026, +19.9% on 2025.",
+    );
+  });
+
+  it("takes the builds on an odd day, and the dispatch when it is newer or the thread is missing", () => {
+    expect(dailyLine(facts, now, 20769)).toBe(
+      "CIG posted “Star Citizen Alpha 4.10.3 PTU RC1 Patch Notes” on Spectrum 4 h ago, and Alpha 4.10.2 is live and 4.10.3 is on the PTU.",
+    );
+    const newer = {
+      ...facts,
+      dispatch: { ...facts.dispatch, publishedAt: "2026-11-10T23:50:00Z" },
+    };
+    expect(dailyLine(newer, now, 20769)).toMatch(
+      /^The latest dispatch is “Twitch Drops: IAE 2956”, 10 min ago, and Alpha/,
+    );
+    expect(dailyLine({ ...facts, staffThread: null }, now, 20768)).toMatch(
+      /^The latest dispatch is “Twitch Drops: IAE 2956”, 1 d ago, and \$132/,
+    );
+  });
+
+  it("falls back across what the pack lacks, down to the site's own words", () => {
+    expect(
+      dailyLine(
+        { ...facts, funding: null, builds: { live: "4.10.2", ptu: null } },
+        now,
+        20768,
+      ),
+    ).toBe(
+      "CIG posted “Star Citizen Alpha 4.10.3 PTU RC1 Patch Notes” on Spectrum 4 h ago, and Alpha 4.10.2 is live.",
+    );
+    expect(
+      dailyLine({ ...facts, builds: { live: null, ptu: null } }, now, 20769),
+    ).toMatch(/, and \$132\.1M pledged in 2026, \+19\.9% on 2025\.$/);
+    expect(
+      dailyLine(
+        {
+          staffThread: null,
+          dispatch: null,
+          builds: { live: null, ptu: null },
+          funding: null,
+        },
+        now,
+        1,
+      ),
+    ).toBe("Star Citizen, on record.");
+    expect(
+      dailyLine(
+        {
+          staffThread: null,
+          dispatch: null,
+          builds: { live: "4.10.2", ptu: null },
+          funding: null,
+        },
+        now,
+        1,
+      ),
+    ).toBe("Alpha 4.10.2 is live.");
+  });
+
+  it('says "posted in" when the freshest staff post answers a thread, and leaves a change out when unknown', () => {
+    const reply = {
+      ...facts,
+      staffThread: { ...facts.staffThread, reply: true },
+      funding: { year: 2027, yearToDate: "$412.3K", change: null },
+    };
+    expect(dailyLine(reply, now, 20768)).toBe(
+      "CIG posted in “Star Citizen Alpha 4.10.3 PTU RC1 Patch Notes” on Spectrum 4 h ago, and $412.3K pledged in 2027.",
+    );
+    // A week on, the cards' clock goes absolute, and so does the line's.
+    expect(
+      dailyLine(
+        { ...facts, staffThread: null },
+        new Date("2026-11-20T00:00:00Z"),
+        20768,
+      ),
+    ).toMatch(
+      /^The latest dispatch is “Twitch Drops: IAE 2956”, 9 Nov 2026, and/,
+    );
+  });
+
+  it("cuts a long title on a word with an ellipsis", () => {
+    const long =
+      "Star Citizen Live: Q&A with the vehicle team on the Perseus, the Polaris and everything in between, part two";
+    expect(headlineCut(long)).toBe(
+      "Star Citizen Live: Q&A with the vehicle team on the Perseus, the Polaris and everything…",
+    );
+    expect(headlineCut("Short")).toBe("Short");
+    expect(headlineCut("a".repeat(100))).toBe(`${"a".repeat(90)}…`);
+  });
+
+  it("trims a thread's title for a headline and shortens a build", () => {
+    expect(
+      headlineTitle(
+        "[All Waves] Star Citizen Alpha 4.10.3 PTU Patch Notes 13145606",
+      ),
+    ).toBe("Star Citizen Alpha 4.10.3 PTU Patch Notes");
+    expect(headlineTitle("IAE 2956 - Choose Your Adventure - FAQ")).toBe(
+      "IAE 2956 - Choose Your Adventure - FAQ",
+    );
+    expect(headlineTitle("Pumpkin contest 2026")).toBe("Pumpkin contest 2026");
+    // Only an audience tag is dropped; any other bracketed word is CIG's and stays.
+    expect(headlineTitle("[Now Closed] Alpha 4.10 PTU Feedback")).toBe(
+      "[Now Closed] Alpha 4.10 PTU Feedback",
+    );
+    expect(headlineTitle("[5.0 PTU Feedback] Planet Tech V5")).toBe(
+      "[5.0 PTU Feedback] Planet Tech V5",
+    );
+    expect(
+      headlineTitle("[Wave 1] Alpha 4.10.3 PTU Patch Notes 13130000"),
+    ).toBe("Alpha 4.10.3 PTU Patch Notes");
+    expect(shortBuild("4.10.2-LIVE.12881860")).toBe("4.10.2");
+    expect(shortBuild(null)).toBeNull();
+  });
+
+  it("finds the freshest staff-opened thread's post within the window", () => {
+    const post = (hoursAgo: number, thread: string, opener = false) => ({
+      published_at: new Date(
+        now.getTime() - hoursAgo * 3_600_000,
+      ).toISOString(),
+      thread_id: thread,
+      url: opener
+        ? `https://example.test/thread/${thread}`
+        : `https://example.test/thread/${thread}/${hoursAgo}`,
+    });
+    const posts = [
+      post(1, "answered"),
+      post(3, "notes"),
+      post(400, "notes", true),
+      post(10, "faq", true),
+    ];
+    expect(freshestStaffWord(posts, now)?.thread_id).toBe("notes");
+    expect(freshestStaffWord(posts, now, 2)).toBeNull();
+    expect(freshestStaffWord([], now)).toBeNull();
+  });
+});

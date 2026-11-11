@@ -11,6 +11,18 @@ import { expect, test } from "@playwright/test";
 const on = ["poll", "feed"].includes(process.env["SPECTRUM_MODE"] ?? "");
 const OUT = join(dirname(fileURLToPath(import.meta.url)), "__screenshots__");
 
+test("the title is the daily line: one sentence from the pack, the date label above it", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const title = page.getByRole("heading", { level: 1 });
+  await expect(title).toHaveText(/^[A-Z$].{20,220}\.$/);
+  await expect(title).toHaveText(/, and /);
+  await expect(page.locator("main p.lab").first()).toHaveText(
+    /^\w+ \d+ \w+ \d{4} · in the ’verse$/,
+  );
+});
+
 test("the sections run dispatches, featured ships, developers (with Spectrum on), funding", async ({
   page,
 }) => {

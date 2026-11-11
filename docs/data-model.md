@@ -204,6 +204,8 @@ The exclusion list is `workers/link-entities/exclusions.json`. Add to it when a 
 
 The normalize step emits `diff.json` per run: for each entity, fields added, removed, or changed versus the previous version of the same channel, with old and new values. Phase 2 displays it on ship pages as "changed in this version"; a later phase builds patch pages from it.
 
+Until it exists, the patch pages (ADR-049) compare build snapshots instead: `fixtures/patches/<build>.json.gz`, one per build the Star Citizen Wiki API keeps, each holding every ship's, part's and blueprint's figures as the source states them (`PatchSnapshot` in `packages/schema/entities/patch.ts`). A comparison computes the same three things `diff.json` will hold (entities added and removed, figures changed with old and new values) for any two builds. When the pipeline publishes a version it can write a snapshot of the same shape (`source: "pipeline"`), which is how PTU builds reach the pages.
+
 ## Slugs and redirects
 
 A slug is computed once when an entity is first published. If the display name changes, the old slug is appended to `slug_history` and the app serves a 301 from it. A slug collision across manufacturers is resolved by prefixing the manufacturer code to the newer entity's slug; when the collision is found at one first publish (a bootstrap pack, a first import), every colliding entity gets the prefix. If the prefixed slug still collides (components that share one display name within a manufacturer, placeholders among them), the slug is the kebab-case `class_name`, which is unique by definition.

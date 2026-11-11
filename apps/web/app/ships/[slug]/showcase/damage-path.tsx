@@ -292,9 +292,6 @@ export function DamagePath({
           stages.map((p) => (
             <div key={p.kind} className="flex flex-col gap-2">
               <p className="m-0 flex items-center gap-2 text-caption text-secondary">
-                {KIND_ICON[p.kind] === undefined ? null : (
-                  <Icon name={KIND_ICON[p.kind]!} className="text-primary" />
-                )}
                 One {DAMAGE_KIND_LABEL[p.kind].toLowerCase()} shot of the{" "}
                 {weapon.name}
                 {p.belowDeflection === null
@@ -317,7 +314,7 @@ export function DamagePath({
                       </span>
                     )}
                     <dt className="flex items-start gap-1 text-caption text-secondary">
-                      <Icon name={c.icon} className="text-primary" />
+                      <Icon name={c.icon} />
                       {c.name}
                     </dt>
                     <dd className="m-0 font-mono text-ui text-primary">

@@ -427,7 +427,7 @@ const renderers: Record<string, { title: string; render: Story["render"] }> = {
   icon: {
     title: "Icon",
     render: () => (
-      <ul className="m-0 grid list-none grid-cols-3 gap-3 p-4">
+      <ul className="m-0 grid list-none grid-cols-2 gap-3 p-4">
         {ICON_NAMES.map((name) => (
           <li
             key={name}

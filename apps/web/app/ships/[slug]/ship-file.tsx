@@ -472,6 +472,8 @@ function SupportingFigures({
 /** Label and value pairs in two columns. */
 export function Facts({ facts }: { readonly facts: readonly Fact[] }) {
   if (facts.length === 0) return null;
+  // Where any fact carries a glyph, every label gets the slot, so the column keeps one edge (ADR-044).
+  const slot = facts.some((f) => f.icon !== undefined);
   return (
     <dl className="m-0 grid border-t border-hairline sm:grid-cols-2 sm:gap-x-8">
       {facts.map((f) => (
@@ -479,8 +481,15 @@ export function Facts({ facts }: { readonly facts: readonly Fact[] }) {
           key={f.label}
           className="flex items-baseline justify-between gap-4 border-b border-hairline py-2"
         >
-          <dt className="flex items-center gap-2 text-ui text-secondary">
-            {f.icon === undefined ? null : <Icon name={f.icon} />}
+          <dt className="text-ui text-secondary">
+            {slot ? (
+              <span
+                aria-hidden="true"
+                className="mr-2 inline-block h-4 w-4 align-middle"
+              >
+                {f.icon === undefined ? null : <Icon name={f.icon} />}
+              </span>
+            ) : null}
             {f.label}
           </dt>
           <dd

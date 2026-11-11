@@ -941,7 +941,14 @@ export function packShipFile(ship: ShipView): ShipFileProps {
     },
     ...(s?.hull_hp == null
       ? []
-      : [{ label: "Hull", value: `${n0(s.hull_hp)} HP`, numeric: true }]),
+      : [
+          {
+            label: "Hull",
+            icon: "hull" as const,
+            value: `${n0(s.hull_hp)} HP`,
+            numeric: true,
+          },
+        ]),
     ...(shieldFigures === null
       ? []
       : [

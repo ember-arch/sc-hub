@@ -1,9 +1,12 @@
 /**
  * One polite client for every source the news pollers read (CLAUDE.md section 9): requests to a
- * host are serial and spaced, the project User-Agent names the project and, for RSI's hosts, the
- * contact address; a 429 or a 5xx is retried after a pause, anything else is an error. `fetch`,
- * `sleep` and `now` are injected so the tests run on fixtures with no network.
+ * host are serial and spaced, the User-Agent is the one docs/legal/obligations.md asks for (the
+ * site, its about page and, when set, the contact address; `userAgent` in `packages/schema`,
+ * ADR-036), and an RSI host is refused without the address; a 429 or a 5xx is retried after a
+ * pause, anything else is an error. `fetch`, `sleep` and `now` are injected so the tests run on
+ * fixtures with no network.
  */
+import { userAgent } from "schema/site";
 
 export type FetchLike = (
   url: string,
@@ -42,10 +45,6 @@ export class FetchError extends Error {
   }
 }
 
-export function userAgent(contact: string | null): string {
-  return `sc-hub-news/0.0 (non-commercial fan reference in development; github.com/ember-arch/sc-hub${contact === null ? "" : `; ${contact}`})`;
-}
-
 export interface Client {
   text(url: string): Promise<string>;
   json(url: string): Promise<unknown>;
@@ -81,7 +80,7 @@ export function createClient(options: ClientOptions): Client {
       try {
         response = await options.fetch(url, {
           headers: {
-            "User-Agent": userAgent(options.contact),
+            "User-Agent": userAgent("poll-news", options.contact),
             Accept: "text/html,application/json;q=0.9,*/*;q=0.8",
           },
         });

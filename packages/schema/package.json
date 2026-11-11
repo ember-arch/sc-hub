@@ -16,6 +16,10 @@
     "./pack": {
       "types": "./dist/pack.d.ts",
       "default": "./dist/pack.js"
+    },
+    "./site": {
+      "types": "./dist/site.d.ts",
+      "default": "./dist/site.js"
     }
   },
   "scripts": {

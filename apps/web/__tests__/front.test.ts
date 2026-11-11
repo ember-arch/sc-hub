@@ -116,6 +116,7 @@ describe("signed", () => {
 // ADR-038: the featured developer posts and the bento's daily draw.
 
 import {
+  FEATURED_REACH_HOURS,
   FEATURED_WINDOW_HOURS,
   dailyPicks,
   featuredPosts,
@@ -125,41 +126,96 @@ import {
 describe("featuredPosts", () => {
   const now = new Date("2026-11-11T00:00:00Z");
   let n = 0;
+  /** A post `hoursAgo` in `thread`; an `opener` is the thread's own page, a reply has a number. */
   const post = (
     hoursAgo: number,
     thread: string | null,
-    url = `https://example.test/thread/${thread ?? "none"}/${(n += 1)}`,
+    {
+      opener = false,
+      likes,
+      url,
+    }: { opener?: boolean; likes?: number; url?: string } = {},
   ) => ({
     published_at: new Date(now.getTime() - hoursAgo * 3_600_000).toISOString(),
     thread_id: thread,
-    url,
+    url:
+      url ??
+      (opener
+        ? `https://example.test/thread/${thread}`
+        : `https://example.test/thread/${thread ?? "none"}/${(n += 1)}`),
+    ...(likes === undefined ? {} : { likes }),
   });
 
-  it("takes one post per thread from the window, the newest of each, newest thread first, five at most", () => {
+  it("takes the threads staff opened in the window first, one post per thread, newest first, five at most", () => {
     const posts = [
       post(1, "patch"),
       post(2, "iae"),
-      post(3, "patch"),
+      post(3, "patch", { opener: true }),
+      post(4, "iae", { opener: true }),
       post(5, "pizza"),
+      post(6, "launcher", { opener: true }),
+      post(7, "pumpkin", { opener: true }),
+      post(8, "contest", { opener: true }),
+      post(9, "sale", { opener: true }),
       post(10, "armor"),
-      post(20, "pumpkin"),
-      post(21, "pumpkin"),
-      post(30, "launcher"),
-      post(100, "old"),
+      post(100, "old", { opener: true }),
     ];
     const picked = featuredPosts(posts, now);
     expect(picked.map((p) => p.thread_id)).toEqual([
       "patch",
       "iae",
-      "pizza",
-      "armor",
+      "launcher",
       "pumpkin",
+      "contest",
     ]);
+    // The thread's newest post stands for it, an opener or not.
     expect(picked[0]).toBe(posts[0]);
   });
 
-  it("fills to three with the newest posts outside the window when the window holds fewer threads", () => {
-    const posts = [post(1, "a"), post(60, "b"), post(61, "b"), post(90, "c")];
+  it("reaches back to 72 hours for staff-opened threads before taking threads staff only answered in", () => {
+    const posts = [
+      post(1, "a", { opener: true }),
+      post(2, "reply-x"),
+      post(60, "b", { opener: true }),
+      post(70, "c", { opener: true }),
+      post(80, "d", { opener: true }),
+      post(5, "reply-y"),
+    ];
+    expect(featuredPosts(posts, now).map((p) => p.thread_id)).toEqual([
+      "a",
+      "b",
+      "c",
+      "reply-x",
+      "reply-y",
+    ]);
+  });
+
+  it("ranks threads staff only answered in by likes where recorded, newest first otherwise", () => {
+    const posts = [
+      post(1, "a", { opener: true }),
+      post(2, "x", { likes: 3 }),
+      post(3, "y", { likes: 40 }),
+      post(4, "z"),
+      post(5, "w", { likes: 40 }),
+      post(6, "v"),
+      post(7, "u"),
+    ];
+    expect(featuredPosts(posts, now).map((p) => p.thread_id)).toEqual([
+      "a",
+      "y",
+      "w",
+      "x",
+      "z",
+    ]);
+  });
+
+  it("fills to three with the newest remaining threads when the windows hold fewer", () => {
+    const posts = [
+      post(1, "a", { opener: true }),
+      post(90, "b"),
+      post(91, "b"),
+      post(200, "c"),
+    ];
     expect(featuredPosts(posts, now).map((p) => p.thread_id)).toEqual([
       "a",
       "b",
@@ -171,16 +227,17 @@ describe("featuredPosts", () => {
 
   it("sorts what it is given and keys a post without a thread id by its thread's address", () => {
     const posts = [
-      post(30, null, "https://example.test/thread/one/3"),
-      post(2, null, "https://example.test/thread/two/9"),
+      post(30, null, { url: "https://example.test/thread/one/3" }),
+      post(2, null, { url: "https://example.test/thread/two/9" }),
       post(10, "t"),
-      post(5, null, "https://example.test/thread/two/7"),
+      post(5, null, { url: "https://example.test/thread/two/7" }),
     ];
     expect(featuredPosts(posts, now)).toEqual([posts[1], posts[2], posts[0]]);
     expect(FEATURED_WINDOW_HOURS).toBe(48);
+    expect(FEATURED_REACH_HOURS).toBe(72);
     // Nothing inside a one-hour window: the fill supplies the minimum, one post.
     expect(
-      featuredPosts(posts, now, { hours: 1, min: 1, max: 5 }),
+      featuredPosts(posts, now, { hours: 1, reach: 1, min: 1, max: 5 }),
     ).toHaveLength(1);
   });
 });

@@ -7,11 +7,12 @@ import { Footer } from "./footer";
 import type { ChannelVersion } from "./patch-strip";
 import { ThemeToggle } from "./theme-toggle";
 
-export type NavSection = "ships" | "components" | "titles" | "news";
+export type NavSection = "ships" | "components" | "patches" | "titles" | "news";
 
 const NAV: readonly { section: NavSection; label: string; href: string }[] = [
   { section: "ships", label: "Ships", href: "/ships" },
   { section: "components", label: "Components", href: "/components" },
+  { section: "patches", label: "Patches", href: "/patches" },
   { section: "titles", label: "Titles", href: "/titles" },
   { section: "news", label: "News", href: "/news" },
 ];
@@ -59,17 +60,18 @@ export function PageShell({
             <Logo />
             <span className="sr-only">{SITE_NAME}</span>
           </NextLink>
-          {/* Below lg the nav takes its own row (ADR-017): the three do not fit in one. */}
+          {/* Below lg the nav takes its own row (ADR-017): the three do not fit in one. On phones the
+              five sections sit on that row edge to edge, tighter, so they keep to one line (ADR-049). */}
           <nav
             aria-label="Primary"
-            className="order-last flex w-full flex-wrap items-center gap-1 lg:order-none lg:w-auto lg:flex-1 lg:justify-center"
+            className="order-last flex w-full flex-wrap items-center justify-between sm:justify-start sm:gap-1 lg:order-none lg:w-auto lg:flex-1 lg:justify-center"
           >
             {NAV.map((item) => (
               <NextLink
                 key={item.section}
                 href={item.href}
                 aria-current={current === item.section ? "page" : undefined}
-                className={`rounded-pill px-3 py-1 text-ui font-medium no-underline transition-colors duration-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent ${current === item.section ? "bg-primary text-page" : "text-secondary hover:bg-inset hover:text-primary"}`}
+                className={`rounded-pill px-2 py-1 text-ui font-medium no-underline sm:px-3 transition-colors duration-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent ${current === item.section ? "bg-primary text-page" : "text-secondary hover:bg-inset hover:text-primary"}`}
               >
                 {item.label}
               </NextLink>

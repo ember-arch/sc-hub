@@ -9,7 +9,9 @@ describe("the search index document", () => {
     for (const e of entries) {
       expect(e.name.length).toBeGreaterThan(0);
       expect(e.href.startsWith("/")).toBe(true);
-      expect(["ship", "component", "manufacturer", "title"]).toContain(e.type);
+      expect(["ship", "component", "manufacturer", "patch", "title"]).toContain(
+        e.type,
+      );
     }
     expect(new Set(entries.map((e) => e.href)).size).toBe(entries.length);
     // A part without a name of its own (shown under its class name) is not searched for.

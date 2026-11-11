@@ -61,6 +61,10 @@ const SCREENS = [
   { name: "manufacturer", path: "/manufacturers/aegis-dynamics", status: 200 },
   { name: "news-dev", path: "/news/dev", status: 200 },
   { name: "titles", path: "/titles", status: 200 },
+  // The patch pages (spec 08, ADR-049).
+  { name: "patches", path: "/patches", status: 200 },
+  { name: "patches-ptu", path: "/patches/ptu", status: 200 },
+  { name: "patches-compare", path: "/patches/compare", status: 200 },
   { name: "titles-guide", path: "/titles?group=guide", status: 200 },
   { name: "about", path: "/about", status: 200 },
   { name: "privacy", path: "/privacy", status: 200 },

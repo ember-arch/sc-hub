@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { repo } from "../lib/data";
+import { builds, latestLive, previousOf } from "../lib/patches";
 import { absolute } from "../lib/seo";
 
 /**
@@ -21,8 +22,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority,
     ...(modified === undefined ? {} : { lastModified: modified }),
   });
+  // The patch pages (ADR-049): the latest patch is /patches, each earlier one its own address.
+  const patchBuilds = builds();
+  const newest = latestLive(patchBuilds);
+  const patches = patchBuilds.filter(
+    (b) =>
+      b.channel === "LIVE" &&
+      b.code !== newest?.code &&
+      previousOf(b, patchBuilds) !== null,
+  );
+  const released = (at: string | null) =>
+    at === null ? undefined : new Date(at);
   return [
     entry("/", 1),
+    entry("/patches", 0.8, released(newest?.releasedAt ?? null)),
+    entry("/patches/ptu", 0.6),
+    ...patches.map((b) =>
+      entry(`/patches/${b.slug}`, 0.5, released(b.releasedAt)),
+    ),
     entry("/ships", 0.9, lastModified),
     entry("/components", 0.8, lastModified),
     entry("/news", 0.8),

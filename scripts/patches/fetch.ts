@@ -274,7 +274,11 @@ async function main(): Promise<void> {
         if (error instanceof FetchError && error.status === 404) {
           skipped.ships += 1;
           unrecorded.add(class_name);
-          log({ event: "patches.ship.missing", build: version.code, class_name });
+          log({
+            event: "patches.ship.missing",
+            build: version.code,
+            class_name,
+          });
           continue;
         }
         throw error;

@@ -105,7 +105,13 @@ export const FEATURED_WINDOW_HOURS = 48;
 export interface FeaturedCandidate {
   readonly published_at: string;
   readonly thread_id: string | null;
+  /** The post's address; a reply's ends in its number, which keys the thread when the id is missing. */
+  readonly url: string;
 }
+
+/** The thread a post belongs to: its id on the pack, or its thread's address without the post number. */
+const threadKey = (p: FeaturedCandidate): string =>
+  p.thread_id ?? p.url.replace(/\/\d+$/, "");
 
 /**
  * The front page's featured developer posts (ADR-038): the posts of the last `hours` before `now`,
@@ -125,10 +131,9 @@ export function featuredPosts<T extends FeaturedCandidate>(
   );
   const seen = new Set<string>();
   const firstPerThread = sorted.filter((p) => {
-    // A post without a thread id stands for itself.
-    if (p.thread_id === null) return true;
-    if (seen.has(p.thread_id)) return false;
-    seen.add(p.thread_id);
+    const key = threadKey(p);
+    if (seen.has(key)) return false;
+    seen.add(key);
     return true;
   });
   const recent = firstPerThread.filter(

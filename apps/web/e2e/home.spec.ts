@@ -1,3 +1,6 @@
+import { mkdirSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { expect, test } from "@playwright/test";
 
 // The hero home page (ADR-038): dispatches first, the featured ships with the register's count,
@@ -6,6 +9,7 @@ import { expect, test } from "@playwright/test";
 // and present in devtracker.spec.ts.
 
 const on = ["poll", "feed"].includes(process.env["SPECTRUM_MODE"] ?? "");
+const OUT = join(dirname(fileURLToPath(import.meta.url)), "__screenshots__");
 
 test("the sections run dispatches, featured ships, developers (with Spectrum on), funding", async ({
   page,
@@ -102,23 +106,52 @@ test("the funding card shows the year's three figures and toggles between the tw
   const months = group.getByRole("button", { name: "By month" });
   await expect(ytd).toHaveAttribute("aria-pressed", "true");
   await expect(months).toHaveAttribute("aria-pressed", "false");
-  // The year-to-date view draws this year against last year; the month view is in the document
-  // but hidden until pressed.
-  const figures = section.locator("figure");
-  await expect(figures.first()).toBeVisible();
-  await expect(figures.nth(1)).toBeHidden();
+  // The year-to-date view draws this year against last year (in the first days of a year, before
+  // two readings, it is a sentence instead); the month view is in the document but hidden until
+  // pressed.
+  const ytdView = section.locator("[id$=-ytd]");
+  const monthView = section.locator("[id$=-months]");
+  await expect(ytdView).toBeVisible();
+  await expect(monthView).toBeHidden();
   await months.click();
   await expect(months).toHaveAttribute("aria-pressed", "true");
-  await expect(figures.nth(1)).toBeVisible();
-  await expect(figures.first()).toBeHidden();
-  // Every month bar carries a title with its figure; the legend names both years.
-  const titles = await figures
-    .nth(1)
-    .locator("svg rect title")
-    .allTextContents();
+  await expect(ytd).toHaveAttribute("aria-pressed", "false");
+  await expect(monthView).toBeVisible();
+  await expect(ytdView).toBeHidden();
+  // Every month bar carries a title with its figure; the frame's summary names both years.
+  const titles = await monthView.locator("svg rect title").allTextContents();
   expect(titles.length).toBeGreaterThan(0);
   for (const t of titles) expect(t).toMatch(/^[A-Z][a-z]{2} \d{4}/);
-  await expect(figures.nth(1).locator("figcaption")).toContainText(
+  await expect(monthView.locator("figcaption")).toContainText(
     /beside the same month of \d{4}/,
   );
 });
+
+// The "By month" view's record (ADR-038): the funding section with the toggle pressed, at both
+// widths and in both schemes, beside the home records that show the year-to-date view.
+for (const viewport of [
+  { name: "phone", width: 390, height: 844 },
+  { name: "desktop", width: 1280, height: 800 },
+] as const) {
+  for (const scheme of ["light", "dark"] as const) {
+    test(`home-funding-months at ${viewport.width} px, ${scheme}`, async ({
+      browser,
+    }) => {
+      const context = await browser.newContext({
+        viewport: { width: viewport.width, height: viewport.height },
+        colorScheme: scheme,
+        deviceScaleFactor: 1,
+      });
+      const page = await context.newPage();
+      await page.goto("/");
+      const section = page.locator("section[aria-labelledby=funding]");
+      await section.getByRole("button", { name: "By month" }).click();
+      await expect(section.locator("[id$=-months]")).toBeVisible();
+      mkdirSync(OUT, { recursive: true });
+      await section.screenshot({
+        path: join(OUT, `home-funding-months-${viewport.name}-${scheme}.png`),
+      });
+      await context.close();
+    });
+  }
+}

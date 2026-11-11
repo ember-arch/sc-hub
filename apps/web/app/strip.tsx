@@ -25,22 +25,33 @@ const COLUMNS: Readonly<Record<number, string>> = {
   6: "md:grid-cols-6",
 };
 
+/** The same, below md. */
+const PHONE_COLUMNS: Readonly<Record<number, string>> = {
+  1: "grid-cols-1",
+  2: "grid-cols-2",
+  3: "grid-cols-3",
+};
+
 const link =
   "no-underline transition-colors duration-hover hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent";
 
 export function FigureStrip({
   figures,
   columns,
+  phoneColumns = 2,
 }: {
   readonly figures: readonly Figure[];
   /** Columns from md up; the count of figures when omitted (at most six). */
   readonly columns?: number | undefined;
+  /** Columns below md: two as a rule; three for a strip of three short figures (ADR-038). */
+  readonly phoneColumns?: 1 | 2 | 3 | undefined;
 }) {
   if (figures.length === 0) return null;
   const cols =
     COLUMNS[columns ?? Math.min(figures.length, 6)] ?? "md:grid-cols-5";
+  const phone = PHONE_COLUMNS[phoneColumns] ?? "grid-cols-2";
   return (
-    <dl className={`m-0 grid grid-cols-2 gap-x-6 gap-y-4 py-3 ${cols}`}>
+    <dl className={`m-0 grid ${phone} gap-x-6 gap-y-4 py-3 ${cols}`}>
       {figures.map((f, i) => {
         const value =
           f.short === undefined ? (

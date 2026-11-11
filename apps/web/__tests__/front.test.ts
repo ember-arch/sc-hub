@@ -124,9 +124,15 @@ import {
 
 describe("featuredPosts", () => {
   const now = new Date("2026-11-11T00:00:00Z");
-  const post = (hoursAgo: number, thread: string | null) => ({
+  let n = 0;
+  const post = (
+    hoursAgo: number,
+    thread: string | null,
+    url = `https://example.test/thread/${thread ?? "none"}/${(n += 1)}`,
+  ) => ({
     published_at: new Date(now.getTime() - hoursAgo * 3_600_000).toISOString(),
     thread_id: thread,
+    url,
   });
 
   it("takes one post per thread from the window, the newest of each, newest thread first, five at most", () => {
@@ -163,8 +169,13 @@ describe("featuredPosts", () => {
     expect(featuredPosts([], now)).toEqual([]);
   });
 
-  it("sorts what it is given and counts a post without a thread as its own", () => {
-    const posts = [post(30, null), post(2, null), post(10, "t")];
+  it("sorts what it is given and keys a post without a thread id by its thread's address", () => {
+    const posts = [
+      post(30, null, "https://example.test/thread/one/3"),
+      post(2, null, "https://example.test/thread/two/9"),
+      post(10, "t"),
+      post(5, null, "https://example.test/thread/two/7"),
+    ];
     expect(featuredPosts(posts, now)).toEqual([posts[1], posts[2], posts[0]]);
     expect(FEATURED_WINDOW_HOURS).toBe(48);
     // Nothing inside a one-hour window: the fill supplies the minimum, one post.

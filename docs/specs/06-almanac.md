@@ -37,10 +37,10 @@ The owner's direction of 2026-11-10: a front page that is current every time it 
 ## Verification
 
 - `pnpm typecheck && pnpm lint && pnpm test`, then `pnpm test:e2e`.
-- Screenshots at 390 px and 1280 px, light and dark, of every page the PR touches, taken with the media folder aside so they match what CI and a deployment render.
+- Screenshots at 390 px and 1280 px, light and dark, of every page the PR touches. Since ADR-034 a deployment serves its pictures from the CDN, so a record may be taken from a build with `CDN_BASE_URL` set to the live store, which shows what the site shows; CI's own run has no media.
 - A fresh-context audit (`KICKOFF.md`, Audit prompt) per PR; findings fixed or deferred in the PR description.
 
 ## Notes
 
-- Imagery and models stay git-ignored and local (ADR-009, ADR-019); CI and deployments render the front page's plates as frames with their captions and no picture inside, and the entry's opening without its figure, the head at a reading width. The ink holomodel can only be seen with the models built locally, so its evidence is the owner's local preview and the session's review screenshots, not the committed ones.
+- Imagery and models stay git-ignored and local (ADR-009, ADR-019) and reach a deployment from the CDN (ADR-034); CI, which has neither, renders the front page's cards as toned panels with their captions and no picture inside, and the entry's opening without its figure, the head at a reading width. The ink holomodel can only be seen with the models built locally, so its evidence is the owner's local preview and the session's review screenshots, not the committed ones.
 - Branch prefix: `spec/06-almanac/…`. The foundation shipped from `spec/03-almanac/foundation` before this spec existed.

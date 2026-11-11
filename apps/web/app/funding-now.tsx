@@ -61,7 +61,7 @@ export function FundingNow({
   ];
   return (
     <div className="flex flex-col gap-4">
-      <FigureStrip columns={3} figures={figures} />
+      <FigureStrip columns={3} phoneColumns={3} figures={figures} />
       <ViewToggle
         label="Funding view"
         views={[
@@ -129,7 +129,9 @@ export function MonthPairs({
   const slot = W / pairs.length;
   const bar = slot * 0.32;
   const gap = slot * 0.06;
-  const heightOf = (v: number): number => (v / yMax) * H;
+  // A month RSI lowered the counter in (ADR-018) is below zero: it draws as no bar, and its
+  // title and the summary carry the figure.
+  const heightOf = (v: number): number => Math.max(0, (v / yMax) * H);
   const ticks = [0, 0.5, 1].map((f) => ({
     at: pct(H - heightOf(f * top), H),
     text: formatCompact(f * top, measure),

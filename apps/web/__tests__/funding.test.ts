@@ -299,7 +299,8 @@ describe("yearAgainstLastYear", () => {
     expect(a?.lastYearTotal).toBeNull();
     expect(a?.shareOfLastYear).toBeNull();
     const real = yearAgainstLastYear(pledges);
-    expect(real?.year).toBe(2026);
+    const latestDay = pledges.at(-1)!.day;
+    expect(real?.year).toBe(Number(latestDay.slice(0, 4)));
     expect(real?.lastYearTotal).toBeGreaterThan(1e8);
     expect(real?.shareOfLastYear).toBeGreaterThan(0);
     expect(real?.change).not.toBeNull();
@@ -334,11 +335,14 @@ describe("monthPairs", () => {
     expect(pairs[0]?.lastYear).toBeNull();
     expect(pairs[0]?.change).toBeNull();
     expect(monthPairs(rows.slice(-1), list.at(-1)!.day)).toEqual([]);
-    const real = monthPairs(yearRows(pledges), pledges.at(-1)!.day);
-    expect(real).toHaveLength(11);
-    expect(real.every((p) => p.thisYear !== null && p.lastYear !== null)).toBe(
-      true,
-    );
+    // On the fixture: one pair per month of the latest year up to the latest reading, the last
+    // of them the current month, and at least one month compared with last year.
+    const latestDay = pledges.at(-1)!.day;
+    const real = monthPairs(yearRows(pledges), latestDay);
+    expect(real).toHaveLength(Number(latestDay.slice(5, 7)));
+    expect(real.at(-1)?.current).toBe(true);
+    expect(real.at(-1)?.change).toBeNull();
+    expect(real.some((p) => p.change !== null)).toBe(true);
   });
 
   it("formats a share as a whole percentage", () => {

@@ -37,12 +37,13 @@ export default function PrivacyPage() {
             YouTube. Their thumbnails load from YouTube's image servers, which
             then see your IP address as with any image; no referrer is sent with
             them. The player loads from youtube-nocookie.com, YouTube's
-            privacy-enhanced mode, only when you press a video, and is unloaded
-            when you close it. It is told this site&apos;s address, as YouTube
-            requires of an embedded player, and while it plays YouTube&apos;s
-            own privacy policy applies, its cookies and storage and any
-            advertising YouTube shows in it included. Every video also links to
-            YouTube, if you would rather watch it there.
+            privacy-enhanced mode, only when you press a video, which then
+            starts playing, and is unloaded when you close it. It is told this
+            site&apos;s address, as YouTube requires of an embedded player, and
+            while it plays YouTube&apos;s own privacy policy applies, its
+            cookies and storage and any advertising YouTube shows in it
+            included. Every video also links to YouTube, if you would rather
+            watch it there.
           </p>
         </Section>
         <Section id="later" title="Planned">

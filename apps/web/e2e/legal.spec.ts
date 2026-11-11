@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { expect, test } from "@playwright/test";
 import {
+  CONTACT_EMAIL,
   DISCLAIMER,
   FANKIT_NOTICE,
   TRADEMARK_LINE,
@@ -54,6 +55,11 @@ for (const route of ROUTES) {
     await expect(
       footer.getByRole("link", { name: "robertsspaceindustries.com" }),
     ).toHaveAttribute("href", "https://robertsspaceindustries.com/");
+    // The takedown address is published in every footer (docs/legal/obligations.md, ADR-033).
+    expect(CONTACT_EMAIL).not.toBeNull();
+    await expect(
+      footer.getByRole("link", { name: CONTACT_EMAIL ?? "" }),
+    ).toHaveAttribute("href", "mailto:" + CONTACT_EMAIL);
   });
 }
 

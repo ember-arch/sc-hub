@@ -96,6 +96,30 @@ test("the ship page has every section in order, each stat with its unit and vers
   }
 });
 
+// ADR-043: pitch, yaw and roll in Mobility, each with its rate in degrees per second and a rank bar.
+test("Mobility gives the Gladius its pitch, yaw and roll, as its record does", async ({
+  page,
+}) => {
+  await page.goto("/ships/gladius");
+  const mobility = page.locator("#mobility");
+  for (const [axis, value] of [
+    ["Pitch", "68 °/s, 81.6 boosted"],
+    ["Yaw", "52 °/s, 62.4 boosted"],
+    ["Roll", "200 °/s, 240 boosted"],
+  ] as const) {
+    const fact = mobility
+      .locator("dt", { hasText: axis })
+      .first()
+      .locator("..");
+    await expect(fact).toContainText(value);
+  }
+  // A ground vehicle has no turn rates on record, and its Mobility shows none.
+  await page.goto("/ships/roc");
+  await expect(page.locator("#mobility dt", { hasText: "Pitch" })).toHaveCount(
+    0,
+  );
+});
+
 // ADR-026 (amended): armour and shields in Weapons and combat, and the damage path of a shot.
 test("Weapons and combat says the shields and the armour, and follows a shot through them", async ({
   page,

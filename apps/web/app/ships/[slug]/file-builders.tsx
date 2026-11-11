@@ -1223,6 +1223,7 @@ export function packShipFile(ship: ShipView): ShipFileProps {
                         label={AXIS_LABEL[axis]}
                         unit="°/s"
                         most="Quickest"
+                        digits={2}
                         values={rankValues(
                           (o) => agilityOf(o.stats?.raw)?.[axis].rate ?? null,
                         )}

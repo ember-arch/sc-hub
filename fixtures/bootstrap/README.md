@@ -288,7 +288,7 @@ Every value is the API's own; the script only maps the API's type names onto the
 
 - `VehicleStats.hydrogen_fuel` and `quantum_fuel` are null; `fuel.capacity` and `quantum.quantum_fuel_capacity` map to the two capacity fields.
 - `ItemStats.power_draw`, `power_output`, `heat_generation`, `cooling_rate`, `em_signature`, `shield_delay`, `qd_range` and `qd_fuel_per_jump` are null (the API gives ranges or pairs).
-- Units are the API's: metres, kilograms, SCU, metres per second. No conversion was applied.
+- Units are the API's: metres, kilograms, SCU, metres per second, and degrees per second for the turn rates in `raw.agility` (ADR-043). No conversion was applied.
 - `Vehicle.base_variant_of` is null: the API exposes no base-variant relation.
 - `Vehicle.role` is the ship-matrix focus list joined with commas.
 - Ports of type `` (9085), `AmmoBox` (13), `Container` (50), `LifeSupportGenerator` (221), `Misc` (683), `Module` (13), `SalvageFieldEmitter` (6), `SalvageFieldSupporter` (2), `SalvageFillerStation` (10), `SalvageInternalStorage` (6), `ToolArm` (18), `UNDEFINED` (41), `WeaponAttachment` (712), `WeaponMount` (13) are kept as `other` and carry no stock item; `Paints` ports are kept as `paint` without one. Only component ports reference an `Item`.

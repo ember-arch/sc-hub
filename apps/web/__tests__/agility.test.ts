@@ -28,10 +28,20 @@ describe("agilityOf", () => {
     });
   });
 
-  it("gives a ship most of the pack's ships turn rates, and none to a vehicle without them", () => {
-    const withTurns = rows.filter((r) => agilityOf(r.raw) !== null).length;
-    expect(withTurns).toBeGreaterThan(200);
-    expect(withTurns).toBeLessThan(rows.length);
+  it("gives none to a ground vehicle, whose record has no turn rates, and reads a hoverbike's", () => {
+    expect(agilityOf(raw("GRIN_ROC"))).toBeNull();
+    expect(agilityOf(raw("MRAI_Pulse"))?.roll.rate).toBe(135);
+    // Every record without turn rates leaves them null, never zero (ADR-043).
+    for (const r of rows) {
+      const block = (r.raw as { agility?: Record<string, unknown> } | null)
+        ?.agility;
+      if (agilityOf(r.raw) === null && block !== undefined)
+        expect(block["pitch"] ?? null, r.class_name).toBeNull();
+    }
+  });
+
+  it("keeps a fractional rate as the record gives it", () => {
+    expect(agilityOf(raw("ANVL_Asgard"))?.pitch.rate).toBe(32.5);
   });
 
   it("refuses a record with an axis missing, zero or not a number, and keeps a missing boost as null", () => {
@@ -54,5 +64,8 @@ describe("formatTurn", () => {
       "68 °/s, 81.6 boosted",
     );
     expect(formatTurn({ rate: 6, boosted: null })).toBe("6 °/s");
+    expect(formatTurn({ rate: 32.5, boosted: 39 })).toBe(
+      "32.5 °/s, 39 boosted",
+    );
   });
 });

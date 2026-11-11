@@ -158,7 +158,8 @@ Rule: a type-specific field left null for other types is fine. Do not create one
 | fetched_at | timestamp | |
 | revision | integer | Increments when the source changes the item |
 | author_id | FK Author nullable | Spectrum only |
-| thread_id, thread_title, forum | string nullable | Spectrum only |
+| thread_id, thread_title | string nullable | Spectrum only |
+| forum | string nullable | Where on its source the item was published: a Spectrum post's forum; a video's YouTube channel, "Star Citizen" or "Squadron 42" (ADR-050) |
 | takedown | boolean | When true: 410, purged from search |
 
 ### Author (CIG staff on Spectrum)

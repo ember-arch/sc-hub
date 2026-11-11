@@ -21,8 +21,13 @@ interface Props {
 /** Dispatches per page (spec 03, "Feed UI"): the lead and nineteen in the grid. */
 export const PAGE_SIZE = 20;
 
-/** The sources a dispatch can come from: everything CIG publishes; developer posts are the tracker's. */
-const DISPATCH_SOURCES = ContentSource.options.filter((s) => s !== "spectrum");
+/**
+ * The sources a dispatch can come from: everything CIG publishes; developer posts are the
+ * tracker's and videos the videos tab's (ADR-050).
+ */
+const DISPATCH_SOURCES = ContentSource.options.filter(
+  (s) => s !== "spectrum" && s !== "video",
+);
 
 /**
  * The dispatches (ADR-027, ADR-029): what CIG publishes, newest first, as cards with their
@@ -36,8 +41,8 @@ export default async function NewsPage({ searchParams }: Props) {
   const raw = typeof params.source === "string" ? params.source : undefined;
   const parsed = raw === undefined ? undefined : ContentSource.safeParse(raw);
   const source =
-    parsed?.success === true && parsed.data !== "spectrum"
-      ? parsed.data
+    parsed?.success === true
+      ? DISPATCH_SOURCES.find((s) => s === parsed.data)
       : undefined;
   const pageRaw = typeof params.page === "string" ? Number(params.page) : 1;
   const page = Number.isInteger(pageRaw) && pageRaw > 1 ? pageRaw : 1;
@@ -71,7 +76,7 @@ export default async function NewsPage({ searchParams }: Props) {
               ? "Feed not yet connected"
               : `${all.length} ${all.length === 1 ? "dispatch" : "dispatches"}`,
             present.length === 0
-              ? "Comm-Links, patch notes, roadmap, video"
+              ? "Comm-Links, patch notes, roadmap"
               : present.map((s) => SOURCE_LABEL[s]).join(", "),
           ]}
           title="Dispatches"
@@ -100,7 +105,7 @@ export default async function NewsPage({ searchParams }: Props) {
         {lead === undefined ? (
           <EmptyState>
             {r.dispatches.length === 0
-              ? "No dispatches yet. Comm-Links, patch notes and videos appear here once the feed is connected."
+              ? "No dispatches yet. Comm-Links, patch notes and roadmap changes appear here once the feed is connected."
               : all.length === 0
                 ? "No dispatches from this source. Choose another source above."
                 : "No more dispatches. Go back a page."}

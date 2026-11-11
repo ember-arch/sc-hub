@@ -1,7 +1,11 @@
 /**
  * The news pollers (spec 03, ADR-027): one run reads every source and writes what is new to the
- * news pack in `fixtures/news/`. Run from the news workflow every fifteen minutes until the
- * pollers move to Fly; by hand with `pnpm workers:poll-news [--source comm_link|roadmap]`. Logs
+ * news pack in `fixtures/news/`. Run from the news workflow every thirty minutes until the
+ * pollers move to Fly; by hand with `pnpm workers:poll-news [--source comm_link|roadmap|video]`.
+ * One YouTube feed is read on the hour's first scheduled run only (ADR-050, `videosDue`). A feed
+ * YouTube does not answer is logged and leaves the videos as they were without discarding the
+ * run's other sources; a feed of an unknown shape halts the run like any source (CLAUDE.md
+ * section 5). Logs
  * are JSON lines on stderr; the summary line goes to stdout. The Comm-Link archive backfill
  * (`--backfill <pages>`, the wiki's list) is refused since ADR-031: the news window admits
  * nothing before 14 May 2026, the hub carries everything newer, and the wiki's older records
@@ -11,13 +15,14 @@ import { randomUUID } from "node:crypto";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { createClient } from "./client.js";
+import { FetchError, createClient } from "./client.js";
 import {
   CommLinkState,
   backfillCommLinks,
   pollCommLinks,
 } from "./sources/comm-link.js";
 import { BoardState, pollRoadmap } from "./sources/roadmap.js";
+import { pollVideos, videosDue } from "./sources/video.js";
 import { openStore } from "./store.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -34,7 +39,15 @@ async function main(): Promise<void> {
   const started = Date.now();
   const args = process.argv.slice(2);
   const only = flag(args, "--source");
-  const sources = only === undefined ? ["comm_link", "roadmap"] : [only];
+  const sources =
+    only === undefined
+      ? [
+          "comm_link",
+          "roadmap",
+          // Once an hour (CLAUDE.md section 9): the workflow's :07 schedule only.
+          ...(videosDue(process.env, new Date()) ? ["video"] : []),
+        ]
+      : [only];
   const backfillPages = Number(flag(args, "--backfill") ?? 0);
   if (backfillPages > 0) {
     throw new Error(
@@ -104,10 +117,25 @@ async function main(): Promise<void> {
           null,
         );
         summary["roadmap"] = await pollRoadmap(client, store, state, now);
+      } else if (source === "video") {
+        summary["video"] = await pollVideos(client, store, now);
       } else {
         throw new Error(`unknown source ${source}`);
       }
     } catch (error) {
+      if (source === "video" && error instanceof FetchError) {
+        // YouTube did not answer: nothing of the feed was asked to be recorded, the run's other
+        // sources still go live, and the next hour's run reads the other channel. A shape error
+        // is not this: it halts the run below.
+        log({
+          event: "news.source.failed",
+          source,
+          soft: true,
+          error: String(error),
+        });
+        summary[source] = { error: String(error), soft: true };
+        continue;
+      }
       errors += 1;
       log({ event: "news.source.failed", source, error: String(error) });
       summary[source] = { error: String(error) };

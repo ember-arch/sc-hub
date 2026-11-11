@@ -122,6 +122,14 @@ export const MADE_BY_THE_COMMUNITY = {
   },
 } as const;
 
+/**
+ * Under the video cards on the front page and the videos tab (ADR-050): the videos and their
+ * thumbnails are CIG's, shown from YouTube and never copied.
+ */
+export const VIDEO_CREDIT = {
+  text: "Videos: Cloud Imperium Games, on YouTube",
+} as const;
+
 /** Under every ship image copied from RSI's ship matrix, linked to the ship's RSI page (ADR-009). */
 export const RSI_IMAGE_CREDIT = {
   text: "Image: Roberts Space Industries",

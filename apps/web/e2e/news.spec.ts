@@ -103,9 +103,12 @@ test("the dev tracker is empty while Spectrum is off, and no author page exists"
     page.getByRole("heading", { level: 1, name: "Developer posts" }),
   ).toBeVisible();
   await expect(page.getByText("Tracker not yet connected")).toBeVisible();
-  await expect(
-    page.getByRole("navigation", { name: "News sections" }),
-  ).toHaveCount(0);
+  // The tabs stay for the dispatches and the videos (ADR-050); the tracker's tab is not drawn.
+  const tabs = page.getByRole("navigation", { name: "News sections" });
+  await expect(tabs.getByRole("link", { name: "Videos" })).toBeVisible();
+  await expect(tabs.getByRole("link", { name: "Developer posts" })).toHaveCount(
+    0,
+  );
   const author = await page.goto("/news/dev/nobody");
   expect(author?.status()).toBe(404);
 });

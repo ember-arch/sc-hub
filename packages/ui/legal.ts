@@ -128,10 +128,11 @@ export const RSI_IMAGE_CREDIT = {
 } as const;
 
 /**
- * The published contact address for corrections and takedowns (docs/legal/takedown.md). The owner
- * has not chosen one yet, so the footer and about page show that it is not yet published.
+ * The published contact address for corrections and takedowns (docs/legal/takedown.md), shown in
+ * the footer and on the about page. The owner chose it on 2026-11-10 (ADR-033); it is the same
+ * address RSI requests carry (SC_HUB_CONTACT_EMAIL). The legal e2e test asserts it is published.
  */
-export const CONTACT_EMAIL: string | null = null;
+export const CONTACT_EMAIL: string | null = "ventures@coppercork.com";
 
 /** One sentence the about page must state plainly (docs/legal/attribution.md). */
 export const ABOUT_STATEMENT =

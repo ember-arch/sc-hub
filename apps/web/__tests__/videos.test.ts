@@ -77,7 +77,7 @@ describe("videos", () => {
     expect([thumb.width, thumb.height]).toEqual([320, 180]);
   });
 
-  it("plays in the privacy-enhanced player, started by the reader's press", () => {
+  it("addresses the privacy-enhanced player with autoplay, for the press that loads it", () => {
     expect(embedUrl("aaaaaaaaaaa")).toBe(
       "https://www.youtube-nocookie.com/embed/aaaaaaaaaaa?autoplay=1&rel=0&playsinline=1",
     );

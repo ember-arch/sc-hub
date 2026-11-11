@@ -20,8 +20,9 @@ export const isShort = (item: Pick<ContentItem, "url">): boolean =>
   /\/shorts\//.test(item.url);
 
 /**
- * The privacy-enhanced player, started by the reader's press: nothing is embedded until then, and
- * the owner asked for the press to start the video (2026-11-11, "Yes, autoplay"; ADR-050).
+ * The privacy-enhanced player, loaded and started by the reader's press, where the browser allows:
+ * nothing is embedded until then. Asked whether a press should start the video, the owner said
+ * "Yes, autoplay" (2026-11-11, ADR-050).
  */
 export const embedUrl = (videoId: string): string =>
   `https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoId)}?autoplay=1&rel=0&playsinline=1`;

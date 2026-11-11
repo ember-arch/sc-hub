@@ -67,6 +67,11 @@ test("a press on a video opens the player in place; Escape closes it and unloads
     "src",
     /^https:\/\/www\.youtube-nocookie\.com\/embed\/[A-Za-z0-9_-]{11}\?autoplay=1&rel=0/,
   );
+  // Without "autoplay" in the frame's allow list, the address's autoplay=1 does nothing.
+  await expect(player.locator("iframe")).toHaveAttribute(
+    "allow",
+    /\bautoplay\b/,
+  );
   await expect(
     player.getByRole("button", { name: "Close the video" }),
   ).toBeFocused();

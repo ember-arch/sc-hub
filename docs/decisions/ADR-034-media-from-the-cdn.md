@@ -1,6 +1,6 @@
 # ADR-034: The pictures and models reach the live site from Cloudflare R2 behind the CDN
 
-- Status: proposed; becomes accepted on the owner's word recorded under "The owner's decision" below
+- Status: accepted (owner decision 2026-11-10, "Yes, publish them"; see "The owner's decision" below)
 - Date: 2026-11-10
 - Deciders: owner, Claude Code session 2026-11-10
 

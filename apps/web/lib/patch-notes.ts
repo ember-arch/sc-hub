@@ -227,6 +227,8 @@ export function noteSections(
       groups.push({ title: line, items: [] });
       return;
     }
+    // A bare address (the issue council, the status page) is a link, not a line of the notes.
+    if (/^https?:\/\/\S+$/.test(line)) return;
     groups[groups.length - 1]!.items.push(line);
   });
   return {
@@ -344,7 +346,9 @@ export function patchNotes(news: readonly ContentItem[]): PatchNote[] {
       };
     }
     if (note === null) continue;
-    const key = `${item.source}:${note.title.replace(/\s+/g, " ").trim()}`;
+    // RSI titles its release announcement and its notes alike ("Star Citizen Alpha 4.10.1"):
+    // the kind keeps both.
+    const key = `${item.source}:${note.kind}:${note.title.replace(/\s+/g, " ").trim()}`;
     const seen = out.get(key);
     if (seen === undefined || seen.publishedAt <= note.publishedAt)
       out.set(key, note);

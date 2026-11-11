@@ -184,3 +184,16 @@ describe("patchNotes on the news pack", () => {
     ).toEqual(["Bug Fixes & Technical", 'Fixed "x"']);
   });
 });
+
+describe("RSI's notes and announcement for one patch", () => {
+  it("keeps both when they share a title", () => {
+    const both = notes.filter(
+      (n) =>
+        n.version === "4.10.1" &&
+        (n.kind === "official" || n.kind === "announcement"),
+    );
+    expect(new Set(both.map((n) => n.kind))).toEqual(
+      new Set(["official", "announcement"]),
+    );
+  });
+});

@@ -943,12 +943,44 @@ export function NotesList({ notes }: { readonly notes: readonly PatchNote[] }) {
       </EmptyState>
     );
   }
-  const firstOpen = notes.findIndex((n) => !n.flat);
+  // RSI's own notes and every post laid out here come first; the Spectrum posts the pack holds
+  // only as a run of text (read before ADR-037) wait in one fold as links, newest first.
+  const shown = notes.filter(
+    (n) => !n.flat || n.kind === "official" || n.kind === "announcement",
+  );
+  const linked = notes.filter((n) => !shown.includes(n));
+  const firstOpen = shown.findIndex((n) => !n.flat);
   return (
     <div className="flex flex-col">
-      {notes.map((n, i) => (
+      {shown.map((n, i) => (
         <Note key={n.id} note={n} open={i === firstOpen} />
       ))}
+      {linked.length === 0 ? null : (
+        <details className="group/more border-b border-hairline">
+          <summary className={summaryClass}>
+            <Fold scope="more" />
+            <span className="text-ui text-accent">
+              {plural(linked.length, "more post", "more posts")} on Spectrum
+            </span>
+          </summary>
+          <ul className="m-0 flex list-none flex-col gap-1 pb-4 pl-6">
+            {linked.map((n) => (
+              <li
+                key={n.id}
+                className="flex flex-wrap items-baseline justify-between gap-x-4 text-ui"
+              >
+                <TextLink href={n.url} external>
+                  {noteName(n)}
+                </TextLink>
+                <span className="text-caption text-secondary">
+                  {day.format(new Date(n.publishedAt))}
+                  {n.build === null ? "" : ` · build ${n.build}`}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </details>
+      )}
     </div>
   );
 }

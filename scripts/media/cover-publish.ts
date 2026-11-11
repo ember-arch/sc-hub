@@ -1,5 +1,5 @@
 /**
- * Publishes the covers of new Comm-Links straight to the media store, from CI (ADR-048).
+ * Publishes the covers of new Comm-Links straight to the media store, from CI (ADR-051).
  *
  * CI has none of the git-ignored media, so it cannot run `prepare.ts`, which rebuilds the whole
  * manifest from the complete `fixtures/`. This path touches covers only: it reads the live manifest
@@ -236,7 +236,7 @@ export interface CoverPublishOptions {
   readonly recentDays: number;
   /**
    * Comm-Links to treat as uncovered although the live manifest has them: a dry rehearsal of the
-   * whole path on a cover that is already up, whose keys should come out the same (ADR-048).
+   * whole path on a cover that is already up, whose keys should come out the same (ADR-051).
    */
   readonly rehearse?: readonly string[];
   /** How long to wait for the CDN to serve the new manifest before reporting it stale. */
@@ -652,7 +652,7 @@ export async function publishCovers(
     attempts,
     generatedAt,
     after: manifestCounts(after),
-    // The record, which is also what lands on main and so redeploys the site (ADR-048).
+    // The record, which is also what lands on main and so redeploys the site (ADR-051).
     coverSources:
       outcome === "uploaded"
         ? mergeCoverSources(deps.coverSources, rows)

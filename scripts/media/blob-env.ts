@@ -1,5 +1,5 @@
 /**
- * The media store's credentials (ADR-034, ADR-048), for `publish.ts` on the owner's machine and
+ * The media store's credentials (ADR-034, ADR-051), for `publish.ts` on the owner's machine and
  * `publish-covers.ts` in the News workflow. Read from the environment, then `.env.local` and
  * `.env` at the repository root; never from arguments, and never printed.
  */

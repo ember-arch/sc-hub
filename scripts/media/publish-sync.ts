@@ -3,7 +3,7 @@
  * manifest, and counts (or, on request, deletes) what the manifest no longer names. Takes the
  * store and the file reader as parameters, so the unit tests run it against an in-memory store.
  *
- * Since ADR-048 the hand publish is not the only writer of the manifest: the News workflow adds new
+ * Since ADR-051 the hand publish is not the only writer of the manifest: the News workflow adds new
  * Comm-Link covers to it. So the sync reads the live manifest from the store before it uploads
  * anything, refuses a manifest that would drop a cover the live one has (a checkout without the
  * CI's covers: run fetch-covers.ts and prepare.ts first), and writes its manifest only if the live
@@ -21,7 +21,7 @@ import {
 export interface SyncOptions {
   readonly dryRun: boolean;
   readonly prune: boolean;
-  /** Let the new manifest lack covers the live one has (a takedown, ADR-048); refused otherwise. */
+  /** Let the new manifest lack covers the live one has (a takedown, ADR-051); refused otherwise. */
   readonly allowCoverDrop?: boolean;
   readonly concurrency: number;
   /** The bytes of a planned object, by its local `src`. */
@@ -48,7 +48,7 @@ export interface SyncResult {
   readonly droppedCovers: readonly string[];
 }
 
-/** The Comm-Link ids whose cover the live manifest lists and `next` does not (ADR-048). */
+/** The Comm-Link ids whose cover the live manifest lists and `next` does not (ADR-051). */
 export function droppedCovers(
   live: Uint8Array,
   next: { readonly covers: readonly { readonly external_id: string }[] },
@@ -146,14 +146,14 @@ export async function syncToStore(
   const log = options.log ?? (() => {});
   const existing = await withRetries("list", () => store.list("media/"), log);
   // The live manifest, from the store, before anything goes up: the cover guard reads it, and the
-  // manifest's write at the end is conditional on it still being this one (ADR-048).
+  // manifest's write at the end is conditional on it still being this one (ADR-051).
   const live = existing.has(MANIFEST_KEY)
     ? await withRetries("read manifest", () => store.read(MANIFEST_KEY), log)
     : null;
   const dropped = live === null ? [] : droppedCovers(live.bytes, plan.manifest);
   if (dropped.length > 0 && options.allowCoverDrop !== true) {
     throw new Error(
-      `the live manifest has ${dropped.length} cover(s) this one lacks (${dropped.slice(0, 8).join(", ")}${dropped.length > 8 ? ", ..." : ""}), most likely added by the News workflow (ADR-048): run fetch-covers.ts and prepare.ts in this checkout, then publish again; pass --allow-cover-drop only when they are meant to go`,
+      `the live manifest has ${dropped.length} cover(s) this one lacks (${dropped.slice(0, 8).join(", ")}${dropped.length > 8 ? ", ..." : ""}), most likely added by the News workflow (ADR-051): run fetch-covers.ts and prepare.ts in this checkout, then publish again; pass --allow-cover-drop only when they are meant to go`,
     );
   }
   const planned = new Set(plan.objects.map((o) => o.key));
@@ -229,7 +229,7 @@ export async function syncToStore(
         );
         if (now === null || !sameBytes(now.bytes, body)) {
           throw new Error(
-            "the live manifest changed while this publish ran (the News workflow's cover step, ADR-048, or another publish); nothing was overwritten: run fetch-covers.ts and prepare.ts, then publish again",
+            "the live manifest changed while this publish ran (the News workflow's cover step, ADR-051, or another publish); nothing was overwritten: run fetch-covers.ts and prepare.ts, then publish again",
             { cause: error },
           );
         }

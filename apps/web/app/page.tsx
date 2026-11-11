@@ -41,6 +41,9 @@ import { withoutFixed } from "../lib/component-filters";
 import { conceptShips, showcaseFor } from "../lib/showcase";
 import { Site, now } from "../lib/site";
 import { FRONT_VIDEOS, videoCard, videosOf } from "../lib/videos";
+
+/** How many dispatches the front page's carousel carries (owner, 2026-11-11: "a 5 slide scroll"). */
+const FRONT_DISPATCHES = 5;
 import {
   Contents,
   type Counter,
@@ -87,12 +90,13 @@ const DAILY_PLATES = 3;
 
 /**
  * The front page (ADR-020, ADR-021, ADR-038, ADR-042, ADR-050): the date line, the daily line composed
- * from the pack as the title, the contents, the counters; then the newest dispatches, CIG's latest
- * videos as a row that scrolls sideways with the player opening in place, the featured ships (the showcase pair and
+ * from the pack as the title, the contents, the counters; then the five newest dispatches and CIG's
+ * five latest videos, each a carousel with overlaid arrows and the same card widths, the videos'
+ * player opening in place, the featured ships (the showcase pair and
  * three that change daily, with the register's count), the developers' latest posts from Spectrum
- * (only with the module on, a row of small cards), and this year's funding against last year's in one drawing with two
- * views, the site's one funding surface since ADR-040. On a phone the dispatches and the featured
- * ships are rows to swipe too, so no section is a column of tall cards (ADR-050). Without media the bento's cards hold their captions alone and the dispatch cards their
+ * (only with the module on, a carousel of small cards), and this year's funding against last year's in one drawing with two
+ * views, the site's one funding surface since ADR-040. On a phone the featured ships are a row to
+ * swipe too, so no section is a column of tall cards (ADR-050). Without media the bento's cards hold their captions alone and the dispatch cards their
  * words.
  */
 export default function HomePage() {
@@ -164,8 +168,8 @@ export default function HomePage() {
     },
   ];
 
-  // The three newest dispatches as cards (ADR-029), first on the page (ADR-038).
-  const feed = r.dispatches.slice(0, 3);
+  // The five newest dispatches as a carousel (ADR-029, ADR-050), first on the page (ADR-038).
+  const feed = r.dispatches.slice(0, FRONT_DISPATCHES);
   const feedPictures = feed.map((item) => coverOf(item));
 
   // The bento: the showcase pair, then three ships drawn for the day from those with pictures.
@@ -301,12 +305,8 @@ export default function HomePage() {
             </EmptyState>
           ) : (
             <div className="flex flex-col gap-2">
-              {/* A row to swipe on a phone, three across from tablet width (ADR-050). */}
-              <Rail
-                label="Dispatches from the Verse"
-                size="post"
-                phoneOnly={{ columns: 3 }}
-              >
+              {/* Five as a carousel with overlaid arrows, three across on a desktop (ADR-050). */}
+              <Rail label="Dispatches from the Verse">
                 {feed.map((item, i) => (
                   <DispatchCard
                     key={item.id}
@@ -343,9 +343,14 @@ export default function HomePage() {
               }
             />
             <div className="flex flex-col gap-2">
-              <Rail label="Latest videos" size="video">
+              {/* The same carousel and the same card widths as the dispatches (owner, 2026-11-11). */}
+              <Rail label="Latest videos">
                 {latestVideos.map((item) => (
-                  <VideoCard key={item.id} {...videoCard(item, at)} />
+                  <VideoCard
+                    key={item.id}
+                    {...videoCard(item, at)}
+                    sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 80vw"
+                  />
                 ))}
               </Rail>
               <p className="m-0 text-caption text-muted">{VIDEO_CREDIT.text}</p>
@@ -379,7 +384,7 @@ export default function HomePage() {
                 No developer gold posts yet. The tracker has not read Spectrum.
               </EmptyState>
             ) : (
-              <Rail label="Developer gold posts" size="post">
+              <Rail label="Developer gold posts">
                 {featured.map((post) => {
                   const who = authorOf(post, r.authors);
                   return (

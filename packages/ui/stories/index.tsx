@@ -381,9 +381,9 @@ const renderers: Record<string, { title: string; render: Story["render"] }> = {
   rail: {
     title: "Rail",
     render: (s) => (
-      <Rail label="Latest videos" size="video">
+      <Rail label="Latest videos">
         {videosOf(s)
-          .slice(0, 7)
+          .slice(0, 5)
           .map((v) => (
             <VideoCard key={v.id} {...v} />
           ))}
@@ -393,7 +393,7 @@ const renderers: Record<string, { title: string; render: Story["render"] }> = {
   "rail-phone": {
     title: "Rail (phone)",
     render: (s) => (
-      <Rail label="Latest videos" size="video">
+      <Rail label="Latest videos">
         {videosOf(s)
           .slice(0, 3)
           .map((v) => (

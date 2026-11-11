@@ -8,61 +8,78 @@ import {
   useRef,
   useState,
 } from "react";
+import { Icon } from "./icon";
 
-/** How wide each card is, as a share of the rail: a peek of the next card always shows. */
-export type RailSize = "video" | "post" | "plate";
-
-const ITEM: Readonly<Record<RailSize, string>> = {
-  // Five on a wide desktop, four on a laptop, two and a peek on a tablet, one and a peek on a phone.
-  video: "basis-4/5 sm:basis-2/5 lg:basis-1/4 xl:basis-1/5",
-  // Posts carry words: three across on a desktop.
-  post: "basis-4/5 sm:basis-1/2 lg:basis-1/3",
-  // Ship plates: one and a peek on a phone (the rail is phone-only for them).
-  plate: "basis-4/5 sm:basis-1/2",
-};
-
-const GRID: Readonly<Record<2 | 3, string>> = {
-  2: "md:grid-cols-2",
-  3: "md:grid-cols-3",
-};
+/**
+ * How many cards a row shows across, by width: one and the next card's edge on a phone, two on
+ * a tablet, three on a desktop. The widths leave room for the gaps between them (`gap-4`, the
+ * spacing scale's 16), so the cards a row shows are whole.
+ */
+const ITEM =
+  "basis-4/5 sm:basis-[calc((100%-var(--spacing-4))/2)] lg:basis-[calc((100%-2*var(--spacing-4))/3)]";
 
 export interface RailProps {
-  /** Names the rail for assistive technology, for example "Latest videos". */
+  /** Names the row for assistive technology, for example "Latest videos". */
   readonly label: string;
-  readonly size: RailSize;
-  /**
-   * A rail on phones only, the given grid from tablet width (`md`) up: for sections whose
-   * desktop layout already fits the screen, so only the phone's long column becomes a row.
-   */
-  readonly phoneOnly?: { readonly columns: 2 | 3 } | undefined;
   /** Each child is one card. */
   readonly children: ReactNode;
 }
 
+interface Edges {
+  readonly start: boolean;
+  readonly end: boolean;
+  readonly fits: boolean;
+  /** The arrows' height from the row's top: the middle of the first card's picture, or null. */
+  readonly middle: number | null;
+}
+
+const same = (a: Edges, b: Edges): boolean =>
+  a.start === b.start &&
+  a.end === b.end &&
+  a.fits === b.fits &&
+  a.middle === b.middle;
+
 /**
- * A row of cards that scrolls sideways (ADR-050): the home page's sections as rails, so a phone
- * reader moves along a section with a swipe and down the page past it, instead of down five tall
- * cards per section. Scroll snapping lands each card at the edge; the next card always peeks in
- * so the row reads as one that continues. From tablet width two buttons page the row by its own
- * width (a jump, not a glide: CLAUDE.md section 7 keeps motion for viewer transitions), marked
- * unavailable at either end and hidden when the row fits; they are words ("Back", "More"), named
- * in full for assistive tech, since ADR-044 keeps icons beside labels, never in their place. Keyboard readers move through the cards' own links,
- * which scroll the row as they take focus. The row is a list named for its section, not a
- * landmark of its own.
+ * A row of cards that scrolls sideways, a carousel (ADR-050): the front page's dispatches, videos
+ * and developer posts, so a phone reader moves along a section with a swipe and down the page
+ * past it, instead of down a column of tall cards. Scroll snapping lands each card at the edge.
+ * There is no scroll bar; two round arrows sit over the row's ends (the owner asked for "overlaid
+ * nav arrows, not a scroll bar", 2026-11-11), level with the middle of the cards' pictures so they
+ * cover an image rather than a title, or the row's middle when the cards have none. Each moves
+ * the row by one card, a jump rather than a glide (CLAUDE.md section 7 keeps motion for viewer
+ * transitions). At its end of the row an arrow is hidden at once and lets presses through to the
+ * card beneath, though a keyboard reader who has it focused still sees it; both are hidden when
+ * the row fits. The arrows are glyphs alone, named for assistive tech ("Latest videos: next"):
+ * ADR-044's one exception. Keyboard readers can also move through the cards' own links, which
+ * scroll the row as they take focus. The row is a list named for its section, not a landmark.
  */
-export function Rail({ label, size, phoneOnly, children }: RailProps) {
+export function Rail({ label, children }: RailProps) {
   const list = useRef<HTMLUListElement>(null);
-  const [edges, setEdges] = useState({ start: true, end: false, fits: false });
+  const [edges, setEdges] = useState<Edges>({
+    start: true,
+    end: false,
+    fits: false,
+    middle: null,
+  });
 
   const measure = useCallback(() => {
     const el = list.current;
     if (el === null) return;
-    const fits = el.scrollWidth <= el.clientWidth + 1;
-    setEdges({
+    const picture = el.querySelector("li img");
+    const box = picture?.getBoundingClientRect();
+    const next: Edges = {
       start: el.scrollLeft <= 1,
       end: el.scrollLeft + el.clientWidth >= el.scrollWidth - 1,
-      fits,
-    });
+      fits: el.scrollWidth <= el.clientWidth + 1,
+      middle:
+        box === undefined
+          ? null
+          : Math.round(
+              box.top - el.getBoundingClientRect().top + box.height / 2,
+            ),
+    };
+    // Only a change re-renders the row, not every scroll event.
+    setEdges((prev) => (same(prev, next) ? prev : next));
   }, []);
 
   useEffect(() => {
@@ -78,62 +95,63 @@ export function Rail({ label, size, phoneOnly, children }: RailProps) {
     };
   }, [measure]);
 
-  // A jump, not a glide: motion is for viewer transitions only (CLAUDE.md section 7).
-  const page = (direction: 1 | -1) => {
+  /** One card's width and the gap after it, as the page draws them: one press's distance. */
+  const step = (el: HTMLUListElement): number => {
+    const card = el.querySelector("li");
+    if (card === null) return el.clientWidth;
+    const gap = Number.parseFloat(getComputedStyle(el).columnGap) || 0;
+    return card.getBoundingClientRect().width + gap;
+  };
+
+  const move = (direction: 1 | -1) => {
     const el = list.current;
     if (el === null) return;
     if (direction === -1 ? edges.start : edges.end) return;
-    el.scrollBy({ left: direction * el.clientWidth * 0.9, behavior: "auto" });
+    el.scrollBy({ left: direction * step(el), behavior: "auto" });
   };
 
-  const grid =
-    phoneOnly === undefined
-      ? ""
-      : `md:mx-0 md:grid md:snap-none md:overflow-visible md:px-0 md:pb-0 ${GRID[phoneOnly.columns]}`;
-  const button =
-    "flex items-center rounded-pill bg-surface px-3 py-1 text-ui text-primary shadow-soft transition-colors duration-hover hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent aria-disabled:cursor-default aria-disabled:text-muted aria-disabled:shadow-none aria-disabled:hover:text-muted";
+  const arrow =
+    "absolute top-1/2 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-pill bg-surface text-primary shadow-popover transition-colors duration-hover hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent aria-disabled:pointer-events-none aria-disabled:opacity-0 aria-disabled:focus-visible:opacity-100";
+  const top = edges.middle === null ? undefined : { top: `${edges.middle}px` };
 
   return (
-    <div className="flex flex-col gap-2">
-      {phoneOnly === undefined ? (
-        <div
-          className={`hidden justify-end gap-2 md:flex ${edges.fits ? "md:hidden" : ""}`}
-        >
-          <button
-            type="button"
-            className={button}
-            onClick={() => page(-1)}
-            aria-disabled={edges.start}
-            aria-label={`${label}: scroll back`}
-          >
-            Back
-          </button>
-          <button
-            type="button"
-            className={button}
-            onClick={() => page(1)}
-            aria-disabled={edges.end}
-            aria-label={`${label}: scroll on`}
-          >
-            More
-          </button>
-        </div>
-      ) : null}
-      {/* The row bleeds to the screen's edges on a phone, so the peek reaches the edge. */}
+    <div className="relative">
+      {/* The row bleeds to the screen's edges on a phone, so the next card's edge reaches it. */}
       <ul
         ref={list}
         aria-label={label}
-        className={`-mx-4 m-0 flex list-none snap-x snap-mandatory scroll-px-4 gap-4 overflow-x-auto overscroll-x-contain px-4 pb-2 [scrollbar-width:thin] ${grid}`}
+        className="-mx-4 m-0 flex list-none snap-x snap-mandatory scroll-px-4 gap-4 overflow-x-auto overscroll-x-contain px-4 [scrollbar-width:none] md:mx-0 md:scroll-px-0 md:px-0 [&::-webkit-scrollbar]:hidden"
       >
         {Children.toArray(children).map((child, i) => (
-          <li
-            key={i}
-            className={`relative flex shrink-0 snap-start ${ITEM[size]} ${phoneOnly === undefined ? "" : "md:basis-auto"}`}
-          >
+          <li key={i} className={`relative flex shrink-0 snap-start ${ITEM}`}>
             <div className="w-full">{child}</div>
           </li>
         ))}
       </ul>
+      {edges.fits ? null : (
+        <>
+          <button
+            type="button"
+            className={`${arrow} left-0 md:-left-4`}
+            style={top}
+            onClick={() => move(-1)}
+            aria-disabled={edges.start}
+            aria-label={`${label}: previous`}
+          >
+            <Icon name="next" className="rotate-180" />
+          </button>
+          <button
+            type="button"
+            className={`${arrow} right-0 md:-right-4`}
+            style={top}
+            onClick={() => move(1)}
+            aria-disabled={edges.end}
+            aria-label={`${label}: next`}
+          >
+            <Icon name="next" />
+          </button>
+        </>
+      )}
     </div>
   );
 }

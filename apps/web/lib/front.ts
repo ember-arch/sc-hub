@@ -110,8 +110,6 @@ export interface FeaturedCandidate {
   readonly thread_id: string | null;
   /** The post's address; a reply's ends in its number, the thread's own page does not. */
   readonly url: string;
-  /** Likes on the post as the pack records them; null or absent until the worker records them. */
-  readonly likes?: number | null | undefined;
 }
 
 /** The thread a post belongs to: its id on the pack, or its thread's address without the post number. */
@@ -127,13 +125,11 @@ const opensThread = (p: FeaturedCandidate): boolean => !/\/\d+$/.test(p.url);
  *
  *   1. threads CIG staff opened (the thread's opening post is on the pack) with a staff post in
  *      the last `hours`, newest first; when fewer than `max`, the same reaching back `reach` hours;
- *   2. then threads staff only answered in, within `reach` hours, by likes where the pack records
- *      them and newest first otherwise;
+ *   2. then threads staff only answered in, within `reach` hours, newest first (not by likes:
+ *      the owner's call of 2026-11-11, ADR-039);
  *   3. when fewer than `min` in all, the newest remaining threads fill the list to `min`.
  *
- * The pack carries no likes yet (ADR-037 strips Spectrum's votes), so the second tier is by
- * recency until the worker records them; the field is read here so that nothing else changes
- * then. `posts` is expected newest first, as the repository keeps it.
+ * `posts` is expected newest first, as the repository keeps it.
  */
 export function featuredPosts<T extends FeaturedCandidate>(
   posts: readonly T[],
@@ -162,12 +158,6 @@ export function featuredPosts<T extends FeaturedCandidate>(
       Date.parse(p.published_at) >= now.getTime() - h * 3_600_000;
   const opened = firstPerThread.filter((p) => staffOpened.has(threadKey(p)));
   const answered = firstPerThread.filter((p) => !staffOpened.has(threadKey(p)));
-  const byLikes = (list: readonly T[]): T[] =>
-    [...list].sort(
-      (a, b) =>
-        (b.likes ?? -1) - (a.likes ?? -1) ||
-        b.published_at.localeCompare(a.published_at),
-    );
   const picked: T[] = [];
   const take = (list: readonly T[], upTo: number): void => {
     for (const p of list) {
@@ -177,7 +167,7 @@ export function featuredPosts<T extends FeaturedCandidate>(
   };
   take(opened.filter(within(hours)), max);
   take(opened.filter(within(reach)), max);
-  take(byLikes(answered.filter(within(reach))), max);
+  take(answered.filter(within(reach)), max);
   take(firstPerThread, Math.min(min, max));
   return picked;
 }

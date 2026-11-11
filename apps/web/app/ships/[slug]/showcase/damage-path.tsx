@@ -242,8 +242,14 @@ export function DamagePath({
                   className="py-1 pl-3 text-right font-normal"
                 >
                   <span className="inline-flex items-center gap-1">
+                    {/* The table's glyphs from sm: on a phone its numbers need the width. */}
                     {KIND_ICON[k] === undefined ? null : (
-                      <Icon name={KIND_ICON[k]!} />
+                      <span
+                        aria-hidden="true"
+                        className="hidden sm:inline-flex"
+                      >
+                        <Icon name={KIND_ICON[k]!} />
+                      </span>
                     )}
                     {DAMAGE_KIND_LABEL[k]}
                   </span>
@@ -259,7 +265,9 @@ export function DamagePath({
                   className="py-1 pr-3 text-left font-normal text-secondary"
                 >
                   <span className="inline-flex items-center gap-2">
-                    <Icon name={row.icon} />
+                    <span aria-hidden="true" className="hidden sm:inline-flex">
+                      <Icon name={row.icon} />
+                    </span>
                     {row.label}
                   </span>
                 </th>
@@ -301,12 +309,14 @@ export function DamagePath({
                     className="relative flex flex-col gap-1 border-t border-hairline pt-2"
                   >
                     {i === all.length - 1 ? null : (
-                      <Icon
-                        name="next"
-                        className="absolute -right-4 top-2 hidden text-muted md:inline-block"
-                      />
+                      <span
+                        aria-hidden="true"
+                        className="absolute -right-4 top-2 hidden text-muted md:block"
+                      >
+                        <Icon name="next" />
+                      </span>
                     )}
-                    <dt className="flex items-center gap-1 text-caption text-secondary">
+                    <dt className="flex items-start gap-1 text-caption text-secondary">
                       <Icon name={c.icon} className="text-primary" />
                       {c.name}
                     </dt>

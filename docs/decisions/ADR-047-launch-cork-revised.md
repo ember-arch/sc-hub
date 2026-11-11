@@ -1,6 +1,6 @@
 # ADR-047: The revised Launch Cork logo
 
-- Status: accepted
+- Status: accepted; the wordmark's second C is lowercase since ADR-048
 - Date: 2026-11-11
 - Deciders: owner (sent the designer's revised boards under the same names, "also updated logo/wordmark - please swap")
 - Amends: ADR-045 (the artwork and the coppers; the two-file approach, the favicon and the CLAUDE.md section 2 exception stand)

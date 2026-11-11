@@ -79,7 +79,7 @@ Faces: Manrope (ADR-021, replacing the almanac's serifs) for everything: text, i
 
 - `PageShell` — the logo with the name as visually hidden text (ADR-045), the sections as pills (the current one filled), the search field as a pill and the theme switch (ADR-021); the footer on every page.
 - `Icon` — the site's line glyphs (ADR-044): damage kinds, the damage path's stages and the three axes, at 16 or 24 px in `currentColor`, hidden beside their labels.
-- `Logo` — the Coppercork logo (ADR-045, ADR-047): the owner's "Launch Cork", the cork lifting off beside the "CopperCork" wordmark, two static SVG files (light and dark) swapped by the theme like a maker's mark, in the header at 32 px; the favicon is the cork alone.
+- `Logo` — the Coppercork logo (ADR-045, ADR-047): the owner's "Launch Cork", the cork lifting off beside the "Coppercork" wordmark (the board's second C drawn lowercase, ADR-048), two static SVG files (light and dark) swapped by the theme like a maker's mark, in the header at 32 px; the favicon is the cork alone.
 - `ThemeToggle` — a switch between light and dark; the choice is kept in localStorage and applied as `data-theme` on `<html>` before the first paint, and the site follows the system until it is used (ADR-021).
 - `CommandPalette` — ⌘K on desktop, persistent button on phone; results grouped by entity type; keyboard navigable; shows recent entities.
 - `EntityPage` — the template: `Hero` (name, manufacturer, status badge, one image or the viewer slot), `KeyFacts` (4 to 8 label/value pairs), `Section`s, `Related`.

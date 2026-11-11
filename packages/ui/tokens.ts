@@ -81,7 +81,7 @@ export const color: Record<Scheme, Record<ColorToken, string>> = {
     "spectrum.staff": "#DEC342",
     // The logo's coppers (ADR-041, ADR-045): the plates and rule, and the flames; the logo alone.
     "brand.copper": "#A85E27",
-    "brand.flame": "#C97A40",
+    "brand.flame": "#A85E27",
   },
   dark: {
     "bg.page": "#161513",

@@ -4,7 +4,8 @@
  * into two static SVG files, one per scheme (the plates and flames in the board's coppers, the
  * wordmark in the page's ink). Which one shows follows the page theme through the app's
  * `theme-on-light` and `theme-on-dark` rules, as a maker's mark does, so it never flashes the
- * wrong one. The images are decorative: the link around them carries the site's name as text.
+ * wrong one; both load lazily, so the hidden one is never fetched. The images are decorative:
+ * the link around them carries the site's name as text.
  */
 
 /** The lockup's files and their shape (1418 by 297 on the board). */
@@ -23,6 +24,7 @@ export function Logo({ height = 32 }: { readonly height?: 24 | 32 | 48 }) {
         width={width}
         height={height}
         alt=""
+        loading="lazy"
         decoding="async"
         className="theme-on-light shrink-0"
       />
@@ -31,6 +33,7 @@ export function Logo({ height = 32 }: { readonly height?: 24 | 32 | 48 }) {
         width={width}
         height={height}
         alt=""
+        loading="lazy"
         decoding="async"
         className="theme-on-dark shrink-0"
       />

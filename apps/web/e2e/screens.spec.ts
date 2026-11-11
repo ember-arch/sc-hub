@@ -62,8 +62,6 @@ const SCREENS = [
   { name: "news-dev", path: "/news/dev", status: 200 },
   { name: "titles", path: "/titles", status: 200 },
   { name: "titles-guide", path: "/titles?group=guide", status: 200 },
-  { name: "funding", path: "/funding", status: 200 },
-  { name: "funding-citizens", path: "/funding?measure=citizens", status: 200 },
   { name: "about", path: "/about", status: 200 },
   { name: "privacy", path: "/privacy", status: 200 },
   { name: "licenses", path: "/licenses", status: 200 },

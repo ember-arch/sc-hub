@@ -29,6 +29,11 @@ const nextConfig: NextConfig = {
   // served as static files locally and from the CDN in a deploy (ADR-009, ADR-034).
   images: { unoptimized: true },
   poweredByHeader: false,
+  // The ledger page is folded into the front page (ADR-040); its address, published since
+  // ADR-018, lands on the home's funding card.
+  redirects: async () => [
+    { source: "/funding", destination: "/#funding", permanent: true },
+  ],
 };
 
 export default nextConfig;

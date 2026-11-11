@@ -6,13 +6,12 @@ import { Footer } from "./footer";
 import type { ChannelVersion } from "./patch-strip";
 import { ThemeToggle } from "./theme-toggle";
 
-export type NavSection = "ships" | "components" | "titles" | "funding" | "news";
+export type NavSection = "ships" | "components" | "titles" | "news";
 
 const NAV: readonly { section: NavSection; label: string; href: string }[] = [
   { section: "ships", label: "Ships", href: "/ships" },
   { section: "components", label: "Components", href: "/components" },
   { section: "titles", label: "Titles", href: "/titles" },
-  { section: "funding", label: "Funding", href: "/funding" },
   { section: "news", label: "News", href: "/news" },
 ];
 

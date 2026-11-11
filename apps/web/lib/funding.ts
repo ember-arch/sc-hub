@@ -7,10 +7,10 @@ import {
 import { REPO_ROOT } from "./data";
 
 /**
- * The funding page's numbers (ADR-018), all computed from RSI's cumulative counters as the wiki
- * API recorded them, one snapshot a day. Pure functions over the series, unit-tested on the
- * committed fixture. A month or year is reported only when a snapshot exists close enough to
- * both of its ends; otherwise it is "unknown", never estimated.
+ * The funding figures (ADR-018, drawn on the front page since ADR-040), all computed from RSI's
+ * cumulative counters as the wiki API recorded them, one snapshot a day. Pure functions over the
+ * series, unit-tested on the committed fixture. A month or year is reported only when a snapshot
+ * exists close enough to both of its ends; otherwise it is "unknown", never estimated.
  */
 
 export const FUNDING_FILE = join(
@@ -36,18 +36,6 @@ export function funding(): FundingSeries | null {
 
 export const MEASURES = ["pledges", "citizens"] as const;
 export type Measure = (typeof MEASURES)[number];
-
-export type Query = Readonly<Record<string, string | string[] | undefined>>;
-
-/** `?measure=citizens`; anything else means pledges. */
-export function parseMeasure(query: Query): Measure {
-  const raw = query["measure"];
-  const value = Array.isArray(raw) ? raw[0] : raw;
-  return value === "citizens" ? "citizens" : "pledges";
-}
-
-export const fundingHref = (measure: Measure): string =>
-  measure === "pledges" ? "/funding" : `/funding?measure=${measure}`;
 
 const DAY_MS = 86_400_000;
 export const dayNumber = (day: string): number =>
@@ -245,133 +233,11 @@ export function yearPaths(
   });
 }
 
-export interface TrendPoint {
-  readonly day: string;
-  /** Trailing 365-day total against the 365 before, as a fraction. */
-  readonly change: number;
-}
-
-/** The trailing-year change for every reading in the last `days`, where both windows are known. */
-export function trailingTrend(
-  list: readonly Reading[],
-  days = 730,
-): TrendPoint[] {
-  const latest = list.at(-1);
-  if (latest === undefined) return [];
-  const from = dayNumber(latest.day) - days;
-  const out: TrendPoint[] = [];
-  for (const r of list) {
-    const n = dayNumber(r.day);
-    if (n < from) continue;
-    const a = readingAt(list, dayString(n - 365));
-    const b = readingAt(list, dayString(n - 730));
-    if (a === null || b === null) continue;
-    const before = a.value - b.value;
-    if (before <= 0) continue;
-    out.push({ day: r.day, change: (r.value - a.value) / before - 1 });
-  }
-  return out;
-}
-
-export interface DailyPoint {
-  readonly day: string;
-  /** Added per day across the stretch since the previous reading. */
-  readonly perDay: number;
-}
-
-/** The amount added per day between consecutive readings, for the whole history. */
-export function dailyRate(list: readonly Reading[]): DailyPoint[] {
-  const out: DailyPoint[] = [];
-  for (let i = 1; i < list.length; i += 1) {
-    const prev = list[i - 1];
-    const r = list[i];
-    if (prev === undefined || r === undefined) continue;
-    const span = dayNumber(r.day) - dayNumber(prev.day);
-    out.push({ day: r.day, perDay: (r.value - prev.value) / span });
-  }
-  return out;
-}
-
-/** A run of readings for the running-total line; a `bridge` spans a gap in the data (drawn dashed). */
-export interface TotalSegment {
-  readonly points: readonly Reading[];
-  readonly bridge: boolean;
-}
-
-/**
- * The running total as runs of readings, split where the data has no snapshot for `minDays` or
- * more: each such stretch becomes a two-point bridge between the readings either side, so the
- * line can show where it is drawn through nothing (ADR-018: never estimated, only joined).
- */
-export function totalSegments(
-  list: readonly Reading[],
-  minDays: number,
-): TotalSegment[] {
-  const out: TotalSegment[] = [];
-  let run: Reading[] = [];
-  for (let i = 0; i < list.length; i += 1) {
-    const r = list[i]!;
-    const prev = list[i - 1];
-    if (
-      prev !== undefined &&
-      dayNumber(r.day) - dayNumber(prev.day) >= minDays
-    ) {
-      if (run.length > 0) out.push({ points: run, bridge: false });
-      out.push({ points: [prev, r], bridge: true });
-      run = [r];
-      continue;
-    }
-    run.push(r);
-  }
-  if (run.length > 1 || (run.length === 1 && out.length === 0))
-    out.push({ points: run, bridge: false });
-  return out;
-}
-
-/** The first reading at or above `threshold`, or null when the counter has not reached it. */
-export function firstCrossing(
-  list: readonly Reading[],
-  threshold: number,
-): Reading | null {
-  return list.find((r) => r.value >= threshold) ?? null;
-}
-
 /** The same calendar date a year earlier; 29 February falls back to 28 February. */
 export function sameDayPriorYear(day: string): string {
   const year = Number(day.slice(0, 4)) - 1;
   const rest = day.slice(5);
   return `${year}-${rest === "02-29" ? "02-28" : rest}`;
-}
-
-export interface Decline {
-  readonly day: string;
-  /** How far the reading fell from the previous one. */
-  readonly by: number;
-}
-
-/** Days on which the counter read lower than the reading before, as recorded. */
-export function declines(list: readonly Reading[]): Decline[] {
-  const out: Decline[] = [];
-  for (let i = 1; i < list.length; i += 1) {
-    const prev = list[i - 1];
-    const r = list[i];
-    if (prev !== undefined && r !== undefined && r.value < prev.value) {
-      out.push({ day: r.day, by: prev.value - r.value });
-    }
-  }
-  return out;
-}
-
-/** The amount added across a gap in the data, for the note under the monthly grid. */
-export function gapTotal(
-  list: readonly Reading[],
-  gap: { readonly from: string; readonly to: string },
-): number | null {
-  const before = lastOnOrBefore(list, gap.from);
-  const after = list.find((r) => r.day > gap.to);
-  return before === null || after === undefined
-    ? null
-    : after.value - before.value;
 }
 
 const usd = new Intl.NumberFormat("en-US", {

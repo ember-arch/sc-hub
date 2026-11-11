@@ -1,6 +1,6 @@
 # ADR-018: Funding: RSI's pledge and citizen counters, by month and year
 
-- Status: accepted
+- Status: accepted; the page is folded into the front page's funding card and removed by ADR-040 (the entity, the fetch, the mapping, the periods and the headline figures stand)
 - Date: 2026-11-08
 - Deciders: owner (asked for the page, chose "Wiki API only" for the data on 2026-11-08, and "everything in one master version"), Claude Code session 2026-11-08
 

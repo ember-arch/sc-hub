@@ -1,25 +1,39 @@
-/** The stopper's outline, shared with the favicon (apps/web/app/icon.svg), which a test keeps equal. */
-export const MARK_PATH =
-  "M9 6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3.5l1.5 17A2 2 0 0 1 22.5 29h-13a2 2 0 0 1-2-2.5L9 9.5Z";
-
 /**
- * The Coppercork mark (ADR-041): a cork stopper in the site's own colour, `brand.copper` (the
- * token, per scheme), with its label as an ink band that takes the text colour around it, so the
- * mark sits in the header's ink in either scheme. Decorative beside the name: the wordmark is
- * the accessible text, the mark is hidden from it.
+ * The Coppercork logo (ADR-045): the owner's "Launch Cork", a cork of three copper plates lifting
+ * off on its flames, beside the wordmark under a copper rule, traced from the designer's board
+ * into two static SVG files, one per scheme (the plates and flames in the board's coppers, the
+ * wordmark in the page's ink). Which one shows follows the page theme through the app's
+ * `theme-on-light` and `theme-on-dark` rules, as a maker's mark does, so it never flashes the
+ * wrong one. The images are decorative: the link around them carries the site's name as text.
  */
-export function Logo({ size = 28 }: { readonly size?: number | undefined }) {
+
+/** The lockup's files and their shape (1418 by 297 on the board). */
+export const LOGO_FILES = {
+  light: "/brand/coppercork-light.svg",
+  dark: "/brand/coppercork-dark.svg",
+} as const;
+export const LOGO_ASPECT = 1418 / 297;
+
+export function Logo({ height = 32 }: { readonly height?: 24 | 32 | 48 }) {
+  const width = Math.round(height * LOGO_ASPECT);
   return (
-    <svg
-      viewBox="0 0 32 32"
-      width={size}
-      height={size}
-      aria-hidden="true"
-      focusable="false"
-      className="shrink-0"
-    >
-      <path d={MARK_PATH} fill="var(--brand-copper)" />
-      <rect x="8.6" y="12" width="14.8" height="2.4" fill="currentColor" />
-    </svg>
+    <>
+      <img
+        src={LOGO_FILES.light}
+        width={width}
+        height={height}
+        alt=""
+        decoding="async"
+        className="theme-on-light shrink-0"
+      />
+      <img
+        src={LOGO_FILES.dark}
+        width={width}
+        height={height}
+        alt=""
+        decoding="async"
+        className="theme-on-dark shrink-0"
+      />
+    </>
   );
 }

@@ -19,7 +19,8 @@
   --warning: #8A5A00;
   --danger: #B3261E;
   --spectrum-staff: #DEC342;
-  --brand-copper: #A8652F;
+  --brand-copper: #A85E27;
+  --brand-flame: #C97A40;
   color-scheme: light;
 }
 
@@ -42,7 +43,8 @@
     --warning: #E0A94A;
     --danger: #EF7A6E;
     --spectrum-staff: #DEC342;
-    --brand-copper: #D08A4F;
+    --brand-copper: #C97A40;
+    --brand-flame: #E9A46E;
     color-scheme: dark;
   }
 }
@@ -65,7 +67,8 @@
   --warning: #E0A94A;
   --danger: #EF7A6E;
   --spectrum-staff: #DEC342;
-  --brand-copper: #D08A4F;
+  --brand-copper: #C97A40;
+  --brand-flame: #E9A46E;
   color-scheme: dark;
 }
 
@@ -89,6 +92,7 @@
   --color-danger: var(--danger);
   --color-spectrum-staff: var(--spectrum-staff);
   --color-brand-copper: var(--brand-copper);
+  --color-brand-flame: var(--brand-flame);
 
   --font-*: initial;
   --font-sans: var(--font-manrope), system-ui, -apple-system, 'Segoe UI', sans-serif;

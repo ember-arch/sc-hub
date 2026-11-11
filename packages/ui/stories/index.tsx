@@ -413,13 +413,15 @@ const renderers: Record<string, { title: string; render: Story["render"] }> = {
     title: "Logo",
     render: () => (
       <div className="flex flex-col gap-4 p-4">
-        <p className="m-0 flex items-center gap-2 text-ui font-medium text-primary">
-          <Logo />
-          {SITE_NAME}
+        <p className="m-0 flex items-center">
+          <Logo height={24} />
+          <span className="sr-only">{SITE_NAME}</span>
         </p>
-        <p className="m-0 flex items-center gap-4 text-primary">
-          <Logo size={96} />
-          <Logo size={16} />
+        <p className="m-0 flex items-center">
+          <Logo height={32} />
+        </p>
+        <p className="m-0 flex items-center">
+          <Logo height={48} />
         </p>
       </div>
     ),

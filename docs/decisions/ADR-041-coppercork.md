@@ -1,6 +1,6 @@
 # ADR-041: The site is Coppercork: the name, the mark and the tagline
 
-- Status: accepted
+- Status: accepted; the mark is replaced by the owner's "Launch Cork" logo (ADR-045), the name and the tagline stand
 - Date: 2026-11-10
 - Deciders: owner ("we need a logo for the site and Let's call it Coppercork and for the tagline should cleverly and cleanly outline what it is", 2026-11-10), Claude Code session 2026-11-10
 - Resolves: CLAUDE.md section 12, "Project name" (the one open decision this record closes; the licence, the hero ship list and the Spectrum access method stay open)

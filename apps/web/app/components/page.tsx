@@ -16,6 +16,8 @@ import {
   componentIndexHref,
   hasComponentFilters,
   parseComponentQuery,
+  parseFixedShown,
+  withoutFixed,
 } from "../../lib/component-filters";
 import { repo } from "../../lib/data";
 import type { Query } from "../../lib/ship-filters";
@@ -37,9 +39,15 @@ export default async function ComponentsPage({
   readonly searchParams: Promise<Query>;
 }) {
   const r = repo();
-  const filters = parseComponentQuery(await searchParams);
-  const components = applyComponentFilters(r.components, filters);
-  const options = componentFacetOptions(r.components);
+  const query = await searchParams;
+  const filters = parseComponentQuery(query);
+  // Thrusters and fuel intakes come with the ship; they are listed on request (ADR-046).
+  const fixedShown = parseFixedShown(query);
+  const listed = withoutFixed(r.components, fixedShown);
+  const fixedCount =
+    r.components.length - withoutFixed(r.components, false).length;
+  const components = applyComponentFilters(listed, filters);
+  const options = componentFacetOptions(listed);
   const filtered = hasComponentFilters(filters);
   const groups = ItemType.options
     .map((type) => ({
@@ -47,7 +55,8 @@ export default async function ComponentsPage({
       items: components.filter((c) => c.item.type === type),
     }))
     .filter((g) => g.items.length > 0);
-  const clearHref = componentIndexHref({});
+  const clearHref = componentIndexHref({}, fixedShown);
+  const fixedHref = componentIndexHref(filters, !fixedShown);
   return (
     <Site
       current="components"
@@ -56,8 +65,8 @@ export default async function ComponentsPage({
           eyebrow={[
             <span key="count" data-testid="component-count">
               {filtered
-                ? `${components.length} of ${r.components.length} components`
-                : `${r.components.length} components in ${groups.length} types`}
+                ? `${components.length} of ${listed.length} components`
+                : `${listed.length} components in ${groups.length} types`}
             </span>,
             r.liveVersion ?? "no LIVE build",
           ]}
@@ -72,6 +81,7 @@ export default async function ComponentsPage({
             action="/components"
             label="Filter components"
             clearHref={filtered ? clearHref : undefined}
+            hidden={fixedShown ? { fixed: "shown" } : undefined}
           >
             <FilterSelect
               name="size"
@@ -88,6 +98,17 @@ export default async function ComponentsPage({
               options={options.manufacturer}
             />
           </FilterBar>
+          <p
+            className="m-0 max-w-prose text-ui text-secondary"
+            data-testid="fixed-parts"
+          >
+            {fixedShown
+              ? `Thrusters and fuel intakes are listed: ${fixedCount} parts that come with the ship and are not swapped. `
+              : `Thrusters and fuel intakes are left out: ${fixedCount} parts that come with the ship and are not swapped. `}
+            <TextLink href={fixedHref}>
+              {fixedShown ? "Hide them" : "Show them"}
+            </TextLink>
+          </p>
           {groups.length > 1 ? (
             // Each type as a figure with its count (ADR-019, as the almanac's strip per ADR-020): the page's map, and a jump to its table.
             <nav aria-label="Component types">

@@ -148,3 +148,25 @@ test("on a phone the comparison stacks instead of scrolling sideways", async ({
   await expect(page.getByRole("region", { name: "Key facts" })).toBeVisible();
   await context.close();
 });
+
+// ADR-046: on the index, a picked ship brings up a bar at the foot of the screen with the way to
+// the side-by-side page, and Clear empties the basket.
+test("the index's compare bar appears with a pick, leads to the comparison, and clears", async ({
+  page,
+}) => {
+  await page.goto("/ships");
+  const tray = page.getByRole("complementary", { name: "Ships to compare" });
+  await expect(tray).toHaveCount(0);
+  const toggle = page.getByRole("button", { name: `Compare ${a.name}` });
+  await expect(toggle).toHaveText("Add to compare");
+  await toggle.click();
+  await expect(toggle).toHaveText("In compare");
+  await expect(tray).toBeInViewport();
+  await expect(tray.getByTestId("compare-tray")).toContainText("1 ship picked");
+  await expect(
+    tray.getByRole("link", { name: "Compare 1 ship" }),
+  ).toHaveAttribute("href", `/compare?ships=${a.slug}`);
+  await tray.getByRole("button", { name: "Clear" }).click();
+  await expect(tray).toHaveCount(0);
+  await expect(toggle).toHaveAttribute("aria-pressed", "false");
+});

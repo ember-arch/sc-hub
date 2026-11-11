@@ -39,6 +39,8 @@ import {
   readings,
 } from "../lib/funding";
 import { media, shipCardImage } from "../lib/media";
+import { shipTally, tallyNote } from "../lib/ship-count";
+import { withoutFixed } from "../lib/component-filters";
 import { conceptShips, showcaseFor } from "../lib/showcase";
 import { Site, now } from "../lib/site";
 import {
@@ -105,11 +107,11 @@ export default function HomePage() {
   const money = pledges === null ? null : headline(pledges);
   const people =
     series === null ? null : headline(readings(series, "citizens"));
-  const flightReady = r.entries.filter(
-    (s) => s.vehicle.status === "flight_ready",
-  ).length;
-  const partTypes = new Set(r.components.map((c) => c.item.type)).size;
-  const shipsOnRecord = r.entries.length + concepts.length;
+  const tally = shipTally(r.entries, concepts.length);
+  // The parts people fit: thrusters and fuel intakes come with the ship (ADR-046).
+  const fitted = withoutFixed(r.components, false);
+  const partTypes = new Set(fitted.map((c) => c.item.type)).size;
+  const shipsOnRecord = tally.total;
   const counters: Counter[] = [
     ...(money === null
       ? []
@@ -149,14 +151,14 @@ export default function HomePage() {
     {
       label: "Ships on record",
       value: String(shipsOnRecord),
-      note: `${flightReady} flight ready · ${concepts.length} in concept`,
+      note: tallyNote(tally),
       href: "/ships",
     },
     {
       label: "Parts on record",
-      value: String(r.components.length),
+      value: String(fitted.length),
       // The build stays in the footer's patch strip (ADR-007: one strip per page).
-      note: `${partTypes} types`,
+      note: `${partTypes} types · ${r.components.length - fitted.length} built-in thrusters and intakes aside`,
       href: "/components",
     },
   ];

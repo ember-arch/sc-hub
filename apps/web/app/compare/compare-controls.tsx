@@ -35,7 +35,7 @@ export function CompareToggle({
       }}
       className={`${button} ${pressed ? "border-accent bg-accent-bg text-primary" : full ? "border-hairline bg-surface text-secondary" : "border-hairline bg-surface text-primary hover:border-hairline-strong"}`}
     >
-      {pressed ? "In compare" : "Compare"}
+      {pressed ? "In compare" : "Add to compare"}
     </button>
   );
 }
@@ -51,6 +51,44 @@ export function CompareLink() {
     >
       Compare {slugs.length} {slugs.length === 1 ? "ship" : "ships"}
     </NextLink>
+  );
+}
+
+/**
+ * On the ships index (ADR-046): a bar pinned to the foot of the screen while the basket holds a
+ * ship, so the way to the side-by-side page is in view wherever the ship was picked. A spacer
+ * keeps the page's last lines clear of it.
+ */
+export function CompareTray() {
+  const { slugs, set } = useCompareBasket();
+  if (slugs.length === 0) return null;
+  const more = MAX_COMPARE - slugs.length;
+  return (
+    <>
+      <div aria-hidden="true" className="h-24" />
+      <aside
+        aria-label="Ships to compare"
+        className="fixed inset-x-0 bottom-0 z-20 border-t border-hairline bg-raised"
+      >
+        <div className="mx-auto flex w-full max-w-content flex-wrap items-center justify-between gap-x-6 gap-y-2 px-4 py-3">
+          <p className="m-0 text-ui text-secondary" data-testid="compare-tray">
+            {slugs.length === 1
+              ? `1 ship picked: add up to ${more} more to see their stats side by side.`
+              : `${slugs.length} of ${MAX_COMPARE} ships picked to see side by side.`}
+          </p>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => set([])}
+              className={`${button} border-hairline bg-surface text-primary hover:border-hairline-strong`}
+            >
+              Clear
+            </button>
+            <CompareLink />
+          </div>
+        </div>
+      </aside>
+    </>
   );
 }
 

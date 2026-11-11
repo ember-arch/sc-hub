@@ -25,10 +25,14 @@ export function Counters({
 const link =
   "no-underline transition-colors duration-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent";
 
-/** The sections of the almanac, numbered, in two columns on wide screens. */
+/**
+ * The sections of the almanac, numbered, in two columns on wide screens. Hidden on phones, where it
+ * stacked above the dispatches and pushed them below the first screen (ADR-046); the header's
+ * sections stay.
+ */
 export function Contents() {
   return (
-    <nav aria-labelledby="contents" className="flex flex-col gap-2">
+    <nav aria-labelledby="contents" className="hidden flex-col gap-2 md:flex">
       <p id="contents" className="lab m-0 text-secondary">
         Contents
       </p>

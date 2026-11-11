@@ -44,6 +44,19 @@ const fixture = <T>(file: string): T =>
 // Editions are listed under their base (ADR-022), so the cards and counts see entries.
 const vehicles = listedVehicles(fixture<VehicleRow[]>("Vehicle.json"));
 const manufacturers = fixture<ManufacturerRow[]>("Manufacturer.json");
+// RSI's concept ships (ADR-010) count toward the register's total (ADR-046).
+const concepts = JSON.parse(
+  readFileSync(
+    fileURLToPath(
+      new URL(
+        "../../../fixtures/ship-matrix/ConceptShip.json",
+        import.meta.url,
+      ),
+    ),
+    "utf8",
+  ),
+) as { name: string; manufacturer_code: string; slug: string }[];
+const total = vehicles.length + concepts.length;
 const live = fixture<GameVersionRow[]>("GameVersion.json").find(
   (v) => v.channel === "LIVE" && v.is_current,
 );
@@ -70,6 +83,9 @@ test("the search narrows the register by name and is URL state", async ({
   const expected = vehicles.filter((v) =>
     v.name.toLowerCase().includes(target.name.toLowerCase()),
   );
+  const conceptMatches = concepts.filter((c) =>
+    c.name.toLowerCase().includes(target.name.toLowerCase()),
+  );
   const search = page.getByLabel("Search");
   await search.fill(target.name);
   await search.press("Enter");
@@ -79,10 +95,10 @@ test("the search narrows the register by name and is URL state", async ({
     ),
   );
   await expect(page.getByTestId("ship-count")).toContainText(
-    `${expected.length} of ${vehicles.length} ships`,
+    `${expected.length + conceptMatches.length} of ${total} ships`,
   );
   await expect(page.getByRole("main").locator("ul li a")).toHaveCount(
-    expected.length,
+    expected.length + conceptMatches.length,
   );
   await expect(search).toHaveValue(target.name);
   await page.getByRole("link", { name: "Clear filters" }).click();
@@ -97,7 +113,7 @@ test("a size filter chosen from the select becomes URL state and narrows the car
   await page.getByLabel("Size").selectOption(size);
   await expect(page).toHaveURL(new RegExp(`/ships\\?size=${size}$`));
   await expect(page.getByTestId("ship-count")).toContainText(
-    `${expected.length} of ${vehicles.length} ships`,
+    `${expected.length} of ${total} ships`,
   );
   // Each card is one link whose name starts with the ship name; count them exactly.
   const cards = page.getByRole("main").locator("ul li a");
@@ -111,9 +127,7 @@ test("a size filter chosen from the select becomes URL state and narrows the car
   // Clear filters restores the full list and the plain URL.
   await page.getByRole("link", { name: "Clear filters" }).click();
   await expect(page).toHaveURL(/\/ships$/);
-  await expect(page.getByTestId("ship-count")).toContainText(
-    `${vehicles.length} ships`,
-  );
+  await expect(page.getByTestId("ship-count")).toContainText(`${total} ships`);
 });
 
 test("a manufacturer filter in the URL preselects the control and survives the view toggle, and a filter change keeps the table view", async ({
@@ -251,7 +265,7 @@ test("without JavaScript the Apply button submits the same filters as a plain GE
   expect(url.searchParams.get("size")).toBe(size);
   expect(url.searchParams.get("view")).toBe("table");
   await expect(page.getByTestId("ship-count")).toContainText(
-    `${vehicles.filter((v) => v.size_class === size).length} of ${vehicles.length} ships`,
+    `${vehicles.filter((v) => v.size_class === size).length} of ${total} ships`,
   );
   await expect(page.getByRole("table")).toBeVisible();
   await context.close();
@@ -319,4 +333,27 @@ test("where columns are hidden, the Sort by select sorts by any of them", async 
     [...byName].sort((a, b) => mass(b) - mass(a)).map((v) => v.name),
   );
   await context.close();
+});
+
+// ADR-046: thrusters and fuel intakes come with the ship; the parts index lists them on request.
+test("the parts index leaves out thrusters and fuel intakes until asked, and keeps the choice", async ({
+  page,
+}) => {
+  await page.goto("/components");
+  await expect(page.locator("section#thruster")).toHaveCount(0);
+  await expect(page.locator("section#fuel_intake")).toHaveCount(0);
+  await expect(page.locator("section#weapon")).toHaveCount(1);
+  await page
+    .getByTestId("fixed-parts")
+    .getByRole("link", { name: "Show them" })
+    .click();
+  await expect(page).toHaveURL(/\/components\?fixed=shown$/);
+  await expect(page.locator("section#thruster")).toHaveCount(1);
+  await page.getByLabel("Size").selectOption({ index: 1 });
+  await expect(page).toHaveURL(/\/components\?size=\d+&fixed=shown$/);
+  await page
+    .getByTestId("fixed-parts")
+    .getByRole("link", { name: "Hide them" })
+    .click();
+  await expect(page).toHaveURL(/\/components\?size=\d+$/);
 });

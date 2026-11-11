@@ -6,6 +6,9 @@ import {
   componentIndexHref,
   hasComponentFilters,
   parseComponentQuery,
+  parseFixedShown,
+  withoutFixed,
+  FIXED_TYPES,
 } from "../lib/component-filters";
 import { bootstrapPack } from "./pack";
 
@@ -92,6 +95,32 @@ describe("componentIndexHref", () => {
     expect(componentIndexHref({})).toBe("/components");
     expect(componentIndexHref({ size: "2", manufacturer: "behring" })).toBe(
       "/components?size=2&manufacturer=behring",
+    );
+  });
+});
+
+// ADR-046: thrusters and fuel intakes come with the ship; the index lists them on request.
+describe("the fixed parts", () => {
+  it("are left out unless asked for, and only they are", () => {
+    const fitted = withoutFixed(components, false);
+    expect(fitted.some((c) => FIXED_TYPES.has(c.item.type))).toBe(false);
+    expect(fitted.length).toBe(
+      components.filter((c) => !FIXED_TYPES.has(c.item.type)).length,
+    );
+    expect(fitted.length).toBeLessThan(components.length);
+    expect(withoutFixed(components, true)).toBe(components);
+  });
+
+  it("are asked for with ?fixed=shown, which the index links keep", () => {
+    expect(parseFixedShown({ fixed: "shown" })).toBe(true);
+    expect(parseFixedShown({ fixed: "yes" })).toBe(false);
+    expect(parseFixedShown({})).toBe(false);
+    expect(componentIndexHref({ size: "2" }, true)).toBe(
+      "/components?size=2&fixed=shown",
+    );
+    expect(componentIndexHref({}, false)).toBe("/components");
+    expect(hasComponentFilters(parseComponentQuery({ fixed: "shown" }))).toBe(
+      false,
     );
   });
 });

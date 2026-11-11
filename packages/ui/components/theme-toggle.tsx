@@ -62,7 +62,7 @@ export function ThemeToggle() {
     >
       <span
         aria-hidden="true"
-        className={`absolute top-1 h-4 w-4 rounded-pill bg-primary ${dark ? "translate-x-6" : "translate-x-1"}`}
+        className={`absolute top-1 h-4 w-4 rounded-pill bg-primary ${dark ? "right-1" : "left-1"}`}
       />
     </button>
   );

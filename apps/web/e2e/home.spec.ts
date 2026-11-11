@@ -212,3 +212,23 @@ for (const viewport of [
     });
   }
 }
+
+// ADR-046: on a phone the contents would push the dispatches off the first screen.
+test("the home page's contents show from tablet width, not on a phone", async ({
+  browser,
+}) => {
+  for (const [width, shown] of [
+    [390, false],
+    [820, true],
+  ] as const) {
+    const context = await browser.newContext({
+      viewport: { width, height: 900 },
+    });
+    const page = await context.newPage();
+    await page.goto("/");
+    const contents = page.getByRole("navigation", { name: "Contents" });
+    if (shown) await expect(contents).toBeVisible();
+    else await expect(contents).toBeHidden();
+    await context.close();
+  }
+});

@@ -70,3 +70,22 @@ test("without a choice the switch reports the system's scheme", async ({
   );
   await context.close();
 });
+
+// ADR-046: the knob stays inside the capsule in both schemes.
+test("the switch's knob sits inside its capsule, on and off", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const knob = async () =>
+    page.getByRole("switch").evaluate((el) => {
+      const track = el.getBoundingClientRect();
+      const dot = (el.firstElementChild as HTMLElement).getBoundingClientRect();
+      return [dot.left - track.left, track.right - dot.right];
+    });
+  for (let i = 0; i < 2; i += 1) {
+    const [left, right] = await knob();
+    expect(left).toBeGreaterThanOrEqual(2);
+    expect(right).toBeGreaterThanOrEqual(2);
+    await page.getByRole("switch").click();
+  }
+});

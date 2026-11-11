@@ -10,13 +10,20 @@ export interface PatchStripProps {
   readonly versions: readonly ChannelVersion[];
 }
 
-const SHOWN: readonly Channel[] = ["LIVE", "PTU"];
+/** LIVE always, with its empty state; PTU only when the data holds a PTU build (ADR-046). */
+const ALWAYS: readonly Channel[] = ["LIVE"];
+const WHEN_RECORDED: readonly Channel[] = ["PTU"];
 
-/** LIVE and PTU build strings, on home and in the footer (spec 00, criterion "Patch strip"). */
+/** The build strings, in the footer (spec 00, criterion "Patch strip"; ADR-046). */
 export function PatchStrip({ versions }: PatchStripProps) {
+  const recorded = new Set(versions.map((v) => v.channel));
+  const shown = [
+    ...ALWAYS,
+    ...WHEN_RECORDED.filter((channel) => recorded.has(channel)),
+  ];
   return (
     <dl className="m-0 flex flex-wrap gap-x-6 gap-y-1 text-caption">
-      {SHOWN.map((channel) => {
+      {shown.map((channel) => {
         const found = versions.find((v) => v.channel === channel);
         return (
           <div key={channel} className="flex items-baseline gap-2">

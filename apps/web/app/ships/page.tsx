@@ -26,7 +26,12 @@ import {
 import { Site } from "../../lib/site";
 import { crewRange, shipCard, shipRows } from "../../lib/views";
 import { conceptShips, showcaseFor } from "../../lib/showcase";
-import { CompareLink, CompareToggle } from "../compare/compare-controls";
+import {
+  CompareLink,
+  CompareToggle,
+  CompareTray,
+} from "../compare/compare-controls";
+import { shipTally, tallyNote } from "../../lib/ship-count";
 import { PriceCredit } from "../price-credit";
 import { ShipTable } from "./ship-table";
 import { media, shipCardImage } from "../../lib/media";
@@ -73,6 +78,7 @@ export default async function ShipsPage({
           q === undefined ||
           matchesSearch(q, [c.name, c.manufacturer_code, c.slug]),
       );
+  const tally = shipTally(r.entries, conceptShips().length);
   const options = shipFacetOptions(r.entries, {
     status: (status) => vehicleStatusBadge(status).label,
     kind: sentence,
@@ -91,15 +97,16 @@ export default async function ShipsPage({
           eyebrow={[
             <span key="count" data-testid="ship-count">
               {filtered
-                ? `${ships.length} of ${r.entries.length} ships`
-                : `${r.entries.length} ships`}
+                ? `${ships.length + concepts.length} of ${tally.total} ships`
+                : `${tally.total} ships`}
             </span>,
+            // The tally describes the whole register, so it stands only beside the whole count.
+            ...(filtered ? [] : [tallyNote(tally)]),
             r.liveVersion ?? "no LIVE build",
-            ...(concepts.length > 0 ? [`${concepts.length} in concept`] : []),
           ]}
           title="The register of ships"
-          lede="Every ship and vehicle on record, one entry each: its plate, its maker and role, and the figures that matter by build. Sort on any column; the name opens the entry."
           aside={<CompareLink />}
+          lede="Every ship and vehicle on record, one entry each: its plate, its maker and role, and the figures that matter by build. Sort on any column; the name opens the entry."
         />
       }
     >
@@ -139,13 +146,13 @@ export default async function ShipsPage({
             />
           </div>
         </div>
-        {ships.length === 0 ? (
+        {ships.length + concepts.length === 0 ? (
           <EmptyState>
             No ships match these filters.{" "}
             <TextLink href={clearHref}>Clear filters</TextLink> to see every
             ship.
           </EmptyState>
-        ) : state.view === "table" ? (
+        ) : ships.length === 0 ? null : state.view === "table" ? (
           <div className="flex flex-col gap-3">
             <ShipTable
               rows={shipRows(ships, shipCardImage)}
@@ -228,6 +235,7 @@ export default async function ShipsPage({
           </section>
         )}
       </div>
+      <CompareTray />
     </Site>
   );
 }

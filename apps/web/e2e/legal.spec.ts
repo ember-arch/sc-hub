@@ -123,7 +123,12 @@ test("the patch strip shows each channel's current build from the pack in the fo
     const version = current(channel);
     for (const strip of [strips.first(), strips.last()]) {
       const slot = strip.locator("div").filter({ hasText: channel });
-      await expect(slot).toContainText(version ?? "no build recorded");
+      // ADR-046: PTU shows only when the pack records a PTU build; LIVE always, empty or not.
+      if (channel === "PTU" && version === undefined) {
+        await expect(slot).toHaveCount(0);
+      } else {
+        await expect(slot).toContainText(version ?? "no build recorded");
+      }
     }
   }
   // The LIVE build string is a real fixture value, not a label.

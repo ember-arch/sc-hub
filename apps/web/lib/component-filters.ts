@@ -1,4 +1,4 @@
-import type { Item, Manufacturer } from "schema";
+import type { Item, ItemType, Manufacturer } from "schema";
 import type { FacetOption, Query } from "./ship-filters";
 
 /**
@@ -79,16 +79,42 @@ export function componentFacetOptions(
   };
 }
 
+/**
+ * Parts a ship comes with and players do not swap (owner, 2026-11-11, ADR-046): thrusters and fuel
+ * intakes, over 40% of the parts on record. The index leaves them out unless `?fixed=shown`.
+ */
+export const FIXED_TYPES: ReadonlySet<ItemType> = new Set<ItemType>([
+  "thruster",
+  "fuel_intake",
+]);
+
+export function parseFixedShown(query: Query): boolean {
+  return first(query["fixed"])?.trim() === "shown";
+}
+
+export function withoutFixed<T extends IndexComponent>(
+  components: readonly T[],
+  shown: boolean,
+): readonly T[] {
+  return shown
+    ? components
+    : components.filter((c) => !FIXED_TYPES.has(c.item.type));
+}
+
 export function hasComponentFilters(filters: ComponentFilters): boolean {
   return COMPONENT_FACETS.some((facet) => filters[facet] !== undefined);
 }
 
-export function componentIndexHref(filters: ComponentFilters): string {
+export function componentIndexHref(
+  filters: ComponentFilters,
+  fixedShown = false,
+): string {
   const params = new URLSearchParams();
   for (const facet of COMPONENT_FACETS) {
     const value = filters[facet];
     if (value !== undefined) params.set(facet, value);
   }
+  if (fixedShown) params.set("fixed", "shown");
   const query = params.toString();
   return query === "" ? "/components" : `/components?${query}`;
 }

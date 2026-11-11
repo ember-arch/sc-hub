@@ -163,7 +163,7 @@ async function covers(): Promise<CoverImage[]> {
   for (const row of rows) {
     const input = join(rsiDir, "covers", row.file);
     if (!existsSync(input)) continue;
-    // The same encoder as the CI cover step (ADR-048), so both reach the same keys.
+    // The same encoder as the CI cover step (ADR-051), so both reach the same keys.
     const renditions = [];
     for (const r of await encodeCoverRenditions(readFileSync(input))) {
       const src = coverRenditionPath(row.external_id, r.width);

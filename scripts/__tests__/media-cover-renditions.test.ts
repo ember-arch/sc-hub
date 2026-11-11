@@ -2,7 +2,7 @@ import sharp from "sharp";
 import { describe, expect, it } from "vitest";
 import { encodeCoverRenditions } from "../media/cover-renditions.js";
 
-// ADR-029, ADR-048: the one encoder prepare.ts and the CI cover step share. A picture made in
+// ADR-029, ADR-051: the one encoder prepare.ts and the CI cover step share. A picture made in
 // memory stands in for a cover; no network.
 
 const picture = (width: number, height: number): Promise<Buffer> =>

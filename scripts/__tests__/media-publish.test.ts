@@ -345,7 +345,7 @@ describe("bringing the store into line", () => {
   });
 });
 
-// ADR-048: the News workflow adds covers to the live manifest, so the hand publish reads it first,
+// ADR-051: the News workflow adds covers to the live manifest, so the hand publish reads it first,
 // refuses to drop covers it lacks, and writes only over the manifest it read.
 describe("sharing the manifest with the CI cover step", () => {
   const cover = (id: string) => ({
@@ -499,7 +499,7 @@ describe("the store's errors, as the retry logic reads them", () => {
     expect(
       status(classifyBlobError(new blob.BlobContentTypeNotAllowedError("x"))),
     ).toBe(400);
-    // A lost conditional write (ADR-048) is read again by the caller, never retried blind.
+    // A lost conditional write (ADR-051) is read again by the caller, never retried blind.
     expect(
       status(classifyBlobError(new blob.BlobPreconditionFailedError())),
     ).toBe(412);

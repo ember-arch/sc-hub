@@ -15,8 +15,8 @@ interface Playing {
  * reader presses a `VideoCard`'s thumbnail or title. It listens on the document, so the cards stay
  * server-rendered links to YouTube: without script, or with a modifier key or a middle click, they
  * go to YouTube as links do. The player is YouTube's privacy-enhanced embed, loaded only now, on
- * the reader's own press, and unloaded on close so playback stops; the reader starts the video
- * in it (spec 03: never embed autoplay). Escape, the close button and a
+ * the reader's own press, which also starts the video (the owner's word, 2026-11-11), and
+ * unloaded on close so playback stops. Escape, the close button and a
  * press on the dimmed page close it; focus goes back to the card. "Watch on YouTube" in the
  * player and on every card is the source link (obligations.md).
  */

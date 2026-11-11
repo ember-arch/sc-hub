@@ -65,7 +65,7 @@ test("a press on a video opens the player in place; Escape closes it and unloads
   await expect(player).toBeVisible();
   await expect(player.locator("iframe")).toHaveAttribute(
     "src",
-    /^https:\/\/www\.youtube-nocookie\.com\/embed\/[A-Za-z0-9_-]{11}\?rel=0/,
+    /^https:\/\/www\.youtube-nocookie\.com\/embed\/[A-Za-z0-9_-]{11}\?autoplay=1&rel=0/,
   );
   await expect(
     player.getByRole("button", { name: "Close the video" }),

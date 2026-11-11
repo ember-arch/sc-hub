@@ -77,9 +77,9 @@ describe("videos", () => {
     expect([thumb.width, thumb.height]).toEqual([320, 180]);
   });
 
-  it("plays in the privacy-enhanced player, never starting on its own", () => {
+  it("plays in the privacy-enhanced player, started by the reader's press", () => {
     expect(embedUrl("aaaaaaaaaaa")).toBe(
-      "https://www.youtube-nocookie.com/embed/aaaaaaaaaaa?rel=0&playsinline=1",
+      "https://www.youtube-nocookie.com/embed/aaaaaaaaaaa?autoplay=1&rel=0&playsinline=1",
     );
     const card = videoCard(videos[2]!, new Date("2026-11-11T12:00:00Z"));
     expect(card.channel).toBe("Star Citizen");

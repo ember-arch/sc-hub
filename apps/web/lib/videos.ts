@@ -19,9 +19,12 @@ export const FRONT_VIDEOS = 7;
 export const isShort = (item: Pick<ContentItem, "url">): boolean =>
   /\/shorts\//.test(item.url);
 
-/** The privacy-enhanced player, the reader starting the video in it (spec 03: never embed autoplay). */
+/**
+ * The privacy-enhanced player, started by the reader's press: nothing is embedded until then, and
+ * the owner asked for the press to start the video (2026-11-11, "Yes, autoplay"; ADR-050).
+ */
 export const embedUrl = (videoId: string): string =>
-  `https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoId)}?rel=0&playsinline=1`;
+  `https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoId)}?autoplay=1&rel=0&playsinline=1`;
 
 /**
  * YouTube's thumbnails for a video: the 16:9 one at 320 and the 4:3 one at 480, whose bands the

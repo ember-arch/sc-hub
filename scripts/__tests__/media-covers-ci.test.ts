@@ -602,3 +602,49 @@ describe("a run", () => {
     expect(store.puts).toEqual([]);
   });
 });
+
+describe("what the audit of ADR-048 asked for", () => {
+  it("waits the RSI spacing before its first request, since the polls just asked RSI", async () => {
+    const h = harness();
+    await h.run();
+    const first = h.calls.find((c) =>
+      c.url.includes("robertsspaceindustries.com"),
+    )!;
+    expect(first.at - NOW).toBeGreaterThanOrEqual(5000);
+  });
+
+  it("counts a write whose answer was lost as its own, and still records the cover", async () => {
+    let lost = false;
+    const store = fakeStore(
+      [{ key: MANIFEST_KEY, body: new TextEncoder().encode(liveText) }],
+      {
+        landThenRefuse: (key) => {
+          if (key !== MANIFEST_KEY || lost) return false;
+          lost = true;
+          return true;
+        },
+      },
+    );
+    const h = harness({ store });
+    const result = await h.run();
+    expect(result.attempts).toBe(2);
+    expect(result.manifest).toBe("uploaded");
+    expect(result.coverSources?.map((r) => r.external_id)).toEqual(["21445"]);
+    expect(result.generatedAt).toBe(h.storedManifest()["generated_at"]);
+  });
+
+  it("waits at least a minute after the write before it ends, so every edge has the new manifest", async () => {
+    const h = harness();
+    await h.run();
+    const write = h.store!.puts.findIndex((p) => p.key === MANIFEST_KEY);
+    expect(write).toBeGreaterThan(-1);
+    expect(h.sleeps.reduce((a, b) => a + b, 0)).toBeGreaterThanOrEqual(60_000);
+  });
+
+  it("rehearses a Comm-Link older than the window", async () => {
+    const h = harness({ news: [row("21445", at(40))] });
+    const result = await h.run({ rehearse: ["21445"] });
+    expect(result.candidates).toEqual(["21445"]);
+    expect(result.manifest).toBe("dry run");
+  });
+});

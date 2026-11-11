@@ -120,6 +120,7 @@ A spec item is done when all of these are true:
 | Windows PC (Star Citizen LIVE and PTU installed) | `pipeline/*` on patch days; hero-ship model export | Game installs, StarBreaker, R2 write credentials |
 | Fly.io | Workers, import job, Meilisearch | Postgres and R2 credentials, Spectrum credentials |
 | Vercel | `apps/web` | Postgres read, Meilisearch read, `CDN_BASE_URL` (the media store's public address, ADR-034); the connected Blob store's token is on the project but nothing in the site reads it |
+| GitHub Actions | The daily refresh (ADR-023), the News workflow (ADR-027) and its cover step (ADR-048) | `SC_HUB_CONTACT_EMAIL` as a repository variable; the repository secret `BLOB_READ_WRITE_TOKEN`, which only the cover step reads, to add new Comm-Links' covers to the media manifest |
 
 Environment variables (validated in `packages/schema/env.ts`; a missing required variable fails startup for any runtime that calls `loadEnv`; the Vercel site does not yet, since it serves the committed packs without a database or search service, ADR-033):
 

@@ -547,3 +547,26 @@ describe("the store's errors, as the retry logic reads them", () => {
     expect(waits).toEqual([3000]);
   });
 });
+
+describe("a hand publish whose manifest write lost its answer", () => {
+  it("finds its own manifest in the store and counts the write as done", async () => {
+    let lost = false;
+    const fake = fakeStore([], {
+      landThenRefuse: (key) => {
+        if (key !== MANIFEST_KEY || lost) return false;
+        lost = true;
+        return true;
+      },
+    });
+    // A first manifest so the write is conditional, as every real publish's is.
+    fake.set(MANIFEST_KEY, new TextEncoder().encode("{}"));
+    const result = await syncToStore(plan, fake.store, {
+      dryRun: false,
+      prune: false,
+      concurrency: 3,
+      readFile: (src: string) => readFile(src),
+    });
+    expect(result.manifest).toBe("uploaded");
+    expect(fake.objects.get(MANIFEST_KEY)).toEqual(manifestBody(plan));
+  });
+});

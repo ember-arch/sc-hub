@@ -51,9 +51,10 @@ jobs:
   poll:
     name: Poll the news sources
     runs-on: ubuntu-latest
-    # Forty: the thread step sleeps five minutes between its requests (up to three threads, a page
-    # each as a rule) and thirty on a refusal (ADR-037); a timeout would lose the run's news too.
-    timeout-minutes: 40
+    # Forty for the thread step, which sleeps five minutes between its requests (up to three
+    # threads, a page each as a rule) and thirty on a refusal (ADR-037), and up to twelve more for
+    # the cover step (ADR-048); a timeout would lose the run's news too.
+    timeout-minutes: 55
     steps:
       - uses: actions/checkout@v4
         with:

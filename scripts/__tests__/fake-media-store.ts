@@ -5,6 +5,11 @@ import type { MediaStore, PutOptions, StoredObject } from "../media/blob.js";
 export interface FakeStoreOptions {
   /** Runs at the start of every put, before the store checks anything: a rival writer's moment. */
   readonly beforePut?: (key: string, store: FakeStore) => void;
+  /**
+   * The write lands but its answer is lost, and the SDK's repeat is refused with a 412: the
+   * store holds the new bytes, the caller sees a lost race.
+   */
+  readonly landThenRefuse?: (key: string) => boolean;
 }
 
 export interface FakeStore {
@@ -66,6 +71,11 @@ export function fakeStore(
         }
         set(key, body);
         puts.push({ key, ...putOptions });
+        if (options.landThenRefuse?.(key) === true) {
+          throw Object.assign(new Error("precondition failed"), {
+            status: 412,
+          });
+        }
         return stored(key);
       },
       async delete(key) {

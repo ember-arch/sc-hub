@@ -205,7 +205,7 @@ export async function syncToStore(
   else {
     if (live !== null && sameBytes(live.bytes, body)) manifest = "unchanged";
     else {
-      let stored: StoredObject;
+      let stored: StoredObject | undefined;
       try {
         stored = await withRetries(
           MANIFEST_KEY,
@@ -220,12 +220,21 @@ export async function syncToStore(
         );
       } catch (error) {
         if (!lostRace(error)) throw error;
-        throw new Error(
-          "the live manifest changed while this publish ran (the News workflow's cover step, ADR-048, or another publish); nothing was overwritten: run fetch-covers.ts and prepare.ts, then publish again",
-          { cause: error },
+        // A write that landed but whose answer was lost comes back as a 412 when the SDK
+        // repeats it: then the store holds this run's own manifest, and that is a success.
+        const now = await withRetries(
+          "read manifest",
+          () => store.read(MANIFEST_KEY),
+          log,
         );
+        if (now === null || !sameBytes(now.bytes, body)) {
+          throw new Error(
+            "the live manifest changed while this publish ran (the News workflow's cover step, ADR-048, or another publish); nothing was overwritten: run fetch-covers.ts and prepare.ts, then publish again",
+            { cause: error },
+          );
+        }
       }
-      first ??= stored;
+      if (stored !== undefined) first ??= stored;
       manifest = "uploaded";
     }
   }

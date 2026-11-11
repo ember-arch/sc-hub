@@ -17,11 +17,13 @@ The build from ADR-034 on fetches `manifest.json` from `CDN_BASE_URL` and fails 
 
 ## After a media refresh
 
-From the checkout whose `fixtures/` hold the complete copies (RSI images and covers, galleries, holoviewer models, title icons, the fankit):
+From the checkout whose `fixtures/` hold the complete copies (RSI images and covers, galleries, holoviewer models, title icons, the fankit). Pull main and fetch the covers first: the News workflow publishes new Comm-Links' covers from CI (ADR-048, below), and `publish.ts` refuses a manifest that lacks any of them.
 
 ```
+git pull
 vercel env pull .env.local
 pnpm --filter schema build
+pnpm exec tsx scripts/media/fetch-covers.ts
 pnpm exec tsx scripts/media/prepare.ts
 pnpm exec tsx scripts/media/publish.ts
 ```
@@ -39,7 +41,7 @@ An expired `VERCEL_OIDC_TOKEN` (about twelve hours after `vercel env pull`) show
 | Date | Run | Result |
 | --- | --- | --- |
 | 2026-11-10 | first publish, from the complete media built on 2026-11-10T05:43:49Z plus the Comm-Link covers | 12,861 objects, 1,726,316,255 bytes, all uploaded, manifest uploaded and read back `current` (max-age 300), sample rendition 200 `image/webp` with a year's cache and CORS `*`, 0 errors, 273 s. The evidence for the object-store part of spec 00's infrastructure criterion |
-| 2026-11-11 | second publish, from the ADR-034 session's own `prepare.ts` build on `main` (`C:Users	rlivsc-hub-cdn`), overlapping the first | 12,309 objects named, 11,029 already in the store from the first run, 1,280 uploaded (405 MB), manifest `generated_at` 2026-11-11T00:13:23.580Z with the 109 Comm-Link covers of the news window; it overwrote the first manifest at the origin and is the one the site builds from. Both manifests' objects stay in the store until a `--prune` run; two publishes should not overlap again, one writer at a time |
+| 2026-11-11 | second publish, from the ADR-034 session's own `prepare.ts` build on `main` (`C:\Users\trliv\sc-hub-cdn`), overlapping the first | 12,309 objects named, 11,029 already in the store from the first run, 1,280 uploaded (405 MB), manifest `generated_at` 2026-11-11T00:13:23.580Z with the 109 Comm-Link covers of the news window; it overwrote the first manifest at the origin and is the one the site builds from. Both manifests' objects stay in the store until a `--prune` run; two publishes should not overlap again, one writer at a time |
 
 ## New Comm-Link covers, from CI (ADR-048)
 

@@ -41,6 +41,8 @@ export const RECENT_DAYS = 14;
 export const HUB_PAGES = 3;
 /** Conditional writes before the run gives up: each loss means another writer just wrote. */
 export const MANIFEST_ATTEMPTS = 3;
+/** How long after its write the run waits at least before the commit that redeploys the site. */
+export const CDN_SETTLE_MS = 60_000;
 
 const EXTENSIONS: Readonly<Record<string, string>> = {
   "image/jpeg": "jpg",
@@ -240,6 +242,8 @@ export interface CoverPublishOptions {
   /** How long to wait for the CDN to serve the new manifest before reporting it stale. */
   readonly cdnWaitMs: number;
   readonly cdnPollMs: number;
+  /** At least this long after the write before the run ends (default `CDN_SETTLE_MS`). */
+  readonly cdnSettleMs?: number;
   readonly spacingMs?: number;
 }
 
@@ -331,12 +335,18 @@ export async function publishCovers(
         )}\n`;
   const before = MediaManifest.parse(JSON.parse(liveText));
   const onRecord = commLinksOnRecord(deps.newsRows);
+  const covered = new Set(before.covers.map((c) => c.external_id));
   const candidates = coverCandidates(
     onRecord,
-    new Set(before.covers.map((c) => c.external_id)),
+    covered,
     deps.now(),
     options.recentDays,
   );
+  // A rehearsed Comm-Link is looked for whatever its age, so a rehearsal never goes quiet.
+  for (const id of rehearse) {
+    if (onRecord.has(id) && !covered.has(id) && !candidates.includes(id))
+      candidates.push(id);
+  }
   const dryRun = options.dryRun || rehearse.size > 0;
   const base = {
     onRecord: onRecord.size,
@@ -367,7 +377,13 @@ export async function publishCovers(
     deps.sleep,
     deps.now,
   );
+  // The polls of the same job have just asked RSI: the first request waits the spacing too.
+  let primed = false;
   const fromRsi = async (url: string): Promise<Response> => {
+    if (!primed) {
+      primed = true;
+      await deps.sleep(options.spacingMs ?? RSI_SPACING_MS);
+    }
     await spacer();
     const response = await deps.fetch(url, {
       headers: { "User-Agent": deps.userAgent() },
@@ -555,8 +571,20 @@ export async function publishCovers(
     const have = new Set(current.covers.map((c) => c.external_id));
     const adding = additions.filter((c) => !have.has(c.external_id));
     if (adding.length === 0) {
-      // Another writer put these covers up meanwhile; nothing to add.
-      outcome = "already there";
+      // Either an earlier attempt of this run landed but its answer was lost (the SDK retried
+      // it and the store refused the repeat with a 412): the covers are this run's own, byte
+      // for byte, and the run carries on as if it had heard back. Or another writer put the
+      // same covers up meanwhile, and there is nothing to add.
+      const ours =
+        attempts > 1 &&
+        additions.every(
+          (a) =>
+            JSON.stringify(
+              current.covers.find((c) => c.external_id === a.external_id),
+            ) === JSON.stringify(a),
+        );
+      outcome = ours ? "uploaded" : "already there";
+      if (ours) generatedAt = current.generated_at;
       after = current;
       break;
     }
@@ -584,11 +612,15 @@ export async function publishCovers(
     }
   }
 
-  // The CDN serves the manifest for up to five minutes; the site's next build reads it there.
+  // The site's next build reads the manifest through the CDN. The edge keeps a copy until an
+  // overwrite purges it, which reaches every edge within about a minute: wait until this one
+  // serves the new manifest, and at least `cdnSettleMs` from the write, before the commit that
+  // redeploys the site.
   let cdn = "not checked";
   const cdnBase = deps.cdnBaseUrl ?? storeUrl;
   if (generatedAt !== null && cdnBase !== null) {
     const started = deps.now();
+    const settle = options.cdnSettleMs ?? CDN_SETTLE_MS;
     cdn = `previous after ${Math.round(options.cdnWaitMs / 1000)} s`;
     for (;;) {
       try {
@@ -599,6 +631,8 @@ export async function publishCovers(
           const seen = MediaManifest.parse(await response.json());
           if (seen.generated_at === generatedAt) {
             cdn = `current after ${Math.round((deps.now() - started) / 1000)} s`;
+            const rest = started + settle - deps.now();
+            if (rest > 0) await deps.sleep(rest);
             break;
           }
         }

@@ -138,7 +138,15 @@ export type BlobAuth =
   | { readonly token: string }
   | { readonly oidcToken: string; readonly storeId: string };
 
-export function vercelBlobStore(auth: BlobAuth): MediaStore {
+/** How often, and how far apart, `read` tries for the store's current copy (ADR-048). */
+export const READ_ATTEMPTS = 12;
+export const READ_WAIT_MS = 10_000;
+
+export function vercelBlobStore(
+  auth: BlobAuth,
+  wait: (ms: number) => Promise<void> = (ms) =>
+    new Promise((resolve) => setTimeout(resolve, ms)),
+): MediaStore {
   const credentials =
     "token" in auth
       ? { token: auth.token }
@@ -208,20 +216,20 @@ export function vercelBlobStore(auth: BlobAuth): MediaStore {
     read: (key) =>
       call(async () => {
         // The manifest's read-modify-write (ADR-048) needs the bytes and the ETag a conditional
-        // write is checked against. `head` gives the store's own, strong ETag; `get` with
-        // useCache: false gives the bytes from the store, not an edge copy, with the ETag of
-        // its HTTP answer, which compression weakens (`W/"..."`). The bytes are the head's only
-        // when the two agree; when they do not, a write landed in between, so read again.
-        for (let attempt = 1; attempt <= 3; attempt += 1) {
+        // write is checked against. `head` asks the store's API and gives its own, strong ETag.
+        // There is no way to the bytes but the public URL, which is the edge: `useCache: false`
+        // works for private stores only, and the edge ignores query strings. It keeps an object
+        // until an overwrite purges it, which takes up to about a minute. So the bytes are the
+        // head's only when the ETag of `get`'s answer (weakened, `W/"..."`, by compression) agrees;
+        // when it does not, the edge still holds an older copy, or a write landed in between:
+        // wait and read again, for up to two minutes (`READ_ATTEMPTS` x `READ_WAIT_MS`).
+        for (let attempt = 1; attempt <= READ_ATTEMPTS; attempt += 1) {
+          if (attempt > 1) await wait(READ_WAIT_MS);
           let etag: string;
           let result: Awaited<ReturnType<typeof get>>;
           try {
             etag = (await head(key, credentials)).etag;
-            result = await get(key, {
-              ...credentials,
-              access: "public",
-              useCache: false,
-            });
+            result = await get(key, { ...credentials, access: "public" });
           } catch (error) {
             if (error instanceof BlobNotFoundError) return null;
             throw error;
@@ -235,7 +243,9 @@ export function vercelBlobStore(auth: BlobAuth): MediaStore {
           );
           if (sameEtag(etag, result.blob.etag)) return { bytes, etag };
         }
-        throw new Error(`${key} kept changing while it was read`);
+        throw new Error(
+          `${key}: the CDN still served an older copy than the store's after ${(READ_ATTEMPTS * READ_WAIT_MS) / 1000} s`,
+        );
       }),
   };
 }

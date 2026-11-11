@@ -33,6 +33,14 @@ describe("uploadIdsIn", () => {
     ).toEqual(["3463136", "3463137"]);
     expect(uploadIdsIn("<p>no pictures</p>")).toEqual([]);
   });
+
+  it("reads an embedded picture's e- id beside upload numbers (ADR-037)", () => {
+    expect(
+      uploadIdsIn(
+        '<img data-upload="e-tgcvmgrkzycyy" width="1119" height="600" alt=""><img data-upload="3463136" alt=""><img data-upload="e-BAD" alt="">',
+      ),
+    ).toEqual(["e-tgcvmgrkzycyy", "3463136"]);
+  });
 });
 
 describe("wantedUploads", () => {
@@ -75,6 +83,31 @@ describe("wantedUploads", () => {
     ]);
     expect(wanted.map((u) => u.upload_id)).toEqual(["11"]);
     expect(unrecorded).toEqual(["12"]);
+  });
+
+  it("orders upload numbers numerically and an embed's e- ids after them, the same every run", () => {
+    const mixed = [
+      {
+        source: "spectrum",
+        external_id: "9",
+        body_html:
+          '<img data-upload="30" alt=""><img data-upload="e-x" alt=""><img data-upload="10" alt=""><img data-upload="5" alt=""><img data-upload="20" alt="">',
+        revision: 1,
+        takedown: false,
+      },
+    ];
+    const rows = ["30", "e-x", "10", "5", "20"].map((id) => row(id, "9"));
+    const { wanted } = wantedUploads(mixed, rows);
+    expect(wanted.map((u) => u.upload_id)).toEqual([
+      "5",
+      "10",
+      "20",
+      "30",
+      "e-x",
+    ]);
+    expect(
+      wantedUploads(mixed, [...rows].reverse()).wanted.map((u) => u.upload_id),
+    ).toEqual(["5", "10", "20", "30", "e-x"]);
   });
 });
 

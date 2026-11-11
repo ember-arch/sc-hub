@@ -22,7 +22,7 @@
  */
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import type { Store } from "poll-news/store";
-import type { ContentItem } from "schema";
+import { type ContentItem, SPECTRUM_PICTURE_ID } from "schema";
 import { z } from "zod";
 import {
   type ContentBlock,
@@ -144,7 +144,7 @@ export type ThreadStateFile = z.infer<typeof ThreadStateFile>;
 
 /** One row of `uploads.json`: a picture a post carries, for the media fetch. */
 export const UploadRow = z.strictObject({
-  upload_id: str.regex(/^\d+$/),
+  upload_id: str.regex(SPECTRUM_PICTURE_ID),
   url: z.url(),
   width: z.number().int().positive().nullable(),
   height: z.number().int().positive().nullable(),
@@ -499,8 +499,9 @@ export async function readThreads(
     options.uploads.value.splice(
       0,
       options.uploads.value.length,
-      ...[...byId.values()].sort(
-        (a, b) => Number(a.upload_id) - Number(b.upload_id),
+      // Numeric collation: upload numbers in order, an embed's "e-" ids after them, stable.
+      ...[...byId.values()].sort((a, b) =>
+        a.upload_id.localeCompare(b.upload_id, "en", { numeric: true }),
       ),
     );
     const missing = [...wanted.keys()].filter((id) => !found.has(id));

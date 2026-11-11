@@ -97,37 +97,56 @@ export function signed(value: number, format: (abs: number) => string): string {
   return `${value > 0 ? "+" : "−"}${format(Math.abs(value))}`;
 }
 
-/** The window the featured developer posts are drawn from (ADR-038). */
+/** The window the featured developer posts are drawn from (ADR-038, ADR-039). */
 export const FEATURED_WINDOW_HOURS = 48;
+/** How far back the window reaches when the first one holds fewer than five threads (ADR-039). */
+export const FEATURED_REACH_HOURS = 72;
 
-/** A post as the featured-post rule needs it: when it was published and which thread it is in. */
+/** A post as the featured-post rule needs it: when it was published, which thread, and its address. */
 export interface FeaturedCandidate {
   readonly published_at: string;
   readonly thread_id: string | null;
-  /** The post's address; a reply's ends in its number, which keys the thread when the id is missing. */
+  /** The post's address; a reply's ends in its number, the thread's own page does not. */
   readonly url: string;
+  /** Likes on the post as the pack records them; null or absent until the worker records them. */
+  readonly likes?: number | null | undefined;
 }
 
 /** The thread a post belongs to: its id on the pack, or its thread's address without the post number. */
 const threadKey = (p: FeaturedCandidate): string =>
   p.thread_id ?? p.url.replace(/\/\d+$/, "");
 
+/** The thread's opening post: its address is the thread's own page, with no post number on it. */
+const opensThread = (p: FeaturedCandidate): boolean => !/\/\d+$/.test(p.url);
+
 /**
- * The front page's featured developer posts (ADR-038): the posts of the last `hours` before `now`,
- * one per thread (the thread's newest post), newest thread first, `max` at most; when fewer than
- * `min` threads posted in the window, the newest posts outside it fill the list to `min`, still one
- * per thread. "Top" is recency by thread: the pack carries no votes or reply counts, and one busy
- * thread must not fill the section. `posts` is expected newest first, as the repository keeps it.
+ * The front page's featured developer posts (ADR-038, ADR-039), one card per thread (the thread's
+ * newest post), five at most, in tiers:
+ *
+ *   1. threads CIG staff opened (the thread's opening post is on the pack) with a staff post in
+ *      the last `hours`, newest first; when fewer than `max`, the same reaching back `reach` hours;
+ *   2. then threads staff only answered in, within `reach` hours, by likes where the pack records
+ *      them and newest first otherwise;
+ *   3. when fewer than `min` in all, the newest remaining threads fill the list to `min`.
+ *
+ * The pack carries no likes yet (ADR-037 strips Spectrum's votes), so the second tier is by
+ * recency until the worker records them; the field is read here so that nothing else changes
+ * then. `posts` is expected newest first, as the repository keeps it.
  */
 export function featuredPosts<T extends FeaturedCandidate>(
   posts: readonly T[],
   now: Date,
-  { hours = FEATURED_WINDOW_HOURS, min = 3, max = 5 } = {},
+  {
+    hours = FEATURED_WINDOW_HOURS,
+    reach = FEATURED_REACH_HOURS,
+    min = 3,
+    max = 5,
+  } = {},
 ): T[] {
-  const since = now.getTime() - hours * 3_600_000;
   const sorted = [...posts].sort((a, b) =>
     b.published_at.localeCompare(a.published_at),
   );
+  const staffOpened = new Set(sorted.filter(opensThread).map(threadKey));
   const seen = new Set<string>();
   const firstPerThread = sorted.filter((p) => {
     const key = threadKey(p);
@@ -135,11 +154,30 @@ export function featuredPosts<T extends FeaturedCandidate>(
     seen.add(key);
     return true;
   });
-  const recent = firstPerThread.filter(
-    (p) => Date.parse(p.published_at) >= since,
-  );
-  if (recent.length >= min) return recent.slice(0, max);
-  return firstPerThread.slice(0, Math.min(min, max));
+  const within =
+    (h: number) =>
+    (p: T): boolean =>
+      Date.parse(p.published_at) >= now.getTime() - h * 3_600_000;
+  const opened = firstPerThread.filter((p) => staffOpened.has(threadKey(p)));
+  const answered = firstPerThread.filter((p) => !staffOpened.has(threadKey(p)));
+  const byLikes = (list: readonly T[]): T[] =>
+    [...list].sort(
+      (a, b) =>
+        (b.likes ?? -1) - (a.likes ?? -1) ||
+        b.published_at.localeCompare(a.published_at),
+    );
+  const picked: T[] = [];
+  const take = (list: readonly T[], upTo: number): void => {
+    for (const p of list) {
+      if (picked.length >= upTo) return;
+      if (!picked.includes(p)) picked.push(p);
+    }
+  };
+  take(opened.filter(within(hours)), max);
+  take(opened.filter(within(reach)), max);
+  take(byLikes(answered.filter(within(reach))), max);
+  take(firstPerThread, Math.min(min, max));
+  return picked;
 }
 
 /** mulberry32: a small seeded generator, enough to shuffle a list the same way for one seed. */

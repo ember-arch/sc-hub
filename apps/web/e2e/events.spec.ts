@@ -95,8 +95,8 @@ test("the front page carries a show only while it runs", async ({ page }) => {
     page.getByRole("link", { name: `Everything about ${shortTitle(live)}` }),
   ).toHaveAttribute("href", `/events/${live.slug}`);
   await expect(strip.getByRole("link")).toHaveCount(live.days.length);
-  // The hero stands where the daily line and the contents were.
-  await expect(page.getByRole("navigation", { name: "Contents" })).toHaveCount(
+  // The show's hero stands where the lead story would (ADR-058).
+  await expect(page.locator("section[aria-labelledby=lead-story]")).toHaveCount(
     0,
   );
 });

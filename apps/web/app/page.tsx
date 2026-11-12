@@ -15,13 +15,11 @@ import { repo, spectrumOn } from "../lib/data";
 import { authorOf, devPosts, excerptOf, threadUrl } from "../lib/dev-posts";
 import { SOURCE_LABEL, coverOf } from "../lib/dispatches";
 import {
-  dailyLine,
   dailyPicks,
   featuredPosts,
   formatFrontDate,
-  freshestStaffWord,
+  pickLead,
   pickPlates,
-  shortBuild,
   signed,
   utcDayNumber,
 } from "../lib/front";
@@ -41,12 +39,11 @@ import { shipTally, tallyNote } from "../lib/ship-count";
 import { withoutFixed } from "../lib/component-filters";
 import { conceptShips, showcaseFor } from "../lib/showcase";
 import { Site, now } from "../lib/site";
-import { frontVideos, videoCard } from "../lib/videos";
+import { frontVideos, isShort, videoCard } from "../lib/videos";
 
 /** How many dispatches the front page's carousel carries (owner, 2026-11-11: "a 5 slide scroll"). */
 const FRONT_DISPATCHES = 5;
 import {
-  Contents,
   type Counter,
   Counters,
   Bento,
@@ -55,6 +52,7 @@ import {
   RunningHead,
 } from "./front";
 import { FrontEvent } from "./front-event";
+import { FrontLead } from "./front-lead";
 import { FundingCard } from "./funding-now";
 import { VideoPlayer } from "./news/videos/player";
 
@@ -91,8 +89,9 @@ const LIVE_EXAMPLE = "perseus";
 const DAILY_PLATES = 3;
 
 /**
- * The front page (ADR-020, ADR-021, ADR-038, ADR-042, ADR-050): the date line, the daily line composed
- * from the pack as the title, the contents, the counters; then the five newest dispatches and CIG's
+ * The front page (ADR-020, ADR-021, ADR-038, ADR-050, ADR-057, ADR-058): the date line, then a
+ * show's hero while one runs or, outside a show, the lead story as the title; the counters; then
+ * the five newest dispatches (the lead left out of them) and CIG's
  * latest full videos (up to five, no Shorts), each a carousel with overlaid arrows and the same card widths, the videos'
  * player opening in place, the featured ships (the showcase pair and
  * three that change daily, with the register's count), the developers' latest posts from Spectrum
@@ -191,8 +190,24 @@ export default function HomePage() {
     },
   ];
 
-  // The five newest dispatches as a carousel (ADR-029, ADR-050), first on the page (ADR-038).
-  const feed = r.dispatches.slice(0, FRONT_DISPATCHES);
+  // The lead story (ADR-058): outside a show, the picture-led story of the latest day before
+  // today, a Comm-Link before a video; it changes at most once a day.
+  const lead =
+    live === null
+      ? pickLead(
+          r.dispatches,
+          r.videos,
+          (id) => media().cover(id) !== null,
+          isShort,
+          at,
+        )
+      : null;
+  const leadId = lead?.lead.id ?? null;
+
+  // The five newest dispatches as a carousel (ADR-029, ADR-050), the lead story left out of them.
+  const feed = r.dispatches
+    .filter((item) => item.id !== leadId)
+    .slice(0, FRONT_DISPATCHES);
   const feedPictures = feed.map((item) => coverOf(item));
 
   // The bento: the showcase pair, then three ships drawn for the day from those with pictures.
@@ -251,48 +266,6 @@ export default function HomePage() {
   // Full videos only, no Shorts (owner, 2026-11-11); the videos tab carries every upload.
   const latestVideos = frontVideos(r.videos);
 
-  // The daily line (ADR-042): composed from what the pack says today, never written.
-  const staffWord = freshestStaffWord(posts, at);
-  const newest = feed[0];
-  const line = dailyLine(
-    {
-      staffThread:
-        staffWord === null
-          ? null
-          : {
-              title: staffWord.thread_title ?? staffWord.title,
-              publishedAt: staffWord.published_at,
-              // A reply's address ends in its number; the thread's own page does not.
-              reply: /\/\d+$/.test(staffWord.url),
-            },
-      dispatch:
-        newest === undefined
-          ? null
-          : { title: newest.title, publishedAt: newest.published_at },
-      builds: {
-        live: shortBuild(
-          r.versions.find((v) => v.channel === "LIVE")?.version ?? null,
-        ),
-        ptu: shortBuild(
-          r.versions.find((v) => v.channel === "PTU")?.version ?? null,
-        ),
-      },
-      funding:
-        money === null || money.yearToDate === null
-          ? null
-          : {
-              year: Number(money.latest.day.slice(0, 4)),
-              yearToDate: formatCompact(money.yearToDate, "pledges"),
-              change:
-                money.yearToDateChange === null
-                  ? null
-                  : formatChange(money.yearToDateChange),
-            },
-    },
-    at,
-    utcDayNumber(at),
-  );
-
   return (
     <Site>
       <div className="flex flex-col gap-8 pt-8">
@@ -301,17 +274,17 @@ export default function HomePage() {
           <p className="lab m-0 text-secondary">
             {formatFrontDate(at)} · in the ’verse
           </p>
-          {live === null ? (
-            <div className="grid items-end gap-8 md:grid-cols-[3fr_2fr] md:gap-12">
-              {/* The daily line (ADR-042): what the pack says today, composed by rule. */}
-              <h1 className="m-0 max-w-prose text-title text-primary lg:text-display">
-                {line}
-              </h1>
-              <Contents />
-            </div>
-          ) : (
-            // A show on (ADR-057): its hero takes the daily line's and the contents' place.
+          {live !== null ? (
+            // A show on (ADR-057): its hero stands at the top of the page.
             <FrontEvent event={live} at={at} r={r} />
+          ) : lead !== null ? (
+            // Outside a show, the lead story (ADR-058).
+            <FrontLead item={lead.lead} video={lead.video} now={at} />
+          ) : (
+            // An empty pack: the site's own words as the title.
+            <h1 className="m-0 max-w-prose text-title text-primary lg:text-display">
+              {SITE_TAGLINE}
+            </h1>
           )}
         </div>
 
@@ -346,9 +319,9 @@ export default function HomePage() {
                     now={at}
                     excerpt={item.summary}
                     picture={feedPictures[i] ?? null}
-                    // The page's first picture, and usually its largest paint, unless a show's
-                    // hero stands above it (ADR-057).
-                    priority={i === 0 && live === null}
+                    // The page's first picture, unless a show's hero (ADR-057) or the lead story
+                    // (ADR-058) stands above it.
+                    priority={i === 0 && live === null && lead === null}
                   />
                 ))}
               </Rail>

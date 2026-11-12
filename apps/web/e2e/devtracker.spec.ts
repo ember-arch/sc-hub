@@ -155,12 +155,14 @@ test.describe("the dev tracker with Spectrum on", () => {
     await expect(
       section.getByRole("heading", { name: "Developer gold posts" }),
     ).toBeVisible();
-    // The daily line (ADR-042) leads with CIG's freshest word: a staff thread or a dispatch; while
-    // a show runs its hero stands in the daily line's place (ADR-057).
+    // The page's title is a show's (ADR-057) or the lead story's (ADR-058), never a Spectrum post's.
     if (eventForFront(shows, clock) === null) {
-      await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-        /^(CIG posted (in )?“|The latest dispatch is “)/,
-      );
+      const href = await page
+        .locator("section[aria-labelledby=lead-story] h1 a")
+        .getAttribute("href");
+      expect(href ?? "").not.toMatch(/spectrum/);
+    } else {
+      await expect(page.locator("#front-event")).toBeVisible();
     }
     await expect(
       section.getByRole("link", { name: "All developer gold posts" }),

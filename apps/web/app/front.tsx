@@ -2,7 +2,6 @@ import NextLink from "next/link";
 import type { ReactNode } from "react";
 import type { PlatePicture } from "ui";
 import { RSI_IMAGE_CREDIT } from "ui/legal";
-import { CONTENTS } from "../lib/front";
 import { type Figure, FigureStrip } from "./strip";
 
 export type Counter = Figure;
@@ -17,44 +16,13 @@ export function Counters({
 }
 
 /**
- * The front page's parts (ADR-020, ADR-021, ADR-038): the contents list, the counters (the figure
+ * The front page's parts (ADR-020, ADR-021, ADR-038): the counters (the figure
  * strip), the bento, the register link and the running heads. Pure presentation; page.tsx reads
  * the data and hands it in.
  */
 
 const link =
   "no-underline transition-colors duration-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent";
-
-/**
- * The sections of the almanac, numbered, in two columns on wide screens. Hidden on phones, where it
- * stacked above the dispatches and pushed them below the first screen (ADR-046); the header's
- * sections stay.
- */
-export function Contents() {
-  return (
-    <nav aria-labelledby="contents" className="hidden flex-col gap-2 md:flex">
-      <p id="contents" className="lab m-0 text-secondary">
-        Contents
-      </p>
-      <ol className="m-0 list-none p-0 text-ui md:columns-2 md:gap-x-8">
-        {CONTENTS.map((entry) => (
-          <li
-            key={entry.href}
-            className="flex break-inside-avoid items-baseline gap-3 border-t border-hairline py-2"
-          >
-            <span className="lab w-6 shrink-0 text-muted">{entry.number}</span>
-            <NextLink
-              href={entry.href}
-              className={`${link} text-primary hover:text-accent`}
-            >
-              {entry.label}
-            </NextLink>
-          </li>
-        ))}
-      </ol>
-    </nav>
-  );
-}
 
 export interface PlateEntry {
   readonly slug: string;

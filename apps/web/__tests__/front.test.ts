@@ -1,33 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
-  CONTENTS,
   formatFrontDate,
   pickPlates,
   romanNumeral,
   signed,
 } from "../lib/front";
 
-// ADR-020, spec 06: the front page's contents, date line, plate numerals and plate choice.
-
-describe("contents", () => {
-  it("lists every section once, numbered in reading order", () => {
-    expect(CONTENTS.map((c) => c.number)).toEqual([
-      "01",
-      "02",
-      "03",
-      "04",
-      "05",
-    ]);
-    expect(new Set(CONTENTS.map((c) => c.href)).size).toBe(CONTENTS.length);
-    expect(CONTENTS.map((c) => c.href)).toEqual([
-      "/ships",
-      "/components",
-      "/titles",
-      "/news",
-      "/about",
-    ]);
-  });
-});
+// ADR-020, spec 06: the front page's date line, plate numerals and plate choice.
 
 describe("formatFrontDate", () => {
   it("prints the weekday, day, month and year without a comma, in UTC", () => {
@@ -299,167 +278,152 @@ describe("dailyPicks", () => {
   });
 });
 
-// ADR-042: the daily line, composed from the pack by rule.
+// ADR-058: the lead story outside a show.
 
-import {
-  dailyLine,
-  freshestStaffWord,
-  headlineCut,
-  headlineTitle,
-  shortBuild,
-} from "../lib/front";
+import { LEAD_PAIR_DAYS, PROMOTION, leadStory, storyKey } from "../lib/front";
 
-describe("dailyLine", () => {
-  const now = new Date("2026-11-11T00:00:00Z");
-  const facts = {
-    staffThread: {
-      title:
-        "[All Waves] Star Citizen Alpha 4.10.3 PTU RC1 Patch Notes 13160301",
-      publishedAt: "2026-11-10T20:00:00Z",
-      reply: false,
-    },
-    dispatch: {
-      title: "Twitch Drops: IAE 2956",
-      publishedAt: "2026-11-09T21:00:00Z",
-    },
-    builds: { live: "4.10.2", ptu: "4.10.3" },
-    funding: { year: 2026, yearToDate: "$132.1M", change: "+19.9%" },
-  };
+describe("leadStory", () => {
+  const now = new Date("2026-11-12T19:00:00Z");
+  const c = (
+    source: "comm_link" | "video",
+    title: string,
+    published_at: string,
+    hasPicture = true,
+  ) => ({ source, title, published_at, hasPicture });
 
-  it("leads with the newer of the staff thread and the dispatch, then the funding on an even day", () => {
-    expect(dailyLine(facts, now, 20768)).toBe(
-      "CIG posted “Star Citizen Alpha 4.10.3 PTU RC1 Patch Notes” on Spectrum 4 h ago, and $132.1M pledged in 2026, +19.9% on 2025.",
+  it("takes the latest day before today, a Comm-Link before a video, the newest first", () => {
+    const picked = leadStory(
+      [
+        c("comm_link", "Today's news", "2026-11-12T16:00:00Z"),
+        c("video", "Yesterday's video", "2026-11-11T20:00:00Z"),
+        c("comm_link", "Yesterday's morning post", "2026-11-11T09:00:00Z"),
+        c("comm_link", "Yesterday's evening post", "2026-11-11T18:00:00Z"),
+        c("comm_link", "An older post", "2026-11-09T18:00:00Z"),
+      ],
+      now,
     );
+    expect(picked?.lead.title).toBe("Yesterday's evening post");
   });
 
-  it("takes the builds on an odd day, and the dispatch when it is newer or the thread is missing", () => {
-    expect(dailyLine(facts, now, 20769)).toBe(
-      "CIG posted “Star Citizen Alpha 4.10.3 PTU RC1 Patch Notes” on Spectrum 4 h ago, and Alpha 4.10.2 is live and 4.10.3 is on the PTU.",
-    );
-    const newer = {
-      ...facts,
-      dispatch: { ...facts.dispatch, publishedAt: "2026-11-10T23:50:00Z" },
-    };
-    expect(dailyLine(newer, now, 20769)).toMatch(
-      /^The latest dispatch is “Twitch Drops: IAE 2956”, 10 min ago, and Alpha/,
-    );
-    expect(dailyLine({ ...facts, staffThread: null }, now, 20768)).toMatch(
-      /^The latest dispatch is “Twitch Drops: IAE 2956”, 1 d ago, and \$132/,
-    );
-  });
-
-  it("falls back across what the pack lacks, down to the site's own words", () => {
-    expect(
-      dailyLine(
-        { ...facts, funding: null, builds: { live: "4.10.2", ptu: null } },
-        now,
-        20768,
-      ),
-    ).toBe(
-      "CIG posted “Star Citizen Alpha 4.10.3 PTU RC1 Patch Notes” on Spectrum 4 h ago, and Alpha 4.10.2 is live.",
-    );
-    expect(
-      dailyLine({ ...facts, builds: { live: null, ptu: null } }, now, 20769),
-    ).toMatch(/, and \$132\.1M pledged in 2026, \+19\.9% on 2025\.$/);
-    expect(
-      dailyLine(
-        {
-          staffThread: null,
-          dispatch: null,
-          builds: { live: null, ptu: null },
-          funding: null,
-        },
-        now,
-        1,
-      ),
-    ).toBe("Star Citizen, on record.");
-    expect(
-      dailyLine(
-        {
-          staffThread: null,
-          dispatch: null,
-          builds: { live: "4.10.2", ptu: null },
-          funding: null,
-        },
-        now,
-        1,
-      ),
-    ).toBe("Alpha 4.10.2 is live.");
-  });
-
-  it('says "posted in" when the freshest staff post answers a thread, and leaves a change out when unknown', () => {
-    const reply = {
-      ...facts,
-      staffThread: { ...facts.staffThread, reply: true },
-      funding: { year: 2027, yearToDate: "$412.3K", change: null },
-    };
-    expect(dailyLine(reply, now, 20768)).toBe(
-      "CIG posted in “Star Citizen Alpha 4.10.3 PTU RC1 Patch Notes” on Spectrum 4 h ago, and $412.3K pledged in 2027.",
-    );
-    // A week on, the cards' clock goes absolute, and so does the line's.
-    expect(
-      dailyLine(
-        { ...facts, staffThread: null },
-        new Date("2026-11-20T00:00:00Z"),
-        20768,
-      ),
-    ).toMatch(
-      /^The latest dispatch is “Twitch Drops: IAE 2956”, 9 Nov 2026, and/,
-    );
-  });
-
-  it("cuts a long title on a word with an ellipsis", () => {
-    const long =
-      "Star Citizen Live: Q&A with the vehicle team on the Perseus, the Polaris and everything in between, part two";
-    expect(headlineCut(long)).toBe(
-      "Star Citizen Live: Q&A with the vehicle team on the Perseus, the Polaris and everything…",
-    );
-    expect(headlineCut("Short")).toBe("Short");
-    expect(headlineCut("a".repeat(100))).toBe(`${"a".repeat(90)}…`);
-  });
-
-  it("trims a thread's title for a headline and shortens a build", () => {
-    expect(
-      headlineTitle(
-        "[All Waves] Star Citizen Alpha 4.10.3 PTU Patch Notes 13145606",
-      ),
-    ).toBe("Star Citizen Alpha 4.10.3 PTU Patch Notes");
-    expect(headlineTitle("IAE 2956 - Choose Your Adventure - FAQ")).toBe(
-      "IAE 2956 - Choose Your Adventure - FAQ",
-    );
-    expect(headlineTitle("Pumpkin contest 2026")).toBe("Pumpkin contest 2026");
-    // Only an audience tag is dropped; any other bracketed word is CIG's and stays.
-    expect(headlineTitle("[Now Closed] Alpha 4.10 PTU Feedback")).toBe(
-      "[Now Closed] Alpha 4.10 PTU Feedback",
-    );
-    expect(headlineTitle("[5.0 PTU Feedback] Planet Tech V5")).toBe(
-      "[5.0 PTU Feedback] Planet Tech V5",
-    );
-    expect(
-      headlineTitle("[Wave 1] Alpha 4.10.3 PTU Patch Notes 13130000"),
-    ).toBe("Alpha 4.10.3 PTU Patch Notes");
-    expect(shortBuild("4.10.2-LIVE.12881860")).toBe("4.10.2");
-    expect(shortBuild(null)).toBeNull();
-  });
-
-  it("finds the freshest staff-opened thread's post within the window", () => {
-    const post = (hoursAgo: number, thread: string, opener = false) => ({
-      published_at: new Date(
-        now.getTime() - hoursAgo * 3_600_000,
-      ).toISOString(),
-      thread_id: thread,
-      url: opener
-        ? `https://example.test/thread/${thread}`
-        : `https://example.test/thread/${thread}/${hoursAgo}`,
-    });
-    const posts = [
-      post(1, "answered"),
-      post(3, "notes"),
-      post(400, "notes", true),
-      post(10, "faq", true),
+  it("holds through quiet days and changes when the day turns", () => {
+    const list = [
+      c("comm_link", "Monday's post", "2026-11-09T18:00:00Z"),
+      c("comm_link", "Thursday's post", "2026-11-12T10:00:00Z"),
     ];
-    expect(freshestStaffWord(posts, now)?.thread_id).toBe("notes");
-    expect(freshestStaffWord(posts, now, 2)).toBeNull();
-    expect(freshestStaffWord([], now)).toBeNull();
+    expect(leadStory(list, now)?.lead.title).toBe("Monday's post");
+    expect(leadStory(list, new Date("2026-11-13T00:05:00Z"))?.lead.title).toBe(
+      "Thursday's post",
+    );
+  });
+
+  it("leads with a video on a day without a Comm-Link", () => {
+    const picked = leadStory(
+      [
+        c("comm_link", "Older post", "2026-11-09T18:00:00Z"),
+        c("video", "A video", "2026-11-11T18:00:00Z"),
+      ],
+      now,
+    );
+    expect(picked).toEqual({
+      lead: c("video", "A video", "2026-11-11T18:00:00Z"),
+      video: null,
+    });
+  });
+
+  it("takes only candidates with a picture, all of them when none has one", () => {
+    const bare = c("comm_link", "Bare", "2026-11-11T18:00:00Z", false);
+    const pictured = c("comm_link", "Pictured", "2026-11-10T18:00:00Z");
+    expect(leadStory([bare, pictured], now)?.lead.title).toBe("Pictured");
+    expect(leadStory([bare], now)?.lead.title).toBe("Bare");
+    expect(leadStory([], now)).toBeNull();
+  });
+
+  it("pairs a Comm-Link with the video of its story, before or after it, within three days", () => {
+    const title = "Star Citizen | Behind the Ships: RSI Galaxy";
+    // RSI's own case: the video at 16:39, the Comm-Link at 22:00 the same day.
+    const post = c("comm_link", title, "2026-11-09T22:00:00Z");
+    const film = c("video", title, "2026-11-09T16:39:01Z");
+    const at = new Date("2026-11-10T12:00:00Z");
+    expect(leadStory([post, film], at)).toEqual({ lead: post, video: film });
+    // Three days apart still pairs; a moment past it does not.
+    const edge = c("video", title, "2026-11-06T22:00:00Z");
+    const past = c("video", title, "2026-11-06T21:59:00Z");
+    expect(leadStory([post, edge], at)?.video).toEqual(edge);
+    expect(leadStory([post, past], at)?.video).toBeNull();
+  });
+
+  it("never pairs a video published today, so the card holds for the day", () => {
+    const title = "Star Citizen | Behind the Ships: RSI Galaxy";
+    const post = c("comm_link", title, "2026-11-09T22:00:00Z");
+    const today = c("video", title, "2026-11-10T09:00:00Z");
+    expect(
+      leadStory([post, today], new Date("2026-11-10T12:00:00Z"))?.video,
+    ).toBeNull();
+  });
+
+  it("breaks a tie on the time by the title, so every build agrees", () => {
+    const a = c(
+      "comm_link",
+      "This Week in Star Citizen",
+      "2026-11-09T22:00:00Z",
+    );
+    const b = c("comm_link", "Behind the Ships", "2026-11-09T22:00:00Z");
+    expect(leadStory([a, b], now)?.lead).toEqual(b);
+    expect(leadStory([b, a], now)?.lead).toEqual(b);
+  });
+
+  it("prefers a picture only within three days of the latest story, then leads in words", () => {
+    const old = c("video", "A video from October", "2026-10-23T18:00:00Z");
+    const bare = c(
+      "comm_link",
+      "Yesterday's post",
+      "2026-11-11T18:00:00Z",
+      false,
+    );
+    // An old pictured video does not outrank a newer story whose cover is missing.
+    expect(leadStory([old, bare], now)?.lead).toEqual(bare);
+    // A pictured story within three days does.
+    const recent = c(
+      "video",
+      "A video of two days ago",
+      "2026-11-09T18:00:00Z",
+    );
+    expect(leadStory([old, bare, recent], now)?.lead).toEqual(recent);
+    expect(LEAD_PAIR_DAYS).toBeGreaterThan(1);
+  });
+
+  it("leaves a store promotion out while anything else is on the pack", () => {
+    const bundle = c(
+      "comm_link",
+      "Monthly Store Bundle 2026",
+      "2026-11-11T16:00:00Z",
+    );
+    const film = c(
+      "video",
+      "Squadron 42 | Inside CIG: Community Gameplay Event",
+      "2026-11-10T16:00:00Z",
+    );
+    expect(leadStory([bundle, film], now)?.lead).toEqual(film);
+    expect(leadStory([bundle], now)?.lead).toEqual(bundle);
+    for (const title of [
+      "Twitch Drops: IAE 2956",
+      "November 2026 Subscriber Promotions",
+      "Anniversary Sale",
+    ]) {
+      expect(PROMOTION.test(title)).toBe(true);
+    }
+    for (const title of [
+      "Intergalactic Aerospace Expo 2956 Free Fly and Manufacturer Schedule",
+      "This Week in Star Citizen",
+    ]) {
+      expect(PROMOTION.test(title)).toBe(false);
+    }
+  });
+
+  it("keys a story by its title without CIG's prefix and punctuation", () => {
+    expect(storyKey("Star Citizen | Behind the Ships: RSI Galaxy")).toBe(
+      storyKey("Behind the Ships - RSI Galaxy"),
+    );
+    expect(storyKey("Squadron 42 | Inside CIG")).toBe("insidecig");
   });
 });

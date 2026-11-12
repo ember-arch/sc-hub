@@ -49,7 +49,9 @@ export function VideoPlayer() {
       if (embed === undefined || title === undefined) return;
       event.preventDefault();
       trigger.current =
-        card.querySelector<HTMLElement>("h3 a") ?? (anchor as HTMLElement);
+        // A card's title, or the front page's lead story's (ADR-058): never the hidden picture link.
+        card.querySelector<HTMLElement>("h3 a, h1 a") ??
+        (anchor as HTMLElement);
       setPlaying({
         embed,
         title,

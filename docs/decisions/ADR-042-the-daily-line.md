@@ -1,6 +1,6 @@
 # ADR-042: The front page's title is a daily line composed from the pack
 
-- Status: accepted
+- Status: superseded by ADR-058 (2026-11-12): the top of the front page is the lead story outside a show (and a show's hero while one runs, ADR-057); the daily line is retired
 - Date: 2026-11-10
 - Deciders: owner ("the main page headline (which right now says 'every ship, every part, etc') should also be a quick tagline updating daily on what's going on in and around the verse that day (could be an events in game, external events, issues, patch, news, spectrum conversation, squadron 42, etc etc) Keeps the page fresh", 2026-11-10; asked whether the words should be composed from the pack by rule or written by Claude at build, chose "Composed from the pack", 2026-11-10), Claude Code session 2026-11-10
 - Amends: ADR-020 and ADR-021 (the front page's title), ADR-038 (the masthead), system.md's Home row

@@ -1,27 +1,9 @@
-import { formatTime } from "ui";
-
 /**
- * The front page's pure parts (ADR-020, ADR-038, spec 06): the contents list, the date line,
+ * The front page's pure parts (ADR-020, ADR-038, ADR-058, spec 06): the date line, the lead story,
  * plate numerals, which ships take the plates and change daily, and which developer posts are
  * featured. No data access here; page.tsx hands in what it read so these can be tested on plain
  * values.
  */
-
-export interface ContentsEntry {
-  /** The section's number as printed, "01"… */
-  readonly number: string;
-  readonly label: string;
-  readonly href: string;
-}
-
-/** The almanac's sections, in reading order. */
-export const CONTENTS: readonly ContentsEntry[] = [
-  { number: "01", label: "The register of ships", href: "/ships" },
-  { number: "02", label: "Parts, by type", href: "/components" },
-  { number: "03", label: "Honours and titles", href: "/titles" },
-  { number: "04", label: "Dispatches", href: "/news" },
-  { number: "05", label: "About this almanac", href: "/about" },
-];
 
 const dateLine = new Intl.DateTimeFormat("en-GB", {
   weekday: "long",
@@ -214,123 +196,78 @@ export function utcDayNumber(date: Date): number {
   return Math.floor(date.getTime() / 86_400_000);
 }
 
-/**
- * The freshest word from CIG on Spectrum for the daily line (ADR-042): the newest post of the last
- * `hours` in a thread staff opened (its opening post on the pack), as the featured-post rule reads
- * it (ADR-039); null when none.
- */
-export function freshestStaffWord<T extends FeaturedCandidate>(
-  posts: readonly T[],
-  now: Date,
-  hours = FEATURED_WINDOW_HOURS,
-): T | null {
-  const since = now.getTime() - hours * 3_600_000;
-  const sorted = [...posts].sort((a, b) =>
-    b.published_at.localeCompare(a.published_at),
-  );
-  const staffOpened = new Set(sorted.filter(opensThread).map(threadKey));
-  return (
-    sorted.find(
-      (p) =>
-        Date.parse(p.published_at) >= since && staffOpened.has(threadKey(p)),
-    ) ?? null
-  );
+/** A candidate for the front page's lead story (ADR-058): a dispatch or a full video. */
+export interface LeadCandidate {
+  readonly source: "comm_link" | "video";
+  readonly title: string;
+  readonly published_at: string;
+  /** Whether the site holds a picture for it: a Comm-Link's cover, a video's thumbnail. */
+  readonly hasPicture: boolean;
 }
 
-/** What the pack says today, as the daily line reads it (ADR-042). Nulls are left out. */
-export interface DailyFacts {
-  /**
-   * The newest staff-opened Spectrum thread with a staff post in the window, or null; `reply`
-   * when that post answers the thread rather than opens it, so the line says "posted in".
-   */
-  readonly staffThread: {
-    readonly title: string;
-    readonly publishedAt: string;
-    readonly reply: boolean;
-  } | null;
-  /** The newest dispatch, or null. */
-  readonly dispatch: {
-    readonly title: string;
-    readonly publishedAt: string;
-  } | null;
-  /** The builds in the footer's patch strip, short ("4.10.2"), or null where unknown. */
-  readonly builds: {
-    readonly live: string | null;
-    readonly ptu: string | null;
-  };
-  /** This year's pledges so far and the change on the same days of last year. */
-  readonly funding: {
-    readonly year: number;
-    readonly yearToDate: string;
-    readonly change: string | null;
-  } | null;
-}
-
-/** CIG's audience tags on a patch-notes thread: who may read the build it describes. */
-const AUDIENCE_TAG = /^\s*\[(?:all (?:waves|backers)|wave \d+|evocati)\]\s*/i;
-
-/**
- * A Spectrum thread's title as a headline reads it: CIG's audience tag in brackets at the front
- * ("[All Waves] ", never another bracketed word such as "[Now Closed]") and a build number of six
- * digits or more at the end (" 13160301") are dropped, nothing else changes.
- */
-export function headlineTitle(title: string): string {
+/** A title as a story's key: CIG's "Star Citizen | " prefix and its punctuation dropped. */
+export function storyKey(title: string): string {
   return title
-    .replace(AUDIENCE_TAG, "")
-    .replace(/\s+\d{6,}\s*$/, "")
-    .trim();
+    .toLowerCase()
+    .replace(/^\s*(?:star citizen|squadron 42)\s*[|:–-]\s*/, "")
+    .replace(/[^a-z0-9]+/g, "");
 }
 
-/** How much of a title the line quotes before an ellipsis, on a word. */
-export const HEADLINE_TITLE_CHARS = 90;
-
-/** A title cut for the line: whole up to the limit, else cut on a word with an ellipsis. */
-export function headlineCut(title: string, max = HEADLINE_TITLE_CHARS): string {
-  if (title.length <= max) return title;
-  const cut = title.slice(0, max);
-  const at = cut.lastIndexOf(" ");
-  return `${at > max / 2 ? cut.slice(0, at) : cut}…`;
-}
-
-/** "4.10.2-LIVE.12881860" → "4.10.2": the build string before its channel, short enough for a line. */
-export const shortBuild = (version: string | null): string | null =>
-  version === null ? null : (version.split("-")[0] ?? version);
+/** How many days a video and a Comm-Link of one title may lie apart and still be one story. */
+export const LEAD_PAIR_DAYS = 3;
 
 /**
- * The daily line (ADR-042): two clauses from the pack, composed by rule and never written. The
- * first is the freshest word from CIG, a staff-opened thread or a dispatch, whichever is newer;
- * the second alternates by the UTC day between the builds and the funding, so the line changes
- * shape day to day as well as with the pack. With nothing on the pack the line is the tagline's
- * first words.
+ * A store promotion by its title: the monthly bundle, a sale, the subscribers' promotions, Twitch
+ * drops. CIG's own words for them; they stay in the dispatches but do not lead (ADR-058).
  */
-export function dailyLine(
-  facts: DailyFacts,
+export const PROMOTION =
+  /\b(?:store|bundles?|sales?|promotions?|subscribers?|twitch drops|giveaways?|referral)\b/i;
+
+/**
+ * The front page's lead story outside a show (ADR-058): from the Comm-Links and full videos
+ * published before today's UTC day began, the latest day that has any; on that day a Comm-Link
+ * before a video, the newest first. So the lead changes at most once a day, and holds through
+ * quiet days. A store promotion does not lead while anything else is on the pack; only candidates
+ * with a picture take part, all of them when none has one (CI has no media). A video whose title
+ * is the lead Comm-Link's, within three days, rides along as its video.
+ */
+export function leadStory<T extends LeadCandidate>(
+  candidates: readonly T[],
   now: Date,
-  dayNumber: number,
-): string {
-  // The cards' own clock words (system.md section 5): relative under a week, then the date.
-  const ago = (at: string): string => formatTime(at, now);
-  const word =
-    facts.staffThread !== null &&
-    (facts.dispatch === null ||
-      facts.staffThread.publishedAt >= facts.dispatch.publishedAt)
-      ? `CIG posted ${facts.staffThread.reply ? "in " : ""}“${headlineCut(headlineTitle(facts.staffThread.title))}” on Spectrum ${ago(facts.staffThread.publishedAt)}`
-      : facts.dispatch !== null
-        ? `the latest dispatch is “${headlineCut(facts.dispatch.title)}”, ${ago(facts.dispatch.publishedAt)}`
-        : null;
-  const builds =
-    facts.builds.live === null
-      ? null
-      : facts.builds.ptu === null
-        ? `Alpha ${facts.builds.live} is live`
-        : `Alpha ${facts.builds.live} is live and ${facts.builds.ptu} is on the PTU`;
-  const funding =
-    facts.funding === null
-      ? null
-      : `${facts.funding.yearToDate} pledged in ${facts.funding.year}${facts.funding.change === null ? "" : `, ${facts.funding.change} on ${facts.funding.year - 1}`}`;
-  const state = dayNumber % 2 === 0 ? (funding ?? builds) : (builds ?? funding);
-  const clauses = [word, state].filter((c): c is string => c !== null);
-  if (clauses.length === 0) return "Star Citizen, on record.";
-  const sentence = clauses.join(", and ");
-  return `${sentence[0]?.toUpperCase() ?? ""}${sentence.slice(1)}.`;
+): { readonly lead: T; readonly video: T | null } | null {
+  const today = utcDayNumber(now);
+  const before = candidates.filter(
+    (c) => utcDayNumber(new Date(c.published_at)) < today,
+  );
+  const stories = before.filter((c) => !PROMOTION.test(c.title));
+  const eligible = stories.length > 0 ? stories : before;
+  const pictured = eligible.filter((c) => c.hasPicture);
+  const pool = pictured.length > 0 ? pictured : eligible;
+  if (pool.length === 0) return null;
+  const latestDay = Math.max(
+    ...pool.map((c) => utcDayNumber(new Date(c.published_at))),
+  );
+  const lead = pool
+    .filter((c) => utcDayNumber(new Date(c.published_at)) === latestDay)
+    .sort(
+      (a, b) =>
+        (a.source === "comm_link" ? 0 : 1) -
+          (b.source === "comm_link" ? 0 : 1) ||
+        b.published_at.localeCompare(a.published_at) ||
+        a.title.localeCompare(b.title),
+    )[0]!;
+  if (lead.source === "video") return { lead, video: null };
+  const key = storyKey(lead.title);
+  const at = Date.parse(lead.published_at);
+  const video =
+    candidates
+      .filter(
+        (c) =>
+          c.source === "video" &&
+          storyKey(c.title) === key &&
+          Math.abs(Date.parse(c.published_at) - at) <=
+            LEAD_PAIR_DAYS * 86_400_000,
+      )
+      .sort((a, b) => b.published_at.localeCompare(a.published_at))[0] ?? null;
+  return { lead, video };
 }

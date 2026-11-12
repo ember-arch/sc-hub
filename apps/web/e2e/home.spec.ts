@@ -12,19 +12,34 @@ import { clock, shows } from "./shows";
 
 const on = ["poll", "feed"].includes(process.env["SPECTRUM_MODE"] ?? "");
 const OUT = join(dirname(fileURLToPath(import.meta.url)), "__screenshots__");
-// A show on (ADR-057) puts its hero in place of the daily line and the contents.
+// A show on (ADR-057) puts its hero at the top of the page; outside one, the lead story (ADR-058).
 const showOn = eventForFront(shows, clock) !== null;
 
-test("the title is the daily line: one sentence from the pack, the date label above it", async ({
+test("the title is the lead story's, linked to its source, under the date label", async ({
   page,
 }) => {
-  test.skip(showOn, "a show's hero stands in the daily line's place (ADR-057)");
+  test.skip(showOn, "a show's hero stands in the lead story's place (ADR-057)");
   await page.goto("/");
-  const title = page.getByRole("heading", { level: 1 });
-  await expect(title).toHaveText(/^[A-Z$].{20,220}\.$/);
-  await expect(title).toHaveText(/, and /);
   await expect(page.locator("main p.lab").first()).toHaveText(
     /^\w+ \d+ \w+ \d{4} · in the ’verse$/,
+  );
+  const lead = page.locator("section[aria-labelledby=lead-story]");
+  const title = lead.getByRole("heading", { level: 1 });
+  await expect(title).toBeVisible();
+  const href = await title.getByRole("link").getAttribute("href");
+  expect(href).toMatch(
+    /^https:\/\/(robertsspaceindustries\.com\/|www\.youtube\.com\/)/,
+  );
+  // Published before today, so the lead holds for the day; never repeated in the carousel below.
+  const published = await lead.locator("time").getAttribute("datetime");
+  expect(Date.parse(published ?? "")).toBeLessThan(
+    Date.UTC(clock.getUTCFullYear(), clock.getUTCMonth(), clock.getUTCDate()),
+  );
+  const rail = page.locator("section[aria-labelledby=dispatches]");
+  await expect(rail.locator(`a[href="${href}"]`)).toHaveCount(0);
+  // The daily line and the contents are gone (ADR-058).
+  await expect(page.getByRole("navigation", { name: "Contents" })).toHaveCount(
+    0,
   );
 });
 
@@ -365,24 +380,3 @@ for (const viewport of [
     });
   }
 }
-
-// ADR-046: on a phone the contents would push the dispatches off the first screen.
-test("the home page's contents show from tablet width, not on a phone", async ({
-  browser,
-}) => {
-  test.skip(showOn, "a show's hero stands in the contents' place (ADR-057)");
-  for (const [width, shown] of [
-    [390, false],
-    [820, true],
-  ] as const) {
-    const context = await browser.newContext({
-      viewport: { width, height: 900 },
-    });
-    const page = await context.newPage();
-    await page.goto("/");
-    const contents = page.getByRole("navigation", { name: "Contents" });
-    if (shown) await expect(contents).toBeVisible();
-    else await expect(contents).toBeHidden();
-    await context.close();
-  }
-});

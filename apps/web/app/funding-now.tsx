@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import {
   MONTHS,
   type Measure,
@@ -14,21 +15,48 @@ import {
 } from "../lib/funding";
 import { Frame, H, W, YearVsYear, pct } from "./funding-charts";
 import { FigureStrip } from "./strip";
-import { ViewToggle } from "./view-toggle";
+import { FundingToggle } from "./funding-toggle";
 
 /**
- * The front page's funding card (ADR-038): this year so far against last year, in three figures
- * and one drawing with two views. "Year to date" is the ledger's own year-against-year chart for
- * this year and last; "By month" pairs each month so far with the same month last year. Every
- * number is the ledger's (ADR-018): differences between RSI's snapshots, never estimated.
+ * The front page's funding card (ADR-038, ADR-040): this year so far against last year, in three
+ * figures and one drawing with two views, for pledges and, since 2026-11-11, for citizens too.
+ * "Year to date" is the ledger's year-against-year chart for this year and last; "By month" pairs
+ * each month so far with the same month last year. Every number is the ledger's (ADR-018):
+ * differences between RSI's snapshots, never estimated.
  */
-export function FundingNow({
-  list,
-  measure,
+export function FundingCard({
+  measures,
 }: {
-  readonly list: readonly Reading[];
-  readonly measure: Measure;
+  readonly measures: readonly {
+    readonly measure: Measure;
+    readonly list: readonly Reading[];
+  }[];
 }) {
+  const parts = measures.flatMap(({ measure, list }) => {
+    const p = fundingParts(list, measure);
+    return p === null
+      ? []
+      : [{ id: measure, label: MEASURE_LABEL[measure], ...p }];
+  });
+  if (parts.length === 0) return null;
+  return <FundingToggle measures={parts} views={VIEWS} />;
+}
+
+const MEASURE_LABEL: Readonly<Record<Measure, string>> = {
+  pledges: "Pledges",
+  citizens: "Citizens",
+};
+
+const VIEWS = [
+  { id: "ytd", label: "Year to date" },
+  { id: "months", label: "By month" },
+] as const;
+
+/** One measure's figures and its two drawings, or null with too few readings this year. */
+function fundingParts(
+  list: readonly Reading[],
+  measure: Measure,
+): { figures: ReactNode; content: Record<string, ReactNode> } | null {
   const against = yearAgainstLastYear(list);
   const latest = list.at(-1);
   if (against === null || latest === undefined) return null;
@@ -38,7 +66,10 @@ export function FundingNow({
   const paths = yearPaths(list, [year, year - 1]);
   const figures = [
     {
-      label: `Pledged in ${year} so far`,
+      label:
+        measure === "pledges"
+          ? `Pledged in ${year} so far`
+          : `Citizens gained in ${year} so far`,
       value: yearToDate === null ? "unknown" : formatValue(yearToDate, measure),
       short:
         yearToDate === null ? "unknown" : formatCompact(yearToDate, measure),
@@ -59,40 +90,27 @@ export function FundingNow({
       note: `on the same days of ${year - 1}`,
     },
   ];
-  return (
-    <div className="flex flex-col gap-4">
-      <FigureStrip columns={3} phoneColumns={3} figures={figures} />
-      <ViewToggle
-        label="Funding view"
-        views={[
-          {
-            id: "ytd",
-            label: "Year to date",
-            content:
-              paths.length >= 2 ? (
-                <YearVsYear paths={paths} measure={measure} latestYear={year} />
-              ) : (
-                <p className="m-0 text-ui text-secondary">
-                  Not enough readings this year to draw against last year yet.
-                </p>
-              ),
-          },
-          {
-            id: "months",
-            label: "By month",
-            content:
-              pairs.length > 0 ? (
-                <MonthPairs pairs={pairs} year={year} measure={measure} />
-              ) : (
-                <p className="m-0 text-ui text-secondary">
-                  No month of this year has a reading at both ends yet.
-                </p>
-              ),
-          },
-        ]}
-      />
-    </div>
-  );
+  return {
+    figures: <FigureStrip columns={3} phoneColumns={3} figures={figures} />,
+    content: {
+      ytd:
+        paths.length >= 2 ? (
+          <YearVsYear paths={paths} measure={measure} latestYear={year} />
+        ) : (
+          <p className="m-0 text-ui text-secondary">
+            Not enough readings this year to draw against last year yet.
+          </p>
+        ),
+      months:
+        pairs.length > 0 ? (
+          <MonthPairs pairs={pairs} year={year} measure={measure} />
+        ) : (
+          <p className="m-0 text-ui text-secondary">
+            No month of this year has a reading at both ends yet.
+          </p>
+        ),
+    },
+  };
 }
 
 const shortDay = new Intl.DateTimeFormat("en-GB", {

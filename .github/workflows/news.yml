@@ -21,6 +21,9 @@
 # on the new manifest. It needs the repository secret BLOB_READ_WRITE_TOKEN (the media store's
 # read-write token); without it the step is a dry run that writes nothing.
 name: News
+# The title marks a run asked for the hour's YouTube feed, which the gate reads to keep the feed to
+# one read an hour (ADR-050, ADR-053).
+run-name: ${{ (github.event.schedule == '7 * * * *' || inputs.video_slot == 'due') && 'News, with the video feed' || 'News' }}
 
 on:
   schedule:
@@ -31,6 +34,10 @@ on:
     # run on Fly.
     # Two schedules rather than one "7,37" so the poll knows which one started it: one YouTube
     # feed is read from the :07 schedule only, once an hour however late GitHub starts it (ADR-050).
+    # GitHub still dropped most of these (two of about nineteen ran on 11-12 Nov), so the news
+    # clock on Vercel (ADR-053) starts the workflow at the same minutes through workflow_dispatch,
+    # and these schedules are its backup: the gate job below makes a scheduled run stand aside
+    # while the clock is running.
     - cron: "7 * * * *"
     - cron: "37 * * * *"
   workflow_dispatch:
@@ -39,21 +46,116 @@ on:
         description: "Comm-Link ids whose covers are already up, to rehearse the cover step on (a dry run; ADR-051)"
         required: false
         default: ""
+      video_slot:
+        description: '"due" to read the hour''s YouTube feed; the news clock sends it in the first half of the hour (ADR-050, ADR-053)'
+        required: false
+        default: ""
 
 concurrency:
   group: news
   cancel-in-progress: false
 
-permissions:
-  contents: write
+permissions: {}
 
 env:
   NEXT_TELEMETRY_DISABLED: "1"
 
 jobs:
+  # The gate (ADR-053), for every run however it was started. The whole run sits in the concurrency
+  # group, so every other run the gate sees has ended.
+  # 1. A scheduled run stands aside when a dispatched run (the news clock's, or a hand-started one)
+  #    began under an hour ago, so the schedule never doubles the clock's runs; an hour after the
+  #    clock last started a run, the schedule runs the news by itself again. A run that stands
+  #    aside cancels itself, so the video check below never takes it for a read.
+  # 2. A run that goes waits until six minutes have passed since the latest end of the last thirty
+  #    runs (the API lists runs by when they were created, not when they ended: a replaced pending
+  #    run or a re-run would otherwise be read as the last). Spectrum's search is asked at most
+  #    once every five minutes (ADR-027), and the poll's own spacing holds only within one run;
+  #    the concurrency group starts a queued run the moment the last ends (a cron call Vercel
+  #    delivered twice, a hand start during a clock run). When the gate cannot read the times it
+  #    waits the whole six minutes. Waiting here touches no source.
+  # 3. A run asked for the hour's YouTube feed reads it only if it was created in this clock hour
+  #    and no other run created this hour that went was asked for it too (a cron call delivered
+  #    twice, or a run held over from the last hour, would read it twice otherwise).
+  # The hour and the six minutes are NEWS_SCHEDULE_STANDS_ASIDE_MS and NEWS_SETTLE_MS in
+  # packages/schema/news-clock.ts, whose test reads them here. A gate job that fails stops the
+  # poll: the next slot runs it, and a run that cannot be spaced never searches Spectrum.
+  gate:
+    name: Stand aside or wait for the last run to settle
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      actions: write
+    outputs:
+      go: ${{ steps.gate.outputs.go }}
+      video: ${{ steps.gate.outputs.video }}
+    steps:
+      - id: gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT: ${{ github.event_name }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+          VIDEO_ASKED: ${{ (github.event.schedule == '7 * * * *' || inputs.video_slot == 'due') && 'due' || '' }}
+        run: |
+          runs="repos/$REPO/actions/workflows/news.yml/runs"
+          now=$(date -u +%s)
+          if [ "$EVENT" = "schedule" ]; then
+            # A dispatched run that was cancelled (a pending one replaced in the queue) never ran.
+            dispatched=$(gh api "$runs?event=workflow_dispatch&per_page=10" --jq '[.workflow_runs[] | select(.conclusion != "cancelled")][0].created_at // ""') || dispatched=""
+            if [ -n "$dispatched" ] && at=$(date -u -d "$dispatched" +%s) && [ $(( now - at )) -lt 3600 ]; then
+              echo "The news clock started a run at $dispatched, under an hour ago: this scheduled run stands aside (ADR-053)."
+              echo "go=false" >> "$GITHUB_OUTPUT"
+              # The cancel takes the step down within seconds; the sleep keeps the run from ending
+              # as a success first, which the video check below would take for a read.
+              gh run cancel "$RUN_ID" --repo "$REPO" || true
+              sleep 60
+              exit 0
+            fi
+          fi
+          pause=360
+          if ended=$(gh api "$runs?status=completed&per_page=30" --jq "[.workflow_runs[] | select(.id != $RUN_ID) | .updated_at] | max // \"\""); then
+            if [ -z "$ended" ]; then
+              pause=0
+            elif at=$(date -u -d "$ended" +%s); then
+              pause=$(( 360 - (now - at) ))
+              if [ "$pause" -gt 360 ]; then pause=360; fi
+            fi
+          else
+            echo "Could not read when the last run ended: waiting the whole six minutes."
+          fi
+          if [ "$pause" -gt 0 ]; then
+            echo "The last run ended at ${ended:-an unknown time}: waiting $pause s so Spectrum is not searched twice within five minutes."
+            sleep "$pause"
+          fi
+          video=""
+          if [ "$VIDEO_ASKED" = "due" ]; then
+            hour=$(date -u +%Y-%m-%dT%H)
+            # Only a run created in the hour it reads in may read: every run that could read this
+            # hour was then created in it, so the count below sees them all.
+            created=$(gh api "repos/$REPO/actions/runs/$RUN_ID" --jq '.created_at') || created=""
+            if [ "${created:0:13}" != "$hour" ]; then
+              echo "This run was created in another clock hour (${created:-unknown}): no video feed this run."
+            elif read=$(gh api "$runs?per_page=30" --jq "[.workflow_runs[] | select(.id != $RUN_ID and .status == \"completed\" and .conclusion != \"cancelled\" and (.display_title | contains(\"video feed\")) and (.created_at | startswith(\"$hour\")))] | length"); then
+              if [ "$read" = "0" ]; then
+                video="due"
+              else
+                echo "Another run this hour was asked for the video feed: this one leaves it (ADR-050)."
+              fi
+            else
+              echo "Could not check this hour's runs: no video feed this run."
+            fi
+          fi
+          echo "video=$video" >> "$GITHUB_OUTPUT"
+          echo "go=true" >> "$GITHUB_OUTPUT"
+
   poll:
     name: Poll the news sources
+    needs: gate
+    if: needs.gate.outputs.go == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     # Forty for the thread step, which sleeps five minutes between its requests (up to three
     # threads, a page each as a rule) and thirty on a refusal (ADR-037), and up to twelve more for
     # the cover step (ADR-051); a timeout would lose the run's news too.
@@ -73,8 +175,10 @@ jobs:
       - name: Poll
         env:
           SC_HUB_CONTACT_EMAIL: ${{ vars.SC_HUB_CONTACT_EMAIL }}
-          # "due" from the :07 schedule only: the hour's one YouTube feed (ADR-050).
-          NEWS_VIDEO_SLOT: ${{ github.event.schedule == '7 * * * *' && 'due' || '' }}
+          # "due" when the run was asked for the hour's one YouTube feed (the :07 schedule or the
+          # news clock's first-half-hour run) and no other run this hour was (the gate, ADR-050,
+          # ADR-053).
+          NEWS_VIDEO_SLOT: ${{ needs.gate.outputs.video }}
         run: pnpm workers:poll-news
       - name: Poll Spectrum (off until SPECTRUM_MODE is set)
         continue-on-error: true

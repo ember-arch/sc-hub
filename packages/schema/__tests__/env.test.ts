@@ -22,6 +22,8 @@ const full: Record<string, string> = {
   SC_INSTALL_ROOT: "C:\\Games\\StarCitizen",
   STARBREAKER_BIN: "C:\\Tools\\starbreaker.exe",
   SC_HUB_CONTACT_EMAIL: "contact@example.org",
+  CRON_SECRET: "cron-secret-for-tests",
+  NEWS_DISPATCH_TOKEN: "dispatch-token-for-tests",
 };
 
 function without(keys: string[]): Record<string, string> {

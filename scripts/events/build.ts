@@ -166,8 +166,11 @@ function blocksOf(html: string): string[] {
 
 /**
  * The sale in RSI's FAQ: "Wave 1 - 16:00 UTC", "Wave 4 - 04:00 UTC (the following day)",
- * "Starting on November 14 (IAE Day 2): Origin 890 Jump", and the sentences on price changes.
- * A FAQ that speaks of waves or stock-limited ships and yields none of them halts the run.
+ * "Starting on November 14 (IAE Day 2): Origin 890 Jump", and the sentences on price changes. A
+ * line that opens as a wave or a sale line but does not read as one in full halts the run, so an
+ * edit RSI makes ("Wave 3 - 00:00 UTC (sold out)") is never dropped in silence. A sale needs
+ * both its waves and its hulls; a FAQ with neither has no sale (null), and one with only one of
+ * them halts.
  */
 export function parseFaq(
   post: FaqPost,
@@ -190,10 +193,22 @@ export function parseFaq(
       });
       continue;
     }
+    if (/^\W*Wave\s+\d/i.test(text)) {
+      throw new EventShapeError("a wave line this module cannot read", {
+        post: post.external_id,
+        line: text,
+      });
+    }
     const hull =
       /^\W*Starting on ([A-Za-z]+) (\d{1,2})(?:\s*\((?:[A-Z0-9]+\s+)?Day (\d+)\))?\s*:\s*(.+)$/i.exec(
         text,
       );
+    if (hull === null && /^\W*Starting on\b/i.test(text)) {
+      throw new EventShapeError("a sale line this module cannot read", {
+        post: post.external_id,
+        line: text,
+      });
+    }
     if (hull !== null) {
       const month = monthOf(hull[1] ?? "");
       if (month === null) {
@@ -218,17 +233,7 @@ export function parseFaq(
       notes.push(firstSentence(text));
     }
   }
-  const speaks = blocks.some((t) =>
-    /\bwaves?\b|stock-limited|limited ships?/i.test(t),
-  );
-  if (waves.length === 0 && hulls.length === 0) {
-    if (speaks && blocks.some((t) => /^\W*Wave\s+\d/i.test(t))) {
-      throw new EventShapeError("the FAQ lists waves this module cannot read", {
-        post: post.external_id,
-      });
-    }
-    return notes.length === 0 ? null : { waves, hulls, notes };
-  }
+  if (waves.length === 0 && hulls.length === 0) return null;
   if (waves.length === 0 || hulls.length === 0) {
     throw new EventShapeError(
       "the FAQ names a stock-limited sale without both its waves and its hulls",
@@ -277,7 +282,6 @@ export function buildEvent(input: BuildInput): EventRecord {
   }
   const introText = body.intro.map(plainText);
   const entryTexts = body.entries.map((e) => plainText(e.html));
-  const faqText = faq === null ? [] : blocksOf(faq.body_html);
 
   const labelled = body.entries.flatMap((entry) => {
     if (entry.subtitle === null) return [];
@@ -289,10 +293,12 @@ export function buildEvent(input: BuildInput): EventRecord {
       entries: body.entries.map((e) => e.title),
     });
   }
-  const opening = openingOf([...introText, ...entryTexts, ...faqText]);
+  // The opening and the place from the schedule alone: the FAQ is a Spectrum post, shown only
+  // with the module on (ADR-027), so nothing but the sale is read from it.
+  const opening = openingOf([...introText, ...entryTexts]);
   if (opening === null) {
     throw new EventShapeError(
-      "neither the schedule nor the FAQ gives the opening hour in UTC",
+      "the schedule does not give the opening hour in UTC",
     );
   }
   const lastTo = labelled
@@ -355,7 +361,7 @@ export function buildEvent(input: BuildInput): EventRecord {
       { opening: iso(opensAt), first: days[0]!.opens_at },
     );
   }
-  const place = placeOf([...introText, ...entryTexts, ...faqText]);
+  const place = placeOf([...introText, ...entryTexts]);
   const sources: EventSourceRef[] = [
     {
       kind: "comm_link",
@@ -390,7 +396,7 @@ export function buildEvent(input: BuildInput): EventRecord {
     opens_at: iso(opensAt),
     last_day: iso(lastTo).slice(0, 10),
     venue: {
-      place: hallOf([...entryTexts, ...faqText, ...introText]),
+      place: hallOf([...entryTexts, ...introText]),
       ...place,
     },
     lead,

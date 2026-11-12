@@ -8,12 +8,20 @@
  *
  * RSI is asked only when an event is due (see `run.ts`), one request every 5 seconds with the
  * project User-Agent and the contact address, which it needs: without SC_HUB_CONTACT_EMAIL the
- * step says so and writes nothing. A shape it does not know prints a JSON report on stderr,
- * exits 1 and writes nothing (CLAUDE.md section 5). A record whose data did not change is not
- * rewritten, so its `fetched_at` stays the day the data last changed.
+ * step says so and writes nothing. A show whose page or FAQ has a shape this does not know keeps
+ * its record as it was (CLAUDE.md section 5): the report goes to stderr and, in CI, an error on
+ * the run; the state file still records the phase, so the day turns on the site; the step exits 1
+ * after writing. A record whose data did not change is not rewritten, so its `fetched_at` stays
+ * the day the data last changed. A show whose schedule Comm-Link is under takedown is removed.
  */
 import { randomUUID } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { ContentItem, EventRecord, EventSource } from "schema";
@@ -36,6 +44,13 @@ function log(event: Record<string, unknown>): void {
   process.stderr.write(
     `${JSON.stringify({ job: "events", run_id: runId, ...event })}\n`,
   );
+}
+
+/** An error on the GitHub Actions run, which a step with continue-on-error would otherwise hide. */
+function annotate(message: string): void {
+  if (process.env["GITHUB_ACTIONS"] !== "true") return;
+  const text = message.replace(/%/g, "%25").replace(/\r?\n/g, " ");
+  process.stdout.write(`::error title=The shows' step::${text}\n`);
 }
 
 const json = (value: unknown): string => `${JSON.stringify(value, null, 2)}\n`;
@@ -92,7 +107,15 @@ async function main(): Promise<void> {
     const path = join(dir, `${slug}.json`);
     if (writeIfChanged(path, json(record))) written.push(`${slug}.json`);
   }
+  for (const slug of out.removed) {
+    const path = join(dir, `${slug}.json`);
+    if (existsSync(path)) {
+      rmSync(path);
+      written.push(`${slug}.json (removed: takedown)`);
+    }
+  }
   if (writeIfChanged(stateFile, json(out.state))) written.push("state.json");
+  // The pages are kept even when parsing them failed: they are what a fix is written against.
   if (args.includes("--save-samples")) {
     const samples = join(dir, "samples");
     mkdirSync(samples, { recursive: true });
@@ -107,16 +130,24 @@ async function main(): Promise<void> {
     events: registry.length,
     requests: out.requests,
     written,
+    failures: out.failures.length,
     duration_ms: Date.now() - startedAt,
   });
+  for (const f of out.failures) {
+    log({ event: "events.halted", ...f });
+    annotate(`${f.slug}: the ${f.part} could not be read: ${f.error}`);
+  }
+  if (out.failures.length > 0) process.exitCode = 1;
 }
 
 main().catch((error: unknown) => {
+  const message = error instanceof Error ? error.message : String(error);
   log({
     event: "events.halted",
-    error: error instanceof Error ? error.message : String(error),
+    error: message,
     detail: error instanceof EventShapeError ? error.detail : undefined,
     duration_ms: Date.now() - startedAt,
   });
+  annotate(message);
   process.exitCode = 1;
 });

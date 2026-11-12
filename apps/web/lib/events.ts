@@ -260,11 +260,12 @@ const entryRank = (ship: ShipView): number =>
 /**
  * Resolves the schedule's ships against the register: by the RSI pledge page the schedule links
  * (`fixtures/rsi-media/sources.json` records the page of every ship-matrix ship, the concepts'
- * pages are on their records), then by name, RSI's name ending in the register's ("RSI Aurora Mk
- * II" is the Aurora Mk II), the longest such name winning. A ship neither finds keeps RSI's link.
+ * pages are on their records), then by name, RSI's name ending in the register's with the ship's
+ * own maker before it ("RSI Aurora Mk II" is the Aurora Mk II, "Aegis Aurora Mk II" is not), the
+ * longest such name winning. A ship neither finds keeps RSI's link.
  */
 export function shipResolver(
-  r: Pick<Repository, "entries">,
+  r: Pick<Repository, "entries" | "manufacturers">,
   concepts: readonly ConceptShip[] = conceptShips(),
   pageSources: readonly PageSource[] = loadPageSources(),
 ): (ship: EventShip) => EventShipView {
@@ -279,6 +280,7 @@ export function shipResolver(
       byPage.set(key, ship);
   }
   const conceptByPage = new Map(concepts.map((c) => [pageKey(c.page_url), c]));
+  const makers = new Map(r.manufacturers.map((m) => [m.code, m]));
   const ranked = [...r.entries].sort(
     (a, b) =>
       b.vehicle.name.length - a.vehicle.name.length ||
@@ -322,13 +324,26 @@ export function shipResolver(
       if (concept !== undefined) return ofConcept(concept, entry);
     }
     const name = squash(entry.name);
-    const named = (candidate: string): boolean => {
+    // RSI's name ends in the register's, and what stands before it is the ship's own maker
+    // (its code, or the start of its name: "Greycat" for Greycat Industrial), or nothing.
+    const named = (candidate: string, makerCode: string): boolean => {
       const n = squash(candidate);
-      return n.length >= 2 && name.endsWith(n);
+      if (n.length < 2 || !name.endsWith(n)) return false;
+      const prefix = name.slice(0, name.length - n.length);
+      if (prefix === "") return true;
+      const maker = makers.get(makerCode);
+      return (
+        prefix === squash(makerCode) ||
+        (maker !== undefined && squash(maker.name).startsWith(prefix))
+      );
     };
-    const ship = ranked.find((s) => named(s.vehicle.name));
+    const ship = ranked.find((s) =>
+      named(s.vehicle.name, s.vehicle.manufacturer_code),
+    );
     if (ship !== undefined) return ofShip(ship, entry);
-    const concept = conceptsRanked.find((c) => named(c.name));
+    const concept = conceptsRanked.find((c) =>
+      named(c.name, c.manufacturer_code),
+    );
     if (concept !== undefined) return ofConcept(concept, entry);
     return {
       name: entry.name,

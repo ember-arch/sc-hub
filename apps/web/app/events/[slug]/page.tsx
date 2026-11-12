@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import NextLink from "next/link";
 import { notFound } from "next/navigation";
 import { DispatchCard, Rail, TextLink } from "ui";
-import { RSI_IMAGE_CREDIT } from "ui/legal";
 import { eventPhase } from "schema";
 import { repo, spectrumOn } from "../../../lib/data";
 import { SOURCE_LABEL, coverOf } from "../../../lib/dispatches";
@@ -31,6 +30,7 @@ import { Site, now } from "../../../lib/site";
 import { RunningHead } from "../../front";
 import {
   BandLink,
+  Credits,
   DayStrip,
   EventOpening,
   MakerRow,
@@ -138,13 +138,13 @@ export default async function EventPage({ params }: Params) {
       value: `${shipCount} ships and vehicles`,
       note: `On the schedule over ${total} days`,
     },
-    ...(sales === null
+    ...(sales === null || sales.hulls[0] === undefined
       ? []
       : [
           {
             label: "Limited sales",
             value: `${sales.hulls.length} hulls`,
-            note: `${sales.waves.length} waves a sale day, from ${formatDayRange(sales.hulls[0]!.from, sales.hulls[0]!.from)}`,
+            note: `${sales.waves.length} waves from a hull's first day, the first from ${formatDayRange(sales.hulls[0].from, sales.hulls[0].from)}`,
           },
         ]),
   ];
@@ -250,11 +250,7 @@ export default async function EventPage({ params }: Params) {
                   ships={leadView}
                   label={`Ships of ${dayLabel(lead)}`}
                 />
-                {leadView.some((v) => v.picture !== null) ? (
-                  <p className="m-0 text-caption text-muted">
-                    {RSI_IMAGE_CREDIT.text}
-                  </p>
-                ) : null}
+                <Credits pictures={leadView.map((v) => v.picture)} />
               </div>
             )}
           </section>
@@ -460,8 +456,15 @@ export default async function EventPage({ params }: Params) {
                 {schedule.title}
               </TextLink>
               , published {formatLongDay(schedule.published_at.slice(0, 10))};
-              read {formatLongDay(event.fetched_at.slice(0, 10))}, again each
-              time the show&apos;s day turns over.
+              read again each time the show moves on and once a day while it
+              runs, the record last changed{" "}
+              {formatLongDay(event.fetched_at.slice(0, 10))}.
+            </li>
+            <li>
+              Each day&apos;s hours are this site&apos;s reading of RSI&apos;s
+              dates at the opening hour RSI gives (
+              {formatUtcTime(event.opens_at)}): RSI gives the dates, not when
+              each day closes.
             </li>
             {sales === null ? null : (
               <li>
@@ -474,9 +477,8 @@ export default async function EventPage({ params }: Params) {
             )}
             <li>
               RSI&apos;s words are quoted briefly and linked to the page they
-              come from. Pictures are of each day&apos;s featured ship as the
-              register holds them, credited on the picture:{" "}
-              {RSI_IMAGE_CREDIT.text.toLowerCase()} or the wiki&apos;s gallery.
+              come from. The pictures are the register&apos;s own of each ship,
+              each credited where it shows.
             </li>
           </ul>
         </section>

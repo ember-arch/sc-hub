@@ -201,7 +201,7 @@ export function DayStrip({
           const status = statuses[i] ?? "later";
           const now = status === "now";
           return (
-            <li key={day.first} className="w-56 shrink-0 snap-start">
+            <li key={day.first} className="shrink-0 snap-start">
               <NextLink
                 href={`${base}#${dayAnchor(day)}`}
                 aria-current={now ? "true" : undefined}
@@ -472,9 +472,33 @@ export function HullDays({
                 </li>
               ))}
             </ul>
+            <Credits
+              pictures={group.hulls.map((h) => resolveHull(h.name).picture)}
+            />
           </li>
         );
       })}
     </ol>
   );
+}
+
+/**
+ * The credits of a group of pictures, once each, under the group (as the bento credits its cards
+ * once below them): "Image: Roberts Space Industries · Images: Roberts Space Industries, via the
+ * Star Citizen Wiki …". Nothing without a picture.
+ */
+export function Credits({
+  pictures,
+}: {
+  readonly pictures: readonly (ResponsiveImage | null)[];
+}) {
+  const texts = [
+    ...new Set(
+      pictures
+        .filter((p): p is ResponsiveImage => p !== null)
+        .map((p) => p.credit.text),
+    ),
+  ];
+  if (texts.length === 0) return null;
+  return <p className="m-0 text-caption text-muted">{texts.join(" · ")}</p>;
 }

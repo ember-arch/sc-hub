@@ -1,7 +1,13 @@
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { EventRecord, eventOnFront, eventPhase, phaseKey } from "schema";
+import {
+  type ContentItem,
+  EventRecord,
+  eventOnFront,
+  eventPhase,
+  phaseKey,
+} from "schema";
 import { describe, expect, it } from "vitest";
 import {
   type CommLinkMeta,
@@ -23,7 +29,14 @@ import {
   parseScheduleBody,
   plainText,
 } from "../events/parse.js";
-import { RSI_SPACING_MS, englishUrl, isDue, runEvents } from "../events/run.js";
+import {
+  RSI_SPACING_MS,
+  type RunDeps,
+  type RunInput,
+  englishUrl,
+  isDue,
+  runEvents,
+} from "../events/run.js";
 
 // The parser runs on RSI's own pages as served on 2026-11-12 (the schedule Comm-Link and its
 // page-builder body) and the FAQ's third revision, committed in fixtures/events/samples; never on
@@ -194,6 +207,14 @@ describe("a day's text", () => {
 
 describe("the event record", () => {
   const event = build();
+
+  it("is the frozen record the site's tests read, byte for byte", () => {
+    // apps/web/__tests__/events.test.ts reads this file rather than the live record, which the
+    // News workflow rewrites as RSI edits its page.
+    expect(`${JSON.stringify(event, null, 2)}\n`).toBe(
+      readFileSync(join(samples, "iae-2956.record.json"), "utf8"),
+    );
+  });
 
   it("validates and holds RSI's dates, place and days", () => {
     expect(EventRecord.safeParse(event).success).toBe(true);
@@ -376,61 +397,138 @@ describe("where the show stands", () => {
   });
 });
 
-describe("a run of the step", () => {
-  const event = build();
-  const seen = (phase: string) => ({
-    phase,
-    body_url: BODY_URL,
-    read_at: "2026-11-12T19:10:00.000Z",
+describe("what the parsers refuse", () => {
+  it("halts on a wave or sale line that does not read in full", () => {
+    const sold = {
+      ...items.faq,
+      body_html: items.faq.body_html.replace(
+        "Wave 3 - 00:00 UTC",
+        "Wave 3 - 00:00 UTC (sold out)",
+      ),
+    };
+    expect(() => parseFaq(sold, new Date(sold.published_at))).toThrow(
+      /wave line/,
+    );
+    const odd = {
+      ...items.faq,
+      body_html: items.faq.body_html.replace(
+        "Starting on November 14 (IAE Day 2): Origin 890 Jump",
+        "Starting on the second day: Origin 890 Jump",
+      ),
+    };
+    expect(() => parseFaq(odd, new Date(odd.published_at))).toThrow(
+      /sale line/,
+    );
   });
 
-  it("reads RSI when an event is new, its day has turned, or it is forced", () => {
+  it("has no sale for a FAQ with only a price note", () => {
+    const note = {
+      ...items.faq,
+      body_html:
+        "<p>The price of the MISC Prospector will increase by $20, from $155 to $175.</p>",
+    };
+    expect(parseFaq(note, new Date(note.published_at))).toBeNull();
+  });
+
+  it("halts on a day whose ships stand outside the lists it reads", () => {
+    expect(() =>
+      parseDayHtml(
+        "<p>Lead.</p><ol><li><strong>Origin M80</strong></li></ol>",
+        "t",
+      ),
+    ).toThrow(/outside the blocks/);
+    expect(() =>
+      parseDayHtml("<p>Lead.</p><div>RSI Galaxy</div>", "t"),
+    ).toThrow(/outside the blocks/);
+  });
+});
+
+describe("a run of the step", () => {
+  const event = build();
+  const seen = (phase: string, read_at = "2026-11-14T16:07:00.000Z") => ({
+    phase,
+    body_url: BODY_URL,
+    read_at,
+  });
+
+  it("reads RSI when an event is new, moves on, or a new UTC day starts, or when forced", () => {
     const t = new Date("2026-11-14T17:00:00Z");
     expect(isDue(undefined, undefined, t, false)).toBe(true);
     expect(isDue(event, seen("day-1"), t, false)).toBe(true);
     expect(isDue(event, seen("day-2"), t, false)).toBe(false);
     expect(isDue(event, seen("day-2"), t, true)).toBe(true);
+    // Read yesterday, in the same phase (the finale's five days): read again today.
+    expect(
+      isDue(
+        event,
+        seen("day-11", "2026-11-24T16:07:00.000Z"),
+        new Date("2026-11-25T00:07:00Z"),
+        false,
+      ),
+    ).toBe(true);
+    // Over: never again, not even to enter the phase.
+    expect(
+      isDue(event, seen("day-11"), new Date("2026-11-28T00:07:00Z"), false),
+    ).toBe(false);
     expect(
       isDue(event, seen("after"), new Date("2026-12-01T00:00:00Z"), false),
     ).toBe(false);
   });
 
-  const news = [
-    {
-      id: "00000000-0000-4000-8000-000000000001",
-      source: "comm_link" as const,
-      external_id: "21386",
-      url: items.comm_link.url,
-      title: items.comm_link.title,
-      summary: null,
-      body_html: "",
-      published_at: items.comm_link.published_at,
-      fetched_at: "2026-11-10T00:00:00.000Z",
-      revision: 1,
-      author_id: null,
-      thread_id: null,
-      thread_title: null,
-      forum: null,
-      takedown: false,
-    },
-    {
-      id: "00000000-0000-4000-8000-000000000002",
-      source: "spectrum" as const,
-      external_id: "575984",
-      url: items.faq.url,
-      title: items.faq.title,
-      summary: null,
-      body_html: items.faq.body_html,
-      published_at: items.faq.published_at,
-      fetched_at: "2026-11-11T00:00:00.000Z",
-      revision: items.faq.revision,
-      author_id: null,
-      thread_id: "575984",
-      thread_title: items.faq.title,
-      forum: null,
-      takedown: false,
-    },
-  ];
+  const row = (over: Partial<ContentItem>): ContentItem => ({
+    id: "00000000-0000-4000-8000-000000000001",
+    source: "comm_link",
+    external_id: "21386",
+    url: items.comm_link.url,
+    title: items.comm_link.title,
+    summary: null,
+    body_html: "",
+    published_at: items.comm_link.published_at,
+    fetched_at: "2026-11-10T00:00:00.000Z",
+    revision: 1,
+    author_id: null,
+    thread_id: null,
+    thread_title: null,
+    forum: null,
+    takedown: false,
+    ...over,
+  });
+  const scheduleRow = row({});
+  const faqRow = row({
+    id: "00000000-0000-4000-8000-000000000002",
+    source: "spectrum",
+    external_id: "575984",
+    url: items.faq.url,
+    title: items.faq.title,
+    body_html: items.faq.body_html,
+    published_at: items.faq.published_at,
+    revision: items.faq.revision,
+    thread_id: "575984",
+    thread_title: items.faq.title,
+  });
+  const news = [scheduleRow, faqRow];
+  const pages = (async (url: string) =>
+    new Response(url.includes("/alexandria/") ? bodyHtml : page, {
+      status: 200,
+    })) as typeof fetch;
+  const deps = (over: Partial<RunDeps> = {}): RunDeps => ({
+    fetch: (async () => {
+      throw new Error("no request expected");
+    }) as typeof fetch,
+    sleep: async () => {},
+    now: () => new Date("2026-11-14T17:00:00Z"),
+    userAgent: "Coppercork/1.0 (+https://coppercork.com/about; x) events",
+    log: () => {},
+    ...over,
+  });
+  const input = (over: Partial<RunInput> = {}): RunInput => ({
+    registry: [SOURCE],
+    news,
+    records: new Map(),
+    state: {},
+    force: false,
+    ...over,
+  });
 
   it("asks RSI twice, spaced, with the project's agent, and records the phase", async () => {
     const calls: { url: string; agent: string | undefined }[] = [];
@@ -440,19 +538,11 @@ describe("a run of the step", () => {
         url,
         agent: (init.headers as Record<string, string>)["User-Agent"],
       });
-      return new Response(url.includes("/alexandria/") ? bodyHtml : page, {
-        status: 200,
-      });
+      return pages(url, init);
     }) as typeof fetch;
     const out = await runEvents(
-      { registry: [SOURCE], news, records: new Map(), state: {}, force: false },
-      {
-        fetch: fake,
-        sleep: async (ms) => sleeps.push(ms),
-        now: () => new Date("2026-11-14T17:00:00Z"),
-        userAgent: "Coppercork/1.0 (+https://coppercork.com/about; x) events",
-        log: () => {},
-      },
+      input(),
+      deps({ fetch: fake, sleep: async (ms) => sleeps.push(ms) }),
     );
     expect(calls.map((c) => c.url)).toEqual([
       englishUrl(items.comm_link.url),
@@ -461,79 +551,124 @@ describe("a run of the step", () => {
     expect(calls.every((c) => c.agent?.startsWith("Coppercork/"))).toBe(true);
     expect(sleeps).toEqual([RSI_SPACING_MS, RSI_SPACING_MS]);
     expect(out.requests).toBe(2);
+    expect(out.failures).toEqual([]);
     expect(out.state["iae-2956"]?.phase).toBe("day-2");
     expect(out.records.get("iae-2956")?.days).toHaveLength(11);
   });
 
   it("asks RSI nothing when not due, and reads the FAQ's sale again", async () => {
-    let asked = 0;
-    const fake = (async () => {
-      asked += 1;
-      return new Response("", { status: 500 });
-    }) as typeof fetch;
     const stale = { ...event, sales: null };
     const out = await runEvents(
-      {
-        registry: [SOURCE],
-        news,
+      input({
         records: new Map([["iae-2956", stale]]),
         state: { "iae-2956": seen("day-2") },
-        force: false,
-      },
-      {
-        fetch: fake,
-        sleep: async () => {},
-        now: () => new Date("2026-11-14T17:00:00Z"),
-        userAgent: "x",
-        log: () => {},
-      },
+      }),
+      deps(),
     );
-    expect(asked).toBe(0);
+    expect(out.requests).toBe(0);
     expect(out.records.get("iae-2956")?.sales?.hulls).toHaveLength(6);
   });
 
-  it("halts on an answer that is not 200, writing nothing", async () => {
-    const fake = (async () =>
+  it("enters after without asking RSI, so the site still rebuilds without the show", async () => {
+    const out = await runEvents(
+      input({
+        records: new Map([["iae-2956", event]]),
+        state: { "iae-2956": seen("day-11") },
+      }),
+      deps({ now: () => new Date("2026-11-28T00:07:00Z") }),
+    );
+    expect(out.requests).toBe(0);
+    expect(out.state["iae-2956"]?.phase).toBe("after");
+  });
+
+  it("keeps the record after a failed read, records the phase and the attempt, and carries on", async () => {
+    const down = (async () =>
       new Response("", { status: 503 })) as typeof fetch;
-    await expect(
-      runEvents(
-        {
-          registry: [SOURCE],
-          news,
-          records: new Map(),
-          state: {},
-          force: false,
-        },
-        {
-          fetch: fake,
-          sleep: async () => {},
-          now: () => new Date("2026-11-14T17:00:00Z"),
-          userAgent: "x",
-          log: () => {},
-        },
+    const out = await runEvents(
+      input({
+        records: new Map([["iae-2956", event]]),
+        state: { "iae-2956": seen("day-1", "2026-11-13T16:07:00.000Z") },
+      }),
+      deps({ fetch: down }),
+    );
+    expect(out.failures).toEqual([
+      expect.objectContaining({ slug: "iae-2956", part: "schedule" }),
+    ]);
+    expect(out.failures[0]?.error).toMatch(/503/);
+    expect(out.records.get("iae-2956")).toEqual(event);
+    expect(out.state["iae-2956"]?.phase).toBe("day-2");
+    // Not asked again in the same phase and day.
+    expect(
+      isDue(
+        event,
+        out.state["iae-2956"],
+        new Date("2026-11-14T17:30:00Z"),
+        false,
       ),
-    ).rejects.toThrow(/503/);
+    ).toBe(false);
+  });
+
+  it("writes nothing for a new event whose read fails", async () => {
+    const down = (async () =>
+      new Response("", { status: 503 })) as typeof fetch;
+    const out = await runEvents(input(), deps({ fetch: down }));
+    expect(out.records.size).toBe(0);
+    expect(out.state).toEqual({});
+    expect(out.failures).toHaveLength(1);
+  });
+
+  it("keeps the sale on file and still reads the schedule when the FAQ cannot be read", async () => {
+    const broken = {
+      ...faqRow,
+      revision: faqRow.revision + 1,
+      body_html: "<p>▲ Wave 1 at four o'clock</p>",
+    };
+    const out = await runEvents(
+      input({
+        news: [scheduleRow, faqRow, broken],
+        records: new Map([["iae-2956", event]]),
+        state: { "iae-2956": seen("day-1", "2026-11-13T16:07:00.000Z") },
+      }),
+      deps({ fetch: pages }),
+    );
+    expect(out.requests).toBe(2);
+    expect(out.failures).toEqual([expect.objectContaining({ part: "faq" })]);
+    expect(out.records.get("iae-2956")?.sales).toEqual(event.sales);
+    expect(out.state["iae-2956"]?.phase).toBe("day-2");
+  });
+
+  it("removes an event whose schedule Comm-Link is under takedown", async () => {
+    const gone = { ...scheduleRow, revision: 2, takedown: true };
+    const out = await runEvents(
+      input({
+        news: [scheduleRow, gone, faqRow],
+        records: new Map([["iae-2956", event]]),
+        state: { "iae-2956": seen("day-2") },
+      }),
+      deps(),
+    );
+    expect(out.removed).toEqual(["iae-2956"]);
+    expect(out.records.has("iae-2956")).toBe(false);
+    expect(out.state["iae-2956"]).toBeUndefined();
+  });
+
+  it("drops the sale and its source when the FAQ is under takedown", async () => {
+    const gone = { ...faqRow, revision: faqRow.revision + 1, takedown: true };
+    const out = await runEvents(
+      input({
+        news: [scheduleRow, faqRow, gone],
+        records: new Map([["iae-2956", event]]),
+        state: { "iae-2956": seen("day-2") },
+      }),
+      deps(),
+    );
+    const record = out.records.get("iae-2956");
+    expect(record?.sales).toBeNull();
+    expect(record?.sources.map((s) => s.kind)).toEqual(["comm_link"]);
   });
 
   it("waits for a Comm-Link the news pack has not got", async () => {
-    const out = await runEvents(
-      {
-        registry: [SOURCE],
-        news: [],
-        records: new Map(),
-        state: {},
-        force: false,
-      },
-      {
-        fetch: (async () => {
-          throw new Error("no request expected");
-        }) as typeof fetch,
-        sleep: async () => {},
-        now: () => new Date(),
-        userAgent: "x",
-        log: () => {},
-      },
-    );
+    const out = await runEvents(input({ news: [] }), deps());
     expect(out.requests).toBe(0);
     expect(out.records.size).toBe(0);
   });

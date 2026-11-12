@@ -459,5 +459,17 @@ export function parseDayHtml(html: string, where: string): DayBody {
     }
     lead ??= firstSentence(text);
   }
+  // Text outside the blocks read above (an <ol>, a <div>, a bare line) would be dropped: halt.
+  const rest = plainText(
+    html.replace(/<(p|ul|h[1-6])\b[^>]*>[\s\S]*?<\/\1>/g, ""),
+  );
+  if (rest !== "") {
+    throw new EventShapeError(
+      `${where}: text outside the blocks this module reads`,
+      {
+        text: rest.slice(0, 120),
+      },
+    );
+  }
   return { lead, groups, ships };
 }

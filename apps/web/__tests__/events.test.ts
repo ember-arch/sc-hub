@@ -1,10 +1,12 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { EventRecord } from "schema";
 import { describe, expect, it } from "vitest";
-import { repo } from "../lib/data";
+import { REPO_ROOT, repo } from "../lib/data";
 import {
   dayCount,
   dayLabel,
   dayStatuses,
-  eventBySlug,
   eventMaker,
   eventNews,
   events,
@@ -17,18 +19,27 @@ import {
   waveMoments,
 } from "../lib/events";
 
-// ADR-057: the events module on the committed record of IAE 2956 and the register on file.
+// ADR-057: the events module on IAE 2956 as RSI's saved pages build it (the frozen record the
+// fetcher's tests keep equal to their build), never the live record, which the News workflow
+// rewrites as RSI edits its page; and the register on file, which the daily refresh rewrites, so
+// what is checked against it is what holds whatever it says.
 
-const iae = () => {
-  const e = eventBySlug("iae-2956");
-  if (e === undefined) throw new Error("fixtures/events has no iae-2956");
-  return e;
-};
+const frozen = EventRecord.parse(
+  JSON.parse(
+    readFileSync(
+      join(REPO_ROOT, "fixtures", "events", "samples", "iae-2956.record.json"),
+      "utf8",
+    ),
+  ),
+);
+const iae = () => frozen;
 
 describe("the events on file", () => {
-  it("loads every event in the registry, validated", () => {
-    expect(events().map((e) => e.slug)).toContain("iae-2956");
-    expect(iae().days).toHaveLength(11);
+  it("loads every event in the registry, validated, the latest first", () => {
+    const list = events();
+    expect(list.every((e) => EventRecord.safeParse(e).success)).toBe(true);
+    const opens = list.map((e) => e.opens_at);
+    expect([...opens].sort().reverse()).toEqual(opens);
   });
 
   it("puts a show on the front page only while it runs", () => {
@@ -121,27 +132,53 @@ describe("the makers and ships against the register", () => {
     expect(eventMaker("SOME NEW MAKER", []).name).toBe("Some New Maker");
   });
 
-  it("finds every ship of the schedule in the register, never a display copy", () => {
+  const label = (slug: string): string | null => {
+    const ship = r.shipBySlug(slug);
+    if (ship !== undefined) {
+      return (
+        {
+          flight_ready: "Flight ready",
+          in_production: "In production",
+          concept: "In concept",
+        }[ship.vehicle.status] ?? null
+      );
+    }
+    return "In concept";
+  };
+
+  it("finds the schedule's ships in the register, never a display copy, with the register's status", () => {
     const resolve = shipResolver(r);
     const views = iae().days.flatMap((d) => d.ships.map(resolve));
     expect(views).toHaveLength(192);
-    expect(views.filter((v) => v.slug === null)).toEqual([]);
+    // New reveals may be missing from the register for a day; nearly all are there.
+    expect(views.filter((v) => v.slug !== null).length).toBeGreaterThanOrEqual(
+      180,
+    );
     expect(views.some((v) => v.slug?.endsWith("-display"))).toBe(false);
+    for (const v of views) {
+      if (v.slug !== null) expect(v.status, v.name).toBe(label(v.slug));
+      else
+        expect(v.href ?? "").toMatch(
+          /^https:\/\/robertsspaceindustries\.com\//,
+        );
+    }
+    // Slugs never change once published (CLAUDE.md section 5).
     const by = (name: string) => views.find((v) => v.name === name);
-    expect(by("RSI Galaxy")?.status).toBe("In concept");
     expect(by("RSI Constellation Mk V Centaurus")?.slug).toBe(
       "rsi-constellation-mk5-centaurus",
     );
     expect(by("RSI Aurora Mk II")?.href).toBe("/ships/aurora-mk-ii");
   });
 
-  it("finds the limited hulls by name", () => {
+  it("finds the limited hulls by name, and only under their own maker", () => {
     const resolve = shipResolver(r);
     const hull = (name: string) =>
       resolve({ name, pledge_url: null, line: null, group: null });
     expect(hull("Origin 890 Jump").slug).toBe("890-jump");
-    expect(hull("Drake Kraken").status).toBe("In concept");
+    expect(hull("Drake Kraken").slug).toBe("kraken");
     expect(hull("Aegis Javelin").slug).toBe("javelin");
+    // The Aurora is RSI's: another maker's name in front is not it.
+    expect(hull("Aegis Aurora Mk II").slug).toBeNull();
   });
 
   it("keys RSI's pages without the language and the case", () => {

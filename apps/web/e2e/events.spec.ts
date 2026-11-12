@@ -30,13 +30,18 @@ test("the event page opens on the show, its days, its schedule and its sources",
     const id = href.split("#")[1] ?? "";
     await expect(page.locator(`[id="${id}"]`)).toHaveCount(1);
   }
-  // Every ship on the schedule links to its entry here.
-  const shipLinks = schedule.locator("article li a");
-  await expect(shipLinks).toHaveCount(shipLines);
-  for (const href of await shipLinks.evaluateAll((as) =>
-    as.map((a) => a.getAttribute("href") ?? ""),
-  )) {
-    expect(href).toMatch(/^\/ships\/[a-z0-9-]+$/);
+  // Every ship on the schedule is listed; nearly all link to their entry here, and one the
+  // register lacks yet (a reveal of the day) to its RSI page.
+  await expect(schedule.locator("article li")).toHaveCount(shipLines);
+  const hrefs = await schedule
+    .locator("article li a")
+    .evaluateAll((as) => as.map((a) => a.getAttribute("href") ?? ""));
+  const internal = hrefs.filter((h) => /^\/ships\/[a-z0-9-]+$/.test(h));
+  expect(internal.length).toBeGreaterThanOrEqual(Math.floor(shipLines * 0.9));
+  for (const href of hrefs) {
+    expect(href).toMatch(
+      /^(\/ships\/[a-z0-9-]+|https:\/\/robertsspaceindustries\.com\/.+)$/,
+    );
   }
   // RSI's words are quoted and linked to the schedule they come from.
   const schedulePage = event.sources.find((s) => s.kind === "comm_link")!;

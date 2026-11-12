@@ -53,7 +53,7 @@ import {
   RegisterLink,
   RunningHead,
 } from "./front";
-import { FundingNow } from "./funding-now";
+import { FundingCard } from "./funding-now";
 import { VideoPlayer } from "./news/videos/player";
 
 export const metadata: Metadata = {
@@ -110,8 +110,8 @@ export default function HomePage() {
   const series = funding();
   const pledges = series === null ? null : readings(series, "pledges");
   const money = pledges === null ? null : headline(pledges);
-  const people =
-    series === null ? null : headline(readings(series, "citizens"));
+  const citizens = series === null ? null : readings(series, "citizens");
+  const people = citizens === null ? null : headline(citizens);
   const tally = shipTally(r.entries, concepts.length);
   // The parts people fit: thrusters and fuel intakes come with the ship (ADR-046).
   const fitted = withoutFixed(r.components, false);
@@ -138,6 +138,8 @@ export default function HomePage() {
               people.last30 === null
                 ? "on record"
                 : `${signed(people.last30, (n) => formatCompact(n, "citizens"))} in the last 30 days`,
+            // The card draws citizens too since 2026-11-11 (ADR-040, amended).
+            href: "#funding",
           },
         ]),
     ...(money === null || money.yearToDate === null
@@ -428,7 +430,14 @@ export default function HomePage() {
                   : `as of ${formatDay(money.latest.day)}`
               }
             />
-            <FundingNow list={pledges} measure="pledges" />
+            <FundingCard
+              measures={[
+                { measure: "pledges", list: pledges },
+                ...(citizens === null || citizens.length < 2
+                  ? []
+                  : [{ measure: "citizens" as const, list: citizens }]),
+              ]}
+            />
             {/* The ledger's sources line, now the card's (ADR-040); the wiki's credit is in every footer. */}
             <p className="m-0 max-w-prose text-caption text-secondary">
               Daily snapshots of RSI&apos;s counter on{" "}

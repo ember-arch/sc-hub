@@ -1,6 +1,6 @@
 # ADR-040: The ledger folded into the front page; the funding page removed
 
-- Status: accepted
+- Status: accepted; amended 2026-11-11 (citizens on the card)
 - Date: 2026-11-10
 - Deciders: owner ("The funding module on the main page is perfect - we can deprecate and remove the dedicated funding page", 2026-11-10), Claude Code session 2026-11-10
 - Amends: ADR-018 (the page), ADR-038 (the card's link to the ledger), ADR-020's ledger row in system.md, spec 02's Funding criterion, spec 06's ledger criteria, `docs/legal/attribution.md`
@@ -37,3 +37,7 @@ What goes with the page and is not carried to the home: the citizens measure (it
 - The citizens counter and the history since 2012 are no longer drawn anywhere; a reader who wants them has RSI's page and the wiki's API, both linked.
 - The funding fixture is still fetched daily (ADR-023) and read by the front page alone; `next.config.ts` keeps tracing it.
 - The home records change (the counters' notes and the sources line); the funding records are deleted.
+
+## Amendment, 2026-11-11: citizens on the card
+
+The owner asked for "a toggle with the same charts, but instead of money it shows citizens/players gained" (2026-11-11). The card now counts either measure: a second control, Pledges or Citizens, sits in one row with the view control (`FundingToggle`, `apps/web/app/funding-toggle.tsx`, which replaces `ViewToggle`), and switches the three figures and both drawings to citizens registered: "Citizens gained in <year> so far", the share of last year's gain, the change on the same days, this year's running gain against last year's and each month's gain beside last year's. The view is kept across a switch. The figures are the same ledger differences as the pledges (ADR-018): the fixture already held RSI's citizens counter for every day (`readings(series, "citizens")`), so no data changed. The "Citizens" counter in the figure strip links to the card again. The two controls now sit above the figures rather than below them (ADR-038 drew the view control under the figure strip); on a phone they wrap onto two rows. A reader without script sees the pledges' year to date, as before; the Citizens counter's link lands on the card as it opens, on pledges. Citizens are "citizens registered", RSI's count of accounts, not players who play; the card says citizens.

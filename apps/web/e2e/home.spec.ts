@@ -121,15 +121,19 @@ test("the ledger's old address lands on the home's funding card, which the count
       .getByRole("navigation", { name: "Primary" })
       .getByRole("link", { name: "Funding" }),
   ).toHaveCount(0);
-  // The other funding counter points at the card too; Citizens, no longer drawn, links nowhere.
+  // The other funding counters point at the card too; Citizens is drawn there again (ADR-040, amended).
   const thisYear = page.locator("dl div", { hasText: /^This year/ });
   await expect(thisYear.locator("dd a").first()).toHaveAttribute(
     "href",
     "#funding",
   );
   await expect(
-    page.locator("dl div", { hasText: /^Citizens/ }).locator("dd a"),
-  ).toHaveCount(0);
+    page
+      // The counter reads "Citizens" then its figure; the card's "Citizens gained in …" is not it.
+      .locator("dl div", { hasText: /^Citizens\d/ })
+      .locator("dd a")
+      .first(),
+  ).toHaveAttribute("href", "#funding");
   // The sources line names RSI's page and the copy date.
   const sources = page.locator("section[aria-labelledby=funding] p", {
     hasText: /^Daily snapshots/,
@@ -151,9 +155,11 @@ test("the funding card shows the year's three figures and toggles between the tw
 }) => {
   await page.goto("/");
   const section = page.locator("section[aria-labelledby=funding]");
-  await expect(section.getByText(/^Pledged in \d{4} so far$/)).toBeVisible();
-  await expect(section.getByText(/^Of \d{4}'s total$/)).toBeVisible();
-  await expect(section.getByText("Year on year")).toBeVisible();
+  // The pledges show first; the citizens' copy of the figures is in the document, hidden.
+  const shown = section.locator("[data-measure=pledges]");
+  await expect(shown.getByText(/^Pledged in \d{4} so far$/)).toBeVisible();
+  await expect(shown.getByText(/^Of \d{4}'s total$/)).toBeVisible();
+  await expect(shown.getByText("Year on year")).toBeVisible();
   await expect(section.getByText(/^as of \d+ \w+ \d{4}$/)).toBeVisible();
   await expect(
     section.getByRole("link", { name: "Star Citizen Wiki API" }),
@@ -166,8 +172,8 @@ test("the funding card shows the year's three figures and toggles between the tw
   // The year-to-date view draws this year against last year (in the first days of a year, before
   // two readings, it is a sentence instead); the month view is in the document but hidden until
   // pressed.
-  const ytdView = section.locator("[id$=-ytd]");
-  const monthView = section.locator("[id$=-months]");
+  const ytdView = section.locator("[data-measure=pledges] [id$=-ytd]");
+  const monthView = section.locator("[data-measure=pledges] [id$=-months]");
   await expect(ytdView).toBeVisible();
   await expect(monthView).toBeHidden();
   await months.click();
@@ -182,6 +188,42 @@ test("the funding card shows the year's three figures and toggles between the tw
   await expect(monthView.locator("figcaption")).toContainText(
     /beside the same month of \d{4}/,
   );
+});
+
+test("the funding card counts citizens too, keeping the view across a switch (ADR-040, amended)", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const section = page.locator("section[aria-labelledby=funding]");
+  const measure = section.getByRole("group", { name: "Funding measure" });
+  const pledgesButton = measure.getByRole("button", { name: "Pledges" });
+  const citizensButton = measure.getByRole("button", { name: "Citizens" });
+  await expect(pledgesButton).toHaveAttribute("aria-pressed", "true");
+  const pledges = section.locator("[data-measure=pledges]");
+  const citizens = section.locator("[data-measure=citizens]");
+  await expect(pledges).toBeVisible();
+  await expect(citizens).toBeHidden();
+  // The month view first, then the measure: the citizens open on their months.
+  await section.getByRole("button", { name: "By month" }).click();
+  await citizensButton.click();
+  await expect(citizensButton).toHaveAttribute("aria-pressed", "true");
+  await expect(citizens).toBeVisible();
+  await expect(pledges).toBeHidden();
+  await expect(
+    citizens.getByText(/^Citizens gained in \d{4} so far$/),
+  ).toBeVisible();
+  await expect(citizens.locator("[id$=-months]")).toBeVisible();
+  await expect(citizens.locator("[id$=-ytd]")).toBeHidden();
+  // Citizens are counted, not paid: no dollar sign anywhere in their view, axes, titles and
+  // summaries included (textContent reads the hidden parts too).
+  const text = (await citizens.textContent()) ?? "";
+  expect(text).not.toContain("$");
+  const titles = await citizens
+    .locator("[id$=-months] svg rect title")
+    .allTextContents();
+  expect(titles.length).toBeGreaterThan(0);
+  await section.getByRole("button", { name: "Year to date" }).click();
+  await expect(citizens.locator("[id$=-ytd]")).toBeVisible();
 });
 
 // The "By month" view's record (ADR-038): the funding section with the toggle pressed, at both
@@ -203,10 +245,21 @@ for (const viewport of [
       await page.goto("/");
       const section = page.locator("section[aria-labelledby=funding]");
       await section.getByRole("button", { name: "By month" }).click();
-      await expect(section.locator("[id$=-months]")).toBeVisible();
+      await expect(
+        section.locator("[data-measure=pledges] [id$=-months]"),
+      ).toBeVisible();
       mkdirSync(OUT, { recursive: true });
       await section.screenshot({
         path: join(OUT, `home-funding-months-${viewport.name}-${scheme}.png`),
+      });
+      // The citizens' year to date (ADR-040, amended), the card's other measure.
+      await section.getByRole("button", { name: "Year to date" }).click();
+      await section.getByRole("button", { name: "Citizens" }).click();
+      await expect(
+        section.locator("[data-measure=citizens] [id$=-ytd]"),
+      ).toBeVisible();
+      await section.screenshot({
+        path: join(OUT, `home-funding-citizens-${viewport.name}-${scheme}.png`),
       });
       await context.close();
     });

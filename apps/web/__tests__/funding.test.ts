@@ -265,3 +265,18 @@ describe("monthPairs", () => {
     expect(formatShare(1.2)).toBe("120%");
   });
 });
+
+describe("citizens on the front page's card (ADR-040, amended 2026-11-11)", () => {
+  it("draws this year against last and each month so far, from the fixture's citizens counter", () => {
+    const citizens = readings(series, "citizens");
+    const against = yearAgainstLastYear(citizens);
+    expect(against).not.toBeNull();
+    expect(against?.yearToDate).toBeGreaterThan(0);
+    expect(against?.lastYearTotal).toBeGreaterThan(0);
+    expect(against?.shareOfLastYear).not.toBeNull();
+    const latestDay = citizens.at(-1)!.day;
+    const pairs = monthPairs(yearRows(citizens), latestDay);
+    expect(pairs).toHaveLength(Number(latestDay.slice(5, 7)));
+    expect(pairs.some((p) => p.change !== null)).toBe(true);
+  });
+});

@@ -68,7 +68,7 @@ export const WIKI_GALLERY_CREDIT = {
 
 /** docs/legal/attribution.md, "RSI loaner ship matrix" row (ADR-015). */
 export const LOANER_MATRIX_CREDIT = {
-  text: "Loaners: the Roberts Space Industries loaner ship matrix, checked weekly.",
+  text: "Loaners: the Roberts Space Industries loaner ship matrix, checked daily.",
   url: "https://support.robertsspaceindustries.com/hc/en-us/articles/360003093114-Loaner-Ship-Matrix",
 } as const;
 

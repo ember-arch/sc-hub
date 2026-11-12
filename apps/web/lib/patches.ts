@@ -73,6 +73,33 @@ export function compareVersions(a: string, b: string): number {
   return 0;
 }
 
+/**
+ * The PTU posts for the version in testing now, newest first, or empty (ADR-049, ADR-046): posts
+ * for a version ahead of LIVE, leaving out a post CIG has marked closed ("[Now Closed] ...", a
+ * tech preview that ended) and every post for a version CIG has already put out on LIVE (its
+ * LIVE release notes or hotfix posts are on the pack, while the wiki's build may lag a day).
+ * Only the version of the newest such post: an older PTU line has gone LIVE or been dropped.
+ */
+export function ptuInTesting(
+  notes: readonly PatchNote[],
+  liveVersion: string | null,
+): PatchNote[] {
+  const released = new Set(
+    notes.filter((n) => n.channel === "LIVE").map((n) => n.version),
+  );
+  const open = notes.filter(
+    (n) =>
+      n.channel === "PTU" &&
+      !/\bclosed\b/i.test(n.audience ?? "") &&
+      !released.has(n.version) &&
+      (liveVersion === null || compareVersions(n.version, liveVersion) > 0),
+  );
+  const newest = open[0];
+  return newest === undefined
+    ? []
+    : open.filter((n) => n.version === newest.version);
+}
+
 let cached: { dir: string; snapshots: PatchSnapshot[] } | undefined;
 
 /** Every snapshot on file, oldest first; empty when the folder is absent. */

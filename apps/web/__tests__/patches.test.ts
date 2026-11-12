@@ -15,6 +15,7 @@ import {
   notesBetween,
   parseCode,
   previousOf,
+  ptuInTesting,
   shipMentions,
   totals,
 } from "../lib/patches";
@@ -538,5 +539,46 @@ describe("the snapshots on record", () => {
   it("give each build one address", () => {
     const list = builds();
     expect(new Set(list.map((b) => b.slug)).size).toBe(list.length);
+  });
+});
+
+describe("ptuInTesting", () => {
+  // The patch pages' "PTU in testing" (ADR-049, ADR-046), from the newest post down.
+  const post = (
+    version: string,
+    channel: "LIVE" | "PTU",
+    audience: string | null = null,
+  ) => ({ version, channel, audience }) as PatchNote;
+
+  it("names the newest PTU version ahead of LIVE, with only that version's posts", () => {
+    const notes = [
+      post("4.10.3", "PTU", "All Waves"),
+      post("4.10.3", "PTU", "Wave 1"),
+      post("4.10.2", "PTU"),
+    ];
+    expect(ptuInTesting(notes, "4.10.2").map((n) => n.audience)).toEqual([
+      "All Waves",
+      "Wave 1",
+    ]);
+  });
+
+  it("drops a version CIG has put out on LIVE, though the wiki's build still lags", () => {
+    const notes = [post("4.10.3", "LIVE"), post("4.10.3", "PTU", "All Waves")];
+    expect(ptuInTesting(notes, "4.10.2")).toEqual([]);
+  });
+
+  it("leaves out a test CIG has closed, so a closed preview never reads as in testing", () => {
+    const notes = [post("5.0.0", "PTU", "Now Closed"), post("4.10.3", "LIVE")];
+    expect(ptuInTesting(notes, "4.10.3")).toEqual([]);
+    expect(
+      ptuInTesting(
+        [post("5.0.0", "PTU", "Now Closed"), post("4.10.4", "PTU", "Wave 1")],
+        "4.10.3",
+      ).map((n) => n.version),
+    ).toEqual(["4.10.4"]);
+  });
+
+  it("names nothing when every PTU post is at or behind LIVE", () => {
+    expect(ptuInTesting([post("4.10.2", "PTU")], "4.10.2")).toEqual([]);
   });
 });

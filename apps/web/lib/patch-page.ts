@@ -7,9 +7,9 @@ import {
   type PatchComparison,
   builds,
   compareBuilds,
-  compareVersions,
   latestLive,
   notesBetween,
+  ptuInTesting,
   previousOf,
   shipMentions,
   totals,
@@ -66,15 +66,9 @@ export function currentPtu(): {
   notes: PatchNote[];
 } | null {
   const live = latestLive();
-  const ptu = allPatchNotes().filter(
-    (n) =>
-      n.channel === "PTU" &&
-      (live === null || compareVersions(n.version, live.version) > 0),
-  );
-  const newest = ptu[0];
+  const same = ptuInTesting(allPatchNotes(), live?.version ?? null);
+  const newest = same[0];
   if (newest === undefined) return null;
-  // Only the version the newest PTU post is for: an older PTU line has gone LIVE or been dropped.
-  const same = ptu.filter((n) => n.version === newest.version);
   return { version: newest.version, build: newest.build, notes: same };
 }
 

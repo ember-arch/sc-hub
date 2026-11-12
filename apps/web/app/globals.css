@@ -152,7 +152,7 @@
 .patch-table .old {
   @apply text-secondary;
 }
-/* ADR-053: Before and After say which side is which; the new value carries the weight. */
+/* ADR-055: Before and After say which side is which; the new value carries the weight. */
 .patch-table thead .side {
   @apply block text-secondary;
 }
@@ -169,6 +169,10 @@
 }
 .patch-table .lead {
   @apply text-right;
+}
+/* A new or removed entry's table: a few figures, kept near their labels (ADR-054). */
+.patch-table.one-side {
+  @apply md:max-w-prose;
 }
 .patch-table .mono {
   @apply font-mono;

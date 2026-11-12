@@ -1,13 +1,6 @@
 import type { ReactNode } from "react";
-import {
-  Badge,
-  EmptyState,
-  SegmentedLinks,
-  StatList,
-  StatRow,
-  TextLink,
-  formatNumber,
-} from "ui";
+import type { PatchValue } from "schema";
+import { Badge, EmptyState, SegmentedLinks, TextLink, formatNumber } from "ui";
 import {
   changeOf,
   formatIngredient,
@@ -84,7 +77,7 @@ export function PatchTabs({
 }
 
 /**
- * One side of a comparison (ADR-053): "From" or "To" over the build's name, its code and date. The
+ * One side of a comparison (ADR-055): "From" or "To" over the build's name, its code and date. The
  * side the page is about, To, carries the weight; From stays quieter. Against a build of the same
  * version (a hotfix) the name carries its number.
  */
@@ -123,7 +116,7 @@ function BuildSide({
 }
 
 /**
- * "From 4.10.1 → To 4.10.2" (ADR-053): the two builds in reading order, old on the left and new on
+ * "From 4.10.1 → To 4.10.2" (ADR-055): the two builds in reading order, old on the left and new on
  * the right, the time between them on the arrow that joins them.
  */
 export function ComparisonHead({
@@ -239,7 +232,7 @@ function ChangeCell({ f }: { readonly f: FigureChange }) {
 }
 
 /**
- * "Before" or "After" over the build it names (ADR-053): a column head that says which side is
+ * "Before" or "After" over the build it names (ADR-055): a column head that says which side is
  * which in words, with the build as its detail.
  */
 function SideHead({
@@ -266,6 +259,18 @@ function SideHead({
   );
 }
 
+/** A value, or a dash where the entry or figure did not exist on that side (ADR-054). */
+function Side({ v }: { readonly v: PatchValue | null }) {
+  return v === null ? (
+    <>
+      <span aria-hidden="true">—</span>
+      <span className="sr-only">none</span>
+    </>
+  ) : (
+    <>{formatValue(v)}</>
+  );
+}
+
 /** The arrow between Before and After, drawn, not read. */
 const Arrow = () => (
   <td className="arrow">
@@ -275,7 +280,7 @@ const Arrow = () => (
 );
 
 /**
- * How far a figure moved, drawn (ADR-053): a bar out from a centre line, right for up and left for
+ * How far a figure moved, drawn (ADR-055): a bar out from a centre line, right for up and left for
  * down, its length the square root of the share it moved, so a 1% change still shows and a
  * doubling fills its half. Numbers only, and not from zero, where a share has no meaning.
  */
@@ -304,19 +309,26 @@ function FigureTable({
   figures,
   from,
   to,
+  status = "changed",
 }: {
   readonly figures: readonly FigureChange[];
   readonly from: string;
   readonly to: string;
+  readonly status?: EntryChange["status"];
 }) {
+  const changed = status === "changed";
+  // A new or removed entry lists a few headline figures: one body, no group headings (each would
+  // head one line). A changed entry groups its figures under their headings.
   const groups: { group: string; rows: FigureChange[] }[] = [];
-  for (const f of figures) {
-    const last = groups.at(-1);
-    if (last !== undefined && last.group === f.group) last.rows.push(f);
-    else groups.push({ group: f.group, rows: [f] });
-  }
+  if (!changed) groups.push({ group: "figures", rows: [...figures] });
+  else
+    for (const f of figures) {
+      const last = groups.at(-1);
+      if (last !== undefined && last.group === f.group) last.rows.push(f);
+      else groups.push({ group: f.group, rows: [f] });
+    }
   return (
-    <table className="patch-table">
+    <table className={changed ? "patch-table" : "patch-table one-side"}>
       <thead>
         <tr>
           <th scope="col">Figure</th>
@@ -325,17 +337,21 @@ function FigureTable({
             <span className="sr-only">to</span>
           </th>
           <SideHead side="After" build={to} />
-          <th scope="col" className="num">
-            Change
-          </th>
-          <th scope="col" className="viz" aria-hidden="true">
-            <span className="sr-only">The change, drawn</span>
-          </th>
+          {changed ? (
+            <>
+              <th scope="col" className="num">
+                Change
+              </th>
+              <th scope="col" className="viz" aria-hidden="true">
+                <span className="sr-only">The change, drawn</span>
+              </th>
+            </>
+          ) : null}
         </tr>
       </thead>
       {groups.map((g) => (
         <tbody key={g.group}>
-          {groups.length > 1 ? (
+          {changed && groups.length > 1 ? (
             <tr className="group">
               <th scope="colgroup" colSpan={6}>
                 {g.group}
@@ -350,15 +366,23 @@ function FigureTable({
                   <span className="unit"> ({f.unit})</span>
                 )}
               </th>
-              <td className="num old">{formatValue(f.from)}</td>
+              <td className="num old">
+                <Side v={f.from} />
+              </td>
               <Arrow />
-              <td className="mono new">{formatValue(f.to)}</td>
-              <td className="num">
-                <ChangeCell f={f} />
+              <td className="mono new">
+                <Side v={f.to} />
               </td>
-              <td className="viz">
-                <Shift f={f} />
-              </td>
+              {changed ? (
+                <>
+                  <td className="num">
+                    <ChangeCell f={f} />
+                  </td>
+                  <td className="viz">
+                    <Shift f={f} />
+                  </td>
+                </>
+              ) : null}
             </tr>
           ))}
         </tbody>
@@ -459,12 +483,10 @@ function IngredientTable({
   rows,
   from,
   to,
-  status,
 }: {
   readonly rows: EntryChange["ingredients"];
   readonly from: string;
   readonly to: string;
-  readonly status: EntryChange["status"];
 }) {
   return (
     <table className="patch-table">
@@ -472,28 +494,24 @@ function IngredientTable({
       <thead>
         <tr>
           <th scope="col">Ingredient</th>
-          {status === "added" ? null : (
-            <SideHead side="Before" build={from} num />
-          )}
-          {status === "changed" ? (
-            <th scope="col" className="arrow">
-              <span className="sr-only">to</span>
-            </th>
-          ) : null}
-          {status === "removed" ? null : <SideHead side="After" build={to} />}
+          <SideHead side="Before" build={from} num />
+          <th scope="col" className="arrow">
+            <span className="sr-only">to</span>
+          </th>
+          <SideHead side="After" build={to} />
         </tr>
       </thead>
       <tbody>
         {rows.map((r) => (
           <tr key={r.name}>
             <th scope="row">{r.name}</th>
-            {status === "added" ? null : (
-              <td className="num old">{formatIngredient(r.from)}</td>
-            )}
-            {status === "changed" ? <Arrow /> : null}
-            {status === "removed" ? null : (
-              <td className="mono new">{formatIngredient(r.to)}</td>
-            )}
+            <td className="num old">
+              {r.from === null ? <Side v={null} /> : formatIngredient(r.from)}
+            </td>
+            <Arrow />
+            <td className="mono new">
+              {r.to === null ? <Side v={null} /> : formatIngredient(r.to)}
+            </td>
           </tr>
         ))}
       </tbody>
@@ -587,6 +605,7 @@ function Entry({
   return (
     <details
       data-patch-entry=""
+      data-status={entry.status}
       data-name={`${entry.name} ${entry.detail ?? ""} ${entry.id} ${KIND_WORDS[kind]} ${tags ?? ""}`.toLowerCase()}
       className="group/entry border-b border-hairline"
     >
@@ -594,7 +613,17 @@ function Entry({
         <Fold scope="entry" />
         <span className="flex min-w-0 flex-1 flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
           <span className="flex min-w-0 flex-col">
-            <span className="text-ui text-primary">{entry.name}</span>
+            <span className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+              <span className="text-ui text-primary">{entry.name}</span>
+              {changed ? null : (
+                <span
+                  data-entry-tag=""
+                  className="rounded-pill bg-inset px-2 text-caption text-secondary"
+                >
+                  {entry.status === "added" ? "New" : "Removed"}
+                </span>
+              )}
+            </span>
             {entry.detail === null ? null : (
               <span className="text-caption text-secondary">
                 {entry.detail}
@@ -665,33 +694,26 @@ function Entry({
         </span>
       </summary>
       <div className="flex flex-col gap-4 pb-6 pl-6">
-        {entry.figures.length === 0 ? null : changed ? (
-          <FigureTable figures={entry.figures} from={from} to={to} />
-        ) : (
-          // A new or removed entry has one side only: its figures, not a table of dashes.
-          <div className="md:max-w-prose">
-            <StatList>
-              {entry.figures.map((f) => (
-                <StatRow
-                  key={f.key}
-                  label={f.label}
-                  value={formatValue(entry.status === "added" ? f.to : f.from)}
-                  unit={f.unit}
-                />
-              ))}
-            </StatList>
-          </div>
+        {changed ? null : (
+          <p className="m-0 text-ui text-secondary" data-entry-note="">
+            {entry.status === "added"
+              ? `New in ${to}: it was not in ${from}, so it has no before.`
+              : `Removed in ${to}: this is how it stood in ${from}.`}
+          </p>
+        )}
+        {entry.figures.length === 0 ? null : (
+          <FigureTable
+            figures={entry.figures}
+            from={from}
+            to={to}
+            status={entry.status}
+          />
         )}
         {entry.loadout.length > 0 ? (
           <LoadoutTable rows={entry.loadout} from={from} to={to} />
         ) : null}
         {entry.ingredients.length > 0 ? (
-          <IngredientTable
-            rows={entry.ingredients}
-            from={from}
-            to={to}
-            status={entry.status}
-          />
+          <IngredientTable rows={entry.ingredients} from={from} to={to} />
         ) : null}
         {mentions.length > 0 ? <Mentions list={mentions} /> : null}
         {entry.href === null ? null : (

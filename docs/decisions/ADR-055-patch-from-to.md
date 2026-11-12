@@ -1,6 +1,6 @@
-# ADR-053: The patch pages read From → To
+# ADR-055: The patch pages read From → To
 
-- Status: accepted
+- Status: accepted; first numbered ADR-053, which the news clock's record (ADR-053-news-clock-on-vercel) also took; renumbered 2026-11-12
 - Date: 2026-11-12
 - Deciders: owner ("on the patch page, it's difficult to really understand the 'from' 'to'; more beautifully designed with clear from/two; think the way you'd brief or show it to a design-focused executive")
 - Amends: ADR-049 (the patch pages' head, tables and folded lines; its "newest first" head and its fixed four-column table are replaced)

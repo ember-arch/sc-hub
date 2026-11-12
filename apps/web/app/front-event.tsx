@@ -53,10 +53,10 @@ export function FrontEvent({
           tone: "success",
           label: `On now · ${dayLabel(lead)} of ${dayCount(event)}`,
         }
-      : phase.kind === "opening"
+      : phase.kind === "opening" || phase.kind === "eve"
         ? {
             tone: "neutral",
-            label: `Opens today, ${formatUtcTime(event.opens_at)}`,
+            label: `Opens ${phase.kind === "eve" ? "tomorrow" : "today"}, ${formatUtcTime(event.opens_at)}`,
           }
         : null;
   return (

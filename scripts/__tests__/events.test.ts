@@ -368,8 +368,10 @@ describe("where the show stands", () => {
   const event = build();
   const at = (iso: string) => eventPhase(event, new Date(iso));
 
-  it("moves from before to opening, through the days, to after", () => {
-    expect(at("2026-11-12T23:59:00Z")).toEqual({ kind: "before" });
+  it("moves from before to its eve and opening, through the days, to after", () => {
+    expect(at("2026-11-11T23:59:00Z")).toEqual({ kind: "before" });
+    expect(at("2026-11-12T00:00:00Z")).toEqual({ kind: "eve" });
+    expect(at("2026-11-12T23:59:00Z")).toEqual({ kind: "eve" });
     expect(at("2026-11-13T00:00:00Z")).toEqual({ kind: "opening" });
     expect(at("2026-11-13T16:00:00Z")).toEqual({ kind: "day", index: 0 });
     expect(at("2026-11-15T18:00:00Z")).toEqual({ kind: "day", index: 2 });
@@ -378,9 +380,10 @@ describe("where the show stands", () => {
     expect(at("2026-11-28T00:00:00Z")).toEqual({ kind: "after" });
   });
 
-  it("is on the front page from the day it opens to the end of its last day", () => {
+  it("is on the front page from its eve to the end of its last day", () => {
     const on = (iso: string) => eventOnFront(event, new Date(iso));
-    expect(on("2026-11-12T23:59:00Z")).toBe(false);
+    expect(on("2026-11-11T23:59:00Z")).toBe(false);
+    expect(on("2026-11-12T00:00:00Z")).toBe(true);
     expect(on("2026-11-13T08:00:00Z")).toBe(true);
     expect(on("2026-11-27T23:59:00Z")).toBe(true);
     expect(on("2026-11-28T00:00:00Z")).toBe(false);
@@ -389,7 +392,8 @@ describe("where the show stands", () => {
   it("names each phase in one word for the state file", () => {
     const key = (iso: string) =>
       phaseKey(event, eventPhase(event, new Date(iso)));
-    expect(key("2026-11-12T12:00:00Z")).toBe("before");
+    expect(key("2026-11-11T12:00:00Z")).toBe("before");
+    expect(key("2026-11-12T12:00:00Z")).toBe("eve");
     expect(key("2026-11-13T12:00:00Z")).toBe("opening");
     expect(key("2026-11-14T17:00:00Z")).toBe("day-2");
     expect(key("2026-11-24T17:00:00Z")).toBe("day-11");

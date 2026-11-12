@@ -39,9 +39,11 @@ export default function EventsPage() {
           ? "On now"
           : phase.kind === "opening"
             ? "Opens today"
-            : phase.kind === "after"
-              ? "Over"
-              : "Coming",
+            : phase.kind === "eve"
+              ? "Opens tomorrow"
+              : phase.kind === "after"
+                ? "Over"
+                : "Coming",
     };
   });
   return (

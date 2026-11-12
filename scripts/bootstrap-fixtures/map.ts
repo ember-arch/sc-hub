@@ -628,12 +628,13 @@ export function mapItemStats(
     channel,
     game_version: requireVersion(raw.version, version, context),
     hp: numberOrNull(raw.durability?.health),
-    // The API gives min/max pairs for power and EM and two regen delays for shields. Picking one
-    // would be an inference, so these stay null and the pairs stay in raw.
+    // Power plants and coolers state one figure each, in segments: what they make while online.
+    // Draw, heat and EM come as min/max pairs or per-state deltas, and shields have two regen
+    // delays. Picking one would be an inference, so those stay null and the pairs stay in raw.
     power_draw: null,
-    power_output: null,
+    power_output: numberOrNull(raw.power_plant?.power_segment_generation),
     heat_generation: null,
-    cooling_rate: null,
+    cooling_rate: numberOrNull(raw.cooler?.coolant_segment_generation),
     em_signature: null,
     ir_signature: numberOrNull(raw.emission?.ir),
     weapon_damage: numberOrNull(raw.vehicle_weapon?.damage?.alpha_total),
@@ -644,6 +645,8 @@ export function mapItemStats(
     shield_regen: numberOrNull(raw.shield?.regen_rate),
     shield_delay: null,
     qd_speed: numberOrNull(raw.quantum_drive?.standard_jump?.drive_speed),
+    // Every drive's jump_range is the float maximum (3.4e38), the game's "no limit": range comes
+    // from the ship's fuel, not the drive. It is not a distance to show.
     qd_range: null,
     qd_fuel_per_jump: null,
     qd_spool_time: numberOrNull(

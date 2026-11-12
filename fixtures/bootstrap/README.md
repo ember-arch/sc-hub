@@ -287,7 +287,8 @@ Game version `4.10.2-LIVE.12881860`, channel LIVE, as reported by the API's defa
 Every value is the API's own; the script only maps the API's type names onto the data model's enumerations (`scripts/bootstrap-fixtures/map.ts`, recorded in ADR-004). Where the API's meaning was ambiguous the field is null and the original values stay in `raw`:
 
 - `VehicleStats.hydrogen_fuel` and `quantum_fuel` are null; `fuel.capacity` and `quantum.quantum_fuel_capacity` map to the two capacity fields.
-- `ItemStats.power_draw`, `power_output`, `heat_generation`, `cooling_rate`, `em_signature`, `shield_delay`, `qd_range` and `qd_fuel_per_jump` are null (the API gives ranges or pairs).
+- `ItemStats.power_output` is the power plant's `power_segment_generation` and `cooling_rate` the cooler's `coolant_segment_generation`, both in segments.
+- `ItemStats.power_draw`, `heat_generation`, `em_signature`, `shield_delay` and `qd_fuel_per_jump` are null (the API gives ranges or pairs). `qd_range` is null because every drive's `jump_range` is the float maximum, the game's "no limit".
 - Units are the API's: metres, kilograms, SCU, metres per second, and degrees per second for the turn rates in `raw.agility` (ADR-043). No conversion was applied.
 - `Vehicle.base_variant_of` is null: the API exposes no base-variant relation.
 - `Vehicle.role` is the ship-matrix focus list joined with commas.

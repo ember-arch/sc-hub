@@ -409,6 +409,42 @@ describe("mapping the item samples", () => {
     expect(shield?.qd_speed).toBe(null);
     expect(quantumDrive?.qd_speed).not.toBe(null);
     expect(quantumDrive?.weapon_damage).toBe(null);
+    expect(quantumDrive?.power_output).toBe(null);
+    expect(quantumDrive?.cooling_rate).toBe(null);
+    // Every drive's jump_range is the float maximum, the game's "no limit": never a range.
+    expect(quantumDrive?.qd_range).toBe(null);
+  });
+
+  it("reads a power plant's and a cooler's output in segments", () => {
+    const [sample] = itemSamples;
+    if (sample === undefined) throw new Error("no item sample");
+    const plant = WikiItem.parse({
+      ...sample,
+      vehicle_weapon: null,
+      ammunition: null,
+      power_plant: { power_segment_generation: 16 },
+    });
+    const cooler = WikiItem.parse({
+      ...sample,
+      vehicle_weapon: null,
+      ammunition: null,
+      cooler: { coolant_segment_generation: 34 },
+    });
+    expect(mapItemStats(plant, channel, version).power_output).toBe(16);
+    expect(mapItemStats(plant, channel, version).cooling_rate).toBe(null);
+    expect(mapItemStats(cooler, channel, version).cooling_rate).toBe(34);
+    expect(mapItemStats(cooler, channel, version).power_output).toBe(null);
+  });
+
+  it("refuses a power plant whose output is not a number", () => {
+    const [sample] = itemSamples;
+    if (sample === undefined) throw new Error("no item sample");
+    expect(() =>
+      WikiItem.parse({
+        ...sample,
+        power_plant: { power_segment_generation: "16" },
+      }),
+    ).toThrow();
   });
 
   it("refuses an item whose type is not a component kind", () => {

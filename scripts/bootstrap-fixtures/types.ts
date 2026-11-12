@@ -127,6 +127,14 @@ export const WikiItem = z.looseObject({
     .nullable()
     .optional(),
   ammunition: z.looseObject({ speed: num }).nullable().optional(),
+  power_plant: z
+    .looseObject({ power_segment_generation: num })
+    .nullable()
+    .optional(),
+  cooler: z
+    .looseObject({ coolant_segment_generation: num })
+    .nullable()
+    .optional(),
 });
 export type WikiItem = z.infer<typeof WikiItem>;
 

@@ -179,7 +179,18 @@ jobs:
           # news clock's first-half-hour run) and no other run this hour was (the gate, ADR-050,
           # ADR-053).
           NEWS_VIDEO_SLOT: ${{ needs.gate.outputs.video }}
-        run: pnpm workers:poll-news
+        # The log is kept for the next step; the default shell's pipefail keeps the poll's own
+        # exit status.
+        run: pnpm workers:poll-news 2>&1 | tee poll-news.log
+      # A source that fails softly (YouTube not answering, ADR-050) leaves the run green; this puts
+      # each such failure on the run's page as a warning, so it is seen without reading the log.
+      - name: Flag the sources that failed softly
+        if: always()
+        run: |
+          [ -f poll-news.log ] || exit 0
+          grep -h '"news.source.failed"' poll-news.log | while IFS= read -r line; do
+            echo "::warning title=A news source failed::${line}"
+          done || true
       - name: Poll Spectrum (off until SPECTRUM_MODE is set)
         continue-on-error: true
         env:

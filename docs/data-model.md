@@ -112,8 +112,8 @@ ModelTier        = preview | full
 | class_name | FK Item | PK with channel + game_version |
 | channel, game_version | | |
 | hp | number nullable | |
-| power_draw, power_output | number nullable | |
-| heat_generation, cooling_rate | number nullable | |
+| power_draw, power_output | number nullable | power_output in segments (power plants) |
+| heat_generation, cooling_rate | number nullable | cooling_rate in segments (coolers) |
 | em_signature, ir_signature | number nullable | |
 | weapon_damage, weapon_fire_rate, weapon_range, projectile_speed | number nullable | Weapons only |
 | shield_hp, shield_regen, shield_delay | number nullable | Shields only |

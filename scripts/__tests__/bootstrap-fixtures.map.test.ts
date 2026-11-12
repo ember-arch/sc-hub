@@ -436,6 +436,24 @@ describe("mapping the item samples", () => {
     expect(mapItemStats(cooler, channel, version).power_output).toBe(null);
   });
 
+  it("halts when the API's own output key disagrees with the segment figure", () => {
+    const [sample] = itemSamples;
+    if (sample === undefined) throw new Error("no item sample");
+    const plant = (power_output: number | null) =>
+      WikiItem.parse({
+        ...sample,
+        power_plant: { power_segment_generation: 16, power_output },
+      });
+    expect(mapItemStats(plant(null), channel, version).power_output).toBe(16);
+    expect(mapItemStats(plant(16), channel, version).power_output).toBe(16);
+    expect(() => mapItemStats(plant(9000), channel, version)).toThrow(MapError);
+    const cooler = WikiItem.parse({
+      ...sample,
+      cooler: { coolant_segment_generation: null, cooling_rate: 34 },
+    });
+    expect(() => mapItemStats(cooler, channel, version)).toThrow(MapError);
+  });
+
   it("refuses a power plant whose output is not a number", () => {
     const [sample] = itemSamples;
     if (sample === undefined) throw new Error("no item sample");

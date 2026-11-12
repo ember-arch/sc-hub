@@ -128,11 +128,11 @@ export const WikiItem = z.looseObject({
     .optional(),
   ammunition: z.looseObject({ speed: num }).nullable().optional(),
   power_plant: z
-    .looseObject({ power_segment_generation: num })
+    .looseObject({ power_segment_generation: num, power_output: num })
     .nullable()
     .optional(),
   cooler: z
-    .looseObject({ coolant_segment_generation: num })
+    .looseObject({ coolant_segment_generation: num, cooling_rate: num })
     .nullable()
     .optional(),
 });

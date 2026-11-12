@@ -76,6 +76,30 @@ test.describe("the patch pages", () => {
     }
   });
 
+  // ADR-053: the comparison reads From → To, and the tables say Before and After.
+  test("the head reads From, then To, and an entry's table says Before and After", async ({
+    page,
+  }) => {
+    await page.goto("/patches");
+    const head = page.locator("[data-comparison]");
+    await expect(head).toBeVisible();
+    const text = (await head.textContent()) ?? "";
+    expect(text.indexOf("From")).toBeGreaterThanOrEqual(0);
+    expect(text.indexOf("From")).toBeLessThan(text.indexOf("To"));
+    const changed = page.locator("#ships details[data-patch-entry]").filter({
+      hasText: /changes?$/,
+    });
+    test.skip((await changed.count()) === 0, "no ship changed");
+    await changed.first().locator("summary").click();
+    const heads = changed
+      .first()
+      .locator("table")
+      .first()
+      .getByRole("columnheader");
+    await expect(heads.filter({ hasText: "Before" })).toHaveCount(1);
+    await expect(heads.filter({ hasText: "After" })).toHaveCount(1);
+  });
+
   test("the filter narrows the entries by name and says how many match", async ({
     page,
   }) => {

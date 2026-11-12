@@ -10,7 +10,7 @@ import { userAgent } from "schema/site";
 /**
  * The news clock (ADR-053): Vercel's cron calls this at seven and thirty-seven past the hour
  * (apps/web/vercel.json), and it starts the News workflow through GitHub's workflow-dispatch API
- * unless a run is queued or under way; the workflow's gate job spaces the runs after that
+ * unless a dispatched run is queued or under way; the workflow's gate job spaces the runs after that
  * (NEWS_SETTLE_MS). It needs CRON_SECRET, which Vercel
  * sends as a bearer token, and NEWS_DISPATCH_TOKEN, a fine-grained token for this repository with
  * Actions read and write only; without the token it answers and does nothing, and the workflow's

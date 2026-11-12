@@ -11,12 +11,16 @@ const call = (authorization?: string) =>
     }),
   );
 
-const runs = (status: string, updated_at: string) =>
+const runs = (
+  status: string,
+  updated_at: string,
+  event = "workflow_dispatch",
+) =>
   Response.json({
     workflow_runs: [
       {
         id: 7,
-        event: "schedule",
+        event,
         status,
         created_at: updated_at,
         updated_at,

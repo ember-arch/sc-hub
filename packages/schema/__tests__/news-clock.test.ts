@@ -51,11 +51,11 @@ describe("decideNewsClock", () => {
   });
 
   it.each(["queued", "in_progress", "waiting", "pending", "requested", null])(
-    "never starts one while another is %s",
+    "never starts one while a dispatched run is %s",
     (status) => {
       const decision = decideNewsClock(
         [
-          run(3, status, "2026-11-12T05:00:00Z"),
+          run(3, status, "2026-11-12T05:00:00Z", "workflow_dispatch"),
           run(2, "completed", "2026-11-12T04:00:00Z"),
         ],
         new Date("2026-11-12T07:07:00Z"),
@@ -64,6 +64,15 @@ describe("decideNewsClock", () => {
       expect(decision).toMatchObject({ reason: expect.stringContaining("3") });
     },
   );
+
+  it("is not held back by a scheduled run under way, which most likely stands aside; the gate spaces the two if not", () => {
+    expect(
+      decideNewsClock(
+        [run(3, "in_progress", "2026-11-12T07:06:50Z", "schedule")],
+        new Date("2026-11-12T07:07:00Z"),
+      ),
+    ).toEqual({ dispatch: true, video_slot: "due" });
+  });
 
   it("is not held back by a run that ended a moment ago, such as a scheduled run that stood aside: the gate spaces the runs", () => {
     expect(
@@ -86,15 +95,29 @@ describe("the workflow's gate", () => {
     expect(workflow).toContain(`-lt ${NEWS_SCHEDULE_STANDS_ASIDE_MS / 1000} ]`);
   });
 
-  it("holds every run back for NEWS_SETTLE_MS after the last one ended, longer than Spectrum's five minutes", () => {
+  it("holds every run back for NEWS_SETTLE_MS after the latest end of the recent runs, and the whole span when it cannot tell", () => {
+    const settle = NEWS_SETTLE_MS / 1000;
     expect(NEWS_SETTLE_MS).toBeGreaterThan(5 * 60_000);
-    expect(workflow).toContain(`pause=$(( ${NEWS_SETTLE_MS / 1000} - `);
+    expect(workflow).toContain(`pause=$(( ${settle} - `);
+    // The default, kept when the API or the date cannot be read.
+    expect(workflow).toContain(`pause=${settle}\n`);
+    // The latest end, not the newest-created run's (the list is in creation order).
+    expect(workflow).toContain("status=completed&per_page=30");
+    expect(workflow).toContain(".updated_at] | max");
   });
 
-  it("lets the poll go when the gate fails, and only stops it on a stand-aside", () => {
+  it("runs the poll only on the gate's word: a failed gate never searches Spectrum unspaced", () => {
+    expect(workflow).toContain("if: needs.gate.outputs.go == 'true'");
     expect(workflow).toContain(
-      "if: ${{ !cancelled() && needs.gate.outputs.go != 'false' }}",
+      "NEWS_VIDEO_SLOT: ${{ needs.gate.outputs.video }}",
     );
+  });
+
+  it("cancels a run that stands aside, so the video check never takes it for a read", () => {
+    expect(workflow).toContain('gh run cancel "$RUN_ID"');
+    expect(workflow).toContain('.conclusion != \\"cancelled\\"');
+    expect(workflow).toContain("'News, with the video feed'");
+    expect(workflow).toContain('contains(\\"video feed\\")');
   });
 });
 

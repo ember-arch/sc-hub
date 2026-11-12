@@ -53,15 +53,19 @@ export type NewsClockDecision =
 
 /**
  * Whether the clock starts a run now, given the workflow's latest runs (newest first, any event):
- * never while another is queued or under way, since that run already covers the slot and a second
- * would only queue behind it. The spacing after a run ends is the gate's (NEWS_SETTLE_MS), so a
- * scheduled run that stood aside a minute ago costs the clock nothing.
+ * never while a dispatched run is queued or under way, since that run already covers the slot. A
+ * scheduled run under way does not hold the clock back: it is most likely about to stand aside,
+ * and if it goes, the clock's run queues behind it and the gate spaces the two (NEWS_SETTLE_MS)
+ * and gives the hour's video feed to one of them only. The spacing after a run ends is the gate's
+ * too, so a scheduled run that stood aside a minute ago costs the clock nothing.
  */
 export function decideNewsClock(
   runs: readonly NewsWorkflowRun[],
   now: Date,
 ): NewsClockDecision {
-  const busy = runs.find((run) => run.status !== "completed");
+  const busy = runs.find(
+    (run) => run.status !== "completed" && run.event !== "schedule",
+  );
   if (busy !== undefined) {
     return {
       dispatch: false,

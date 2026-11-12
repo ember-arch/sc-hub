@@ -7,6 +7,7 @@ import {
   dayStatuses,
   eventBanner,
   eventDates,
+  formatUtcMoment,
   formatUtcTime,
   hullsOn,
   leadDay,
@@ -53,12 +54,19 @@ export function FrontEvent({
           tone: "success",
           label: `On now · ${dayLabel(lead)} of ${dayCount(event)}`,
         }
-      : phase.kind === "opening" || phase.kind === "eve"
+      : phase.kind === "opening"
         ? {
             tone: "neutral",
-            label: `Opens ${phase.kind === "eve" ? "tomorrow" : "today"}, ${formatUtcTime(event.opens_at)}`,
+            label: `Opens today, ${formatUtcTime(event.opens_at)}`,
           }
-        : null;
+        : phase.kind === "eve"
+          ? // The date, not "tomorrow": the page is built once, and the words must stay true
+            // in the minutes after midnight before the next build (ADR-057).
+            {
+              tone: "neutral",
+              label: `Opens ${formatUtcMoment(event.opens_at)}`,
+            }
+          : null;
   return (
     <div className="flex flex-col gap-4">
       <EventOpening

@@ -40,7 +40,7 @@ export default function EventsPage() {
           : phase.kind === "opening"
             ? "Opens today"
             : phase.kind === "eve"
-              ? "Opens tomorrow"
+              ? "Coming"
               : phase.kind === "after"
                 ? "Over"
                 : "Coming",

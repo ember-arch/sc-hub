@@ -101,10 +101,10 @@ export default async function EventPage({ params }: Params) {
         }
       : phase.kind === "after"
         ? { tone: "neutral", label: `Over · ran ${eventDates(event)}` }
-        : phase.kind === "opening" || phase.kind === "eve"
+        : phase.kind === "opening"
           ? {
               tone: "neutral",
-              label: `Opens ${phase.kind === "eve" ? "tomorrow" : "today"}, ${formatUtcTime(event.opens_at)}`,
+              label: `Opens today, ${formatUtcTime(event.opens_at)}`,
             }
           : {
               tone: "neutral",

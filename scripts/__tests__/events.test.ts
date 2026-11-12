@@ -455,6 +455,21 @@ describe("a run of the step", () => {
     read_at,
   });
 
+  it("reads RSI on the eve and again when the opening day starts", () => {
+    // The state on file the evening before IAE 2956: read in "before" at 19:11.
+    const before = seen("before", "2026-11-12T19:11:51.000Z");
+    expect(isDue(event, before, new Date("2026-11-12T21:07:00Z"), false)).toBe(
+      true,
+    );
+    const eve = seen("eve", "2026-11-12T21:07:00.000Z");
+    expect(isDue(event, eve, new Date("2026-11-12T21:37:00Z"), false)).toBe(
+      false,
+    );
+    expect(isDue(event, eve, new Date("2026-11-13T00:07:00Z"), false)).toBe(
+      true,
+    );
+  });
+
   it("reads RSI when an event is new, moves on, or a new UTC day starts, or when forced", () => {
     const t = new Date("2026-11-14T17:00:00Z");
     expect(isDue(undefined, undefined, t, false)).toBe(true);

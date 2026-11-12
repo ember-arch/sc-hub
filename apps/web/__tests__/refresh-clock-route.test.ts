@@ -119,4 +119,12 @@ describe("GET /api/cron/refresh", () => {
     fetchMock.mockRejectedValueOnce(new Error("network down"));
     expect((await call(`Bearer ${SECRET}`)).status).toBe(502);
   });
+
+  it("answers 502 and starts nothing when the run list is not the shape it reads", async () => {
+    fetchMock.mockResolvedValueOnce(
+      Response.json({ workflow_runs: [{ id: "seven" }] }),
+    );
+    expect((await call(`Bearer ${SECRET}`)).status).toBe(502);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
 });

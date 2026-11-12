@@ -6,26 +6,17 @@ import { NewsWorkflowRun } from "./news-clock.js";
  * when its queues are busy (15:27 on 12 Nov 2026, 14:35 the day before), so the Vercel cron job
  * that already starts the News workflow (ADR-053) starts the refresh at 06:23 too, through the same
  * workflow-dispatch API and token. The workflow's schedule stays as the backup and stands aside
- * when the clock already ran it that day. This module is the clock's decision, free of I/O so the
- * unit suite can pin it, and the span the workflow's gate job uses, which a test checks against
- * .github/workflows/refresh.yml.
+ * when a dispatched run was created on the same UTC date. This module is the clock's decision,
+ * free of I/O so the unit suite can pin it; a test checks the gate job in
+ * .github/workflows/refresh.yml keys on the same date.
+ *
+ * Both rules count runs by UTC date, not by a rolling window: a run started by hand in the evening
+ * is that day's refresh, and the next morning's clock still runs. With windows of twelve and twenty
+ * hours, a hand run at 20:00 held back both the clock at 06:23 and the late schedule at 15:00 the
+ * next day, and the site lost a day.
  */
 
 export const REFRESH_WORKFLOW = "refresh.yml";
-
-/**
- * A scheduled run stands aside when a dispatched run was created within this long (the gate job
- * reads it). The schedule's run comes at 06:23 or, late, any time up to the evening; the clock's
- * started at 06:23, so the late one is always inside the span. When the clock has not run for a
- * day, the schedule's run goes as before.
- */
-export const REFRESH_SCHEDULE_STANDS_ASIDE_MS = 20 * 60 * 60_000;
-
-/**
- * The clock starts nothing when a dispatched run was created within this long: a cron call
- * delivered twice, or a run started by hand earlier that morning, already did the day's refresh.
- */
-export const REFRESH_CLOCK_GAP_MS = 12 * 60 * 60_000;
 
 /** The run fields the refresh clock reads: the news clock's, and how a finished run ended. */
 export const RefreshWorkflowRun = NewsWorkflowRun.extend({
@@ -43,11 +34,18 @@ export type RefreshClockDecision =
   | { readonly dispatch: true }
   | { readonly dispatch: false; readonly reason: string };
 
+/** The UTC date of an instant, `YYYY-MM-DD`, the prefix GitHub's `created_at` carries. */
+export function utcDate(at: Date): string {
+  return at.toISOString().slice(0, 10);
+}
+
 /**
  * Whether the clock starts the refresh now, given the workflow's latest runs (newest first, any
  * event): never while any run is queued or under way, however it was started, since a refresh
  * asks RSI and the wiki for thousands of pages and a second one behind it would ask again; and
- * never when a dispatched run that was not cancelled was created within REFRESH_CLOCK_GAP_MS.
+ * never when a dispatched run that was not cancelled was created on today's UTC date (a cron call
+ * delivered twice, or a run started by hand before 06:23). A dispatched run that failed still
+ * counts as the day's run, as a scheduled one that failed always has.
  */
 export function decideRefreshClock(
   runs: readonly RefreshWorkflowRun[],
@@ -60,16 +58,17 @@ export function decideRefreshClock(
       reason: `run ${busy.id} is ${busy.status ?? "of no status"}`,
     };
   }
-  const recent = runs.find(
+  const today = utcDate(now);
+  const ran = runs.find(
     (run) =>
       run.event === "workflow_dispatch" &&
       run.conclusion !== "cancelled" &&
-      now.getTime() - Date.parse(run.created_at) < REFRESH_CLOCK_GAP_MS,
+      run.created_at.startsWith(today),
   );
-  if (recent !== undefined) {
+  if (ran !== undefined) {
     return {
       dispatch: false,
-      reason: `run ${recent.id} was started at ${recent.created_at}, under ${REFRESH_CLOCK_GAP_MS / 3_600_000} hours ago`,
+      reason: `run ${ran.id} was started at ${ran.created_at}, already today (UTC)`,
     };
   }
   return { dispatch: true };

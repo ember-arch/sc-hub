@@ -11,7 +11,7 @@ import { cronAuthorized } from "../../../../lib/cron-auth";
 /**
  * The refresh clock (ADR-056): Vercel's cron calls this at 06:23 UTC (apps/web/vercel.json), and
  * it starts the daily refresh through GitHub's workflow-dispatch API unless a run is queued or under
- * way or one was started by dispatch within the last twelve hours. It uses the news clock's
+ * way or one was started by dispatch earlier the same UTC day. It uses the news clock's
  * credentials (ADR-053): CRON_SECRET, which Vercel sends as a bearer token, and
  * NEWS_DISPATCH_TOKEN, the fine-grained token for this repository with Actions read and write only,
  * which covers every workflow in it. Without the token it answers and does nothing, and the

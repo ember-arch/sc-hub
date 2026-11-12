@@ -1,13 +1,12 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
-  REFRESH_CLOCK_GAP_MS,
-  REFRESH_SCHEDULE_STANDS_ASIDE_MS,
   type RefreshWorkflowRun,
   decideRefreshClock,
+  utcDate,
 } from "../refresh-clock.js";
 
-// ADR-056: the refresh clock's decision and the span the workflow's gate uses.
+// ADR-056: the refresh clock's decision and the workflow's gate.
 
 const now = new Date("2026-11-13T06:23:00Z");
 const run = (
@@ -22,7 +21,7 @@ const run = (
 });
 
 describe("decideRefreshClock", () => {
-  it("starts the refresh when nothing ran today", () => {
+  it("starts the refresh when nothing was dispatched today", () => {
     expect(decideRefreshClock([], now)).toEqual({ dispatch: true });
     expect(
       decideRefreshClock(
@@ -31,6 +30,19 @@ describe("decideRefreshClock", () => {
           run({ event: "schedule", created_at: "2026-11-12T15:27:52Z" }),
         ],
         now,
+      ),
+    ).toEqual({ dispatch: true });
+  });
+
+  it("still runs the morning after a refresh started by hand last evening", () => {
+    // The case a rolling window lost: a hand run at 20:00 is the previous day's refresh.
+    expect(
+      decideRefreshClock([run({ created_at: "2026-11-12T20:00:00Z" })], now),
+    ).toEqual({ dispatch: true });
+    expect(
+      decideRefreshClock(
+        [run({ created_at: "2026-11-12T23:59:59Z" })],
+        new Date("2026-11-13T00:00:00Z"),
       ),
     ).toEqual({ dispatch: true });
   });
@@ -52,15 +64,23 @@ describe("decideRefreshClock", () => {
     },
   );
 
-  it("starts nothing when a dispatched run began within the gap, a cron call delivered twice or a hand start", () => {
-    const decision = decideRefreshClock(
-      [run({ created_at: "2026-11-13T06:23:01Z" })],
-      new Date("2026-11-13T06:23:40Z"),
-    );
-    expect(decision.dispatch).toBe(false);
+  it("starts nothing when a dispatched run was created today: a cron call delivered twice, or a hand start before 06:23", () => {
     expect(
-      decideRefreshClock([run({ created_at: "2026-11-13T01:00:00Z" })], now)
+      decideRefreshClock(
+        [run({ created_at: "2026-11-13T06:23:01Z" })],
+        new Date("2026-11-13T06:23:40Z"),
+      ).dispatch,
+    ).toBe(false);
+    expect(
+      decideRefreshClock([run({ created_at: "2026-11-13T00:00:00Z" })], now)
         .dispatch,
+    ).toBe(false);
+    // A dispatched run that failed is still the day's run, as a failed scheduled one always was.
+    expect(
+      decideRefreshClock(
+        [run({ conclusion: "failure", created_at: "2026-11-13T01:00:00Z" })],
+        now,
+      ).dispatch,
     ).toBe(false);
   });
 
@@ -75,6 +95,11 @@ describe("decideRefreshClock", () => {
       ),
     ).toEqual({ dispatch: true });
   });
+
+  it("reads the UTC date GitHub's created_at starts with", () => {
+    expect(utcDate(new Date("2026-11-13T23:59:59.999Z"))).toBe("2026-11-13");
+    expect(utcDate(new Date("2026-11-13T00:00:00-08:00"))).toBe("2026-11-13");
+  });
 });
 
 describe("the workflow's gate", () => {
@@ -83,19 +108,18 @@ describe("the workflow's gate", () => {
     "utf8",
   );
 
-  it("stands a scheduled run aside for REFRESH_SCHEDULE_STANDS_ASIDE_MS after a dispatched one", () => {
-    // Long enough to cover a schedule run as late as the evening, short of the next day's clock.
-    expect(REFRESH_SCHEDULE_STANDS_ASIDE_MS).toBeGreaterThan(16 * 3_600_000);
-    expect(REFRESH_SCHEDULE_STANDS_ASIDE_MS).toBeLessThan(24 * 3_600_000);
-    expect(REFRESH_CLOCK_GAP_MS).toBeLessThan(24 * 3_600_000);
-    expect(workflow).toContain(
-      `-lt ${REFRESH_SCHEDULE_STANDS_ASIDE_MS / 1000} ]`,
-    );
+  it("stands a scheduled run aside only for a dispatched run created on the same UTC date", () => {
+    expect(workflow).toContain("today=$(date -u +%F)");
+    expect(workflow).toContain('startswith(\\"$today\\")');
+    expect(workflow).toContain('.conclusion != \\"cancelled\\"');
+    expect(workflow).toContain("event=workflow_dispatch");
   });
 
-  it("runs the refresh job only when the gate lets it go", () => {
+  it("runs the refresh job unless the gate said no, so a failed gate still refreshes", () => {
     expect(workflow).toContain("needs: gate");
-    expect(workflow).toContain("if: needs.gate.outputs.go == 'true'");
+    expect(workflow).toContain(
+      "if: ${{ !cancelled() && needs.gate.outputs.go != 'false' }}",
+    );
   });
 
   it("keeps the schedule the clock mirrors", () => {

@@ -11,6 +11,7 @@ export * from "./entities/cargo-box.js";
 export * from "./entities/ship-fit.js";
 export * from "./media.js";
 export * from "./concept.js";
+export * from "./event.js";
 export * from "./entities/port.js";
 export * from "./entities/item.js";
 export * from "./entities/item-stats.js";

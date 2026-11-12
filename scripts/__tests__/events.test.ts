@@ -368,8 +368,10 @@ describe("where the show stands", () => {
   const event = build();
   const at = (iso: string) => eventPhase(event, new Date(iso));
 
-  it("moves from before to opening, through the days, to after", () => {
-    expect(at("2026-11-12T23:59:00Z")).toEqual({ kind: "before" });
+  it("moves from before to its eve and opening, through the days, to after", () => {
+    expect(at("2026-11-11T23:59:00Z")).toEqual({ kind: "before" });
+    expect(at("2026-11-12T00:00:00Z")).toEqual({ kind: "eve" });
+    expect(at("2026-11-12T23:59:00Z")).toEqual({ kind: "eve" });
     expect(at("2026-11-13T00:00:00Z")).toEqual({ kind: "opening" });
     expect(at("2026-11-13T16:00:00Z")).toEqual({ kind: "day", index: 0 });
     expect(at("2026-11-15T18:00:00Z")).toEqual({ kind: "day", index: 2 });
@@ -378,9 +380,10 @@ describe("where the show stands", () => {
     expect(at("2026-11-28T00:00:00Z")).toEqual({ kind: "after" });
   });
 
-  it("is on the front page from the day it opens to the end of its last day", () => {
+  it("is on the front page from its eve to the end of its last day", () => {
     const on = (iso: string) => eventOnFront(event, new Date(iso));
-    expect(on("2026-11-12T23:59:00Z")).toBe(false);
+    expect(on("2026-11-11T23:59:00Z")).toBe(false);
+    expect(on("2026-11-12T00:00:00Z")).toBe(true);
     expect(on("2026-11-13T08:00:00Z")).toBe(true);
     expect(on("2026-11-27T23:59:00Z")).toBe(true);
     expect(on("2026-11-28T00:00:00Z")).toBe(false);
@@ -389,7 +392,8 @@ describe("where the show stands", () => {
   it("names each phase in one word for the state file", () => {
     const key = (iso: string) =>
       phaseKey(event, eventPhase(event, new Date(iso)));
-    expect(key("2026-11-12T12:00:00Z")).toBe("before");
+    expect(key("2026-11-11T12:00:00Z")).toBe("before");
+    expect(key("2026-11-12T12:00:00Z")).toBe("eve");
     expect(key("2026-11-13T12:00:00Z")).toBe("opening");
     expect(key("2026-11-14T17:00:00Z")).toBe("day-2");
     expect(key("2026-11-24T17:00:00Z")).toBe("day-11");
@@ -449,6 +453,21 @@ describe("a run of the step", () => {
     phase,
     body_url: BODY_URL,
     read_at,
+  });
+
+  it("reads RSI on the eve and again when the opening day starts", () => {
+    // The state on file the evening before IAE 2956: read in "before" at 19:11.
+    const before = seen("before", "2026-11-12T19:11:51.000Z");
+    expect(isDue(event, before, new Date("2026-11-12T21:07:00Z"), false)).toBe(
+      true,
+    );
+    const eve = seen("eve", "2026-11-12T21:07:00.000Z");
+    expect(isDue(event, eve, new Date("2026-11-12T21:37:00Z"), false)).toBe(
+      false,
+    );
+    expect(isDue(event, eve, new Date("2026-11-13T00:07:00Z"), false)).toBe(
+      true,
+    );
   });
 
   it("reads RSI when an event is new, moves on, or a new UTC day starts, or when forced", () => {

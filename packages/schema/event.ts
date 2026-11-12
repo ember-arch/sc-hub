@@ -148,12 +148,15 @@ export const EventRecord = z.strictObject({
 export type EventRecord = z.infer<typeof EventRecord>;
 
 /**
- * Where an event stands at a moment (ADR-057). `before` until the UTC day it opens; `opening` on
- * that day before the doors open; `day` inside an entry's hours; `after` once its last day is
- * over. The site shows the event on the front page from `opening` to the end of its last day.
+ * Where an event stands at a moment (ADR-057). `before` until the UTC day before it opens; `eve`
+ * on that day; `opening` on the day it opens, before the doors open; `day` inside an entry's
+ * hours; `after` once its last day is over. The site shows the event on the front page from its
+ * eve to the end of its last day (the owner, 2026-11-12: "we can launch it now since IAE is
+ * tomorrow").
  */
 export type EventPhase =
   | { readonly kind: "before" }
+  | { readonly kind: "eve" }
   | { readonly kind: "opening" }
   | { readonly kind: "day"; readonly index: number }
   | { readonly kind: "after" };
@@ -172,7 +175,8 @@ export function eventPhase(
   const opens = Date.parse(event.opens_at);
   const over = Date.parse(`${event.last_day}T00:00:00.000Z`) + DAY_MS;
   if (t >= over) return { kind: "after" };
-  if (t < utcDayStart(opens)) return { kind: "before" };
+  if (t < utcDayStart(opens) - DAY_MS) return { kind: "before" };
+  if (t < utcDayStart(opens)) return { kind: "eve" };
   if (t < opens) return { kind: "opening" };
   // The latest entry that has opened: entries follow one another, and a gap keeps the last one.
   let index = 0;
@@ -182,7 +186,7 @@ export function eventPhase(
   return { kind: "day", index };
 }
 
-/** A phase as one word, for the fetcher's state file: "before", "opening", "day-3", "after". */
+/** A phase as one word, for the fetcher's state file: "before", "eve", "opening", "day-3", "after". */
 export function phaseKey(
   event: Pick<EventRecord, "opens_at" | "last_day" | "days">,
   phase: EventPhase,
@@ -192,13 +196,13 @@ export function phaseKey(
   return day === undefined ? "day" : `day-${day.first}`;
 }
 
-/** Whether the front page carries the event: from the UTC day it opens to the end of its last day. */
+/** Whether the front page carries the event: from its eve (the UTC day before it opens) to the end of its last day. */
 export function eventOnFront(
   event: Pick<EventRecord, "opens_at" | "last_day" | "days">,
   at: Date,
 ): boolean {
   const kind = eventPhase(event, at).kind;
-  return kind === "opening" || kind === "day";
+  return kind === "eve" || kind === "opening" || kind === "day";
 }
 
 /** The short names CIG uses for its shows. */

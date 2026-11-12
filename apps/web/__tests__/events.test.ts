@@ -42,9 +42,13 @@ describe("the events on file", () => {
     expect([...opens].sort().reverse()).toEqual(opens);
   });
 
-  it("puts a show on the front page only while it runs", () => {
+  it("puts a show on the front page from its eve to the end of its last day", () => {
     const list = [iae()];
-    expect(frontEvent(new Date("2026-11-12T12:00:00Z"), list)).toBeNull();
+    expect(frontEvent(new Date("2026-11-11T12:00:00Z"), list)).toBeNull();
+    // The day before it opens, the hero already says so.
+    expect(frontEvent(new Date("2026-11-12T12:00:00Z"), list)?.slug).toBe(
+      "iae-2956",
+    );
     expect(frontEvent(new Date("2026-11-13T09:00:00Z"), list)?.slug).toBe(
       "iae-2956",
     );

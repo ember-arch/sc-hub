@@ -170,6 +170,10 @@
 .patch-table .lead {
   @apply text-right;
 }
+/* A new or removed entry's table: a few figures, kept near their labels (ADR-054). */
+.patch-table.one-side {
+  @apply md:max-w-prose;
+}
 .patch-table .mono {
   @apply font-mono;
 }

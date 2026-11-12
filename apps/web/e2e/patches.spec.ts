@@ -212,6 +212,29 @@ test.describe("the patch pages", () => {
     await context.close();
   });
 
+  // ADR-054: a new entry says it is new, and still reads Before → After, with no before.
+  test("a new ship is tagged New and opens on Before → After with an empty before", async ({
+    page,
+  }) => {
+    await page.goto("/patches");
+    const fresh = page.locator("#ships details[data-patch-entry]").filter({
+      has: page.locator("summary", { hasText: "New" }),
+    });
+    test.skip((await fresh.count()) === 0, "no new ship in this patch");
+    const entry = fresh.first();
+    await entry.locator("summary").click();
+    await expect(entry.locator("[data-entry-note]")).toContainText(/^New in /);
+    const table = entry.locator("table").first();
+    const heads = table.getByRole("columnheader");
+    await expect(heads.filter({ hasText: "Before" })).toHaveCount(1);
+    await expect(heads.filter({ hasText: "After" })).toHaveCount(1);
+    await expect(heads.filter({ hasText: "Change" })).toHaveCount(0);
+    // Every Before cell is the dash, read as "none".
+    const before = await table.locator("td.old").allTextContents();
+    expect(before.length).toBeGreaterThan(0);
+    for (const cell of before) expect(cell).toContain("none");
+  });
+
   test("an unknown patch is a 404", async ({ page }) => {
     const response = await page.goto("/patches/0.0.1");
     expect(response?.status()).toBe(404);

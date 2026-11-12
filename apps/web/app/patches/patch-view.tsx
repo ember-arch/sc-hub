@@ -1,13 +1,6 @@
 import type { ReactNode } from "react";
-import {
-  Badge,
-  EmptyState,
-  SegmentedLinks,
-  StatList,
-  StatRow,
-  TextLink,
-  formatNumber,
-} from "ui";
+import type { PatchValue } from "schema";
+import { Badge, EmptyState, SegmentedLinks, TextLink, formatNumber } from "ui";
 import {
   changeOf,
   formatIngredient,
@@ -266,6 +259,18 @@ function SideHead({
   );
 }
 
+/** A value, or a dash where the entry or figure did not exist on that side (ADR-054). */
+function Side({ v }: { readonly v: PatchValue | null }) {
+  return v === null ? (
+    <>
+      <span aria-hidden="true">—</span>
+      <span className="sr-only">none</span>
+    </>
+  ) : (
+    <>{formatValue(v)}</>
+  );
+}
+
 /** The arrow between Before and After, drawn, not read. */
 const Arrow = () => (
   <td className="arrow">
@@ -304,11 +309,14 @@ function FigureTable({
   figures,
   from,
   to,
+  status = "changed",
 }: {
   readonly figures: readonly FigureChange[];
   readonly from: string;
   readonly to: string;
+  readonly status?: EntryChange["status"];
 }) {
+  const changed = status === "changed";
   const groups: { group: string; rows: FigureChange[] }[] = [];
   for (const f of figures) {
     const last = groups.at(-1);
@@ -316,7 +324,7 @@ function FigureTable({
     else groups.push({ group: f.group, rows: [f] });
   }
   return (
-    <table className="patch-table">
+    <table className={changed ? "patch-table" : "patch-table one-side"}>
       <thead>
         <tr>
           <th scope="col">Figure</th>
@@ -325,19 +333,24 @@ function FigureTable({
             <span className="sr-only">to</span>
           </th>
           <SideHead side="After" build={to} />
-          <th scope="col" className="num">
-            Change
-          </th>
-          <th scope="col" className="viz" aria-hidden="true">
-            <span className="sr-only">The change, drawn</span>
-          </th>
+          {changed ? (
+            <>
+              <th scope="col" className="num">
+                Change
+              </th>
+              <th scope="col" className="viz" aria-hidden="true">
+                <span className="sr-only">The change, drawn</span>
+              </th>
+            </>
+          ) : null}
         </tr>
       </thead>
       {groups.map((g) => (
         <tbody key={g.group}>
-          {groups.length > 1 ? (
+          {/* A new or removed entry lists a few headline figures; their groups would be one line each. */}
+          {changed && groups.length > 1 ? (
             <tr className="group">
-              <th scope="colgroup" colSpan={6}>
+              <th scope="colgroup" colSpan={changed ? 6 : 4}>
                 {g.group}
               </th>
             </tr>
@@ -350,15 +363,23 @@ function FigureTable({
                   <span className="unit"> ({f.unit})</span>
                 )}
               </th>
-              <td className="num old">{formatValue(f.from)}</td>
+              <td className="num old">
+                <Side v={f.from} />
+              </td>
               <Arrow />
-              <td className="mono new">{formatValue(f.to)}</td>
-              <td className="num">
-                <ChangeCell f={f} />
+              <td className="mono new">
+                <Side v={f.to} />
               </td>
-              <td className="viz">
-                <Shift f={f} />
-              </td>
+              {changed ? (
+                <>
+                  <td className="num">
+                    <ChangeCell f={f} />
+                  </td>
+                  <td className="viz">
+                    <Shift f={f} />
+                  </td>
+                </>
+              ) : null}
             </tr>
           ))}
         </tbody>
@@ -459,12 +480,10 @@ function IngredientTable({
   rows,
   from,
   to,
-  status,
 }: {
   readonly rows: EntryChange["ingredients"];
   readonly from: string;
   readonly to: string;
-  readonly status: EntryChange["status"];
 }) {
   return (
     <table className="patch-table">
@@ -472,28 +491,24 @@ function IngredientTable({
       <thead>
         <tr>
           <th scope="col">Ingredient</th>
-          {status === "added" ? null : (
-            <SideHead side="Before" build={from} num />
-          )}
-          {status === "changed" ? (
-            <th scope="col" className="arrow">
-              <span className="sr-only">to</span>
-            </th>
-          ) : null}
-          {status === "removed" ? null : <SideHead side="After" build={to} />}
+          <SideHead side="Before" build={from} num />
+          <th scope="col" className="arrow">
+            <span className="sr-only">to</span>
+          </th>
+          <SideHead side="After" build={to} />
         </tr>
       </thead>
       <tbody>
         {rows.map((r) => (
           <tr key={r.name}>
             <th scope="row">{r.name}</th>
-            {status === "added" ? null : (
-              <td className="num old">{formatIngredient(r.from)}</td>
-            )}
-            {status === "changed" ? <Arrow /> : null}
-            {status === "removed" ? null : (
-              <td className="mono new">{formatIngredient(r.to)}</td>
-            )}
+            <td className="num old">
+              {r.from === null ? <Side v={null} /> : formatIngredient(r.from)}
+            </td>
+            <Arrow />
+            <td className="mono new">
+              {r.to === null ? <Side v={null} /> : formatIngredient(r.to)}
+            </td>
           </tr>
         ))}
       </tbody>
@@ -594,7 +609,14 @@ function Entry({
         <Fold scope="entry" />
         <span className="flex min-w-0 flex-1 flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
           <span className="flex min-w-0 flex-col">
-            <span className="text-ui text-primary">{entry.name}</span>
+            <span className="flex flex-wrap items-baseline gap-x-2">
+              <span className="text-ui text-primary">{entry.name}</span>
+              {changed ? null : (
+                <span className="rounded-pill bg-inset px-2 text-caption text-secondary">
+                  {entry.status === "added" ? "New" : "Removed"}
+                </span>
+              )}
+            </span>
             {entry.detail === null ? null : (
               <span className="text-caption text-secondary">
                 {entry.detail}
@@ -665,33 +687,26 @@ function Entry({
         </span>
       </summary>
       <div className="flex flex-col gap-4 pb-6 pl-6">
-        {entry.figures.length === 0 ? null : changed ? (
-          <FigureTable figures={entry.figures} from={from} to={to} />
-        ) : (
-          // A new or removed entry has one side only: its figures, not a table of dashes.
-          <div className="md:max-w-prose">
-            <StatList>
-              {entry.figures.map((f) => (
-                <StatRow
-                  key={f.key}
-                  label={f.label}
-                  value={formatValue(entry.status === "added" ? f.to : f.from)}
-                  unit={f.unit}
-                />
-              ))}
-            </StatList>
-          </div>
+        {changed ? null : (
+          <p className="m-0 text-ui text-secondary" data-entry-note="">
+            {entry.status === "added"
+              ? `New in ${to}: it was not in ${from}, so it has no before.`
+              : `Removed in ${to}: this is how it stood in ${from}.`}
+          </p>
+        )}
+        {entry.figures.length === 0 ? null : (
+          <FigureTable
+            figures={entry.figures}
+            from={from}
+            to={to}
+            status={entry.status}
+          />
         )}
         {entry.loadout.length > 0 ? (
           <LoadoutTable rows={entry.loadout} from={from} to={to} />
         ) : null}
         {entry.ingredients.length > 0 ? (
-          <IngredientTable
-            rows={entry.ingredients}
-            from={from}
-            to={to}
-            status={entry.status}
-          />
+          <IngredientTable rows={entry.ingredients} from={from} to={to} />
         ) : null}
         {mentions.length > 0 ? <Mentions list={mentions} /> : null}
         {entry.href === null ? null : (

@@ -22,6 +22,7 @@ import { ConceptShip, PledgeOffer, ShopPrice } from "schema";
 import { z } from "zod";
 import { createWikiClient } from "./fetch.js";
 import { rsiUserAgent, userAgent } from "../user-agent.js";
+import { rsiGet } from "../rsi-fetch.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(here, "..", "..");
@@ -287,9 +288,12 @@ async function conceptOffers(fetchedAt: string): Promise<PledgeOffer[]> {
   const out: PledgeOffer[] = [];
   for (const [i, concept] of concepts.entries()) {
     if (i > 0) await sleep(RSI_SPACING_MS);
-    const response = await globalThis.fetch(concept.page_url, {
-      headers: { "User-Agent": rsiUserAgent("bootstrap") },
-    });
+    // RSI redirects the matrix's old addresses to /en/...: follow only after the spacing.
+    const response = await rsiGet(
+      concept.page_url,
+      { headers: { "User-Agent": rsiUserAgent("bootstrap") } },
+      { spacingMs: RSI_SPACING_MS, sleep },
+    );
     if (!response.ok) {
       throw new Error(`${concept.page_url}: HTTP ${response.status}`);
     }

@@ -262,7 +262,7 @@ async function patchesGate(): Promise<{ run: true; note?: string } | string> {
     log,
   });
   const listed = (
-    (await client.getJson("/api/game-versions?limit=100")) as {
+    (await client.getJson("/api/game-versions?page[size]=100")) as {
       data?: { code?: unknown }[];
     }
   ).data

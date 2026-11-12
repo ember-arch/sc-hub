@@ -208,7 +208,7 @@ async function main(): Promise<void> {
   };
 
   const versions = VersionList.parse(
-    await get("/api/game-versions?limit=100"),
+    await get("/api/game-versions?page[size]=100"),
   ).data;
   const filed = filedBuilds();
   const newest = newestFiled(filed);

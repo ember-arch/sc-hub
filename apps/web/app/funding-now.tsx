@@ -25,8 +25,11 @@ import { FundingToggle } from "./funding-toggle";
  * differences between RSI's snapshots, never estimated.
  */
 export function FundingCard({
+  anchor,
   measures,
 }: {
+  /** The section running head's id; each measure's address is `#<anchor>-<measure>`. */
+  readonly anchor: string;
   readonly measures: readonly {
     readonly measure: Measure;
     readonly list: readonly Reading[];
@@ -39,7 +42,7 @@ export function FundingCard({
       : [{ id: measure, label: MEASURE_LABEL[measure], ...p }];
   });
   if (parts.length === 0) return null;
-  return <FundingToggle measures={parts} views={VIEWS} />;
+  return <FundingToggle anchor={anchor} measures={parts} views={VIEWS} />;
 }
 
 const MEASURE_LABEL: Readonly<Record<Measure, string>> = {

@@ -32,8 +32,14 @@ const nextConfig: NextConfig = {
   images: { unoptimized: true },
   poweredByHeader: false,
   // The ledger page is folded into the front page (ADR-040); its address, published since
-  // ADR-018, lands on the home's funding card.
+  // ADR-018, lands on the home's funding card, and its citizens address on the card's citizens.
   redirects: async () => [
+    {
+      source: "/funding",
+      has: [{ type: "query", key: "measure", value: "citizens" }],
+      destination: "/#funding-citizens",
+      permanent: true,
+    },
     { source: "/funding", destination: "/#funding", permanent: true },
   ],
 };

@@ -102,7 +102,7 @@ test("the featured ships are five cards with the showcase pair, and the register
   );
 });
 
-test("the ledger's old address lands on the home's funding card, which the counters point at (ADR-040)", async ({
+test("the ledger's old address lands on the home's funding card, which the counters point at, each at its measure (ADR-040)", async ({
   page,
   request,
 }) => {
@@ -114,18 +114,19 @@ test("the ledger's old address lands on the home's funding card, which the count
     .locator("dl div", { hasText: /^Pledged since/ })
     .locator("dd a")
     .first();
-  await expect(pledged).toHaveAttribute("href", "#funding");
+  await expect(pledged).toHaveAttribute("href", "#funding-pledges");
   await expect(page.locator("section[aria-labelledby=funding]")).toBeVisible();
   await expect(
     page
       .getByRole("navigation", { name: "Primary" })
       .getByRole("link", { name: "Funding" }),
   ).toHaveCount(0);
-  // The other funding counters point at the card too; Citizens is drawn there again (ADR-040, amended).
+  // The other funding counters point at the card too, Citizens at the card's citizens (ADR-040,
+  // amended).
   const thisYear = page.locator("dl div", { hasText: /^This year/ });
   await expect(thisYear.locator("dd a").first()).toHaveAttribute(
     "href",
-    "#funding",
+    "#funding-pledges",
   );
   await expect(
     page
@@ -133,7 +134,7 @@ test("the ledger's old address lands on the home's funding card, which the count
       .locator("dl div", { hasText: /^Citizens\d/ })
       .locator("dd a")
       .first(),
-  ).toHaveAttribute("href", "#funding");
+  ).toHaveAttribute("href", "#funding-citizens");
   // The sources line names RSI's page and the copy date.
   const sources = page.locator("section[aria-labelledby=funding] p", {
     hasText: /^Daily snapshots/,
@@ -142,12 +143,106 @@ test("the ledger's old address lands on the home's funding card, which the count
     sources.getByRole("link", { name: "robertsspaceindustries.com" }),
   ).toBeVisible();
   await expect(sources).toContainText(/copied \d+ \w+ \d{4}\./);
-  // The old measure address lands on the card too; Next keeps the query, which the home ignores.
+  // The old measure address lands on the card's citizens; Next keeps the query, which the home
+  // ignores.
   const citizens = await request.get("/funding?measure=citizens", {
     maxRedirects: 0,
   });
   expect(citizens.status()).toBe(308);
-  expect(citizens.headers()["location"]).toMatch(/#funding$/);
+  expect(citizens.headers()["location"]).toMatch(/#funding-citizens$/);
+});
+
+test("the counters open the funding card on their own measure, with its running head in view (ADR-040, amended)", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const section = page.locator("section[aria-labelledby=funding]");
+  const measure = section.getByRole("group", { name: "Funding measure" });
+  const pledgesButton = measure.getByRole("button", { name: "Pledges" });
+  const citizensButton = measure.getByRole("button", { name: "Citizens" });
+  const counter = (label: RegExp) =>
+    page.locator("dl div", { hasText: label }).locator("dd a").first();
+  const headTop = () =>
+    page
+      .locator("#funding")
+      .evaluate((el) => Math.round(el.getBoundingClientRect().top));
+  // The Citizens figure: the card opens on citizens, its head at the top of the screen.
+  await counter(/^Citizens\d/).click();
+  await expect(page).toHaveURL(/#funding-citizens$/);
+  await expect(citizensButton).toHaveAttribute("aria-pressed", "true");
+  await expect(section.locator("[data-measure=citizens]")).toBeVisible();
+  await expect(section.locator("[data-measure=pledges]")).toBeHidden();
+  const top = await headTop();
+  expect(top).toBeGreaterThanOrEqual(0);
+  expect(top).toBeLessThan(24);
+  // Pressing Pledges rewrites the address in place; the Citizens link opens citizens again.
+  await pledgesButton.click();
+  await expect(page).toHaveURL(/#funding-pledges$/);
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await counter(/^Citizens\d/).click();
+  await expect(citizensButton).toHaveAttribute("aria-pressed", "true");
+  // A pledges figure opens the card on pledges.
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await counter(/^Pledged since/).click();
+  await expect(page).toHaveURL(/#funding-pledges$/);
+  await expect(pledgesButton).toHaveAttribute("aria-pressed", "true");
+  expect(await headTop()).toBeLessThan(24);
+  // The address opens the card on citizens from a fresh load too; a bare #funding then leaves the
+  // measure as it is.
+  await page.goto("about:blank");
+  await page.goto("/#funding-citizens");
+  await expect(citizensButton).toHaveAttribute("aria-pressed", "true");
+  expect(await headTop()).toBeLessThan(24);
+  // Waits for the change to be announced and the card to have heard it before looking.
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        window.addEventListener("hashchange", () => setTimeout(resolve, 200), {
+          once: true,
+        });
+        window.location.hash = "funding";
+      }),
+  );
+  await expect(page).toHaveURL(/#funding$/);
+  await expect(citizensButton).toHaveAttribute("aria-pressed", "true");
+  // The pledges' address, typed in, opens the pledges.
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        window.addEventListener("hashchange", () => setTimeout(resolve, 200), {
+          once: true,
+        });
+        window.location.hash = "funding-pledges";
+      }),
+  );
+  await expect(pledgesButton).toHaveAttribute("aria-pressed", "true");
+});
+
+test("Back returns to the front page after a counter's link and a page away (ADR-040, amended)", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page
+    .locator("dl div", { hasText: /^Citizens\d/ })
+    .locator("dd a")
+    .first()
+    .click();
+  await expect(page).toHaveURL(/\/#funding-citizens$/);
+  await page
+    .locator("section[aria-labelledby=featured] ul li a[href^='/ships/']")
+    .first()
+    .click();
+  await expect(page).toHaveURL(/\/ships\/[a-z0-9-]+$/);
+  await page.goBack();
+  await expect(page).toHaveURL(/\/#funding-citizens$/);
+  // The front page itself, not the ship's page under the old address, with the card on citizens.
+  const section = page.locator("section[aria-labelledby=funding]");
+  await expect(section).toBeVisible();
+  await expect(
+    section
+      .getByRole("group", { name: "Funding measure" })
+      .getByRole("button", { name: "Citizens" }),
+  ).toHaveAttribute("aria-pressed", "true");
 });
 
 test("the funding card shows the year's three figures and toggles between the two views", async ({

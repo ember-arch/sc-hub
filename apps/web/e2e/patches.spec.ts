@@ -38,7 +38,10 @@ test.describe("the patch pages", () => {
       "aria-current",
       "page",
     );
-    await expect(page.locator("main [data-build]").first()).toHaveText(newest!);
+    // ADR-053: From is the earlier build, To the latest.
+    const head = page.locator("[data-comparison] [data-build]");
+    await expect(head.first()).toHaveText(previous!);
+    await expect(head.last()).toHaveText(newest!);
     const headings = await page
       .getByRole("heading", { level: 2 })
       .allTextContents();
@@ -65,7 +68,7 @@ test.describe("the patch pages", () => {
     // A changed entry opens on a table of both builds; a new or removed one on its figures.
     await expect(entry.locator("table, dl").first()).toBeVisible();
     const changed = page.locator("#ships details[data-patch-entry]").filter({
-      hasText: /changes?$/,
+      has: page.locator("summary", { hasText: /changes?$/ }),
     });
     if ((await changed.count()) > 0) {
       await changed.first().locator("summary").click();
@@ -86,8 +89,9 @@ test.describe("the patch pages", () => {
     const text = (await head.textContent()) ?? "";
     expect(text.indexOf("From")).toBeGreaterThanOrEqual(0);
     expect(text.indexOf("From")).toBeLessThan(text.indexOf("To"));
+    // A changed entry's own line ends on its count of changes.
     const changed = page.locator("#ships details[data-patch-entry]").filter({
-      hasText: /changes?$/,
+      has: page.locator("summary", { hasText: /changes?$/ }),
     });
     test.skip((await changed.count()) === 0, "no ship changed");
     await changed.first().locator("summary").click();
@@ -128,17 +132,17 @@ test.describe("the patch pages", () => {
     expect(await page.locator("[data-patch-entry][hidden]").count()).toBe(0);
   });
 
-  test("compare takes two builds in either order and shows the newer first", async ({
+  test("compare takes two builds in either order and reads From the older To the newer", async ({
     page,
   }) => {
     const response = await page.goto(
       `/patches/compare?from=${version(newest!)}&to=${version(previous!)}`,
     );
     expect(response?.status()).toBe(200);
-    // The newer build stands first in the head, whichever order the address gave.
-    const builds = page.locator("main [data-build]");
-    await expect(builds.first()).toHaveText(newest!);
-    await expect(builds.nth(1)).toHaveText(previous!);
+    // The older build is From and the newer To, whichever order the address gave (ADR-053).
+    const builds = page.locator("[data-comparison] [data-build]");
+    await expect(builds.first()).toHaveText(previous!);
+    await expect(builds.nth(1)).toHaveText(newest!);
     await expect(
       page.getByRole("link", { name: "Compare", exact: true }),
     ).toHaveAttribute("aria-current", "page");

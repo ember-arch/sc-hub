@@ -26,6 +26,6 @@ ADR-049's patch pages compare two builds. Three places made the direction hard t
 
 ## Consequences
 
-- `patches.spec.ts` checks the head's order (From, then To) and the Before and After heads.
+- `patches.spec.ts` checks the head's order (From, then To, ADR-049's "newest first" replaced) and the Before and After heads; two of its checks matched an entry's whole text instead of its line and never ran, now fixed.
 - The tables' styles stay in `globals.css` (`.patch-table`), from the tokens.
 - The bars are decoration for the eye (`aria-hidden`); the change cell carries the same facts in words for screen readers.

@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { repo } from "../lib/data";
+import { events } from "../lib/events";
 import { builds, latestLive, previousOf } from "../lib/patches";
 import { absolute } from "../lib/seo";
 
@@ -46,6 +47,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     entry("/news/dev", 0.6),
     entry("/news/videos", 0.6),
     entry("/titles", 0.6),
+    // The shows (ADR-057): each event page, changed when the events step last read RSI.
+    entry("/events", 0.5),
+    ...events().map((e) =>
+      entry(`/events/${e.slug}`, 0.7, new Date(e.fetched_at)),
+    ),
     entry("/about", 0.3),
     entry("/privacy", 0.2),
     entry("/licenses", 0.1),

@@ -40,7 +40,7 @@ import { shipTally, tallyNote } from "../lib/ship-count";
 import { withoutFixed } from "../lib/component-filters";
 import { conceptShips, showcaseFor } from "../lib/showcase";
 import { Site, now } from "../lib/site";
-import { FRONT_VIDEOS, videoCard, videosOf } from "../lib/videos";
+import { frontVideos, videoCard } from "../lib/videos";
 
 /** How many dispatches the front page's carousel carries (owner, 2026-11-11: "a 5 slide scroll"). */
 const FRONT_DISPATCHES = 5;
@@ -91,7 +91,7 @@ const DAILY_PLATES = 3;
 /**
  * The front page (ADR-020, ADR-021, ADR-038, ADR-042, ADR-050): the date line, the daily line composed
  * from the pack as the title, the contents, the counters; then the five newest dispatches and CIG's
- * five latest videos, each a carousel with overlaid arrows and the same card widths, the videos'
+ * latest full videos (up to five, no Shorts), each a carousel with overlaid arrows and the same card widths, the videos'
  * player opening in place, the featured ships (the showcase pair and
  * three that change daily, with the register's count), the developers' latest posts from Spectrum
  * (only with the module on, a carousel of small cards), and this year's funding against last year's in one drawing with two
@@ -225,7 +225,8 @@ export default function HomePage() {
   const featured = featuredPosts(posts, at);
 
   // CIG's latest on YouTube (ADR-050): the newest of both channels, the player opening in place.
-  const latestVideos = videosOf(r.videos, undefined).slice(0, FRONT_VIDEOS);
+  // Full videos only, no Shorts (owner, 2026-11-11); the videos tab carries every upload.
+  const latestVideos = frontVideos(r.videos);
 
   // The daily line (ADR-042): composed from what the pack says today, never written.
   const staffWord = freshestStaffWord(posts, at);

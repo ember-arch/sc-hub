@@ -76,6 +76,17 @@ export function videosOf(
     .sort((a, b) => b.published_at.localeCompare(a.published_at));
 }
 
+/**
+ * The front page's videos: up to five of the newest full videos of both channels, no Shorts.
+ * Asked "Keep YouTube Shorts in the home page's video row?", the owner answered "Full videos
+ * only" (2026-11-11); the videos tab keeps every upload.
+ */
+export function frontVideos(videos: readonly ContentItem[]): ContentItem[] {
+  return videosOf(videos, undefined)
+    .filter((v) => !isShort(v))
+    .slice(0, FRONT_VIDEOS);
+}
+
 export function parseChannel(raw: unknown): VideoChannel | undefined {
   return VIDEO_CHANNELS.find((c) => c === raw);
 }

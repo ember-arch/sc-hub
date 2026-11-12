@@ -130,7 +130,7 @@ test("the dispatches leave videos to their tab", async ({ page }) => {
   ).toHaveCount(0);
 });
 
-test("the front page carries the latest videos as a row, the newest first, with a link to the tab", async ({
+test("the front page carries the latest full videos as a row, no Shorts, with a link to the tab", async ({
   page,
 }) => {
   await page.goto("/");
@@ -140,7 +140,15 @@ test("the front page carries the latest videos as a row, the newest first, with 
   ).toBeVisible();
   const cards = section.locator("article[data-video]");
   const count = await cards.count();
-  expect(count).toBe(5);
+  // Five at most, full videos only (owner, 2026-11-11): the pack holds four on 2026-11-11.
+  expect(count).toBeGreaterThan(0);
+  expect(count).toBeLessThanOrEqual(5);
+  await expect(section.locator("article[data-video-short]")).toHaveCount(0);
+  for (const href of await section
+    .getByRole("link", { name: /^Watch .+ on YouTube$/ })
+    .evaluateAll((as) => as.map((a) => a.getAttribute("href")))) {
+    expect(href).toMatch(/\/watch\?v=/);
+  }
   await expect(
     section.getByRole("link", { name: "All videos" }),
   ).toHaveAttribute("href", "/news/videos");

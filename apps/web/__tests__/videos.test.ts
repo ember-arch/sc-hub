@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   FRONT_VIDEOS,
   embedUrl,
+  frontVideos,
   isShort,
   parseChannel,
   thumbnailOf,
@@ -86,6 +87,28 @@ describe("videos", () => {
     expect(card.short).toBe(true);
     expect(card.url).toBe("https://www.youtube.com/shorts/ccccccccccc");
     expect(card.embed).toBe(embedUrl("ccccccccccc"));
+  });
+
+  it("puts full videos only on the front page, newest first, and keeps Shorts for the tab", () => {
+    expect(frontVideos(videos).map((v) => v.external_id)).toEqual([
+      "bbbbbbbbbbb",
+      "aaaaaaaaaaa",
+    ]);
+    expect(videosOf(videos, undefined)).toHaveLength(3);
+  });
+
+  it("carries at most five full videos on the front page, and none when there are only Shorts", () => {
+    const many = Array.from({ length: 8 }, (_, i) =>
+      item(
+        `v${String(i).padStart(10, "0")}`,
+        "Star Citizen",
+        `2026-11-0${i + 1}T10:00:00.000Z`,
+      ),
+    );
+    expect(frontVideos(many)).toHaveLength(FRONT_VIDEOS);
+    expect(frontVideos(many)[0]!.external_id).toBe("v0000000007");
+    const shorts = [videos[2]!];
+    expect(frontVideos(shorts)).toEqual([]);
   });
 
   it("carries five to seven on the front page", () => {

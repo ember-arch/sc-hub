@@ -117,6 +117,22 @@ export default function HomePage() {
   const fitted = withoutFixed(r.components, false);
   const partTypes = new Set(fitted.map((c) => c.item.type)).size;
   const shipsOnRecord = tally.total;
+  // The funding card's measures (ADR-040): the pledges, and the citizens with two readings.
+  const cardMeasures =
+    series === null || pledges === null || pledges.length < 2
+      ? []
+      : [
+          { measure: "pledges" as const, list: pledges },
+          ...(citizens === null || citizens.length < 2
+            ? []
+            : [{ measure: "citizens" as const, list: citizens }]),
+        ];
+  // A counter opens the card on its own measure (ADR-040, amended 2026-11-12), or on the card as
+  // it is when that measure is not drawn.
+  const toCard = (measure: "pledges" | "citizens"): string =>
+    cardMeasures.some((m) => m.measure === measure)
+      ? `#funding-${measure}`
+      : "#funding";
   const counters: Counter[] = [
     ...(money === null
       ? []
@@ -125,7 +141,8 @@ export default function HomePage() {
             label: `Pledged since ${firstYear(pledges)}`,
             value: formatValue(money.latest.value, "pledges"),
             note: `as of ${formatDay(money.latest.day)}`,
-            href: "#funding",
+            // The pledges' figures open the card on pledges, even after a reader pressed Citizens.
+            href: toCard("pledges"),
           },
         ]),
     ...(people === null
@@ -138,8 +155,8 @@ export default function HomePage() {
               people.last30 === null
                 ? "on record"
                 : `${signed(people.last30, (n) => formatCompact(n, "citizens"))} in the last 30 days`,
-            // The card draws citizens too since 2026-11-11 (ADR-040, amended).
-            href: "#funding",
+            // The card draws citizens too since 2026-11-11, and this opens it on them (ADR-040, amended).
+            href: toCard("citizens"),
           },
         ]),
     ...(money === null || money.yearToDate === null
@@ -152,7 +169,7 @@ export default function HomePage() {
               money.yearToDateChange === null
                 ? "so far"
                 : `${formatChange(money.yearToDateChange)} on the same days of ${Number(money.latest.day.slice(0, 4)) - 1}`,
-            href: "#funding",
+            href: toCard("pledges"),
           },
         ]),
     {
@@ -416,7 +433,7 @@ export default function HomePage() {
           </section>
         ) : null}
 
-        {series === null || pledges === null || pledges.length < 2 ? null : (
+        {series === null || cardMeasures.length === 0 ? null : (
           <section
             aria-labelledby="funding"
             className="flex scroll-mt-8 flex-col gap-4"
@@ -430,14 +447,7 @@ export default function HomePage() {
                   : `as of ${formatDay(money.latest.day)}`
               }
             />
-            <FundingCard
-              measures={[
-                { measure: "pledges", list: pledges },
-                ...(citizens === null || citizens.length < 2
-                  ? []
-                  : [{ measure: "citizens" as const, list: citizens }]),
-              ]}
-            />
+            <FundingCard anchor="funding" measures={cardMeasures} />
             {/* The ledger's sources line, now the card's (ADR-040); the wiki's credit is in every footer. */}
             <p className="m-0 max-w-prose text-caption text-secondary">
               Daily snapshots of RSI&apos;s counter on{" "}

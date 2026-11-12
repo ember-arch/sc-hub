@@ -262,7 +262,7 @@ function loanerSource(loaner: LoanerView | null): SourceEntry[] {
         {
           text: "RSI loaner ship matrix",
           href: loaner.url,
-          note: `Loaners, as RSI last updated them on ${loaner.editedOn}${loaner.build === null ? "" : ` for ${loaner.build}`}; checked weekly`,
+          note: `Loaners, as RSI last updated them on ${loaner.editedOn}${loaner.build === null ? "" : ` for ${loaner.build}`}; checked daily`,
         },
       ];
 }

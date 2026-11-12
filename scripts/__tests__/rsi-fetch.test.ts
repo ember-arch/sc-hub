@@ -68,6 +68,16 @@ describe("rsiGet", () => {
     expect((await rsiGet(NEW, { headers: {} }, options(f))).status).toBe(404);
   });
 
+  it("refuses a redirect off RSI, so the contact address goes nowhere else", async () => {
+    const f = fakeRsi({
+      [OLD]: { status: 302, location: "https://example.com/elsewhere" },
+    });
+    await expect(rsiGet(OLD, { headers: {} }, options(f))).rejects.toThrow(
+      /redirected off RSI/,
+    );
+    expect(f.calls).toHaveLength(1);
+  });
+
   it("gives up on a redirect loop", async () => {
     const f = fakeRsi({ [OLD]: { status: 301, location: OLD } });
     await expect(rsiGet(OLD, { headers: {} }, options(f))).rejects.toThrow(

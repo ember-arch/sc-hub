@@ -26,9 +26,16 @@ export async function rsiGet(
     if (response.status < 300 || response.status >= 400 || location === null) {
       return response;
     }
+    // The redirect's own body is not read; release it so the connection is not held.
+    await response.body?.cancel();
     if (hop >= maxHops)
       throw new Error(`${url}: more than ${maxHops} redirects`);
-    target = new URL(location, target).toString();
+    const next = new URL(location, target);
+    // Only within RSI: the project's User-Agent and contact address go nowhere else this way.
+    if (!/(^|\.)robertsspaceindustries\.com$/.test(next.hostname)) {
+      throw new Error(`${url}: redirected off RSI, to ${next.origin}`);
+    }
+    target = next.toString();
     await options.sleep(options.spacingMs);
   }
 }

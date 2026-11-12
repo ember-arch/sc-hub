@@ -48,6 +48,17 @@ export const envSchema = z.object({
   STARBREAKER_BIN: nonEmpty.optional(),
   /** Dev scripts, the daily refresh and the news workers: the contact address RSI requests carry, in every User-Agent (ADR-015, ADR-036). */
   SC_HUB_CONTACT_EMAIL: z.email().optional(),
+  /**
+   * The Vercel site only: the shared secret Vercel's cron sends as a bearer token to
+   * /api/cron/news; without it the route refuses every call (ADR-053).
+   */
+  CRON_SECRET: nonEmpty.optional(),
+  /**
+   * The Vercel site only: a fine-grained GitHub token for this repository alone, with Actions read
+   * and write and nothing else, which the news clock uses to start the News workflow; without it
+   * the clock does nothing and the workflow's own schedule runs it (ADR-053).
+   */
+  NEWS_DISPATCH_TOKEN: nonEmpty.optional(),
 });
 export type Env = z.infer<typeof envSchema>;
 export type EnvKey = keyof Env;

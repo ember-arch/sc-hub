@@ -31,6 +31,10 @@ on:
     # run on Fly.
     # Two schedules rather than one "7,37" so the poll knows which one started it: one YouTube
     # feed is read from the :07 schedule only, once an hour however late GitHub starts it (ADR-050).
+    # GitHub still dropped most of these (two of about nineteen ran on 11-12 Nov), so the news
+    # clock on Vercel (ADR-053) starts the workflow at the same minutes through workflow_dispatch,
+    # and these schedules are its backup: the gate job below makes a scheduled run stand aside
+    # while the clock is running.
     - cron: "7 * * * *"
     - cron: "37 * * * *"
   workflow_dispatch:
@@ -39,21 +43,61 @@ on:
         description: "Comm-Link ids whose covers are already up, to rehearse the cover step on (a dry run; ADR-051)"
         required: false
         default: ""
+      video_slot:
+        description: '"due" to read the hour''s YouTube feed; the news clock sends it in the first half of the hour (ADR-050, ADR-053)'
+        required: false
+        default: ""
 
 concurrency:
   group: news
   cancel-in-progress: false
 
-permissions:
-  contents: write
+permissions: {}
 
 env:
   NEXT_TELEMETRY_DISABLED: "1"
 
 jobs:
+  # A scheduled run stands aside when a dispatched run (the news clock's, ADR-053, or a hand-started
+  # one) began under an hour ago, so the schedule never doubles the clock's runs and Spectrum is
+  # never searched twice within five minutes; an hour after the clock last started a run, the
+  # schedule runs the news by itself again. The hour is NEWS_SCHEDULE_STANDS_ASIDE_MS in
+  # packages/schema/news-clock.ts. A failed look runs the news rather than skip it.
+  gate:
+    name: Stand aside while the news clock runs
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: read
+    outputs:
+      go: ${{ steps.gate.outputs.go }}
+    steps:
+      - id: gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT: ${{ github.event_name }}
+          REPO: ${{ github.repository }}
+        run: |
+          if [ "$EVENT" != "schedule" ]; then
+            echo "go=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          last=$(gh api "repos/$REPO/actions/workflows/news.yml/runs?event=workflow_dispatch&per_page=1" --jq '.workflow_runs[0].created_at // ""') || last=""
+          if [ -n "$last" ] && [ $(( $(date -u +%s) - $(date -u -d "$last" +%s) )) -lt 3600 ]; then
+            echo "The news clock started a run at $last, under an hour ago: this scheduled run stands aside (ADR-053)."
+            echo "go=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "No dispatched run in the last hour: the schedule runs the news."
+            echo "go=true" >> "$GITHUB_OUTPUT"
+          fi
+
   poll:
     name: Poll the news sources
+    needs: gate
+    if: needs.gate.outputs.go == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     # Forty for the thread step, which sleeps five minutes between its requests (up to three
     # threads, a page each as a rule) and thirty on a refusal (ADR-037), and up to twelve more for
     # the cover step (ADR-051); a timeout would lose the run's news too.
@@ -73,8 +117,9 @@ jobs:
       - name: Poll
         env:
           SC_HUB_CONTACT_EMAIL: ${{ vars.SC_HUB_CONTACT_EMAIL }}
-          # "due" from the :07 schedule only: the hour's one YouTube feed (ADR-050).
-          NEWS_VIDEO_SLOT: ${{ github.event.schedule == '7 * * * *' && 'due' || '' }}
+          # "due" from the :07 schedule or the news clock's first-half-hour run only: the hour's one
+          # YouTube feed (ADR-050, ADR-053).
+          NEWS_VIDEO_SLOT: ${{ (github.event.schedule == '7 * * * *' || inputs.video_slot == 'due') && 'due' || '' }}
         run: pnpm workers:poll-news
       - name: Poll Spectrum (off until SPECTRUM_MODE is set)
         continue-on-error: true

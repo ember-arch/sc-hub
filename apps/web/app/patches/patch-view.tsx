@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import {
   Badge,
   EmptyState,
-  Icon,
   SegmentedLinks,
   StatList,
   StatRow,
@@ -107,7 +106,7 @@ function BuildSide({
     >
       <span className="lab text-muted">{label}</span>
       <span
-        className={`text-title ${strong === true ? "font-medium text-primary" : "text-secondary"}`}
+        className={`build-name text-heading sm:text-title ${strong === true ? "text-primary" : "text-secondary"}`}
       >
         {build.channel === "LIVE" ? name : `${name} ${build.channel}`}
       </span>
@@ -145,11 +144,13 @@ export function ComparisonHead({
       : null;
   // A comparison can run backwards (an older build chosen as "to"); then no direction is claimed.
   const gapText =
-    days === null || days < 0
-      ? "then"
-      : days === 0
-        ? "same day"
-        : `${plural(days, "day", "days")} later`;
+    days === null
+      ? ""
+      : days < 0
+        ? "then"
+        : days === 0
+          ? "same day"
+          : `${plural(days, "day", "days")} later`;
   return (
     <div className="flex flex-wrap items-end justify-between gap-6 border-b border-hairline pb-4">
       <div
@@ -171,13 +172,15 @@ export function ComparisonHead({
             className="flex items-center sm:min-w-2 sm:flex-1"
           >
             <span className="hidden flex-1 border-t border-hairline-strong sm:block" />
-            <Icon name="next" />
+            <span className="text-heading text-secondary">→</span>
           </span>
         </span>
         <BuildSide label="To" build={to} other={from} strong />
-        <span className="col-span-3 pt-3 text-center text-caption text-muted sm:hidden">
-          {gapText}
-        </span>
+        {gapText === "" ? null : (
+          <span className="col-span-3 pt-3 text-center text-caption text-muted sm:hidden">
+            {gapText}
+          </span>
+        )}
       </div>
       {aside}
     </div>
@@ -265,8 +268,9 @@ function SideHead({
 
 /** The arrow between Before and After, drawn, not read. */
 const Arrow = () => (
-  <td className="arrow" aria-hidden="true">
-    →
+  <td className="arrow">
+    <span aria-hidden="true">→</span>
+    <span className="sr-only">to</span>
   </td>
 );
 
@@ -324,7 +328,7 @@ function FigureTable({
           <th scope="col" className="num">
             Change
           </th>
-          <th scope="col" className="viz">
+          <th scope="col" className="viz" aria-hidden="true">
             <span className="sr-only">The change, drawn</span>
           </th>
         </tr>
@@ -416,7 +420,7 @@ function LoadoutTable({
             <span className="sr-only">to</span>
           </th>
           <SideHead side="After" build={to} />
-          <th scope="col" className="num">
+          <th scope="col" className="num hidden sm:table-cell">
             Change
           </th>
         </tr>
@@ -435,7 +439,7 @@ function LoadoutTable({
             <td className="new">
               <PartName part={r.to} />
             </td>
-            <td className="num">
+            <td className="num hidden sm:table-cell">
               <span className="delta">
                 {r.from === null
                   ? "Fitted"
@@ -471,6 +475,11 @@ function IngredientTable({
           {status === "added" ? null : (
             <SideHead side="Before" build={from} num />
           )}
+          {status === "changed" ? (
+            <th scope="col" className="arrow">
+              <span className="sr-only">to</span>
+            </th>
+          ) : null}
           {status === "removed" ? null : <SideHead side="After" build={to} />}
         </tr>
       </thead>
@@ -481,6 +490,7 @@ function IngredientTable({
             {status === "added" ? null : (
               <td className="num old">{formatIngredient(r.from)}</td>
             )}
+            {status === "changed" ? <Arrow /> : null}
             {status === "removed" ? null : (
               <td className="mono new">{formatIngredient(r.to)}</td>
             )}
@@ -611,24 +621,26 @@ function Entry({
               return (
                 <span
                   key={f.key}
-                  className="inline-flex items-baseline gap-1 whitespace-nowrap"
+                  className="inline-flex flex-wrap items-baseline gap-x-1"
                 >
                   {f.label}
-                  <span className="font-mono text-secondary">
-                    {formatValue(f.from)}
-                  </span>
-                  <span aria-hidden="true" className="text-muted">
-                    →
-                  </span>
-                  <span className="sr-only">to</span>
-                  <span className="font-mono font-medium text-primary">
-                    {formatValue(f.to)}
-                  </span>
-                  {c.percent === null ? null : (
-                    <span className="rounded-pill bg-inset px-2 font-mono text-secondary">
-                      {c.percent}
+                  <span className="inline-flex items-baseline gap-1 whitespace-nowrap">
+                    <span className="font-mono text-secondary">
+                      {formatValue(f.from)}
                     </span>
-                  )}
+                    <span aria-hidden="true" className="text-muted">
+                      →
+                    </span>
+                    <span className="sr-only">to</span>
+                    <span className="font-mono font-medium text-primary">
+                      {formatValue(f.to)}
+                    </span>
+                    {c.percent === null ? null : (
+                      <span className="rounded-pill bg-inset px-2 font-mono text-secondary">
+                        {c.percent}
+                      </span>
+                    )}
+                  </span>
                 </span>
               );
             })}

@@ -172,6 +172,46 @@ test.describe("the patch pages", () => {
     );
   });
 
+  // ADR-053: with every fold open, the patch pages fit a phone, the hotfix page included.
+  test("every fold open, the patch pages do not scroll sideways at 390 px", async ({
+    browser,
+  }) => {
+    const context = await browser.newContext({
+      viewport: { width: 390, height: 900 },
+    });
+    const page = await context.newPage();
+    const hotfix = codes.find(
+      (c) => codes.filter((o) => version(o) === version(c)).length > 1,
+    );
+    const paths = ["/patches"];
+    if (hotfix !== undefined) {
+      const later = codes.filter((o) => version(o) === version(hotfix)).at(-1)!;
+      paths.push(`/patches/${version(later)}-${later.split(".").at(-1)}`);
+    }
+    for (const path of paths) {
+      const response = await page.goto(path);
+      if (response?.status() !== 200) continue;
+      await page.evaluate(() => {
+        for (const d of document.querySelectorAll("details")) d.open = true;
+      });
+      const [head, wide] = await page.evaluate(() => {
+        const panel = document.querySelector("[data-comparison]");
+        const tables = [...document.querySelectorAll("table.patch-table")];
+        return [
+          panel === null ? 0 : panel.scrollWidth - panel.clientWidth,
+          tables.filter(
+            (t) => t.scrollWidth > (t.parentElement?.clientWidth ?? 0) + 1,
+          ).length,
+        ];
+      });
+      expect(head, `${path}: the From/To panel overflows`).toBeLessThanOrEqual(
+        0,
+      );
+      expect(wide, `${path}: tables wider than their fold`).toBe(0);
+    }
+    await context.close();
+  });
+
   test("an unknown patch is a 404", async ({ page }) => {
     const response = await page.goto("/patches/0.0.1");
     expect(response?.status()).toBe(404);

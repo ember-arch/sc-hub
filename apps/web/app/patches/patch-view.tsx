@@ -83,31 +83,49 @@ export function PatchTabs({
   return <SegmentedLinks label="Patch views" links={links} current={href} />;
 }
 
-/** A build as a heading; against a build of the same version (a hotfix), with its number. */
-function BuildName({
+/**
+ * One side of a comparison (ADR-053): "From" or "To" over the build's name, its code and date. The
+ * side the page is about, To, carries the weight; From stays quieter. Against a build of the same
+ * version (a hotfix) the name carries its number.
+ */
+function BuildSide({
+  label,
   build,
   other,
+  strong,
 }: {
+  readonly label: "From" | "To";
   readonly build: Build;
   readonly other: Build;
+  readonly strong?: boolean;
 }) {
   const name = buildLabel(build, other);
   return (
-    <span className="flex flex-col">
-      <span className="text-heading text-primary">
+    <span
+      className={`flex min-w-0 flex-col gap-1 ${strong === true ? "items-end text-right" : ""}`}
+    >
+      <span className="lab text-muted">{label}</span>
+      <span
+        className={`build-name text-heading sm:text-title ${strong === true ? "text-primary" : "text-secondary"}`}
+      >
         {build.channel === "LIVE" ? name : `${name} ${build.channel}`}
       </span>
-      <span className="font-mono text-caption text-secondary">
-        <span data-build={build.code}>{build.code}</span>
-        {build.releasedAt === null
-          ? ""
-          : ` · ${day.format(new Date(build.releasedAt))}`}
+      <span className="flex flex-col text-caption text-secondary">
+        {build.releasedAt === null ? null : (
+          <span>{day.format(new Date(build.releasedAt))}</span>
+        )}
+        <span className="font-mono text-muted" data-build={build.code}>
+          {build.code}
+        </span>
       </span>
     </span>
   );
 }
 
-/** "4.10.2 against 4.10.1": the two builds, newest first, and how far apart. */
+/**
+ * "From 4.10.1 → To 4.10.2" (ADR-053): the two builds in reading order, old on the left and new on
+ * the right, the time between them on the arrow that joins them.
+ */
 export function ComparisonHead({
   from,
   to,
@@ -124,15 +142,45 @@ export function ComparisonHead({
             86_400_000,
         )
       : null;
+  // A comparison can run backwards (an older build chosen as "to"); then no direction is claimed.
+  const gapText =
+    days === null
+      ? ""
+      : days < 0
+        ? "then"
+        : days === 0
+          ? "same day"
+          : `${plural(days, "day", "days")} later`;
   return (
     <div className="flex flex-wrap items-end justify-between gap-6 border-b border-hairline pb-4">
-      <div className="flex flex-wrap items-end gap-x-6 gap-y-3">
-        <BuildName build={to} other={from} />
-        <span className="lab pb-1 text-muted">
-          against
-          {days === null ? "" : `, ${plural(days, "day", "days")} earlier`}
+      <div
+        data-comparison=""
+        className="grid w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-4 rounded-card bg-surface p-4 shadow-soft md:w-auto md:min-w-0 md:flex-1 md:gap-x-6 md:p-6"
+      >
+        <BuildSide label="From" build={from} other={to} />
+        {/* From sm up the time sits on the line between the builds; on a phone the arrow alone does, the time below. */}
+        <span className="flex min-w-0 items-center justify-center gap-2 text-muted">
+          <span
+            aria-hidden="true"
+            className="hidden min-w-2 flex-1 border-t border-hairline-strong sm:block"
+          />
+          <span className="hidden whitespace-nowrap text-caption sm:inline">
+            {gapText}
+          </span>
+          <span
+            aria-hidden="true"
+            className="flex items-center sm:min-w-2 sm:flex-1"
+          >
+            <span className="hidden flex-1 border-t border-hairline-strong sm:block" />
+            <span className="text-heading text-secondary">→</span>
+          </span>
         </span>
-        <BuildName build={from} other={to} />
+        <BuildSide label="To" build={to} other={from} strong />
+        {gapText === "" ? null : (
+          <span className="col-span-3 pt-3 text-center text-caption text-muted sm:hidden">
+            {gapText}
+          </span>
+        )}
       </div>
       {aside}
     </div>
@@ -183,10 +231,66 @@ export function PatchFigures({ data }: { readonly data: PatchPageData }) {
 function ChangeCell({ f }: { readonly f: FigureChange }) {
   const c = changeOf(f.from, f.to);
   return (
-    <>
+    <span className="delta">
       <span aria-label={c.spoken}>{c.text}</span>
       {c.percent === null ? null : <span className="pct">{c.percent}</span>}
-    </>
+    </span>
+  );
+}
+
+/**
+ * "Before" or "After" over the build it names (ADR-053): a column head that says which side is
+ * which in words, with the build as its detail.
+ */
+function SideHead({
+  side,
+  build,
+  num,
+  lead,
+}: {
+  readonly side: "Before" | "After";
+  readonly build: string;
+  /** A figure column: right-aligned, in figures. */
+  readonly num?: boolean;
+  /** Words that end at the arrow: right-aligned, in text. */
+  readonly lead?: boolean;
+}) {
+  return (
+    <th
+      scope="col"
+      className={num === true ? "num" : lead === true ? "lead" : undefined}
+    >
+      <span className="side">{side}</span>
+      <span className="build">{build}</span>
+    </th>
+  );
+}
+
+/** The arrow between Before and After, drawn, not read. */
+const Arrow = () => (
+  <td className="arrow">
+    <span aria-hidden="true">→</span>
+    <span className="sr-only">to</span>
+  </td>
+);
+
+/**
+ * How far a figure moved, drawn (ADR-053): a bar out from a centre line, right for up and left for
+ * down, its length the square root of the share it moved, so a 1% change still shows and a
+ * doubling fills its half. Numbers only, and not from zero, where a share has no meaning.
+ */
+function Shift({ f }: { readonly f: FigureChange }) {
+  if (typeof f.from !== "number" || typeof f.to !== "number") return null;
+  if (f.from === 0 || f.to === f.from) return null;
+  const share = (f.to - f.from) / Math.abs(f.from);
+  const half = Math.min(1, Math.sqrt(Math.abs(share))) * 50;
+  return (
+    <span className="shift" aria-hidden="true">
+      <span
+        className={share > 0 ? "up" : "down"}
+        style={{ width: `${half.toFixed(1)}%` }}
+      />
+    </span>
   );
 }
 
@@ -216,14 +320,16 @@ function FigureTable({
       <thead>
         <tr>
           <th scope="col">Figure</th>
-          <th scope="col" className="num">
-            {from}
+          <SideHead side="Before" build={from} num />
+          <th scope="col" className="arrow">
+            <span className="sr-only">to</span>
           </th>
-          <th scope="col" className="num">
-            {to}
-          </th>
+          <SideHead side="After" build={to} />
           <th scope="col" className="num">
             Change
+          </th>
+          <th scope="col" className="viz" aria-hidden="true">
+            <span className="sr-only">The change, drawn</span>
           </th>
         </tr>
       </thead>
@@ -231,7 +337,7 @@ function FigureTable({
         <tbody key={g.group}>
           {groups.length > 1 ? (
             <tr className="group">
-              <th scope="colgroup" colSpan={4}>
+              <th scope="colgroup" colSpan={6}>
                 {g.group}
               </th>
             </tr>
@@ -245,9 +351,13 @@ function FigureTable({
                 )}
               </th>
               <td className="num old">{formatValue(f.from)}</td>
-              <td className="num">{formatValue(f.to)}</td>
+              <Arrow />
+              <td className="mono new">{formatValue(f.to)}</td>
               <td className="num">
                 <ChangeCell f={f} />
+              </td>
+              <td className="viz">
+                <Shift f={f} />
               </td>
             </tr>
           ))}
@@ -305,8 +415,14 @@ function LoadoutTable({
       <thead>
         <tr>
           <th scope="col">Port</th>
-          <th scope="col">{from}</th>
-          <th scope="col">{to}</th>
+          <SideHead side="Before" build={from} lead />
+          <th scope="col" className="arrow">
+            <span className="sr-only">to</span>
+          </th>
+          <SideHead side="After" build={to} />
+          <th scope="col" className="num hidden sm:table-cell">
+            Change
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -316,11 +432,21 @@ function LoadoutTable({
               {portLabel(r)}
               <span className="path">{breakable(r.port)}</span>
             </th>
-            <td>
+            <td className="old lead">
               <PartName part={r.from} />
             </td>
-            <td>
+            <Arrow />
+            <td className="new">
               <PartName part={r.to} />
+            </td>
+            <td className="num hidden sm:table-cell">
+              <span className="delta">
+                {r.from === null
+                  ? "Fitted"
+                  : r.to === null
+                    ? "Removed"
+                    : "Swapped"}
+              </span>
             </td>
           </tr>
         ))}
@@ -347,15 +473,14 @@ function IngredientTable({
         <tr>
           <th scope="col">Ingredient</th>
           {status === "added" ? null : (
-            <th scope="col" className="num">
-              {from}
-            </th>
+            <SideHead side="Before" build={from} num />
           )}
-          {status === "removed" ? null : (
-            <th scope="col" className="num">
-              {to}
+          {status === "changed" ? (
+            <th scope="col" className="arrow">
+              <span className="sr-only">to</span>
             </th>
-          )}
+          ) : null}
+          {status === "removed" ? null : <SideHead side="After" build={to} />}
         </tr>
       </thead>
       <tbody>
@@ -365,8 +490,9 @@ function IngredientTable({
             {status === "added" ? null : (
               <td className="num old">{formatIngredient(r.from)}</td>
             )}
+            {status === "changed" ? <Arrow /> : null}
             {status === "removed" ? null : (
-              <td className="num">{formatIngredient(r.to)}</td>
+              <td className="mono new">{formatIngredient(r.to)}</td>
             )}
           </tr>
         ))}
@@ -493,12 +619,28 @@ function Entry({
             {top.map((f) => {
               const c = changeOf(f.from, f.to);
               return (
-                <span key={f.key} className="whitespace-nowrap">
-                  {f.label}{" "}
-                  <span className="font-mono text-primary">
-                    {formatValue(f.from)} → {formatValue(f.to)}
+                <span
+                  key={f.key}
+                  className="inline-flex flex-wrap items-baseline gap-x-1"
+                >
+                  {f.label}
+                  <span className="inline-flex items-baseline gap-1 whitespace-nowrap">
+                    <span className="font-mono text-secondary">
+                      {formatValue(f.from)}
+                    </span>
+                    <span aria-hidden="true" className="text-muted">
+                      →
+                    </span>
+                    <span className="sr-only">to</span>
+                    <span className="font-mono font-medium text-primary">
+                      {formatValue(f.to)}
+                    </span>
+                    {c.percent === null ? null : (
+                      <span className="rounded-pill bg-inset px-2 font-mono text-secondary">
+                        {c.percent}
+                      </span>
+                    )}
                   </span>
-                  {c.percent === null ? null : ` (${c.percent})`}
                 </span>
               );
             })}

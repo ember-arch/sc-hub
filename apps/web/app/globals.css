@@ -152,6 +152,64 @@
 .patch-table .old {
   @apply text-secondary;
 }
+/* ADR-053: Before and After say which side is which; the new value carries the weight. */
+.patch-table thead .side {
+  @apply block text-secondary;
+}
+.patch-table thead .build {
+  @apply text-label block font-mono font-regular text-muted;
+  overflow-wrap: anywhere;
+}
+/* A build's name in the From/To panel: a hotfix's number may wrap rather than push the panel. */
+.build-name {
+  overflow-wrap: anywhere;
+}
+.patch-table .new {
+  @apply font-medium;
+}
+.patch-table .lead {
+  @apply text-right;
+}
+.patch-table .mono {
+  @apply font-mono;
+}
+.patch-table .arrow {
+  @apply w-6 px-1 text-center text-muted;
+}
+.patch-table .delta {
+  @apply inline-flex flex-col items-end whitespace-nowrap rounded-control bg-inset px-2 py-1 text-caption text-primary sm:flex-row sm:items-baseline sm:gap-2 sm:rounded-pill;
+}
+.patch-table .delta .pct {
+  @apply pl-0;
+}
+.patch-table .viz {
+  @apply hidden w-24 pl-4 sm:table-cell;
+}
+/* The change, drawn: a centre line, a bar out to the right for up and to the left for down. */
+.patch-table .shift {
+  @apply relative block h-2 w-24 rounded-pill bg-inset;
+}
+.patch-table .shift::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  @apply -top-1 -bottom-1 border-l border-hairline-strong;
+}
+.patch-table .shift .up,
+.patch-table .shift .down {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  @apply bg-secondary;
+}
+.patch-table .shift .up {
+  left: 50%;
+  @apply rounded-r-pill;
+}
+.patch-table .shift .down {
+  right: 50%;
+  @apply rounded-l-pill;
+}
 .patch-table .unit,
 .patch-table .pct {
   @apply text-caption text-muted;

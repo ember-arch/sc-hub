@@ -38,7 +38,10 @@ test.describe("the patch pages", () => {
       "aria-current",
       "page",
     );
-    await expect(page.locator("main [data-build]").first()).toHaveText(newest!);
+    // ADR-053: From is the earlier build, To the latest.
+    const head = page.locator("[data-comparison] [data-build]");
+    await expect(head.first()).toHaveText(previous!);
+    await expect(head.last()).toHaveText(newest!);
     const headings = await page
       .getByRole("heading", { level: 2 })
       .allTextContents();
@@ -65,7 +68,7 @@ test.describe("the patch pages", () => {
     // A changed entry opens on a table of both builds; a new or removed one on its figures.
     await expect(entry.locator("table, dl").first()).toBeVisible();
     const changed = page.locator("#ships details[data-patch-entry]").filter({
-      hasText: /changes?$/,
+      has: page.locator("summary", { hasText: /changes?$/ }),
     });
     if ((await changed.count()) > 0) {
       await changed.first().locator("summary").click();
@@ -74,6 +77,31 @@ test.describe("the patch pages", () => {
         /Figure|Port|Ingredient/,
       ]);
     }
+  });
+
+  // ADR-053: the comparison reads From → To, and the tables say Before and After.
+  test("the head reads From, then To, and an entry's table says Before and After", async ({
+    page,
+  }) => {
+    await page.goto("/patches");
+    const head = page.locator("[data-comparison]");
+    await expect(head).toBeVisible();
+    const text = (await head.textContent()) ?? "";
+    expect(text.indexOf("From")).toBeGreaterThanOrEqual(0);
+    expect(text.indexOf("From")).toBeLessThan(text.indexOf("To"));
+    // A changed entry's own line ends on its count of changes.
+    const changed = page.locator("#ships details[data-patch-entry]").filter({
+      has: page.locator("summary", { hasText: /changes?$/ }),
+    });
+    test.skip((await changed.count()) === 0, "no ship changed");
+    await changed.first().locator("summary").click();
+    const heads = changed
+      .first()
+      .locator("table")
+      .first()
+      .getByRole("columnheader");
+    await expect(heads.filter({ hasText: "Before" })).toHaveCount(1);
+    await expect(heads.filter({ hasText: "After" })).toHaveCount(1);
   });
 
   test("the filter narrows the entries by name and says how many match", async ({
@@ -104,17 +132,17 @@ test.describe("the patch pages", () => {
     expect(await page.locator("[data-patch-entry][hidden]").count()).toBe(0);
   });
 
-  test("compare takes two builds in either order and shows the newer first", async ({
+  test("compare takes two builds in either order and reads From the older To the newer", async ({
     page,
   }) => {
     const response = await page.goto(
       `/patches/compare?from=${version(newest!)}&to=${version(previous!)}`,
     );
     expect(response?.status()).toBe(200);
-    // The newer build stands first in the head, whichever order the address gave.
-    const builds = page.locator("main [data-build]");
-    await expect(builds.first()).toHaveText(newest!);
-    await expect(builds.nth(1)).toHaveText(previous!);
+    // The older build is From and the newer To, whichever order the address gave (ADR-053).
+    const builds = page.locator("[data-comparison] [data-build]");
+    await expect(builds.first()).toHaveText(previous!);
+    await expect(builds.nth(1)).toHaveText(newest!);
     await expect(
       page.getByRole("link", { name: "Compare", exact: true }),
     ).toHaveAttribute("aria-current", "page");
@@ -142,6 +170,46 @@ test.describe("the patch pages", () => {
       "aria-current",
       "page",
     );
+  });
+
+  // ADR-053: with every fold open, the patch pages fit a phone, the hotfix page included.
+  test("every fold open, the patch pages do not scroll sideways at 390 px", async ({
+    browser,
+  }) => {
+    const context = await browser.newContext({
+      viewport: { width: 390, height: 900 },
+    });
+    const page = await context.newPage();
+    const hotfix = codes.find(
+      (c) => codes.filter((o) => version(o) === version(c)).length > 1,
+    );
+    const paths = ["/patches"];
+    if (hotfix !== undefined) {
+      const later = codes.filter((o) => version(o) === version(hotfix)).at(-1)!;
+      paths.push(`/patches/${version(later)}-${later.split(".").at(-1)}`);
+    }
+    for (const path of paths) {
+      const response = await page.goto(path);
+      if (response?.status() !== 200) continue;
+      await page.evaluate(() => {
+        for (const d of document.querySelectorAll("details")) d.open = true;
+      });
+      const [head, wide] = await page.evaluate(() => {
+        const panel = document.querySelector("[data-comparison]");
+        const tables = [...document.querySelectorAll("table.patch-table")];
+        return [
+          panel === null ? 0 : panel.scrollWidth - panel.clientWidth,
+          tables.filter(
+            (t) => t.scrollWidth > (t.parentElement?.clientWidth ?? 0) + 1,
+          ).length,
+        ];
+      });
+      expect(head, `${path}: the From/To panel overflows`).toBeLessThanOrEqual(
+        0,
+      );
+      expect(wide, `${path}: tables wider than their fold`).toBe(0);
+    }
+    await context.close();
   });
 
   test("an unknown patch is a 404", async ({ page }) => {

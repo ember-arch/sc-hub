@@ -380,3 +380,31 @@ for (const viewport of [
     });
   }
 }
+
+test("the lead story's video plays in place, and Escape hands the focus back to its title", async ({
+  page,
+}) => {
+  test.skip(showOn, "a show's hero stands in the lead story's place (ADR-057)");
+  await page.goto("/");
+  const lead = page.locator("section[aria-labelledby=lead-story]");
+  const play = lead.getByRole("link", { name: "Play the video" });
+  test.skip(
+    (await play.count()) === 0,
+    "the lead story has no video on this pack (ADR-058)",
+  );
+  await play.click();
+  const dialog = page.locator("dialog[open]");
+  await expect(dialog).toBeVisible();
+  await expect(dialog.locator("iframe")).toHaveAttribute(
+    "src",
+    /^https:\/\/www\.youtube-nocookie\.com\/embed\//,
+  );
+  // The page stays put: the player opened in place.
+  await expect(page).toHaveURL(/\/$/);
+  await page.keyboard.press("Escape");
+  await expect(dialog).toHaveCount(0);
+  // "Watch on YouTube" always leaves (obligations.md): it never opens the player.
+  await expect(
+    lead.locator("[data-video-out] a", { hasText: "Watch on YouTube" }),
+  ).toHaveAttribute("href", /^https:\/\/www\.youtube\.com\//);
+});

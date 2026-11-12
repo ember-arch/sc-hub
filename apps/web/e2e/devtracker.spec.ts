@@ -156,13 +156,14 @@ test.describe("the dev tracker with Spectrum on", () => {
       section.getByRole("heading", { name: "Developer gold posts" }),
     ).toBeVisible();
     // The page's title is a show's (ADR-057) or the lead story's (ADR-058), never a Spectrum post's.
-    await expect(
-      page.locator(
-        eventForFront(shows, clock) === null
-          ? "section[aria-labelledby=lead-story] h1"
-          : "#front-event",
-      ),
-    ).toBeVisible();
+    if (eventForFront(shows, clock) === null) {
+      const href = await page
+        .locator("section[aria-labelledby=lead-story] h1 a")
+        .getAttribute("href");
+      expect(href ?? "").not.toMatch(/spectrum/);
+    } else {
+      await expect(page.locator("#front-event")).toBeVisible();
+    }
     await expect(
       section.getByRole("link", { name: "All developer gold posts" }),
     ).toHaveAttribute("href", "/news/dev");

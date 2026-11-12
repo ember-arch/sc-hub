@@ -18,7 +18,7 @@ import {
   dailyPicks,
   featuredPosts,
   formatFrontDate,
-  leadStory,
+  pickLead,
   pickPlates,
   signed,
   utcDayNumber,
@@ -89,8 +89,9 @@ const LIVE_EXAMPLE = "perseus";
 const DAILY_PLATES = 3;
 
 /**
- * The front page (ADR-020, ADR-021, ADR-038, ADR-042, ADR-050): the date line, the daily line composed
- * from the pack as the title, the contents, the counters; then the five newest dispatches and CIG's
+ * The front page (ADR-020, ADR-021, ADR-038, ADR-050, ADR-057, ADR-058): the date line, then a
+ * show's hero while one runs or, outside a show, the lead story as the title; the counters; then
+ * the five newest dispatches (the lead left out of them) and CIG's
  * latest full videos (up to five, no Shorts), each a carousel with overlaid arrows and the same card widths, the videos'
  * player opening in place, the featured ships (the showcase pair and
  * three that change daily, with the register's count), the developers' latest posts from Spectrum
@@ -191,33 +192,17 @@ export default function HomePage() {
 
   // The lead story (ADR-058): outside a show, the picture-led story of the latest day before
   // today, a Comm-Link before a video; it changes at most once a day.
-  const fullVideos = r.videos.filter((v) => !isShort(v));
   const lead =
     live === null
-      ? leadStory(
-          [
-            ...r.dispatches
-              .filter((d) => d.source === "comm_link")
-              .map((item) => ({
-                item,
-                source: "comm_link" as const,
-                title: item.title,
-                published_at: item.published_at,
-                hasPicture: media().cover(item.external_id) !== null,
-              })),
-            ...fullVideos.map((item) => ({
-              item,
-              source: "video" as const,
-              title: item.title,
-              published_at: item.published_at,
-              // Every upload has YouTube's thumbnails (ADR-050).
-              hasPicture: true,
-            })),
-          ],
+      ? pickLead(
+          r.dispatches,
+          r.videos,
+          (id) => media().cover(id) !== null,
+          isShort,
           at,
         )
       : null;
-  const leadId = lead?.lead.item.id ?? null;
+  const leadId = lead?.lead.id ?? null;
 
   // The five newest dispatches as a carousel (ADR-029, ADR-050), the lead story left out of them.
   const feed = r.dispatches
@@ -294,11 +279,7 @@ export default function HomePage() {
             <FrontEvent event={live} at={at} r={r} />
           ) : lead !== null ? (
             // Outside a show, the lead story (ADR-058).
-            <FrontLead
-              item={lead.lead.item}
-              video={lead.video?.item ?? null}
-              now={at}
-            />
+            <FrontLead item={lead.lead} video={lead.video} now={at} />
           ) : (
             // An empty pack: the site's own words as the title.
             <h1 className="m-0 max-w-prose text-title text-primary lg:text-display">

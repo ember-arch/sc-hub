@@ -1,3 +1,5 @@
+import { withoutEmoji } from "ui";
+
 /**
  * The front page's pure parts (ADR-020, ADR-038, ADR-058, spec 06): the date line, the lead story,
  * plate numerals, which ships take the plates and change daily, and which developer posts are
@@ -223,44 +225,47 @@ export const LEAD_PAIR_DAYS = 3;
 export const PROMOTION =
   /\b(?:store|bundles?|sales?|promotions?|subscribers?|twitch drops|giveaways?|referral)\b/i;
 
+const dayOf = (c: Pick<LeadCandidate, "published_at">): number =>
+  utcDayNumber(new Date(c.published_at));
+
+/** A Comm-Link before a video, then the newest, then the title, so every build agrees. */
+const leadOrder = (a: LeadCandidate, b: LeadCandidate): number =>
+  (a.source === "comm_link" ? 0 : 1) - (b.source === "comm_link" ? 0 : 1) ||
+  b.published_at.localeCompare(a.published_at) ||
+  a.title.localeCompare(b.title);
+
 /**
  * The front page's lead story outside a show (ADR-058): from the Comm-Links and full videos
- * published before today's UTC day began, the latest day that has any; on that day a Comm-Link
- * before a video, the newest first. So the lead changes at most once a day, and holds through
- * quiet days. A store promotion does not lead while anything else is on the pack; only candidates
- * with a picture take part, all of them when none has one (CI has no media). A video whose title
- * is the lead Comm-Link's, within three days, rides along as its video.
+ * published before today's UTC day began (so the lead changes at most once a day and holds through
+ * quiet days), store promotions aside while anything else is there. The latest such day leads;
+ * a story with a picture is preferred within three days of it (a missing cover never lets an old
+ * video lead for long), on the latest of those days a Comm-Link before a video, the newest first.
+ * With no picture within those days, the latest day's story leads in words alone. A video whose
+ * title is the lead Comm-Link's, published within three days of it and before today, rides along.
  */
 export function leadStory<T extends LeadCandidate>(
   candidates: readonly T[],
   now: Date,
 ): { readonly lead: T; readonly video: T | null } | null {
   const today = utcDayNumber(now);
-  const before = candidates.filter(
-    (c) => utcDayNumber(new Date(c.published_at)) < today,
-  );
+  const before = candidates.filter((c) => dayOf(c) < today);
   const stories = before.filter((c) => !PROMOTION.test(c.title));
   const eligible = stories.length > 0 ? stories : before;
-  const pictured = eligible.filter((c) => c.hasPicture);
-  const pool = pictured.length > 0 ? pictured : eligible;
-  if (pool.length === 0) return null;
-  const latestDay = Math.max(
-    ...pool.map((c) => utcDayNumber(new Date(c.published_at))),
-  );
-  const lead = pool
-    .filter((c) => utcDayNumber(new Date(c.published_at)) === latestDay)
-    .sort(
-      (a, b) =>
-        (a.source === "comm_link" ? 0 : 1) -
-          (b.source === "comm_link" ? 0 : 1) ||
-        b.published_at.localeCompare(a.published_at) ||
-        a.title.localeCompare(b.title),
-    )[0]!;
+  if (eligible.length === 0) return null;
+  const latestDay = Math.max(...eligible.map(dayOf));
+  const recent = eligible.filter((c) => dayOf(c) > latestDay - LEAD_PAIR_DAYS);
+  const pictured = recent.filter((c) => c.hasPicture);
+  const pool =
+    pictured.length > 0
+      ? pictured
+      : recent.filter((c) => dayOf(c) === latestDay);
+  const bestDay = Math.max(...pool.map(dayOf));
+  const lead = pool.filter((c) => dayOf(c) === bestDay).sort(leadOrder)[0]!;
   if (lead.source === "video") return { lead, video: null };
   const key = storyKey(lead.title);
   const at = Date.parse(lead.published_at);
   const video =
-    candidates
+    before
       .filter(
         (c) =>
           c.source === "video" &&
@@ -270,4 +275,65 @@ export function leadStory<T extends LeadCandidate>(
       )
       .sort((a, b) => b.published_at.localeCompare(a.published_at))[0] ?? null;
   return { lead, video };
+}
+
+/** What `pickLead` reads of a dispatch or a video. */
+export interface LeadItem {
+  readonly id: string;
+  readonly source: string;
+  readonly external_id: string;
+  readonly title: string;
+  readonly published_at: string;
+  readonly url: string;
+}
+
+/**
+ * The lead story from the pack as the front page holds it: the Comm-Links among the dispatches
+ * (with a picture when the media has their cover) and the full videos, no Shorts (every upload has
+ * YouTube's thumbnails, ADR-050).
+ */
+export function pickLead<T extends LeadItem>(
+  dispatches: readonly T[],
+  videos: readonly T[],
+  hasCover: (externalId: string) => boolean,
+  isShort: (item: T) => boolean,
+  now: Date,
+): { readonly lead: T; readonly video: T | null } | null {
+  const picked = leadStory(
+    [
+      ...dispatches
+        .filter((d) => d.source === "comm_link")
+        .map((item) => ({
+          item,
+          source: "comm_link" as const,
+          title: item.title,
+          published_at: item.published_at,
+          hasPicture: hasCover(item.external_id),
+        })),
+      ...videos
+        .filter((v) => !isShort(v))
+        .map((item) => ({
+          item,
+          source: "video" as const,
+          title: item.title,
+          published_at: item.published_at,
+          hasPicture: true,
+        })),
+    ],
+    now,
+  );
+  return picked === null
+    ? null
+    : { lead: picked.lead.item, video: picked.video?.item ?? null };
+}
+
+/**
+ * The lead's excerpt: CIG's summary without emoji (CLAUDE.md section 2), none when it is a bare
+ * link or carries one (a video's "Wishlist on Steam Now: https://…" is not a lead's words).
+ */
+export function leadExcerpt(summary: string | null): string | null {
+  if (summary === null) return null;
+  const text = withoutEmoji(summary).trim();
+  if (text === "" || /https?:\/\//i.test(text)) return null;
+  return text;
 }

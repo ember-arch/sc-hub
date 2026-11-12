@@ -22,7 +22,7 @@ import {
 } from "./events/parts";
 
 /**
- * The front page's hero while a show runs (ADR-057): in place of the daily line and the contents,
+ * The front page's hero while a show runs (ADR-057): at the top of the page, in the lead story's place (ADR-058),
  * from the UTC day the show opens to the end of its last day, then gone. The show's name, the day
  * on the floor and its makers over the featured ship's picture, the links into the event page,
  * and the strip of days under it.

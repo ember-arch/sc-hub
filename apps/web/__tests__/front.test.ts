@@ -338,29 +338,58 @@ describe("leadStory", () => {
     expect(leadStory([], now)).toBeNull();
   });
 
-  it("pairs a Comm-Link with the video of its story within three days", () => {
-    const post = c(
+  it("pairs a Comm-Link with the video of its story, before or after it, within three days", () => {
+    const title = "Star Citizen | Behind the Ships: RSI Galaxy";
+    // RSI's own case: the video at 16:39, the Comm-Link at 22:00 the same day.
+    const post = c("comm_link", title, "2026-11-09T22:00:00Z");
+    const film = c("video", title, "2026-11-09T16:39:01Z");
+    const at = new Date("2026-11-10T12:00:00Z");
+    expect(leadStory([post, film], at)).toEqual({ lead: post, video: film });
+    // Three days apart still pairs; a moment past it does not.
+    const edge = c("video", title, "2026-11-06T22:00:00Z");
+    const past = c("video", title, "2026-11-06T21:59:00Z");
+    expect(leadStory([post, edge], at)?.video).toEqual(edge);
+    expect(leadStory([post, past], at)?.video).toBeNull();
+  });
+
+  it("never pairs a video published today, so the card holds for the day", () => {
+    const title = "Star Citizen | Behind the Ships: RSI Galaxy";
+    const post = c("comm_link", title, "2026-11-09T22:00:00Z");
+    const today = c("video", title, "2026-11-10T09:00:00Z");
+    expect(
+      leadStory([post, today], new Date("2026-11-10T12:00:00Z"))?.video,
+    ).toBeNull();
+  });
+
+  it("breaks a tie on the time by the title, so every build agrees", () => {
+    const a = c(
       "comm_link",
-      "Star Citizen | Behind the Ships: RSI Galaxy",
+      "This Week in Star Citizen",
       "2026-11-09T22:00:00Z",
     );
-    const film = c(
-      "video",
-      "Star Citizen | Behind the Ships: RSI Galaxy",
-      "2026-11-10T19:01:05Z",
+    const b = c("comm_link", "Behind the Ships", "2026-11-09T22:00:00Z");
+    expect(leadStory([a, b], now)?.lead).toEqual(b);
+    expect(leadStory([b, a], now)?.lead).toEqual(b);
+  });
+
+  it("prefers a picture only within three days of the latest story, then leads in words", () => {
+    const old = c("video", "A video from October", "2026-10-23T18:00:00Z");
+    const bare = c(
+      "comm_link",
+      "Yesterday's post",
+      "2026-11-11T18:00:00Z",
+      false,
     );
-    const late = c(
+    // An old pictured video does not outrank a newer story whose cover is missing.
+    expect(leadStory([old, bare], now)?.lead).toEqual(bare);
+    // A pictured story within three days does.
+    const recent = c(
       "video",
-      "Star Citizen | Behind the Ships: RSI Galaxy",
-      "2026-11-20T19:00:00Z",
+      "A video of two days ago",
+      "2026-11-09T18:00:00Z",
     );
-    expect(
-      leadStory([post, film], new Date("2026-11-10T12:00:00Z"))?.video,
-    ).toEqual(film);
-    expect(LEAD_PAIR_DAYS).toBe(3);
-    const far = leadStory([post, late], new Date("2026-11-10T12:00:00Z"));
-    expect(far?.lead).toEqual(post);
-    expect(far?.video).toBeNull();
+    expect(leadStory([old, bare, recent], now)?.lead).toEqual(recent);
+    expect(LEAD_PAIR_DAYS).toBeGreaterThan(1);
   });
 
   it("leaves a store promotion out while anything else is on the pack", () => {

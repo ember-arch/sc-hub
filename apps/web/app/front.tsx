@@ -16,7 +16,7 @@ export function Counters({
 }
 
 /**
- * The front page's parts (ADR-020, ADR-021, ADR-038): the contents list, the counters (the figure
+ * The front page's parts (ADR-020, ADR-021, ADR-038): the counters (the figure
  * strip), the bento, the register link and the running heads. Pure presentation; page.tsx reads
  * the data and hands it in.
  */

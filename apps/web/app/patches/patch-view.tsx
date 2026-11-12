@@ -317,12 +317,16 @@ function FigureTable({
   readonly status?: EntryChange["status"];
 }) {
   const changed = status === "changed";
+  // A new or removed entry lists a few headline figures: one body, no group headings (each would
+  // head one line). A changed entry groups its figures under their headings.
   const groups: { group: string; rows: FigureChange[] }[] = [];
-  for (const f of figures) {
-    const last = groups.at(-1);
-    if (last !== undefined && last.group === f.group) last.rows.push(f);
-    else groups.push({ group: f.group, rows: [f] });
-  }
+  if (!changed) groups.push({ group: "figures", rows: [...figures] });
+  else
+    for (const f of figures) {
+      const last = groups.at(-1);
+      if (last !== undefined && last.group === f.group) last.rows.push(f);
+      else groups.push({ group: f.group, rows: [f] });
+    }
   return (
     <table className={changed ? "patch-table" : "patch-table one-side"}>
       <thead>
@@ -347,10 +351,9 @@ function FigureTable({
       </thead>
       {groups.map((g) => (
         <tbody key={g.group}>
-          {/* A new or removed entry lists a few headline figures; their groups would be one line each. */}
           {changed && groups.length > 1 ? (
             <tr className="group">
-              <th scope="colgroup" colSpan={changed ? 6 : 4}>
+              <th scope="colgroup" colSpan={6}>
                 {g.group}
               </th>
             </tr>
@@ -602,6 +605,7 @@ function Entry({
   return (
     <details
       data-patch-entry=""
+      data-status={entry.status}
       data-name={`${entry.name} ${entry.detail ?? ""} ${entry.id} ${KIND_WORDS[kind]} ${tags ?? ""}`.toLowerCase()}
       className="group/entry border-b border-hairline"
     >
@@ -609,10 +613,13 @@ function Entry({
         <Fold scope="entry" />
         <span className="flex min-w-0 flex-1 flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
           <span className="flex min-w-0 flex-col">
-            <span className="flex flex-wrap items-baseline gap-x-2">
+            <span className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
               <span className="text-ui text-primary">{entry.name}</span>
               {changed ? null : (
-                <span className="rounded-pill bg-inset px-2 text-caption text-secondary">
+                <span
+                  data-entry-tag=""
+                  className="rounded-pill bg-inset px-2 text-caption text-secondary"
+                >
                   {entry.status === "added" ? "New" : "Removed"}
                 </span>
               )}

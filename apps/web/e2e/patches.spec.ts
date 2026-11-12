@@ -217,11 +217,12 @@ test.describe("the patch pages", () => {
     page,
   }) => {
     await page.goto("/patches");
-    const fresh = page.locator("#ships details[data-patch-entry]").filter({
-      has: page.locator("summary", { hasText: "New" }),
-    });
+    const fresh = page.locator(
+      '#ships details[data-patch-entry][data-status="added"]',
+    );
     test.skip((await fresh.count()) === 0, "no new ship in this patch");
     const entry = fresh.first();
+    await expect(entry.locator("summary [data-entry-tag]")).toHaveText("New");
     await entry.locator("summary").click();
     await expect(entry.locator("[data-entry-note]")).toContainText(/^New in /);
     const table = entry.locator("table").first();

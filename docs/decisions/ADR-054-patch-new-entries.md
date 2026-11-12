@@ -3,7 +3,7 @@
 - Status: accepted
 - Date: 2026-11-12
 - Deciders: owner ("when I click into something that was changed, it shows me the change, but not what it was before... we need from to in these sections/drop downs too")
-- Amends: ADR-049 ("a new or removed entry has one side only: its figures, not a table of dashes"), ADR-053
+- Amends: ADR-049 ("a new or removed entry has one side only: its figures, not a table of dashes"), ADR-053 (patch-from-to)
 
 ## Context
 
@@ -19,5 +19,7 @@ The owner opened the Avenger Stalker on `/patches` and saw a plain list of its f
 | Recipes | What one craft takes shows Before → After for every recipe, a dash on the side it did not exist | The same rule |
 
 ## Consequences
+
+- A figure first stated, or no longer stated, in a changed entry shows the same dash, read as "none".
 
 - `patches.spec.ts` checks that a new ship carries the tag, opens on the note, and has a Before → After table whose Before cells are empty.

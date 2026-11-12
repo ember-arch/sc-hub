@@ -129,7 +129,8 @@ test("the ledger's old address lands on the home's funding card, which the count
   );
   await expect(
     page
-      .locator("dl div", { hasText: /^Citizens/ })
+      // The counter reads "Citizens" then its figure; the card's "Citizens gained in …" is not it.
+      .locator("dl div", { hasText: /^Citizens\d/ })
       .locator("dd a")
       .first(),
   ).toHaveAttribute("href", "#funding");
@@ -213,12 +214,14 @@ test("the funding card counts citizens too, keeping the view across a switch (AD
   ).toBeVisible();
   await expect(citizens.locator("[id$=-months]")).toBeVisible();
   await expect(citizens.locator("[id$=-ytd]")).toBeHidden();
-  // Citizens are counted, not paid: no dollar sign in their figures or bar titles.
-  await expect(citizens.locator("dl")).not.toContainText("$");
+  // Citizens are counted, not paid: no dollar sign anywhere in their view, axes, titles and
+  // summaries included (textContent reads the hidden parts too).
+  const text = (await citizens.textContent()) ?? "";
+  expect(text).not.toContain("$");
   const titles = await citizens
     .locator("[id$=-months] svg rect title")
     .allTextContents();
-  for (const t of titles) expect(t).not.toContain("$");
+  expect(titles.length).toBeGreaterThan(0);
   await section.getByRole("button", { name: "Year to date" }).click();
   await expect(citizens.locator("[id$=-ytd]")).toBeVisible();
 });

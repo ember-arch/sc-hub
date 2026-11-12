@@ -13,7 +13,8 @@
         "http://localhost:3000/compare?ships=gladius,polaris",
         "http://localhost:3000/news",
         "http://localhost:3000/titles",
-        "http://localhost:3000/patches"
+        "http://localhost:3000/patches",
+        "http://localhost:3000/events/iae-2956"
       ]
     },
     "assert": {

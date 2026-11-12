@@ -2,7 +2,9 @@ import { mkdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { expect, test } from "@playwright/test";
+import { eventForFront } from "schema";
 import { DISCLAIMER } from "../../../packages/ui/legal";
+import { clock, shows } from "./shows";
 
 // The dev tracker with the pack's Spectrum posts shown (spec 03, "Dev tracker UI" and "Author
 // pages"): runs only when the server was built with SPECTRUM_MODE on, which the live site is not
@@ -153,10 +155,13 @@ test.describe("the dev tracker with Spectrum on", () => {
     await expect(
       section.getByRole("heading", { name: "Developer gold posts" }),
     ).toBeVisible();
-    // The daily line (ADR-042) leads with CIG's freshest word: a staff thread or a dispatch.
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-      /^(CIG posted (in )?“|The latest dispatch is “)/,
-    );
+    // The daily line (ADR-042) leads with CIG's freshest word: a staff thread or a dispatch; while
+    // a show runs its hero stands in the daily line's place (ADR-057).
+    if (eventForFront(shows, clock) === null) {
+      await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+        /^(CIG posted (in )?“|The latest dispatch is “)/,
+      );
+    }
     await expect(
       section.getByRole("link", { name: "All developer gold posts" }),
     ).toHaveAttribute("href", "/news/dev");

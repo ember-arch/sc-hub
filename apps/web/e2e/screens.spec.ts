@@ -67,6 +67,9 @@ const SCREENS = [
   { name: "patches-ptu", path: "/patches/ptu", status: 200 },
   { name: "patches-compare", path: "/patches/compare", status: 200 },
   { name: "titles-guide", path: "/titles?group=guide", status: 200 },
+  // The shows (ADR-057): the event page in the canonical format, and the index.
+  { name: "event", path: "/events/iae-2956", status: 200 },
+  { name: "events", path: "/events", status: 200 },
   { name: "about", path: "/about", status: 200 },
   { name: "privacy", path: "/privacy", status: 200 },
   { name: "licenses", path: "/licenses", status: 200 },

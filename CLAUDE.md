@@ -43,7 +43,7 @@ docs/
   legal/cig-approval.md, obligations.md, takedown.md, attribution.md
   decisions/ADR-NNN-*.md
   specs/0N-*.md
-  runbooks/patch-day.md, refresh.md, launch.md, media.md
+  runbooks/patch-day.md, refresh.md, launch.md, media.md, events.md
 packages/
   schema/        Zod types + JSON schema export; the pipeline↔web contract
   ui/            design tokens + components (no app logic)
@@ -52,7 +52,7 @@ pipeline/        Windows-only: detect, extract, normalize, optimize, publish
 apps/web/        Next.js app
 workers/         pollers (news, spectrum), import job, link-entities job (poll-news runs from CI every thirty minutes until Fly, started by the news clock on Vercel with the workflow's schedule as backup, ADR-053; poll-spectrum only with SPECTRUM_MODE on, ADR-027)
 fixtures/        real extracted records per game version; committed (the whole catalog since ADR-022, under 40 MB)
-scripts/         one-off dev scripts; nothing here runs in production (one orchestrator, scripts/refresh, runs daily in CI to refresh the fixtures from their sources and land real changes on main, ADR-023; and scripts/media/publish-covers.ts runs in the News workflow to put new Comm-Links' covers in the live media manifest, ADR-051)
+scripts/         one-off dev scripts; nothing here runs in production (one orchestrator, scripts/refresh, runs daily in CI to refresh the fixtures from their sources and land real changes on main, ADR-023; and scripts/media/publish-covers.ts runs in the News workflow to put new Comm-Links' covers in the live media manifest, ADR-051; and scripts/events/fetch.ts runs in the News workflow to read CIG's shows from RSI's own schedule into fixtures/events, ADR-057)
 ```
 
 Create exactly this layout in Phase 0. Add folders only with an ADR.
@@ -133,6 +133,7 @@ CDN_BASE_URL (the media store's public address; the site resolves every /media/ 
 SPECTRUM_MODE (feed | poll | off), SPECTRUM_FEED_URL (feed mode), SPECTRUM_THREADS (off skips the thread step of a scheduled run while a local backfill holds the endpoint, ADR-037), SPECTRUM_STAFF_ROLE_ID (optional; poll mode resolves the staff role from Spectrum's own role list each run and needs no sign-in, ADR-027)
 SENTRY_DSN
 SITE_URL (the public origin; canonical URLs, sitemap.xml and Open Graph resolve against it)
+SITE_CLOCK (local runs only, ignored on Vercel: an ISO time that pins the site's clock, so a build can be photographed on a given day of a show, ADR-057)
 SC_INSTALL_ROOT (Windows only, for example C:\Program Files\Roberts Space Industries\StarCitizen)
 STARBREAKER_BIN (Windows only)
 SC_HUB_CONTACT_EMAIL (dev scripts, the daily refresh and the news workers; the contact address every User-Agent carries and RSI requests require, ADR-015, ADR-023, ADR-036; a repository variable in CI)

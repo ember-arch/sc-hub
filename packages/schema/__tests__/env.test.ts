@@ -19,6 +19,7 @@ const full: Record<string, string> = {
   SPECTRUM_STAFF_ROLE_ID: "11",
   SENTRY_DSN: "https://key@sentry.example.test/1",
   SITE_URL: "https://site.example.test",
+  SITE_CLOCK: "2026-11-15T18:00:00Z",
   SC_INSTALL_ROOT: "C:\\Games\\StarCitizen",
   STARBREAKER_BIN: "C:\\Tools\\starbreaker.exe",
   SC_HUB_CONTACT_EMAIL: "contact@example.org",

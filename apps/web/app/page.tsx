@@ -35,6 +35,7 @@ import {
   type Reading,
   readings,
 } from "../lib/funding";
+import { frontEvent } from "../lib/events";
 import { media, shipCardImage } from "../lib/media";
 import { shipTally, tallyNote } from "../lib/ship-count";
 import { withoutFixed } from "../lib/component-filters";
@@ -53,6 +54,7 @@ import {
   RegisterLink,
   RunningHead,
 } from "./front";
+import { FrontEvent } from "./front-event";
 import { FundingCard } from "./funding-now";
 import { VideoPlayer } from "./news/videos/player";
 
@@ -102,6 +104,8 @@ const DAILY_PLATES = 3;
 export default function HomePage() {
   const r = repo();
   const at = now();
+  // A show on today (ADR-057) takes the top of the page.
+  const live = frontEvent(at);
   const concepts = conceptShips();
   const makerName = (code: string): string =>
     r.manufacturers.find((m) => m.code === code)?.name ?? code;
@@ -297,13 +301,18 @@ export default function HomePage() {
           <p className="lab m-0 text-secondary">
             {formatFrontDate(at)} · in the ’verse
           </p>
-          <div className="grid items-end gap-8 md:grid-cols-[3fr_2fr] md:gap-12">
-            {/* The daily line (ADR-042): what the pack says today, composed by rule. */}
-            <h1 className="m-0 max-w-prose text-title text-primary lg:text-display">
-              {line}
-            </h1>
-            <Contents />
-          </div>
+          {live === null ? (
+            <div className="grid items-end gap-8 md:grid-cols-[3fr_2fr] md:gap-12">
+              {/* The daily line (ADR-042): what the pack says today, composed by rule. */}
+              <h1 className="m-0 max-w-prose text-title text-primary lg:text-display">
+                {line}
+              </h1>
+              <Contents />
+            </div>
+          ) : (
+            // A show on (ADR-057): its hero takes the daily line's and the contents' place.
+            <FrontEvent event={live} at={at} r={r} />
+          )}
         </div>
 
         <Counters counters={counters} />
@@ -337,8 +346,9 @@ export default function HomePage() {
                     now={at}
                     excerpt={item.summary}
                     picture={feedPictures[i] ?? null}
-                    // The page's first picture, and usually its largest paint.
-                    priority={i === 0}
+                    // The page's first picture, and usually its largest paint, unless a show's
+                    // hero stands above it (ADR-057).
+                    priority={i === 0 && live === null}
                   />
                 ))}
               </Rail>

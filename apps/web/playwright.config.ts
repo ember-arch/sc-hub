@@ -1,5 +1,15 @@
 import { defineConfig, devices } from "@playwright/test";
 
+// One clock for the build and the tests (ADR-057): the pages are prerendered with the build's
+// `now()`, and a test that reads the clock (is a show on?) must read the same one, or a run that
+// crosses midnight UTC would disagree with its own build. The web server and the workers inherit
+// this environment; a run that sets SITE_CLOCK itself keeps its own.
+if ((process.env["SITE_CLOCK"] ?? "") === "") {
+  const at = new Date();
+  at.setSeconds(0, 0);
+  process.env["SITE_CLOCK"] = at.toISOString();
+}
+
 /**
  * End-to-end tests and screenshots (CLAUDE.md section 6). Runs against a production build so
  * Lighthouse and the e2e suite see the same output; locally it reuses a dev server already on

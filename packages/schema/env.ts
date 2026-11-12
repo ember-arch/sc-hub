@@ -42,6 +42,8 @@ export const envSchema = z.object({
   SENTRY_DSN: url.optional(),
   /** The public origin for canonical URLs, the sitemap and Open Graph (spec 02, "SEO"). */
   SITE_URL: url.optional(),
+  /** Local runs only, ignored on Vercel: an ISO time that pins the site's clock, so a build can be photographed on a given day of a show (ADR-057). */
+  SITE_CLOCK: z.iso.datetime({ offset: true }).optional(),
   /** Windows only. */
   SC_INSTALL_ROOT: nonEmpty.optional(),
   /** Windows only. */

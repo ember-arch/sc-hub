@@ -29,9 +29,21 @@ export function Site({ children, current, stage }: SiteProps) {
   );
 }
 
-/** A stable "now" for relative timestamps: the server's clock, rounded to the minute. */
+/**
+ * A stable "now" for relative timestamps: the server's clock, rounded to the minute. Off Vercel,
+ * `SITE_CLOCK` (an ISO time) pins it, so a local build can be photographed on a given day of a
+ * show (ADR-057); a deployment always reads its own clock.
+ */
 export function now(): Date {
-  const d = new Date();
+  const pinned =
+    process.env["VERCEL"] === undefined ? process.env["SITE_CLOCK"] : undefined;
+  const d =
+    pinned === undefined || pinned.trim() === ""
+      ? new Date()
+      : new Date(pinned);
+  if (Number.isNaN(d.getTime())) {
+    throw new Error(`SITE_CLOCK is not a time: ${JSON.stringify(pinned)}`);
+  }
   d.setSeconds(0, 0);
   return d;
 }

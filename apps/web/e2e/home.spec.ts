@@ -2,6 +2,8 @@ import { mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { expect, test } from "@playwright/test";
+import { eventForFront } from "schema";
+import { clock, shows } from "./shows";
 
 // The hero home page (ADR-038): dispatches first, the featured ships with the register's count,
 // the developers' latest only with Spectrum on, and this year's funding with its two views. Runs
@@ -10,10 +12,13 @@ import { expect, test } from "@playwright/test";
 
 const on = ["poll", "feed"].includes(process.env["SPECTRUM_MODE"] ?? "");
 const OUT = join(dirname(fileURLToPath(import.meta.url)), "__screenshots__");
+// A show on (ADR-057) puts its hero in place of the daily line and the contents.
+const showOn = eventForFront(shows, clock) !== null;
 
 test("the title is the daily line: one sentence from the pack, the date label above it", async ({
   page,
 }) => {
+  test.skip(showOn, "a show's hero stands in the daily line's place (ADR-057)");
   await page.goto("/");
   const title = page.getByRole("heading", { level: 1 });
   await expect(title).toHaveText(/^[A-Z$].{20,220}\.$/);
@@ -365,6 +370,7 @@ for (const viewport of [
 test("the home page's contents show from tablet width, not on a phone", async ({
   browser,
 }) => {
+  test.skip(showOn, "a show's hero stands in the contents' place (ADR-057)");
   for (const [width, shown] of [
     [390, false],
     [820, true],

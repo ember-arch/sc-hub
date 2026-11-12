@@ -230,7 +230,7 @@ jobs:
         run: pnpm exec tsx scripts/media/publish-covers.ts --dry-run-without-token --rehearse "$REHEARSE"
       - name: Commit what changed
         run: |
-          git add fixtures/news fixtures/spectrum/thread-state.json fixtures/spectrum/uploads.json fixtures/rsi-media/cover-sources.json fixtures/events/state.json fixtures/events/*.json
+          git add fixtures/news fixtures/spectrum/thread-state.json fixtures/spectrum/uploads.json fixtures/rsi-media/cover-sources.json fixtures/events
           if git diff --cached --quiet; then
             echo "Nothing new."
             exit 0

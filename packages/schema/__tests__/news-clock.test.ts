@@ -114,7 +114,9 @@ describe("the workflow's gate", () => {
   });
 
   it("cancels a run that stands aside, so the video check never takes it for a read", () => {
-    expect(workflow).toContain('gh run cancel "$RUN_ID"');
+    expect(workflow).toMatch(/gh run cancel "\$RUN_ID".*\n\s*sleep 60\n/);
+    // Only a run created in the hour it reads in may read the feed.
+    expect(workflow).toContain('if [ "${created:0:13}" != "$hour" ]; then');
     expect(workflow).toContain('.conclusion != \\"cancelled\\"');
     expect(workflow).toContain("'News, with the video feed'");
     expect(workflow).toContain('contains(\\"video feed\\")');

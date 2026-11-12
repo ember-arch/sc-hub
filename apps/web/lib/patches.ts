@@ -75,9 +75,11 @@ export function compareVersions(a: string, b: string): number {
 
 /**
  * The PTU posts for the version in testing now, newest first, or empty (ADR-049, ADR-046): posts
- * for a version ahead of LIVE, leaving out a post CIG has marked closed ("[Now Closed] ...", a
- * tech preview that ended) and every post for a version CIG has already put out on LIVE (its
- * LIVE release notes or hotfix posts are on the pack, while the wiki's build may lag a day).
+ * for a version ahead of LIVE, leaving out a version CIG has marked closed on any of its posts
+ * ("[Now Closed] ...", a tech preview that ended) and every version CIG has already put out on
+ * LIVE: its LIVE release notes, official notes or hotfix posts are on the pack, while the wiki's
+ * build may lag a day. A Comm-Link announcement does not count as a release: a preview of a
+ * version is announced before it reaches LIVE.
  * Only the version of the newest such post: an older PTU line has gone LIVE or been dropped.
  */
 export function ptuInTesting(
@@ -85,12 +87,19 @@ export function ptuInTesting(
   liveVersion: string | null,
 ): PatchNote[] {
   const released = new Set(
-    notes.filter((n) => n.channel === "LIVE").map((n) => n.version),
+    notes
+      .filter((n) => n.channel === "LIVE" && n.kind !== "announcement")
+      .map((n) => n.version),
+  );
+  const closed = new Set(
+    notes
+      .filter((n) => n.channel === "PTU" && /\bclosed\b/i.test(n.title))
+      .map((n) => n.version),
   );
   const open = notes.filter(
     (n) =>
       n.channel === "PTU" &&
-      !/\bclosed\b/i.test(n.audience ?? "") &&
+      !closed.has(n.version) &&
       !released.has(n.version) &&
       (liveVersion === null || compareVersions(n.version, liveVersion) > 0),
   );

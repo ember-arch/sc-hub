@@ -548,7 +548,15 @@ describe("ptuInTesting", () => {
     version: string,
     channel: "LIVE" | "PTU",
     audience: string | null = null,
-  ) => ({ version, channel, audience }) as PatchNote;
+    kind: PatchNote["kind"] = channel === "LIVE" ? "live" : "ptu",
+  ) =>
+    ({
+      version,
+      channel,
+      audience,
+      kind,
+      title: `${audience === null ? "" : `[${audience}] `}Star Citizen Alpha ${version} ${channel} Patch Notes`,
+    }) as PatchNote;
 
   it("names the newest PTU version ahead of LIVE, with only that version's posts", () => {
     const notes = [
@@ -576,6 +584,24 @@ describe("ptuInTesting", () => {
         "4.10.3",
       ).map((n) => n.version),
     ).toEqual(["4.10.4"]);
+  });
+
+  it("keeps a PTU whose version only has a Comm-Link announcement, which comes before release", () => {
+    const notes = [
+      post("4.11.0", "LIVE", null, "announcement"),
+      post("4.11.0", "PTU", "Wave 1"),
+    ];
+    expect(ptuInTesting(notes, "4.10.3").map((n) => n.version)).toEqual([
+      "4.11.0",
+    ]);
+  });
+
+  it("closes a whole version when any of its posts says closed", () => {
+    const notes = [
+      post("5.0.0", "PTU", "Now Closed"),
+      post("5.0.0", "PTU", "Evocati"),
+    ];
+    expect(ptuInTesting(notes, "4.10.3")).toEqual([]);
   });
 
   it("names nothing when every PTU post is at or behind LIVE", () => {

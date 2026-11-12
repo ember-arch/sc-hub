@@ -77,7 +77,7 @@ export function PatchTabs({
 }
 
 /**
- * One side of a comparison (ADR-053): "From" or "To" over the build's name, its code and date. The
+ * One side of a comparison (ADR-055): "From" or "To" over the build's name, its code and date. The
  * side the page is about, To, carries the weight; From stays quieter. Against a build of the same
  * version (a hotfix) the name carries its number.
  */
@@ -116,7 +116,7 @@ function BuildSide({
 }
 
 /**
- * "From 4.10.1 → To 4.10.2" (ADR-053): the two builds in reading order, old on the left and new on
+ * "From 4.10.1 → To 4.10.2" (ADR-055): the two builds in reading order, old on the left and new on
  * the right, the time between them on the arrow that joins them.
  */
 export function ComparisonHead({
@@ -232,7 +232,7 @@ function ChangeCell({ f }: { readonly f: FigureChange }) {
 }
 
 /**
- * "Before" or "After" over the build it names (ADR-053): a column head that says which side is
+ * "Before" or "After" over the build it names (ADR-055): a column head that says which side is
  * which in words, with the build as its detail.
  */
 function SideHead({
@@ -280,7 +280,7 @@ const Arrow = () => (
 );
 
 /**
- * How far a figure moved, drawn (ADR-053): a bar out from a centre line, right for up and left for
+ * How far a figure moved, drawn (ADR-055): a bar out from a centre line, right for up and left for
  * down, its length the square root of the share it moved, so a 1% change still shows and a
  * doubling fills its half. Numbers only, and not from zero, where a share has no meaning.
  */

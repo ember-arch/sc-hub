@@ -152,7 +152,7 @@
 .patch-table .old {
   @apply text-secondary;
 }
-/* ADR-053: Before and After say which side is which; the new value carries the weight. */
+/* ADR-055: Before and After say which side is which; the new value carries the weight. */
 .patch-table thead .side {
   @apply block text-secondary;
 }

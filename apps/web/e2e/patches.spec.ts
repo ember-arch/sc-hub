@@ -38,7 +38,7 @@ test.describe("the patch pages", () => {
       "aria-current",
       "page",
     );
-    // ADR-053: From is the earlier build, To the latest.
+    // ADR-055: From is the earlier build, To the latest.
     const head = page.locator("[data-comparison] [data-build]");
     await expect(head.first()).toHaveText(previous!);
     await expect(head.last()).toHaveText(newest!);
@@ -79,7 +79,7 @@ test.describe("the patch pages", () => {
     }
   });
 
-  // ADR-053: the comparison reads From → To, and the tables say Before and After.
+  // ADR-055: the comparison reads From → To, and the tables say Before and After.
   test("the head reads From, then To, and an entry's table says Before and After", async ({
     page,
   }) => {
@@ -139,7 +139,7 @@ test.describe("the patch pages", () => {
       `/patches/compare?from=${version(newest!)}&to=${version(previous!)}`,
     );
     expect(response?.status()).toBe(200);
-    // The older build is From and the newer To, whichever order the address gave (ADR-053).
+    // The older build is From and the newer To, whichever order the address gave (ADR-055).
     const builds = page.locator("[data-comparison] [data-build]");
     await expect(builds.first()).toHaveText(previous!);
     await expect(builds.nth(1)).toHaveText(newest!);
@@ -172,7 +172,7 @@ test.describe("the patch pages", () => {
     );
   });
 
-  // ADR-053: with every fold open, the patch pages fit a phone, the hotfix page included.
+  // ADR-055: with every fold open, the patch pages fit a phone, the hotfix page included.
   test("every fold open, the patch pages do not scroll sideways at 390 px", async ({
     browser,
   }) => {

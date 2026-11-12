@@ -3,7 +3,7 @@
 - Status: accepted
 - Date: 2026-11-12
 - Deciders: owner ("when I click into something that was changed, it shows me the change, but not what it was before... we need from to in these sections/drop downs too")
-- Amends: ADR-049 ("a new or removed entry has one side only: its figures, not a table of dashes"), ADR-053 (patch-from-to)
+- Amends: ADR-049 ("a new or removed entry has one side only: its figures, not a table of dashes"), ADR-055 (patch-from-to, first numbered ADR-053, which the news clock also took)
 
 ## Context
 

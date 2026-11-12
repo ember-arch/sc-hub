@@ -46,9 +46,9 @@ export const VEHICLE_STATS: readonly StatSpec<VehicleStats>[] = [
 const ITEM_STATS: readonly StatSpec<ItemStats>[] = [
   { key: "hp", label: "Health", digits: 2 },
   { key: "power_draw", label: "Power draw", digits: 2 },
-  { key: "power_output", label: "Power output", digits: 2 },
+  { key: "power_output", label: "Power output", unit: "segments", digits: 2 },
   { key: "heat_generation", label: "Heat generation", digits: 2 },
-  { key: "cooling_rate", label: "Cooling rate", digits: 2 },
+  { key: "cooling_rate", label: "Cooling rate", unit: "segments", digits: 2 },
   { key: "em_signature", label: "EM signature", digits: 2 },
   { key: "ir_signature", label: "IR signature", digits: 2 },
   { key: "weapon_damage", label: "Damage", digits: 2 },

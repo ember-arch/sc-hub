@@ -1,0 +1,1493 @@
+{
+  "slug": "iae-2956",
+  "kind": "iae",
+  "title": "Intergalactic Aerospace Expo 2956",
+  "subtitle": "Free Fly & Manufacturer Schedule",
+  "opens_at": "2026-11-13T16:00:00.000Z",
+  "last_day": "2026-11-27",
+  "venue": {
+    "place": "Tobin Expo Center",
+    "city": "New Babbage",
+    "body": "microTech",
+    "system": "Stanton"
+  },
+  "lead": "Join us in New Babbage on microTech, system Stanton, for the biggest spaceship show in the universe!",
+  "picture": {
+    "url": "https://robertsspaceindustries.com/i/2db7c95e30cdc86bf6d516ff052d4b759a575147/ADdPNihJzmPbNuTnFsH1DqUeqBRpXdSXVVtgJTyDDgscGKrzJuoFjResj6737R84FAMrw4cHBsT1L18UTZzjWMmHg/sc-iae2026-communityhub.webp",
+    "alt": "SC IAE2026 COMMUNITYHUB"
+  },
+  "days": [
+    {
+      "first": 1,
+      "last": 1,
+      "title": "Roberts Space Industries",
+      "makers": [
+        "Roberts Space Industries"
+      ],
+      "from": "2026-11-13",
+      "to": "2026-11-14",
+      "opens_at": "2026-11-13T16:00:00.000Z",
+      "closes_at": "2026-11-14T16:00:00.000Z",
+      "lead": "The Galaxy arrives at last, casting a massive shadow over the Expo hall with its flyable debut!",
+      "ships": [
+        {
+          "name": "RSI Galaxy",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/galaxy/Galaxy",
+          "line": "With a fully modular design and an onboard hangar capable of deploying small ships, the cutting-edge Galaxy can be outfitted with comprehensive facilities to support cargo, medical, or refining operations.",
+          "group": null
+        },
+        {
+          "name": "RSI Skylark",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/skylark/Skylark",
+          "line": "Armed for attack, shielded for safety, and fueled for the frontier, the Skylark is a snub fighter built with everyday adventure in mind.",
+          "group": null
+        },
+        {
+          "name": "RSI Apollo Medivac",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/rsi-apollo/Apollo-Medivac",
+          "line": "A life-saving ship with enhanced armor and missile racks, capable of responding to calls in the heaviest combat.",
+          "group": null
+        },
+        {
+          "name": "RSI Apollo Triage",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/rsi-apollo/Apollo-Triage",
+          "line": "The Triage delivers highly configurable, professional-level medical care anywhere in the galaxy.",
+          "group": null
+        },
+        {
+          "name": "RSI Aurora Mk II",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/Standalone-Ships/Aurora-Mk-II",
+          "line": "The next generation in accessible spacecraft.",
+          "group": null
+        },
+        {
+          "name": "RSI Constellation Mk V Centaurus",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/Standalone-Ships/Constellation-Mk-V-Centaurus-10-Year",
+          "line": "A legend reborn for the modern era.",
+          "group": null
+        },
+        {
+          "name": "RSI Constellation Mk IV Andromeda",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/rsi-constellation/Constellation-Mk-IV-Andromeda",
+          "line": "The Constellation Mk IV Andromeda, a multi-person freighter, is beloved by smugglers and merchants alike for its modular flexibility, potent firepower, and iconic looks.",
+          "group": null
+        },
+        {
+          "name": "RSI Constellation Mk IV Aquila",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/rsi-constellation/Constellation-Mk-IV-Aquila",
+          "line": "Sporting a redesigned cockpit for maximum visibility, advanced sensors, and an onboard Ursa rover for planetary exploration, the Constellation Mk IV Aquila is ready for adventure.",
+          "group": null
+        },
+        {
+          "name": "RSI Constellation Mk IV Phoenix",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/rsi-constellation/Constellation-Mk-IV-Phoenix",
+          "line": "Operable as an organization command ship or dedicated luxury spacecraft for the discerning star captain, the Constellation Mark IV Phoenix comes with a Lynx rover and a Kruger P-72 Archimedes Fighter.",
+          "group": null
+        },
+        {
+          "name": "RSI Constellation Mk IV Taurus",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/rsi-constellation/Constellation-Mk-IV-Taurus",
+          "line": "A dedicated freighter including a shielded cargo hold and an industrial-grade tractor beam, the Constellation Mk IV Taurus is a great way to start your hauling empire.",
+          "group": null
+        },
+        {
+          "name": "RSI Hermes",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/hermes/Hermes",
+          "line": "High capacity, high speed, and high defense.",
+          "group": null
+        },
+        {
+          "name": "RSI Lynx",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/ursa/Lynx",
+          "line": "Tour the wildest corners of the ‘verse in safety, comfort, and style in the Lynx from RSI.",
+          "group": null
+        },
+        {
+          "name": "RSI Mantis",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/rsi-mantis/Mantis",
+          "line": "Stop ships dead in their tracks with RSI’s premier quantum enforcer.",
+          "group": null
+        },
+        {
+          "name": "RSI Meteor",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/rsi-meteor/Meteor",
+          "line": "A medium fighter providing a devastating mix of speed and firepower wrapped in the aggressive styling the brand is known for.",
+          "group": null
+        },
+        {
+          "name": "RSI Perseus",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/perseus/Perseus",
+          "line": "Capable of shredding sub-capital class goliaths, the mere presence of a Perseus gunship in a blockade or patrol squad is enough to make your most aggressive enemies think twice before engaging, just like its vintage namesake.",
+          "group": null
+        },
+        {
+          "name": "RSI Polaris",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/polaris/Polaris",
+          "line": "The Polaris is a nimble corvette-class capital ship that packs a powerful punch with a full armament of turrets and torpedoes.",
+          "group": null
+        },
+        {
+          "name": "RSI Salvation",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/Standalone-Ships/Salvation",
+          "line": "With beginner-friendly functionality and a back-to-basics interior, the Salvation brings exactly that to those dreaming of finding their tomorrow in yesterday’s wrecks.",
+          "group": null
+        },
+        {
+          "name": "RSI Scorpius",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/scorpius/Scorpius",
+          "line": "With an adaptable bi-wing configuration and revolutionary rail-mounted remote turret, the Scorpius offers unprecedented fire coverage, allowing for both defensive and assault-minded applications.",
+          "group": null
+        },
+        {
+          "name": "RSI Scorpius Antares",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/scorpius/Scorpius-Antares",
+          "line": "Redesigned to house a devastating EMP device and quantum jammer, the Antares shuts down enemy combatants, leaving them open to attack or boarding.",
+          "group": null
+        },
+        {
+          "name": "RSI Ursa",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/ursa/ursa",
+          "line": "Rugged, durable, and tough, this is the rover of choice for extreme planetary exploration.",
+          "group": null
+        },
+        {
+          "name": "RSI Ursa Medivac",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/ursa/Ursa-Medivac",
+          "line": "Provides frontline medical support essential to any ground operation.",
+          "group": null
+        },
+        {
+          "name": "RSI Zeus Mk II CL",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/zeus-mk-ii/Zeus-Mk-II-CL",
+          "line": "With a focus on commerce, the Zeus Mk II CL features additional cargo space and a tractor beam for handling large volumes of freight.",
+          "group": null
+        },
+        {
+          "name": "RSI Zeus Mk II ES",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/zeus-mk-ii/zeus-mk-ii-es",
+          "line": "With a focus on exploration, the Zeus Mk II ES features a robust radar package for making new discoveries along with enhanced weaponry and shielding.",
+          "group": null
+        }
+      ],
+      "featured": "RSI Galaxy",
+      "picture": {
+        "url": "https://robertsspaceindustries.com/i/40b504df667ade493b131d6fb6ca866b36c8efa2/ADdPNihJzmPbNuTnFsH1DqUeqBRpXdSXVVtgJTyDDgscGKrzJuoFjResk1qmiT16MRxVjwP5YSRSpHGYUJDXwKgBx/galaxy2026.webp",
+        "alt": "Galaxy2026"
+      }
+    },
+    {
+      "first": 2,
+      "last": 2,
+      "title": "Origin Jumpworks",
+      "makers": [
+        "Origin Jumpworks"
+      ],
+      "from": "2026-11-14",
+      "to": "2026-11-15",
+      "opens_at": "2026-11-14T16:00:00.000Z",
+      "closes_at": "2026-11-15T16:00:00.000Z",
+      "lead": "Your IAE journey continues on a more refined route as Origin lights the path.",
+      "ships": [
+        {
+          "name": "Origin 85x",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/85x/85X",
+          "line": "A luxury and sporty short-range runabout for pilot and passenger.",
+          "group": null
+        },
+        {
+          "name": "Origin 100i",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/origin-100/100i",
+          "line": "Tour the universe with the perfect coupling of luxury and performance.",
+          "group": null
+        },
+        {
+          "name": "Origin 125a",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/origin-100/125a",
+          "line": "With high fuel economy, a souped-up weapons package, and trademark Origin refinement, the 125a is the ideal entry into luxury spaceflight.",
+          "group": null
+        },
+        {
+          "name": "Origin 135c",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/origin-100/135c",
+          "line": "With a deceptive amount of storage space in its sleek, stylish frame, the 135c is the obvious choice for the hauler of taste.",
+          "group": null
+        },
+        {
+          "name": "Origin 300i",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/origin-300/300i",
+          "line": "Travel in style with this high-performance solo tourer.",
+          "group": null
+        },
+        {
+          "name": "Origin 315p",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/origin-300/315p",
+          "line": "Traverse the ‘verse with this high-performance light explorer.",
+          "group": null
+        },
+        {
+          "name": "Origin 325a",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/origin-300/325a",
+          "line": "Origin’s sleek signature fighter, the 325a makes a great companion for finding your mark in style and sophistication.",
+          "group": null
+        },
+        {
+          "name": "Origin 350r",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/origin-300/350r",
+          "line": "Origin’s signature racer, the 350r leaves the competition in the dust.",
+          "group": null
+        },
+        {
+          "name": "Origin 400i",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/400i/400i",
+          "line": "To explore the stars is a most noble endeavor, and Origin Jumpworks has risen to the occasion in crafting the 400i, the ultimate high-performance pathfinder.",
+          "group": null
+        },
+        {
+          "name": "Origin 600i Explorer",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/600i/600i-Explorer",
+          "line": "The 600i Explorer swaps the lounge for a robust scanning station as well as additional utility hardpoints to increase the ship's effectiveness.",
+          "group": null
+        },
+        {
+          "name": "Origin 600i Touring",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/600i/600i-Touring",
+          "line": "Star Citizen’s iconic luxury tourer.",
+          "group": null
+        },
+        {
+          "name": "Origin 890 Jump",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/890-jump/890-Jump",
+          "line": "A vessel in a class all of its own, the colossal 890 Jump is a masterpiece of long-distance touring.",
+          "group": null
+        },
+        {
+          "name": "Origin M50",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/origin-m50/M50",
+          "line": "Origin’s premier racer.",
+          "group": null
+        },
+        {
+          "name": "Origin M80",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/m80/M80",
+          "line": "Beauty and power combine to create a Heavy Fighter far more than mere machine.",
+          "group": null
+        },
+        {
+          "name": "Origin X1",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/x1/x1",
+          "line": "The X1 takes speed and agility to the next level thanks to seamlessly integrated engine technology and joint vector thruster placement.",
+          "group": null
+        },
+        {
+          "name": "Origin X1 Force",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/x1/x1-force",
+          "line": "This open-canopy vehicle from Origin is equally suited to ground-based exploration, reconnaissance expeditions, and security operations.",
+          "group": null
+        },
+        {
+          "name": "Origin X1 Velocity",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/x1/X1-Velocity",
+          "line": "The X1 Velocity offers a lighter chassis to improve overall performance, making it a dangerous new addition to the open-canopy racer lineup.",
+          "group": null
+        }
+      ],
+      "featured": "Origin M80",
+      "picture": {
+        "url": "https://robertsspaceindustries.com/i/9a932893b808280a317261ca6cf3499d83e8a81b/ADdPNihJzmPbNuTnFsH1DqUeqBRpXdSXVVtgJTyDDgscGKrzJuoFjResepmFM1VmMimrWyTmYY55Z4UKGTC3WPjKk/m80.webp",
+        "alt": "M80"
+      }
+    },
+    {
+      "first": 3,
+      "last": 3,
+      "title": "Anvil Aerospace",
+      "makers": [
+        "Anvil Aerospace"
+      ],
+      "from": "2026-11-15",
+      "to": "2026-11-16",
+      "opens_at": "2026-11-15T16:00:00.000Z",
+      "closes_at": "2026-11-16T16:00:00.000Z",
+      "lead": "Day 3 plays host to Anvil's legendary stable of combat-tested ships.",
+      "ships": [
+        {
+          "name": "Anvil Arrow",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/anvil-arrow/Arrow",
+          "line": "Featuring an ultra-aerodynamic frame and slight profile, it’s the most agile ship in its class.",
+          "group": null
+        },
+        {
+          "name": "Anvil Asgard",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/anvil-asgard/Asgard",
+          "line": "A heavily armored vehicle-dropship equipped for boundless resilience in the hottest combat zones.",
+          "group": null
+        },
+        {
+          "name": "Anvil Ballista",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/anvil-ballista/Ballista",
+          "line": "This self-propelled air defense system is capable of destruction on a massive scale.",
+          "group": null
+        },
+        {
+          "name": "Anvil C8R Pisces",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/anvil-pisces/C8R-Pisces",
+          "line": "With the addition of an onboard Tier 3 Medical Bed, the C8R Pisces can treat minor injuries and keep a patient stable while transporting them to safety.",
+          "group": null
+        },
+        {
+          "name": "Anvil C8X Pisces Expedition",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/anvil-pisces/C8X-Pisces-Expedition",
+          "line": "Ideal for inter-system travel or investigating tight spots inaccessible to larger ships, it’s a small ship ready for big adventures.",
+          "group": null
+        },
+        {
+          "name": "Anvil Carrack",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/carrack/Carrack",
+          "line": "Iconic multi-crew explorer ready for your next epic adventure.",
+          "group": null
+        },
+        {
+          "name": "Anvil Centurion",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/centurion/Centurion",
+          "line": "Built on Anvil’s popular Atlas Platform, the Centurion presents a tactical solution for short-range anti-aircraft engagement.",
+          "group": null
+        },
+        {
+          "name": "Anvil F7C Hornet Mk II",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/anvil-hornet-mkii/F7C-Hornet-Mk-II",
+          "line": "Tame the power, speed, and offensive punch of the UEE Navy's premier carrier-based fighter, made famous by its dominating role in the Vanduul war.",
+          "group": null
+        },
+        {
+          "name": "Anvil F7C-M Super Hornet Mk II",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/anvil-hornet-mkii/F7C-M-Super-Hornet-Mk-II",
+          "line": "The Super Hornet is back and upgraded to Mk II spec, making it deadlier than ever.",
+          "group": null
+        },
+        {
+          "name": "Anvil F7C-R Hornet Tracker Mk II",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/anvil-hornet-mkii/F7C-R-Hornet-Tracker-Mk-II",
+          "line": "The F7CR “Tracker” model is a formidable stalker equipped with supercharged long-range radar.",
+          "group": null
+        },
+        {
+          "name": "Anvil F7C-S Hornet Ghost Mk II",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/anvil-hornet-mkii/F7C-S-Hornet-Ghost-Mk-II",
+          "line": "The F7CS “Ghost” model is a stealth fighter more than capable of both reconnaissance and ambush operations.",
+          "group": null
+        },
+        {
+          "name": "Anvil F8C Lightning",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/lightning/f8c-lightning",
+          "line": "A force to be reckoned with, it has protected Humanity countless times from countless threats at home and far from civilization.",
+          "group": null
+        },
+        {
+          "name": "Anvil Gladiator",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/anvil-gladiator/Gladiator",
+          "line": "A ruggedly built two-person dive bomber.",
+          "group": null
+        },
+        {
+          "name": "Anvil Hawk",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/hawk/Hawk",
+          "line": "The perfect ship for independent bounty hunters or local security.",
+          "group": null
+        },
+        {
+          "name": "Anvil Hurricane",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/hurricane/Hurricane",
+          "line": "A heavy fighter with an almost excessive loadout.",
+          "group": null
+        },
+        {
+          "name": "Anvil Paladin",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/paladin/Paladin",
+          "line": "A formidable gunship with durable armor and immense firepower.",
+          "group": null
+        },
+        {
+          "name": "Anvil Spartan",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/spartan/Spartan",
+          "line": "Ready for any battlefield, this vehicle gets troops there safely, quickly, and effectively.",
+          "group": null
+        },
+        {
+          "name": "Anvil Terrapin",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/terrapin/Terrapin",
+          "line": "Heavily armored ship with a sophisticated scanner.",
+          "group": null
+        },
+        {
+          "name": "Anvil Terrapin Medic",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/terrapin/Terrapin-Medic",
+          "line": "Sporting the same robust frame and armor as its pathfinding predecessor, the Terrapin Medic adds a Tier 2 MedBed to become a true miniature frontline trauma center or robust search and rescue vessel.",
+          "group": null
+        },
+        {
+          "name": "Anvil Valkyrie",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/anvil-valkyrie/Valkyrie",
+          "line": "A heavily armed dropship perfect for full-crew expeditions.",
+          "group": null
+        }
+      ],
+      "featured": "Anvil Carrack",
+      "picture": {
+        "url": "https://robertsspaceindustries.com/i/d583b10c9254b07df4eef31650a56f35a2fb7788/ADdPNihJzmPbNuTnFsH1DqUeqBRpXdSXVVtgJTyDDgscGKrzJuoFjResjUG7C7nzuhBVMtByegDgVm1CwfQsCYGDC/carrack2026.webp",
+        "alt": "Carrack2026"
+      }
+    },
+    {
+      "first": 4,
+      "last": 4,
+      "title": "Crusader Industries, Tumbril",
+      "makers": [
+        "CRUSADER INDUSTRIES",
+        "TUMBRIL LAND SYSTEMS"
+      ],
+      "from": "2026-11-16",
+      "to": "2026-11-17",
+      "opens_at": "2026-11-16T16:00:00.000Z",
+      "closes_at": "2026-11-17T16:00:00.000Z",
+      "lead": "Hailing from its lofty perch above the namesake gas giant, Crusader Industries now deploys its wares on microTech.",
+      "ships": [
+        {
+          "name": "Crusader A1 Spirit",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/spirit/A1-Spirit",
+          "line": "A mid-size multi-purpose starship equipped as a light bomber but has the cargo and weaponry to deal with many different scenarios.",
+          "group": "CRUSADER INDUSTRIES"
+        },
+        {
+          "name": "Crusader A2 Hercules",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/crusader-starlifter/A2-Hercules",
+          "line": "With more than double the firepower of the M2, and a custom bomb bay capable of delivering a staggering payload, the A2 caters to anyone hauling massive amounts of cargo through potentially unfriendly skies.",
+          "group": "CRUSADER INDUSTRIES"
+        },
+        {
+          "name": "Crusader Ares Ion",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/crusader-ares/Ares-Ion",
+          "line": "This single cannon equipped heavy fighter delivers extremely powerful shots to quickly disable the shields of even the biggest enemy vessels.",
+          "group": "CRUSADER INDUSTRIES"
+        },
+        {
+          "name": "Crusader Ares Inferno",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/crusader-ares/Ares-Inferno",
+          "line": "Whether heading up a crew or hunting big ships solo, the Ares Inferno's massive Gatling tears through gunship armor and turns smaller fighters to dust in seconds.",
+          "group": "CRUSADER INDUSTRIES"
+        },
+        {
+          "name": "Crusader C1 Spirit",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/spirit/C1-Spirit",
+          "line": "A mid-size multi-purpose starship built for cargo transport and delivery but packing enough versatility to tackle multiple roles and unpredictable jobs.",
+          "group": "CRUSADER INDUSTRIES"
+        },
+        {
+          "name": "Crusader C2 Hercules",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/crusader-starlifter/C2-Hercules",
+          "line": "Utilizing the patented Hercules military-grade spaceframe and expanding cargo capacity, while sacrificing barely any firepower, the C2 has become the cargo industry standard.",
+          "group": "CRUSADER INDUSTRIES"
+        },
+        {
+          "name": "Crusader Intrepid",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/intrepid/Intrepid",
+          "line": "Versatile starter ship and light hauler built with true Crusader quality.",
+          "group": "CRUSADER INDUSTRIES"
+        },
+        {
+          "name": "Crusader M2 Hercules",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/crusader-starlifter/M2-Hercules",
+          "line": "As the UEE's premier tactical Starlifter, the M2’s potent combination of capacity, maneuverability, and durability make it the obvious choice in large-scale transport.",
+          "group": "CRUSADER INDUSTRIES"
+        },
+        {
+          "name": "Crusader Mercury Star Runner",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/crusader-mercury-star-runner/Mercury",
+          "line": "Built with the same engineering and design principles that has made Crusader the go-to manufacturer for galactic transport on any scale, the Mercury checks all the boxes expected of a dependable courier vessel.",
+          "group": "CRUSADER INDUSTRIES"
+        },
+        {
+          "name": "Tumbril Cyclone",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/cyclone/Cyclone",
+          "line": "Stir up a storm with this robust two-seater buggy that can carry a little something in the back.",
+          "group": "TUMBRIL LAND SYSTEMS"
+        },
+        {
+          "name": "Tumbril Cyclone AA",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/cyclone/Cyclone-AA",
+          "line": "Features EMP functionality and an anti-air missile launcher to deter threats from above.",
+          "group": "TUMBRIL LAND SYSTEMS"
+        },
+        {
+          "name": "Tumbril Cyclone MT",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/cyclone/Cyclone-MT",
+          "line": "Building on the agile off-road platform of the base variant, the MT adds two surface-to-air missile launchers and a ballistic cannon to keep airborne assailants at bay.",
+          "group": "TUMBRIL LAND SYSTEMS"
+        },
+        {
+          "name": "Tumbril Cyclone RC",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/cyclone/Cyclone-RC",
+          "line": "Cyclone racing variant.",
+          "group": "TUMBRIL LAND SYSTEMS"
+        },
+        {
+          "name": "Tumbril Cyclone RN",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/cyclone/Cyclone-RN",
+          "line": "Built to clear the fog of war, the recon variant of the Cyclone features a powerful scanner array.",
+          "group": "TUMBRIL LAND SYSTEMS"
+        },
+        {
+          "name": "Tumbril Cyclone TR",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/cyclone/Cyclone-TR",
+          "line": "Support infantry with this combat buggy.",
+          "group": "TUMBRIL LAND SYSTEMS"
+        },
+        {
+          "name": "Tumbril Nova",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/nova-tank/Nova",
+          "line": "This heavy tank offers a devastating combination of weaponry to eliminate threats on the ground and in the air.",
+          "group": "TUMBRIL LAND SYSTEMS"
+        },
+        {
+          "name": "Tumbril Storm",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/storm/Storm",
+          "line": "The Tumbril Storm single-operator mini-tank is built to blitz battlefields and take out enemy artillery.",
+          "group": "TUMBRIL LAND SYSTEMS"
+        },
+        {
+          "name": "Tumbril Storm AA",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/storm/Storm-AA",
+          "line": "Blitz overcrowded battlefields, take out threats from the air, and turn the tide of any conflict.",
+          "group": "TUMBRIL LAND SYSTEMS"
+        }
+      ],
+      "featured": "Crusader A2 Hercules",
+      "picture": {
+        "url": "https://robertsspaceindustries.com/i/48449a7f2d043692dd51a95ee721f114ed7f5fcc/ADdPNihJzmPbNuTnFsH1DqUeqBRpXdSXVVtgJTyDDgscGKrzJuoFjResiqDCP6uC4mVubmodMd8LiXBD3A6Veru4r/hercules.webp",
+        "alt": "Hercules"
+      }
+    },
+    {
+      "first": 5,
+      "last": 5,
+      "title": "Drake Interplanetary",
+      "makers": [
+        "Drake Interplanetary"
+      ],
+      "from": "2026-11-17",
+      "to": "2026-11-18",
+      "opens_at": "2026-11-17T16:00:00.000Z",
+      "closes_at": "2026-11-18T16:00:00.000Z",
+      "lead": "Ready to get your hands dirty?",
+      "ships": [
+        {
+          "name": "Drake Buccaneer",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/drake-buccaneer/Buccaneer",
+          "line": "A light fighter that sacrifices durability (and its ejection seat!) for raw firepower.",
+          "group": null
+        },
+        {
+          "name": "Drake Caterpillar",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/drake-caterpillar/Caterpillar",
+          "line": "A heavy multi-crew commercial freighter.",
+          "group": null
+        },
+        {
+          "name": "Drake Clipper",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/clipper/Clipper",
+          "line": "Depend only on yourself.",
+          "group": null
+        },
+        {
+          "name": "Drake Corsair",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/drake-corsair/Corsair",
+          "line": "A worthy exploration companion, supporting you in battle, discovery, and delivery, wherever the winds of adventure may steer you.",
+          "group": null
+        },
+        {
+          "name": "Drake Cutlass Black",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/drake-cutlass/Cutlass-Black",
+          "line": "Back in black, Drake’s pirate-favorite is a highly versatile ship with combat and cargo prowess.",
+          "group": null
+        },
+        {
+          "name": "Drake Cutlass Blue",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/drake-cutlass/Cutlass-Blue",
+          "line": "The Cutlass Blue boasts missiles, a more powerful engine, and Durasteel holding cells in the cargo bay.",
+          "group": null
+        },
+        {
+          "name": "Drake Cutlass Red",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/drake-cutlass/Cutlass-Red",
+          "line": "The Cutlass Red converts the standard cargo hold into a well-equipped medical facility, including two MedBeds.",
+          "group": null
+        },
+        {
+          "name": "Drake Cutlass Steel",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/drake-cutlass/Cutlass-Steel",
+          "line": "Whoever has the guns and the personnel makes the rules.",
+          "group": null
+        },
+        {
+          "name": "Drake Cutter",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/cutter/Cutter",
+          "line": "Designed for hard-working folks of all stripes, the Cutter packs 4 SCU of cargo room and plenty of wallop into a rough and tumble, compact frame.",
+          "group": null
+        },
+        {
+          "name": "Drake Cutter Rambler",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/cutter/Cutter-Rambler",
+          "line": "The pilot-favorite Cutter chassis outfitted for long hauls and extended engagements.",
+          "group": null
+        },
+        {
+          "name": "Drake Cutter Scout",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/cutter/Cutter-Scout",
+          "line": "The Scout model comes factory-equipped with a beefed-up scanning suite that makes it perfect for pathfinding, surveying, and even reconnaissance and covert intelligence operations.",
+          "group": null
+        },
+        {
+          "name": "Drake Dragonfly Black",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/drake-dragonfly/Dragonfly-Black",
+          "line": "A two-seater grav-lev bike that easily traverses rough terrain or open space.",
+          "group": null
+        },
+        {
+          "name": "Drake Golem",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/golem/Golem",
+          "line": "An accessible tool built to end the corporate monopoly on mining and place your future firmly within your grasp.",
+          "group": null
+        },
+        {
+          "name": "Drake Golem OX",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/golem/Golem-OX",
+          "line": "Disrupt the hauling industry with Drake.",
+          "group": null
+        },
+        {
+          "name": "Drake Herald",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/herald/Herald",
+          "line": "No secret is safe.",
+          "group": null
+        },
+        {
+          "name": "Drake Ironclad",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/ironclad/Ironclad",
+          "line": "Run the skies with Drake’s juggernaut of free enterprise, the mighty Ironclad.",
+          "group": null
+        },
+        {
+          "name": "Drake Ironclad Assault",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/ironclad/Ironclad-Assault",
+          "line": "Drake’s stalwart Heavy Freighter, outfitted for combat and vehicle transport.",
+          "group": null
+        },
+        {
+          "name": "Drake Mule",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/mule/Mule",
+          "line": "Whether you need to transport cargo over the roughest terrain possible or load it onto larger vessels and cargo decks, the Mule works, plain and simple.",
+          "group": null
+        },
+        {
+          "name": "Drake Pitbull",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/pitbull/Pitbull",
+          "line": "A small-but-mighty Snub Fighter that excels at close-combat dogfighting.",
+          "group": null
+        },
+        {
+          "name": "Drake Vulture",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/drake-vulture/Vulture",
+          "line": "Rip wrecks like a pro and carve out your own place in the great big empty behind the stick of this rough, rugged salvage machine from Drake Interplanetary.",
+          "group": null
+        }
+      ],
+      "featured": "Drake Ironclad",
+      "picture": {
+        "url": "https://robertsspaceindustries.com/i/28859adabdf6a5a0f2197eea7daefe3028dac652/ADdPNihJzmPbNuTnFsH1DqUeqBRpXdSXVVtgJTyDDgscGKrzJuoFjResjkTbagHdC7CRvYX2nNTNhDvYesFVGSNaa/ironclad2026.webp",
+        "alt": "Ironclad2026"
+      }
+    },
+    {
+      "first": 6,
+      "last": 6,
+      "title": "ARGO Astronautics, Consolidated Outland, Greycat Industrial, Grey's Market",
+      "makers": [
+        "ARGO ASTRONAUTICS",
+        "CONSOLIDATED OUTLAND",
+        "GREYCAT INDUSTRIAL",
+        "GREY'S MARKET"
+      ],
+      "from": "2026-11-18",
+      "to": "2026-11-19",
+      "opens_at": "2026-11-18T16:00:00.000Z",
+      "closes_at": "2026-11-19T16:00:00.000Z",
+      "lead": "With something for just about everyone, Day 6 brings a wide array of manufacturers to IAE.",
+      "ships": [
+        {
+          "name": "Argo ATLS",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/atls/ATLS",
+          "line": "The ATLS power suit lets you tackle big jobs without the fuss of a vehicle.",
+          "group": "ARGO ASTRONAUTICS"
+        },
+        {
+          "name": "Argo ATLS GEO",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/atls/ATLS-GEO",
+          "line": "Built on the proven ATLS power suit chassis, the GEO is outfitted with bespoke mining components and a Jump Pack to open up the most inaccessible (and prosperous) corners of the galaxy.",
+          "group": "ARGO ASTRONAUTICS"
+        },
+        {
+          "name": "Argo CSV-SM",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/csv/CSV-SM",
+          "line": "Rugged, reliable, and typically Argo, the CSV-SM gives you the power to move essential cargo anywhere, whatever the terrain.",
+          "group": "ARGO ASTRONAUTICS"
+        },
+        {
+          "name": "Argo MOLE",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/argo-mole/Mole",
+          "line": "Tap into your crew’s full potential with the combined force of Argo’s patented tri-lateral mining system.",
+          "group": "ARGO ASTRONAUTICS"
+        },
+        {
+          "name": "Argo MOTH",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/moth/MOTH",
+          "line": "Expand your salvage operation with the Multi Operator Targeted Harvester.",
+          "group": "ARGO ASTRONAUTICS"
+        },
+        {
+          "name": "Argo MPUV Cargo",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/argo/MPUV-Cargo",
+          "line": "A small, unarmed utility runabout designed for shuttling cargo.",
+          "group": "ARGO ASTRONAUTICS"
+        },
+        {
+          "name": "Argo MPUV Personnel",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/argo/MPUV-Personnel",
+          "line": "A compact utility shuttle built for moving personnel.",
+          "group": "ARGO ASTRONAUTICS"
+        },
+        {
+          "name": "Argo MPUV Tractor",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/argo/MPUV-Tractor",
+          "line": "The MPUV Tractor features dual tractor beams for effortless cargo handling alongside the sturdy, reliable design you expect from Argo.",
+          "group": "ARGO ASTRONAUTICS"
+        },
+        {
+          "name": "Argo RAFT",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/raft/RAFT",
+          "line": "Perfect for entry-level haulers and old pros alike, the RAFT is an ideal solution for reliable local freight transport.",
+          "group": "ARGO ASTRONAUTICS"
+        },
+        {
+          "name": "Argo SRV",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/argo-srv/SRV",
+          "line": "From simple freight and cargo towing to harrowing search-and-rescue operations, the SRV handles whatever you can throw at it.",
+          "group": "ARGO ASTRONAUTICS"
+        },
+        {
+          "name": "CNOU HoverQuad",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/hoverquad/HoverQuad",
+          "line": "You know that place where the roads end, and sky runs out?",
+          "group": "CONSOLIDATED OUTLAND"
+        },
+        {
+          "name": "CNOU Mustang Alpha",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/mustang/Mustang-Alpha",
+          "line": "Consolidated Outland’s premier ship for those wanting to push the limits a little further when starting out.",
+          "group": "CONSOLIDATED OUTLAND"
+        },
+        {
+          "name": "CNOU Mustang Beta",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/mustang/Mustang-Beta",
+          "line": "Home is where the heart is.",
+          "group": "CONSOLIDATED OUTLAND"
+        },
+        {
+          "name": "CNOU Mustang Gamma",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/mustang/Mustang-Gamma",
+          "line": "An additional engine provides racers the competitive edge they need.",
+          "group": "CONSOLIDATED OUTLAND"
+        },
+        {
+          "name": "CNOU Mustang Delta",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/mustang/Mustang-Delta",
+          "line": "The Mustang Delta is armed with heavier weapons and rocket pods to give new pilots a little more firepower.",
+          "group": "CONSOLIDATED OUTLAND"
+        },
+        {
+          "name": "CNOU Nomad",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/nomad/Nomad",
+          "line": "The Nomad is ready to go anywhere and do anything - the perfect solution for anyone yearning to start a brand-new adventure.",
+          "group": "CONSOLIDATED OUTLAND"
+        },
+        {
+          "name": "Greycat MDC",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/mdc/MDC",
+          "line": "Explore in safety and keep your planetside interests secure with the Greycat Mobile Defense Centre.",
+          "group": "GREYCAT INDUSTRIAL"
+        },
+        {
+          "name": "Greycat MTC",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/mtc/MTC",
+          "line": "The MTC is perfect for carrying weapons and armor to battlefields, bunkers, outposts, expedition sites, and more.",
+          "group": "GREYCAT INDUSTRIAL"
+        },
+        {
+          "name": "Greycat PTV",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/Standalone-Ships/PTV-Buggy",
+          "line": "The Greycat PTV buggy gets you from point to point, wherever you are.",
+          "group": "GREYCAT INDUSTRIAL"
+        },
+        {
+          "name": "Greycat ROC",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/roc/ROC",
+          "line": "Designed to be as hard-working and versatile as the miners who use it.",
+          "group": "GREYCAT INDUSTRIAL"
+        },
+        {
+          "name": "Greycat ROC-DS",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/roc/ROC-DS",
+          "line": "With more than double the ore capacity of the standard ROC, and a dedicated boom seat for manual laser operation, the ROC-DS makes big jobs manageable.",
+          "group": "GREYCAT INDUSTRIAL"
+        },
+        {
+          "name": "Greycat STV",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/stv/STV",
+          "line": "A sports vehicle built by pros for pros that takes the industry-proven usability of Greycat and opens the door to adventure.",
+          "group": "GREYCAT INDUSTRIAL"
+        },
+        {
+          "name": "Greycat UTV",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/utv/UTV",
+          "line": "Deliver and explore anywhere with the galaxy-renowned utility of Greycat Industrial.",
+          "group": "GREYCAT INDUSTRIAL"
+        },
+        {
+          "name": "Grey's Market Basher",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/basher/Basher",
+          "line": "Grey's doesn’t comply, it defies.",
+          "group": "GREY'S MARKET"
+        },
+        {
+          "name": "Grey's Market Shiv",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/shiv/Shiv",
+          "line": "Don't ask how we got it, don't ask where it came from, just ask, \"Do you want it?\"",
+          "group": "GREY'S MARKET"
+        }
+      ],
+      "featured": "Grey's Market Basher",
+      "picture": {
+        "url": "https://robertsspaceindustries.com/i/a0250bcd1762e0e0926a4ddd0dcf2447b71228ac/ADdPNihJzmPbNuTnFsH1DqUeqBRpXdSXVVtgJTyDDgscGKrzJuoFjResf1HJP5vD3RFVT6xFk8LzuovFntPEHqW8W/basher.webp",
+        "alt": "Basher"
+      }
+    },
+    {
+      "first": 7,
+      "last": 7,
+      "title": "MISC, Mirai, Kruger Intergalactic",
+      "makers": [
+        "MUSASHI INDUSTRIAL AND STARFLIGHT CONCERN",
+        "MIRAI",
+        "KRUGER INTERGALACTIC"
+      ],
+      "from": "2026-11-19",
+      "to": "2026-11-20",
+      "opens_at": "2026-11-19T16:00:00.000Z",
+      "closes_at": "2026-11-20T16:00:00.000Z",
+      "lead": "The workhorse Hull and Freelancer series are ubiquitous throughout the 'verse.",
+      "ships": [
+        {
+          "name": "MISC Fortune",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/fortune/Fortune",
+          "line": "Get the job done quickly with MISC’s most efficient salvager yet.",
+          "group": "MUSASHI INDUSTRIAL AND STARFLIGHT CONCERN"
+        },
+        {
+          "name": "MISC Freelancer",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/misc-freelancer/Freelancer",
+          "line": "A multi-crew freighter with a turret and ordnance to deter those after its haul.",
+          "group": "MUSASHI INDUSTRIAL AND STARFLIGHT CONCERN"
+        },
+        {
+          "name": "MISC Freelancer DUR",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/misc-freelancer/Freelancer-DUR",
+          "line": "The Freelancer DUR specializes in exploration with improved scanner, jump drive, and fuel tanks.",
+          "group": "MUSASHI INDUSTRIAL AND STARFLIGHT CONCERN"
+        },
+        {
+          "name": "MISC Freelancer MAX",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/misc-freelancer/Freelancer-MAX",
+          "line": "The Freelancer MAX is for pilots who prize increased cargo capacity over everything else.",
+          "group": "MUSASHI INDUSTRIAL AND STARFLIGHT CONCERN"
+        },
+        {
+          "name": "MISC Freelancer MIS",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/misc-freelancer/Freelancer-MIS",
+          "line": "The Freelancer MIS is a limited-edition militarized variant of the classic merchant ship.",
+          "group": "MUSASHI INDUSTRIAL AND STARFLIGHT CONCERN"
+        },
+        {
+          "name": "MISC Hull A",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/hull/Hull-A",
+          "line": "Where the others trade cargo capacity for firepower or speed, the Hull A is 100% on-mission transport.",
+          "group": "MUSASHI INDUSTRIAL AND STARFLIGHT CONCERN"
+        },
+        {
+          "name": "MISC Hull B",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/hull/Hull-B",
+          "line": "With a huge payload and MISC’s trademark collapsible cargo system, the Hull B is built for serious haulers and delivery outfits looking to take their business to the next level and beyond.",
+          "group": "MUSASHI INDUSTRIAL AND STARFLIGHT CONCERN"
+        },
+        {
+          "name": "MISC Hull C",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/hull/Hull-C",
+          "line": "Often called the most common ship in the galaxy, the Hull C cargo vessel is the most-produced of the range and is considered by many to be the most versatile.",
+          "group": "MUSASHI INDUSTRIAL AND STARFLIGHT CONCERN"
+        },
+        {
+          "name": "MISC Prospector",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/misc-prospector/Prospector",
+          "line": "A miner’s best friend, with a powerful laser and saddlebags to turn minerals to profit.",
+          "group": "MUSASHI INDUSTRIAL AND STARFLIGHT CONCERN"
+        },
+        {
+          "name": "MISC Reliant Kore",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/reliant/Reliant-Kore",
+          "line": "A fusion of Xi’an and Human technology, this light freighter lets you haul cargo with a friend.",
+          "group": "MUSASHI INDUSTRIAL AND STARFLIGHT CONCERN"
+        },
+        {
+          "name": "MISC Reliant Mako",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/reliant/Reliant-Mako",
+          "line": "Go where the news is and capture every moment with turret-mounted optics.",
+          "group": "MUSASHI INDUSTRIAL AND STARFLIGHT CONCERN"
+        },
+        {
+          "name": "MISC Reliant Sen",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/reliant/Reliant-Sen",
+          "line": "The Reliant Sen is a versatile mobile science platform.",
+          "group": "MUSASHI INDUSTRIAL AND STARFLIGHT CONCERN"
+        },
+        {
+          "name": "MISC Reliant Tana",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/reliant/Reliant-Tana",
+          "line": "An easy to maintain, versatile, lightweight fighter.",
+          "group": "MUSASHI INDUSTRIAL AND STARFLIGHT CONCERN"
+        },
+        {
+          "name": "MISC Starfarer",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/misc-starfarer/Starfarer",
+          "line": "The dedicated fuel refining platform from MISC.",
+          "group": "MUSASHI INDUSTRIAL AND STARFLIGHT CONCERN"
+        },
+        {
+          "name": "MISC Starfarer Gemini",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/misc-starfarer/Starfarer-Gemini",
+          "line": "This military variant sacrifices fuel capacity for armor and a missile launcher.",
+          "group": "MUSASHI INDUSTRIAL AND STARFLIGHT CONCERN"
+        },
+        {
+          "name": "MISC Starlancer MAX",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/starlancer/Starlancer-MAX",
+          "line": "Designed to carry huge payloads, the Starlancer MAX allows you to go big with a massively expansive cargo deck.",
+          "group": "MUSASHI INDUSTRIAL AND STARFLIGHT CONCERN"
+        },
+        {
+          "name": "MISC Starlancer TAC",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/starlancer/Starlancer-TAC",
+          "line": "Heavy weaponry, a dedicated snub hangar, medbeds, and eight military-spec jump seats mean you’re ready for anything.",
+          "group": "MUSASHI INDUSTRIAL AND STARFLIGHT CONCERN"
+        },
+        {
+          "name": "MISC Starlite",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/starlite/Starlite",
+          "line": "Refuelers are the unsung heroes of the Empire, and they demand a ship that’s as focused as they are.",
+          "group": "MUSASHI INDUSTRIAL AND STARFLIGHT CONCERN"
+        },
+        {
+          "name": "Mirai Fury",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/fury/Fury",
+          "line": "Shatter the limits of performance with this next-generation snub fighter from Mirai featuring four halo-mounted size 2 laser repeaters, best-in-class maneuverability, and unprecedented integration of Xi’an tech.",
+          "group": "MIRAI"
+        },
+        {
+          "name": "Mirai Fury LX",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/fury/Fury-LX",
+          "line": "The next-generation Fury LX racing ship from Mirai switches out the lithe ship’s offensive capabilities to make room for additional maneuvering thrusters perfect for getting across the finish line.",
+          "group": "MIRAI"
+        },
+        {
+          "name": "Mirai Fury MX",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/fury/Fury-MX",
+          "line": "A ruthlessly efficient snub-bomber packing an intimidating payload that’s capable of delivering it with deadly precision.",
+          "group": "MIRAI"
+        },
+        {
+          "name": "Mirai Guardian",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/guardian/Guardian",
+          "line": "Single-operator, long-range heavy fighter with a focus on raw firepower and precision.",
+          "group": "MIRAI"
+        },
+        {
+          "name": "Mirai Guardian QI",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/guardian/Guardian-QI",
+          "line": "Single-operator fighter-interceptor with a focus on raw firepower and precision.",
+          "group": "MIRAI"
+        },
+        {
+          "name": "Mirai Guardian MX",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/guardian/Guardian-MX",
+          "line": "Mirai’s already deadly Guardian, tuned for uncompromised combat performance with harder-hitting weapons and heavier defense.",
+          "group": "MIRAI"
+        },
+        {
+          "name": "Mirai Pulse",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/mirai-pulse/Pulse",
+          "line": "Redefines the hoverbike experience with its fusion of sleek design, integrated weaponry, and advanced thrusters for unmatched maneuverability.",
+          "group": "MIRAI"
+        },
+        {
+          "name": "Mirai Pulse LX",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/mirai-pulse/Pulse-LX",
+          "line": "The leader of high-speed thrills.",
+          "group": "MIRAI"
+        },
+        {
+          "name": "Mirai Razor",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/razor/Razor",
+          "line": "Cutting ahead of the competition, this sleek racer gives anyone a run for pole position.",
+          "group": "MIRAI"
+        },
+        {
+          "name": "Mirai Razor EX",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/razor/Razor-EX",
+          "line": "Stealth-edition of the Razor outfitted with signature-reducing materials and low-draw components.",
+          "group": "MIRAI"
+        },
+        {
+          "name": "Mirai Razor LX",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/razor/Razor-LX",
+          "line": "Special-edition of the Razor features reduced maneuverability and armament in exchange for extreme straight-line speed.",
+          "group": "MIRAI"
+        },
+        {
+          "name": "Kruger L-21 Wolf",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/wolf/L-21-Wolf",
+          "line": "A combat ship prioritizing quality and agility in a timeless design that encompasses Kruger Intergalactic’s core tenet - Perfection in Every Piece.",
+          "group": "KRUGER INTERGALACTIC"
+        },
+        {
+          "name": "Kruger L-22 Alpha Wolf",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/wolf/L-22-Alpha-Wolf",
+          "line": "Kruger’s modern classic Wolf, tweaked for a new audience, with bespoke laser repeaters, upgraded missiles, and a new winglet makeover.",
+          "group": "KRUGER INTERGALACTIC"
+        },
+        {
+          "name": "Kruger P-52 Merlin",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/p52-merlin/P-52-Merlin",
+          "line": "Small, agile, and with a sting in its tail.",
+          "group": "KRUGER INTERGALACTIC"
+        },
+        {
+          "name": "Kruger P-72 Archimedes",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/p72-archimedes/p-72-archimedes",
+          "line": "The Archimedes delivers exceptional handling and boost capabilities in a beautifully designed package.",
+          "group": "KRUGER INTERGALACTIC"
+        },
+        {
+          "name": "Kruger S-65 Stingray",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/s-65-stingray/S-65-Stingray",
+          "line": "Kruger continues to expand its stunning lineup with its first Medium Fighter.",
+          "group": "KRUGER INTERGALACTIC"
+        }
+      ],
+      "featured": "Kruger S-65 Stingray",
+      "picture": {
+        "url": "https://robertsspaceindustries.com/i/4001dd23d7ebf4e881afae895eb63b1b616afd8b/ADdPNihJzmPbNuTnFsH1DqUeqBRpXdSXVVtgJTyDDgscGKrzJuoFjReseoXeAKiJfa34taDLfYtAppydx6p6up4P8/stingray.webp",
+        "alt": "Stingray"
+      }
+    },
+    {
+      "first": 8,
+      "last": 8,
+      "title": "Aegis Dynamics",
+      "makers": [
+        "Aegis Dynamics"
+      ],
+      "from": "2026-11-20",
+      "to": "2026-11-21",
+      "opens_at": "2026-11-20T16:00:00.000Z",
+      "closes_at": "2026-11-21T16:00:00.000Z",
+      "lead": "Now we're bringing in the big guns.",
+      "ships": [
+        {
+          "name": "Aegis Avenger Stalker",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/aegis-avenger/Avenger-Stalker",
+          "line": "A modified version of the Avenger catering to bounty hunters thanks to built-in prison cells.",
+          "group": null
+        },
+        {
+          "name": "Aegis Avenger Titan",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/aegis-avenger/Avenger-Titan",
+          "line": "A former Advocacy patrol ship with added cargo capacity for light couriering.",
+          "group": null
+        },
+        {
+          "name": "Aegis Avenger Titan Renegade",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/aegis-avenger/Avenger-Titan-Renegade",
+          "line": "Special-edition of the Avenger Titan with custom livery and a loadout geared to Arena Commander.",
+          "group": null
+        },
+        {
+          "name": "Aegis Avenger Warlock",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/aegis-avenger/Avenger-Warlock",
+          "line": "A variant of the Avenger armed with an EMP generator to humanely disable enemies.",
+          "group": null
+        },
+        {
+          "name": "Aegis Eclipse",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/eclipse/Eclipse",
+          "line": "A sleek stealth bomber armed with heavy torpedoes.",
+          "group": null
+        },
+        {
+          "name": "Aegis Gladius",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/gladius/Gladius",
+          "line": "An aging but agile light-fighter boasting mid-range armament.",
+          "group": null
+        },
+        {
+          "name": "Aegis Gladius Valiant",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/gladius/Gladius-Valiant",
+          "line": "Special-edition Gladius with custom livery and a loadout geared to Arena Commander.",
+          "group": null
+        },
+        {
+          "name": "Aegis Hammerhead",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/hammerhead/Hammerhead",
+          "line": "A multi-crew corvette bristling with manned turrets and heavy firepower.",
+          "group": null
+        },
+        {
+          "name": "Aegis Reclaimer",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/reclaimer/Reclaimer",
+          "line": "A vast deep-space salvage vessel built to reclaim wrecks and derelict ships.",
+          "group": null
+        },
+        {
+          "name": "Aegis Redeemer",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/redeemer/Redeemer",
+          "line": "Dotted with turrets and missiles, the Aegis Redeemer is a powerful fighting gunship capable of holding its own in combat with an impressive weapons payload.",
+          "group": null
+        },
+        {
+          "name": "Aegis Retaliator",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/aegis-retaliator/Retaliator",
+          "line": "One of Humanity’s most powerful warbirds, the Retaliator is a fearsome weapons platform originally designed to strike and kill capital ships.",
+          "group": null
+        },
+        {
+          "name": "Aegis Sabre",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/sabre/Sabre",
+          "line": "Favoring agility over durability, the Sabre is light, sleek, and deadly.",
+          "group": null
+        },
+        {
+          "name": "Aegis Sabre Comet",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/sabre/Sabre-Comet",
+          "line": "Special-edition of the Sabre with custom livery and a loadout geared to Arena Commander.",
+          "group": null
+        },
+        {
+          "name": "Aegis Sabre Firebird",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/sabre/Sabre-Firebird",
+          "line": "Facilitating a devastating marriage of speed and ballistic firepower, the Firebird brings the heat to the infamous Sabre chassis.",
+          "group": null
+        },
+        {
+          "name": "Aegis Sabre Peregrine",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/sabre/Sabre-Peregrine",
+          "line": "The fastest Sabre model yet conceived, the Peregrine takes the infamous military-born chassis and tunes it for pure unadulterated speed.",
+          "group": null
+        },
+        {
+          "name": "Aegis Sabre Raven EX",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/sabre/Sabre-Raven-EX",
+          "line": "Built on a legacy of space superiority, the Aegis Sabre Raven EX matches the firepower of the Sabre, the silhouette of the Raven, and adds a quantum dampener to isolate enemies and keep them in the line of fire.",
+          "group": null
+        },
+        {
+          "name": "Aegis Tiburon",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/tiburon/Tiburon",
+          "line": "Conceived to rip capital ships from the sky, the Aegis Tiburon is built to destroy.",
+          "group": null
+        },
+        {
+          "name": "Aegis Vanguard Harbinger",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/vanguard/Vanguard-Harbinger",
+          "line": "A powerful bomber that can operate out of the roughest forward-operating bases.",
+          "group": null
+        },
+        {
+          "name": "Aegis Vanguard Hoplite",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/vanguard/Vanguard-Hoplite",
+          "line": "Long-range squad dropship with a manned turret for protection.",
+          "group": null
+        },
+        {
+          "name": "Aegis Vanguard Sentinel",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/vanguard/Vanguard-Sentinel",
+          "line": "A ship designed to fight smart instead of taking enemies head-on.",
+          "group": null
+        },
+        {
+          "name": "Aegis Vanguard Warden",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/vanguard/Vanguard-Warden",
+          "line": "One of Aegis' most versatile and deadly long-range fighters.",
+          "group": null
+        }
+      ],
+      "featured": "Aegis Tiburon",
+      "picture": {
+        "url": "https://robertsspaceindustries.com/i/f77813c6e134e0685811e83be7724fae33767a33/ADdPNihJzmPbNuTnFsH1DqUeqBRpXdSXVVtgJTyDDgscGKrzJuoFjResjkBztzjFzz9peVL7Tu2tR6qGA5y3CSPR8/tiburon.webp",
+        "alt": "Tiburon"
+      }
+    },
+    {
+      "first": 9,
+      "last": 9,
+      "title": "Aopoa, Banu, Esperia, Gatac",
+      "makers": [
+        "AOPOA",
+        "BANU",
+        "ESPERIA",
+        "GATAC MANUFACTURE"
+      ],
+      "from": "2026-11-21",
+      "to": "2026-11-22",
+      "opens_at": "2026-11-21T16:00:00.000Z",
+      "closes_at": "2026-11-22T16:00:00.000Z",
+      "lead": "Ready to change things up?",
+      "ships": [
+        {
+          "name": "Aopoa Khartu-al",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/khartu/Khartu-Al",
+          "line": "Enigmatic, exotic, and agile.",
+          "group": "AOPOA"
+        },
+        {
+          "name": "Aopoa Nox",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/nox/Nox",
+          "line": "Sleek and fast, this gravity bike glides across rough terrain.",
+          "group": "AOPOA"
+        },
+        {
+          "name": "Aopoa San'tok.yāi",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/aopoa-santokyai/santoky-i",
+          "line": "Meet the next evolution of Xi'an tech and design innovation.",
+          "group": "AOPOA"
+        },
+        {
+          "name": "Banu Defender",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/defender/defender",
+          "line": "The exotic fighter is the first line of defense against enemy attack.",
+          "group": "BANU"
+        },
+        {
+          "name": "Esperia Blade",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/vanduul-blade/Blade",
+          "line": "This alien fighter slices through the air with high agility to shred foes to ribbons.",
+          "group": "ESPERIA"
+        },
+        {
+          "name": "Esperia Glaive",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/esperia-glaive/Glaive",
+          "line": "This medium alien fighter replica drives fear with its impressive armament.",
+          "group": "ESPERIA"
+        },
+        {
+          "name": "Esperia Prowler",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/prowler/Prowler",
+          "line": "The Prowler is a modernized version of the infamous Tevarin armored personnel carrier.",
+          "group": "ESPERIA"
+        },
+        {
+          "name": "Esperia Prowler Utility",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/prowler/Prowler-Utility",
+          "line": "The Utility embraces the alien design of the infamous Tevarin ship entrusted to Esperia decades ago.",
+          "group": "ESPERIA"
+        },
+        {
+          "name": "Esperia Stinger",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/stinger/Stinger",
+          "line": "A closely replicated Vanduul ship, reworked for Human flight.",
+          "group": "ESPERIA"
+        },
+        {
+          "name": "Esperia Talon",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/talon/Talon",
+          "line": "The Talon is the Tevarin equivalent to the Aegis Gladius or Vanduul Blade; a single-seat combat ship.",
+          "group": "ESPERIA"
+        },
+        {
+          "name": "Esperia Talon Shrike",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/talon/Talon-Shrike",
+          "line": "The infamous Shrike variant is armed with authentic internal missile racks capable of unleashing lethal barrages of projectiles.",
+          "group": "ESPERIA"
+        },
+        {
+          "name": "Gatac Railen",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/railen/Railen",
+          "line": "An elegant interspecies vessel perfect for any Human or Xi’an pilot looking for a safe, reliable solution for commercial-grade medium cargo hauling.",
+          "group": "GATAC MANUFACTURE"
+        },
+        {
+          "name": "Gatac Syulen",
+          "pledge_url": "https://robertsspaceindustries.com/pledge/ships/syulen/Syulen",
+          "line": "The Syulen cargo vessel has been artfully crafted by the renowned House Gatac to perfectly suit both Human and Xi'an pilots.",
+          "group": "GATAC MANUFACTURE"
+        },
+        {
+          "name": "Gatac Tyilui",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/tyilui/Tyilui",
+          "line": "Effortlessly navigate the multi-directional zero-gravity hangar in Gatac’s first carrier craft.",
+          "group": "GATAC MANUFACTURE"
+        }
+      ],
+      "featured": "Gatac Railen",
+      "picture": {
+        "url": "https://robertsspaceindustries.com/i/b3481a588d6aeb4f4b2f450535686a45406814e0/ADdPNihJzmPbNuTnFsH1DqUeqBRpXdSXVVtgJTyDDgscGKrzJuoFjResiiw3zQ1ZfVqYjVtbPSgHCMLRQzJzYgbn6/railen2026.webp",
+        "alt": "Railen2026"
+      }
+    },
+    {
+      "first": 10,
+      "last": 10,
+      "title": "Best In Show",
+      "makers": [],
+      "from": "2026-11-22",
+      "to": "2026-11-22",
+      "opens_at": "2026-11-22T16:00:00.000Z",
+      "closes_at": "2026-11-23T16:00:00.000Z",
+      "lead": "Over the summer, we held our annual Ship Showdown contest to uncover the community’s favorite flyable ship of 2026.",
+      "ships": [],
+      "featured": "RSI Perseus",
+      "picture": {
+        "url": "https://robertsspaceindustries.com/i/a1265ef8f2ca24fe0839db3b272287262dc1c617/ADdPNihJzmPbNuTnFsH1DqUeqBRpXdSXVVtgJTyDDgscGKrzJuoFjResjZkmCN46wp75yQwUU7dZjb5YuUzBHxmot/perseus2026.webp",
+        "alt": "Perseus2026"
+      }
+    },
+    {
+      "first": 11,
+      "last": 15,
+      "title": "Finale",
+      "makers": [],
+      "from": "2026-11-23",
+      "to": "2026-11-27",
+      "opens_at": "2026-11-23T16:00:00.000Z",
+      "closes_at": "2026-11-28T00:00:00.000Z",
+      "lead": "All previously available flyable ships will be ready to test-fly via the rental kiosks located in the Tobin Center in New Babbage on microTech.",
+      "ships": [],
+      "featured": null,
+      "picture": {
+        "url": "https://robertsspaceindustries.com/i/2db7c95e30cdc86bf6d516ff052d4b759a575147/ADdPNihJzmPbNuTnFsH1DqUeqBRpXdSXVVtgJTyDDgscGKrzJuoFjResj6737R84FAMrw4cHBsT1L18UTZzjWMmHg/sc-iae2026-communityhub.webp",
+        "alt": "SC IAE2026 COMMUNITYHUB"
+      }
+    }
+  ],
+  "sales": {
+    "waves": [
+      {
+        "number": 1,
+        "at": "16:00",
+        "next_day": false
+      },
+      {
+        "number": 2,
+        "at": "20:00",
+        "next_day": false
+      },
+      {
+        "number": 3,
+        "at": "00:00",
+        "next_day": false
+      },
+      {
+        "number": 4,
+        "at": "04:00",
+        "next_day": true
+      },
+      {
+        "number": 5,
+        "at": "08:00",
+        "next_day": true
+      },
+      {
+        "number": 6,
+        "at": "12:00",
+        "next_day": true
+      }
+    ],
+    "hulls": [
+      {
+        "name": "Origin 890 Jump",
+        "from": "2026-11-14",
+        "day": 2
+      },
+      {
+        "name": "Drake Kraken",
+        "from": "2026-11-17",
+        "day": 5
+      },
+      {
+        "name": "Drake Kraken Privateer",
+        "from": "2026-11-17",
+        "day": 5
+      },
+      {
+        "name": "Consolidated Outland Pioneer",
+        "from": "2026-11-18",
+        "day": 6
+      },
+      {
+        "name": "Aegis Idris-P",
+        "from": "2026-11-20",
+        "day": 8
+      },
+      {
+        "name": "Aegis Javelin",
+        "from": "2026-11-20",
+        "day": 8
+      }
+    ],
+    "notes": [
+      "The price of the MISC Prospector will increase by $20, from $155 to $175 on MISC Day of IAE."
+    ],
+    "source": {
+      "kind": "spectrum",
+      "external_id": "575984",
+      "url": "https://robertsspaceindustries.com/spectrum/community/SC/forum/1/thread/iae-2956-faq-choose-your-adventure",
+      "title": "IAE 2956 - Choose Your Adventure - FAQ",
+      "published_at": "2026-11-10T21:00:00.000Z",
+      "revision": 3
+    }
+  },
+  "sources": [
+    {
+      "kind": "comm_link",
+      "external_id": "21386",
+      "url": "https://robertsspaceindustries.com/comm-link/transmission/21386-Intergalactic-Aerospace-Expo-2956-Free-Fly-And-Manufacturer-Schedule",
+      "title": "Intergalactic Aerospace Expo 2956 Free Fly and Manufacturer Schedule - Try Star Citizen for Free",
+      "published_at": "2026-11-09T16:00:00.000Z",
+      "revision": null
+    },
+    {
+      "kind": "spectrum",
+      "external_id": "575984",
+      "url": "https://robertsspaceindustries.com/spectrum/community/SC/forum/1/thread/iae-2956-faq-choose-your-adventure",
+      "title": "IAE 2956 - Choose Your Adventure - FAQ",
+      "published_at": "2026-11-10T21:00:00.000Z",
+      "revision": 3
+    }
+  ],
+  "body_url": "https://robertsspaceindustries.com/alexandria/html/6ad1120ff662e74386db6f4b/6af49f40b153459bd9458f54/9PSi6rulraO8ATjcoJEUqSjZAL8-en-mwcd80r7-fa253c06",
+  "fetched_at": "2026-11-12T19:11:51.967Z"
+}

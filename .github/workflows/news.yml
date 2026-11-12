@@ -205,6 +205,16 @@ jobs:
           # "off" while a local backfill holds the thread endpoint (ADR-037); unset otherwise.
           SPECTRUM_THREADS: ${{ vars.SPECTRUM_THREADS }}
         run: pnpm workers:poll-spectrum
+      # The shows (ADR-057): after the polls, so the FAQ the Spectrum worker just collected is the
+      # one read. RSI is asked only when a show's day has turned over since it was last read, two
+      # requests then; the state file changes with the day, so the commit below rebuilds the site
+      # when a new day opens. A failure here never holds back the news commit.
+      - name: Read the shows' schedules
+        continue-on-error: true
+        timeout-minutes: 5
+        env:
+          SC_HUB_CONTACT_EMAIL: ${{ vars.SC_HUB_CONTACT_EMAIL }}
+        run: pnpm exec tsx scripts/events/fetch.ts
       # After the polls, so a Comm-Link collected in this run is looked for in this run; before the
       # commit, so the push that redeploys the site comes once the CDN serves the new manifest.
       # A failure here never holds back the news commit (ADR-051).
@@ -220,13 +230,17 @@ jobs:
         run: pnpm exec tsx scripts/media/publish-covers.ts --dry-run-without-token --rehearse "$REHEARSE"
       - name: Commit what changed
         run: |
-          git add fixtures/news fixtures/spectrum/thread-state.json fixtures/spectrum/uploads.json fixtures/rsi-media/cover-sources.json
+          git add fixtures/news fixtures/spectrum/thread-state.json fixtures/spectrum/uploads.json fixtures/rsi-media/cover-sources.json fixtures/events/state.json fixtures/events/*.json
           if git diff --cached --quiet; then
             echo "Nothing new."
             exit 0
           fi
           git config user.name "sc-hub news"
           git config user.email "news@users.noreply.github.com"
-          git commit -m "data: news pack, $(date -u +%Y-%m-%dT%H:%MZ) (ADR-027)"
+          message="data: news pack, $(date -u +%Y-%m-%dT%H:%MZ) (ADR-027)"
+          if ! git diff --cached --quiet -- fixtures/events; then
+            message="${message}; the shows (ADR-057)"
+          fi
+          git commit -m "$message"
           git pull --rebase origin main
           git push origin HEAD:main

@@ -119,7 +119,7 @@ A spec item is done when all of these are true:
 | Owner's laptop or a cloud Claude Code session | `apps/web`, `packages/*`, `workers/*` development, all tests | Fixtures only; no game files |
 | Windows PC (Star Citizen LIVE and PTU installed) | `pipeline/*` on patch days; hero-ship model export | Game installs, StarBreaker, R2 write credentials |
 | Fly.io | Workers, import job, Meilisearch | Postgres and R2 credentials, Spectrum credentials |
-| Vercel | `apps/web` | Postgres read, Meilisearch read, `CDN_BASE_URL` (the media store's public address, ADR-034); the connected Blob store's token is on the project but nothing in the site reads it; `CRON_SECRET` and `NEWS_DISPATCH_TOKEN` for the news clock's cron route only (ADR-053) |
+| Vercel | `apps/web` | Postgres read, Meilisearch read, `CDN_BASE_URL` (the media store's public address, ADR-034); the connected Blob store's token is on the project but nothing in the site reads it; `CRON_SECRET` and `NEWS_DISPATCH_TOKEN` for the news and refresh clocks' cron routes only (ADR-053, ADR-056) |
 | GitHub Actions | The daily refresh (ADR-023), the News workflow (ADR-027) and its cover step (ADR-051) | `SC_HUB_CONTACT_EMAIL` as a repository variable; the repository secret `BLOB_READ_WRITE_TOKEN`, which only the cover step reads, to add new Comm-Links' covers to the media manifest |
 
 Environment variables (validated in `packages/schema/env.ts`; a missing required variable fails startup for any runtime that calls `loadEnv`; the Vercel site does not yet, since it serves the committed packs without a database or search service, ADR-033):
@@ -136,8 +136,8 @@ SITE_URL (the public origin; canonical URLs, sitemap.xml and Open Graph resolve 
 SC_INSTALL_ROOT (Windows only, for example C:\Program Files\Roberts Space Industries\StarCitizen)
 STARBREAKER_BIN (Windows only)
 SC_HUB_CONTACT_EMAIL (dev scripts, the daily refresh and the news workers; the contact address every User-Agent carries and RSI requests require, ADR-015, ADR-023, ADR-036; a repository variable in CI)
-CRON_SECRET (the Vercel site only: the bearer token Vercel's cron sends to /api/cron/news, which refuses every call without it, ADR-053)
-NEWS_DISPATCH_TOKEN (the Vercel site only: a fine-grained GitHub token for this repository alone with Actions read and write, which the news clock uses to start the News workflow; unset, the clock does nothing and the workflow's schedule runs the news, ADR-053)
+CRON_SECRET (the Vercel site only: the bearer token Vercel's cron sends to /api/cron/news and /api/cron/refresh, which refuse every call without it, ADR-053, ADR-056)
+NEWS_DISPATCH_TOKEN (the Vercel site only: a fine-grained GitHub token for this repository alone with Actions read and write, which the news and refresh clocks use to start the News and Refresh workflows; unset, the clocks do nothing and the workflows' schedules run them, ADR-053, ADR-056)
 ```
 
 When `DATABASE_URL` is unset, `pnpm db:migrate` and `pnpm db:seed` use an embedded PGlite database in `packages/db/.pglite/` (local development only; ADR-004). Every deployed worker requires it; the Vercel site serves the committed packs without it until the database arrives (ADR-033).

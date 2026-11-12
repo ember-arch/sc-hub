@@ -10,11 +10,15 @@
 # not fetch that build again until the branch is gone. The sources on robertsspaceindustries.com
 # need the repository variable SC_HUB_CONTACT_EMAIL (CLAUDE.md section 9); without it they are
 # skipped and an issue says so.
+#
+# A clock on Vercel starts this workflow at 06:23 UTC through the dispatch API (ADR-056), since
+# GitHub runs the schedule hours late; the schedule stays as the backup, and its run stands aside
+# when a dispatched run was created within the last twenty hours.
 name: Refresh
 
 on:
   schedule:
-    # Every day, 06:23 UTC.
+    # Every day, 06:23 UTC: the backup for the Vercel clock (ADR-056).
     - cron: "23 6 * * *"
   workflow_dispatch:
     inputs:
@@ -35,8 +39,40 @@ env:
   NEXT_TELEMETRY_DISABLED: "1"
 
 jobs:
+  gate:
+    name: Stand aside when the clock already ran today
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: read
+    outputs:
+      go: ${{ steps.gate.outputs.go }}
+    steps:
+      - id: gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT: ${{ github.event_name }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          go=true
+          if [ "$EVENT" = "schedule" ]; then
+            # A dispatched run that was cancelled (a pending one replaced in the queue) never ran.
+            # When the list cannot be read, the scheduled run goes: a second refresh costs requests,
+            # a missed one costs a day.
+            dispatched=$(gh api "repos/$REPO/actions/workflows/refresh.yml/runs?event=workflow_dispatch&per_page=10" --jq "[.workflow_runs[] | select(.id != $RUN_ID and .conclusion != \"cancelled\")][0].created_at // \"\"") || dispatched=""
+            now=$(date -u +%s)
+            if [ -n "$dispatched" ] && at=$(date -u -d "$dispatched" +%s) && [ $(( now - at )) -lt 72000 ]; then
+              echo "The refresh clock started a run at $dispatched, under twenty hours ago: this scheduled run stands aside (ADR-056)."
+              go=false
+            fi
+          fi
+          echo "go=$go" >> "$GITHUB_OUTPUT"
+
   refresh:
     name: Refresh the fixtures
+    needs: gate
+    if: needs.gate.outputs.go == 'true'
     runs-on: ubuntu-latest
     # A rebuild is some three thousand requests at the polite limit, about two hours.
     timeout-minutes: 300

@@ -1,4 +1,4 @@
-import { randomUUID, timingSafeEqual } from "node:crypto";
+import { randomUUID } from "node:crypto";
 import {
   decideNewsClock,
   NEWS_REPOSITORY,
@@ -6,6 +6,7 @@ import {
   NewsWorkflowRunList,
 } from "schema";
 import { userAgent } from "schema/site";
+import { cronAuthorized } from "../../../../lib/cron-auth";
 
 /**
  * The news clock (ADR-053): Vercel's cron calls this at seven and thirty-seven past the hour
@@ -21,13 +22,6 @@ export const maxDuration = 30;
 
 const API = `https://api.github.com/repos/${NEWS_REPOSITORY}/actions/workflows/${NEWS_WORKFLOW}`;
 const TIMEOUT_MS = 10_000;
-
-/** Compares the Authorization header with `Bearer <secret>` in constant time (only the length can leak). */
-function authorized(header: string | null, secret: string): boolean {
-  const given = Buffer.from(header ?? "");
-  const expected = Buffer.from(`Bearer ${secret}`);
-  return given.length === expected.length && timingSafeEqual(given, expected);
-}
 
 export async function GET(request: Request): Promise<Response> {
   const runId = randomUUID();
@@ -47,7 +41,7 @@ export async function GET(request: Request): Promise<Response> {
   if (secret === "") {
     return answer(503, { dispatched: false, reason: "CRON_SECRET is not set" });
   }
-  if (!authorized(request.headers.get("authorization"), secret)) {
+  if (!cronAuthorized(request.headers.get("authorization"), secret)) {
     return answer(401, { dispatched: false, reason: "unauthorized" });
   }
   const token = process.env["NEWS_DISPATCH_TOKEN"]?.trim();

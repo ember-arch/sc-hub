@@ -62,22 +62,49 @@ describe("GET /api/cron/news", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it("starts the workflow on main when no run is under way", async () => {
-    fetchMock
-      .mockResolvedValueOnce(runs("completed", "2026-01-01T00:00:00Z"))
-      .mockResolvedValueOnce(new Response(null, { status: 204 }));
-    const response = await call(`Bearer ${SECRET}`);
-    expect(response.status).toBe(200);
-    expect(await response.json()).toMatchObject({ dispatched: true });
-    const [url, init] = fetchMock.mock.calls[1]!;
-    expect(url).toBe(
-      "https://api.github.com/repos/ember-arch/sc-hub/actions/workflows/news.yml/dispatches",
-    );
-    expect(init?.method).toBe("POST");
-    expect(JSON.parse(String(init?.body))).toMatchObject({ ref: "main" });
-    const headers = init?.headers as Record<string, string>;
-    expect(headers["Authorization"]).toBe("Bearer dispatch-token-for-tests");
-    expect(headers["User-Agent"]).toMatch(/ news-clock$/);
+  it.each([
+    ["2026-11-12T07:07:00Z", "due"],
+    ["2026-11-12T07:37:00Z", ""],
+  ])(
+    "starts the workflow on main when no run is under way (at %s the video slot is %j), and never logs the token",
+    async (at, slot) => {
+      vi.useFakeTimers({ toFake: ["Date"] });
+      vi.setSystemTime(new Date(at));
+      fetchMock
+        .mockResolvedValueOnce(runs("completed", "2026-01-01T00:00:00Z"))
+        .mockResolvedValueOnce(new Response(null, { status: 204 }));
+      const response = await call(`Bearer ${SECRET}`);
+      vi.useRealTimers();
+      expect(response.status).toBe(200);
+      expect(await response.json()).toMatchObject({
+        dispatched: true,
+        video_slot: slot,
+      });
+      const [url, init] = fetchMock.mock.calls[1]!;
+      expect(url).toBe(
+        "https://api.github.com/repos/ember-arch/sc-hub/actions/workflows/news.yml/dispatches",
+      );
+      expect(init?.method).toBe("POST");
+      expect(JSON.parse(String(init?.body))).toEqual({
+        ref: "main",
+        inputs: { video_slot: slot },
+      });
+      const headers = init?.headers as Record<string, string>;
+      expect(headers["Authorization"]).toBe("Bearer dispatch-token-for-tests");
+      expect(headers["User-Agent"]).toMatch(/ news-clock$/);
+      const logged = vi.mocked(console.log).mock.calls.flat().join("\n");
+      expect(logged).toContain('"run_id"');
+      expect(logged).not.toContain("dispatch-token-for-tests");
+      expect(logged).not.toContain(SECRET);
+    },
+  );
+
+  it("still matches a secret stored with a stray space, which the header loses in transit", async () => {
+    vi.stubEnv("CRON_SECRET", ` ${SECRET} `);
+    vi.stubEnv("NEWS_DISPATCH_TOKEN", "");
+    expect((await call(`Bearer  ${SECRET} `)).status).toBe(401);
+    expect((await call(`Bearer ${SECRET} `)).status).toBe(200);
+    expect((await call(`Bearer ${SECRET}x`)).status).toBe(401);
   });
 
   it("starts nothing while a run is under way", async () => {

@@ -58,15 +58,22 @@ env:
   NEXT_TELEMETRY_DISABLED: "1"
 
 jobs:
-  # A scheduled run stands aside when a dispatched run (the news clock's, ADR-053, or a hand-started
-  # one) began under an hour ago, so the schedule never doubles the clock's runs and Spectrum is
-  # never searched twice within five minutes; an hour after the clock last started a run, the
-  # schedule runs the news by itself again. The hour is NEWS_SCHEDULE_STANDS_ASIDE_MS in
-  # packages/schema/news-clock.ts. A failed look runs the news rather than skip it.
+  # The gate (ADR-053), for every run however it was started:
+  # 1. A scheduled run stands aside when a dispatched run (the news clock's, or a hand-started one)
+  #    began under an hour ago, so the schedule never doubles the clock's runs; an hour after the
+  #    clock last started a run, the schedule runs the news by itself again.
+  # 2. A run that goes waits until six minutes have passed since the last completed run ended.
+  #    Spectrum's search is asked at most once every five minutes (ADR-027), and the poll's own
+  #    spacing holds only within one run; the concurrency group keeps runs from overlapping but
+  #    starts a queued one the moment the last ends (a cron call Vercel delivered twice, a hand
+  #    start during a clock run). Waiting here touches no source.
+  # The hour and the six minutes are NEWS_SCHEDULE_STANDS_ASIDE_MS and NEWS_SETTLE_MS in
+  # packages/schema/news-clock.ts, whose test reads them here. A failed look runs the news rather
+  # than skip it: an API error leaves the times empty, and a failed gate job still lets the poll go.
   gate:
-    name: Stand aside while the news clock runs
+    name: Stand aside or wait for the last run to settle
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     permissions:
       actions: read
     outputs:
@@ -78,23 +85,29 @@ jobs:
           EVENT: ${{ github.event_name }}
           REPO: ${{ github.repository }}
         run: |
-          if [ "$EVENT" != "schedule" ]; then
-            echo "go=true" >> "$GITHUB_OUTPUT"
-            exit 0
+          runs="repos/$REPO/actions/workflows/news.yml/runs"
+          if [ "$EVENT" = "schedule" ]; then
+            dispatched=$(gh api "$runs?event=workflow_dispatch&per_page=1" --jq '.workflow_runs[0].created_at // ""') || dispatched=""
+            if [ -n "$dispatched" ] && [ $(( $(date -u +%s) - $(date -u -d "$dispatched" +%s) )) -lt 3600 ]; then
+              echo "The news clock started a run at $dispatched, under an hour ago: this scheduled run stands aside (ADR-053)."
+              echo "go=false" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
           fi
-          last=$(gh api "repos/$REPO/actions/workflows/news.yml/runs?event=workflow_dispatch&per_page=1" --jq '.workflow_runs[0].created_at // ""') || last=""
-          if [ -n "$last" ] && [ $(( $(date -u +%s) - $(date -u -d "$last" +%s) )) -lt 3600 ]; then
-            echo "The news clock started a run at $last, under an hour ago: this scheduled run stands aside (ADR-053)."
-            echo "go=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "No dispatched run in the last hour: the schedule runs the news."
-            echo "go=true" >> "$GITHUB_OUTPUT"
+          ended=$(gh api "$runs?status=completed&per_page=1" --jq '.workflow_runs[0].updated_at // ""') || ended=""
+          if [ -n "$ended" ]; then
+            pause=$(( 360 - ($(date -u +%s) - $(date -u -d "$ended" +%s)) ))
+            if [ "$pause" -gt 0 ]; then
+              echo "The last run ended at $ended: waiting $pause s so Spectrum is not searched twice within five minutes."
+              sleep "$pause"
+            fi
           fi
+          echo "go=true" >> "$GITHUB_OUTPUT"
 
   poll:
     name: Poll the news sources
     needs: gate
-    if: needs.gate.outputs.go == 'true'
+    if: ${{ !cancelled() && needs.gate.outputs.go != 'false' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write

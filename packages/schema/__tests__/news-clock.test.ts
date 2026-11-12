@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
   decideNewsClock,
@@ -7,8 +8,9 @@ import {
   NewsWorkflowRunList,
 } from "../news-clock.js";
 
-// ADR-053: the news clock starts the News workflow unless a run is under way or one ended under
-// six minutes ago, and asks for the hour's YouTube feed in the first half of the hour only.
+// ADR-053: the news clock starts the News workflow unless a run is queued or under way, and asks
+// for the hour's YouTube feed in the first half of the hour only. The spacing after a run is the
+// workflow's gate job, whose numbers are checked against the constants here.
 
 const run = (
   id: number,
@@ -24,7 +26,7 @@ const run = (
 });
 
 describe("decideNewsClock", () => {
-  it("starts a run when the last one ended long ago, asking for the video feed at :07", () => {
+  it("starts a run when none is under way, asking for the video feed at :07", () => {
     expect(
       decideNewsClock(
         [run(2, "completed", "2026-11-12T06:10:00Z")],
@@ -63,31 +65,36 @@ describe("decideNewsClock", () => {
     },
   );
 
-  it("waits six minutes after the last run ended, whichever run ended last", () => {
-    const now = new Date("2026-11-12T07:07:00Z");
-    const justUnder = new Date(
-      now.getTime() - NEWS_SETTLE_MS + 1000,
-    ).toISOString();
-    const justOver = new Date(
-      now.getTime() - NEWS_SETTLE_MS - 1000,
-    ).toISOString();
+  it("is not held back by a run that ended a moment ago, such as a scheduled run that stood aside: the gate spaces the runs", () => {
     expect(
       decideNewsClock(
-        [
-          run(3, "completed", "2026-11-12T05:00:00Z"),
-          run(2, "completed", justUnder),
-        ],
-        now,
+        [run(3, "completed", "2026-11-12T07:06:30Z")],
+        new Date("2026-11-12T07:07:00Z"),
       ).dispatch,
-    ).toBe(false);
-    expect(decideNewsClock([run(3, "completed", justOver)], now).dispatch).toBe(
-      true,
-    );
+    ).toBe(true);
+  });
+});
+
+describe("the workflow's gate", () => {
+  const workflow = readFileSync(
+    new URL("../../../.github/workflows/news.yml", import.meta.url),
+    "utf8",
+  );
+
+  it("stands a scheduled run aside for NEWS_SCHEDULE_STANDS_ASIDE_MS after a dispatched one", () => {
+    expect(NEWS_SCHEDULE_STANDS_ASIDE_MS).toBeGreaterThan(30 * 60_000);
+    expect(workflow).toContain(`-lt ${NEWS_SCHEDULE_STANDS_ASIDE_MS / 1000} ]`);
   });
 
-  it("keeps the schedule's stand-aside longer than the clock's half hour, so it never doubles a run", () => {
-    expect(NEWS_SCHEDULE_STANDS_ASIDE_MS).toBeGreaterThan(30 * 60_000);
+  it("holds every run back for NEWS_SETTLE_MS after the last one ended, longer than Spectrum's five minutes", () => {
     expect(NEWS_SETTLE_MS).toBeGreaterThan(5 * 60_000);
+    expect(workflow).toContain(`pause=$(( ${NEWS_SETTLE_MS / 1000} - `);
+  });
+
+  it("lets the poll go when the gate fails, and only stops it on a stand-aside", () => {
+    expect(workflow).toContain(
+      "if: ${{ !cancelled() && needs.gate.outputs.go != 'false' }}",
+    );
   });
 });
 

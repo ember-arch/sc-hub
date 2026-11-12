@@ -1,4 +1,4 @@
-import { timingSafeEqual } from "node:crypto";
+import { randomUUID, timingSafeEqual } from "node:crypto";
 import {
   decideNewsClock,
   NEWS_REPOSITORY,
@@ -10,7 +10,8 @@ import { userAgent } from "schema/site";
 /**
  * The news clock (ADR-053): Vercel's cron calls this at seven and thirty-seven past the hour
  * (apps/web/vercel.json), and it starts the News workflow through GitHub's workflow-dispatch API
- * unless a run is under way or one ended under six minutes ago. It needs CRON_SECRET, which Vercel
+ * unless a run is queued or under way; the workflow's gate job spaces the runs after that
+ * (NEWS_SETTLE_MS). It needs CRON_SECRET, which Vercel
  * sends as a bearer token, and NEWS_DISPATCH_TOKEN, a fine-grained token for this repository with
  * Actions read and write only; without the token it answers and does nothing, and the workflow's
  * own schedule runs the news as before.
@@ -21,16 +22,7 @@ export const maxDuration = 30;
 const API = `https://api.github.com/repos/${NEWS_REPOSITORY}/actions/workflows/${NEWS_WORKFLOW}`;
 const TIMEOUT_MS = 10_000;
 
-function answer(status: number, body: Record<string, unknown>): Response {
-  // One line per call in Vercel's logs, the same shape as the workers' events.
-  console.log(JSON.stringify({ job: "news-clock", status, ...body }));
-  return Response.json(body, {
-    status,
-    headers: { "Cache-Control": "no-store" },
-  });
-}
-
-/** Compares the Authorization header with the expected one in constant time. */
+/** Compares the Authorization header with `Bearer <secret>` in constant time (only the length can leak). */
 function authorized(header: string | null, secret: string): boolean {
   const given = Buffer.from(header ?? "");
   const expected = Buffer.from(`Bearer ${secret}`);
@@ -38,8 +30,21 @@ function authorized(header: string | null, secret: string): boolean {
 }
 
 export async function GET(request: Request): Promise<Response> {
-  const secret = process.env["CRON_SECRET"]?.trim();
-  if (!secret) {
+  const runId = randomUUID();
+  const answer = (status: number, body: Record<string, unknown>): Response => {
+    // One line per call in Vercel's logs, the same shape as the workers' events (section 6).
+    console.log(
+      JSON.stringify({ run_id: runId, job: "news-clock", status, ...body }),
+    );
+    return Response.json(body, {
+      status,
+      headers: { "Cache-Control": "no-store" },
+    });
+  };
+  // Trimmed: a header value loses its surrounding whitespace in transit (RFC 9110), so a secret
+  // stored with a stray space still matches what arrives.
+  const secret = process.env["CRON_SECRET"]?.trim() ?? "";
+  if (secret === "") {
     return answer(503, { dispatched: false, reason: "CRON_SECRET is not set" });
   }
   if (!authorized(request.headers.get("authorization"), secret)) {

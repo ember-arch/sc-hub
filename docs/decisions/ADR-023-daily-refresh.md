@@ -4,6 +4,7 @@
 - Date: 2026-11-09
 - Deciders: owner ("make sure we are building in protocols to keep all info on the site always updated. CIG is always changing ship specs, releases, components, damage figures, funding etc. We need to perhaps daily scrape everything in our catalog and implement changes", 2026-11-09), Claude Code session 2026-11-09
 - Amends: ADR-015 (the weekly loaner check becomes one source of the daily refresh)
+- Amended by: ADR-056 (a Vercel cron job starts the refresh at 06:23 UTC through the dispatch API; the schedule is the backup and stands aside when the clock ran)
 
 ## Context
 

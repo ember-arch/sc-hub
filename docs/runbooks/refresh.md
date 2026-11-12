@@ -1,6 +1,6 @@
 # Runbook — the daily refresh
 
-What keeps the site's figures current until Phase 1, and what to do when it needs a hand (ADR-023). Nothing here is run by hand on a normal day: `.github/workflows/refresh.yml` runs `scripts/refresh/index.ts` every day at 06:23 UTC.
+What keeps the site's figures current until Phase 1, and what to do when it needs a hand (ADR-023). Nothing here is run by hand on a normal day: `.github/workflows/refresh.yml` runs `scripts/refresh/index.ts` every day at 06:23 UTC. A Vercel cron job starts it then through the dispatch API (ADR-056); the workflow's own schedule is the backup, and its run stands aside when any dispatched run, the clock's or one started by hand, was created on the same UTC date.
 
 ## What a run does
 

@@ -10,11 +10,15 @@
 # not fetch that build again until the branch is gone. The sources on robertsspaceindustries.com
 # need the repository variable SC_HUB_CONTACT_EMAIL (CLAUDE.md section 9); without it they are
 # skipped and an issue says so.
+#
+# A clock on Vercel starts this workflow at 06:23 UTC through the dispatch API (ADR-056), since
+# GitHub runs the schedule hours late; the schedule stays as the backup, and its run stands aside
+# when a dispatched run (the clock's, or one started by hand) was created on the same UTC date.
 name: Refresh
 
 on:
   schedule:
-    # Every day, 06:23 UTC.
+    # Every day, 06:23 UTC: the backup for the Vercel clock (ADR-056).
     - cron: "23 6 * * *"
   workflow_dispatch:
     inputs:
@@ -35,8 +39,42 @@ env:
   NEXT_TELEMETRY_DISABLED: "1"
 
 jobs:
+  gate:
+    name: Stand aside when the clock already ran today
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: read
+    outputs:
+      go: ${{ steps.gate.outputs.go }}
+    steps:
+      - id: gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT: ${{ github.event_name }}
+          REPO: ${{ github.repository }}
+        run: |
+          go=true
+          if [ "$EVENT" = "schedule" ]; then
+            # A dispatched run that was cancelled (a pending one replaced in the queue) never ran.
+            # When the list cannot be read, the scheduled run goes: a second refresh costs requests,
+            # a missed one costs a day.
+            # Counted by UTC date, as the clock counts (ADR-056): a run started by hand last evening
+            # does not stand in for today's.
+            today=$(date -u +%F)
+            dispatched=$(gh api "repos/$REPO/actions/workflows/refresh.yml/runs?event=workflow_dispatch&per_page=10" --jq "[.workflow_runs[] | select(.conclusion != \"cancelled\" and (.created_at | startswith(\"$today\")))][0].created_at // \"\"") || dispatched=""
+            if [ -n "$dispatched" ]; then
+              echo "A dispatched run (the refresh clock's, or one started by hand) was created at $dispatched, today (UTC): this scheduled run stands aside (ADR-056)."
+              go=false
+            fi
+          fi
+          echo "go=$go" >> "$GITHUB_OUTPUT"
+
   refresh:
     name: Refresh the fixtures
+    needs: gate
+    # A gate that failed lets the refresh go: a second refresh costs requests, a missed one a day.
+    if: ${{ !cancelled() && needs.gate.outputs.go != 'false' }}
     runs-on: ubuntu-latest
     # A rebuild is some three thousand requests at the polite limit, about two hours.
     timeout-minutes: 300

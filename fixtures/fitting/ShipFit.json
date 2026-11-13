@@ -4,12 +4,12 @@
     "url": "https://docs.google.com/spreadsheets/d/15wiwmRnwqzBDpFF0B02ifxHH3OqNe0CLAtL8NU3hefc/edit",
     "author": "u/Pegaxsus",
     "sheet": "COMBINED SHEET",
-    "build_label": "PRE LIVE 4.10.3",
+    "build_label": "LIVE 4.10.3",
     "under_construction": "2026-10-10",
-    "last_update": "2026-11-09",
+    "last_update": "2026-11-12",
     "consent": "granted"
   },
-  "fetched_at": "2026-11-10T18:43:30.196Z",
+  "fetched_at": "2026-11-13T06:39:53.325Z",
   "legend": {
     "verdicts": {
       "fits": "Good Fit",
@@ -28,6 +28,7 @@
       "CM": "Cargo module",
       "H": "Hangar",
       "S/N": "Not / Safe to Land; Due to a 890Jump bug, some ships may go purple on landing",
+      "S": "Good Fit, but needs vehicle support for lifting",
       "**": "Silver ticket (partial physical components)"
     }
   },
@@ -455,7 +456,7 @@
       "label": "GATAC Tyilui",
       "column": 36,
       "slot": null,
-      "marker": "x",
+      "marker": "SRC",
       "unreleased": false,
       "class_names": [
         "GAMA_Tyilui"
@@ -831,7 +832,7 @@
     },
     {
       "id": 65,
-      "label": "KRAKEN",
+      "label": "KRAKEN / PRIVATEER",
       "column": 68,
       "slot": null,
       "marker": null,
@@ -4229,7 +4230,7 @@
     {
       "carrier": 55,
       "vehicle": 5,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -13877,7 +13878,7 @@
     {
       "carrier": 55,
       "vehicle": 29,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
@@ -14279,7 +14280,7 @@
     {
       "carrier": 55,
       "vehicle": 30,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
@@ -14681,7 +14682,7 @@
     {
       "carrier": 55,
       "vehicle": 31,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
@@ -20309,8 +20310,8 @@
     {
       "carrier": 55,
       "vehicle": 45,
-      "verdict": "untested",
-      "mark": null
+      "verdict": "tricks",
+      "mark": "E"
     },
     {
       "carrier": 56,
@@ -20969,13 +20970,13 @@
     {
       "carrier": 31,
       "vehicle": 47,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
       "carrier": 32,
       "vehicle": 47,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -21113,7 +21114,7 @@
     {
       "carrier": 55,
       "vehicle": 47,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -21515,8 +21516,8 @@
     {
       "carrier": 55,
       "vehicle": 48,
-      "verdict": "untested",
-      "mark": null
+      "verdict": "tricks",
+      "mark": "E"
     },
     {
       "carrier": 56,
@@ -22721,7 +22722,7 @@
     {
       "carrier": 55,
       "vehicle": 51,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -23927,7 +23928,7 @@
     {
       "carrier": 55,
       "vehicle": 54,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -25133,8 +25134,8 @@
     {
       "carrier": 55,
       "vehicle": 57,
-      "verdict": "untested",
-      "mark": null
+      "verdict": "tricks",
+      "mark": "E"
     },
     {
       "carrier": 56,
@@ -30473,7 +30474,7 @@
     {
       "carrier": 7,
       "vehicle": 71,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
@@ -30761,8 +30762,8 @@
     {
       "carrier": 55,
       "vehicle": 71,
-      "verdict": "untested",
-      "mark": null
+      "verdict": "fits",
+      "mark": "S"
     },
     {
       "carrier": 56,
@@ -30875,7 +30876,7 @@
     {
       "carrier": 7,
       "vehicle": 72,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
@@ -31163,8 +31164,8 @@
     {
       "carrier": 55,
       "vehicle": 72,
-      "verdict": "untested",
-      "mark": null
+      "verdict": "fits",
+      "mark": "S"
     },
     {
       "carrier": 56,
@@ -31277,7 +31278,7 @@
     {
       "carrier": 7,
       "vehicle": 73,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
@@ -31565,8 +31566,8 @@
     {
       "carrier": 55,
       "vehicle": 73,
-      "verdict": "untested",
-      "mark": null
+      "verdict": "fits",
+      "mark": "S"
     },
     {
       "carrier": 56,
@@ -34379,7 +34380,7 @@
     {
       "carrier": 55,
       "vehicle": 80,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -34781,7 +34782,7 @@
     {
       "carrier": 55,
       "vehicle": 81,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -40007,8 +40008,8 @@
     {
       "carrier": 55,
       "vehicle": 94,
-      "verdict": "untested",
-      "mark": null
+      "verdict": "fits",
+      "mark": "S"
     },
     {
       "carrier": 56,
@@ -40409,8 +40410,8 @@
     {
       "carrier": 55,
       "vehicle": 95,
-      "verdict": "untested",
-      "mark": null
+      "verdict": "fits",
+      "mark": "S"
     },
     {
       "carrier": 56,
@@ -40811,8 +40812,8 @@
     {
       "carrier": 55,
       "vehicle": 96,
-      "verdict": "untested",
-      "mark": null
+      "verdict": "fits",
+      "mark": "S"
     },
     {
       "carrier": 56,

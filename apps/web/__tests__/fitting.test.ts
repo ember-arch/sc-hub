@@ -54,9 +54,87 @@ describe("buildFittingIndex", () => {
     const jump = index.carries("ORIG_890Jump");
     const marked = jump.find((c) => c.mark === "S");
     expect(marked?.note).toMatch(/Safe to Land/);
+    expect(jump.find((c) => c.mark === "N")?.note).toMatch(/Safe to Land/);
     expect(noteFor({ "S/N": "Not / Safe" }, "N")).toBe("Not / Safe");
     expect(noteFor({ "*": "wheels" }, "*")).toBe("wheels");
     expect(noteFor({ "*": "wheels" }, "SRC")).toBeNull();
     expect(noteFor({}, null)).toBeNull();
+  });
+
+  it("reads a letter the legend uses twice by the ship it is on", () => {
+    // Since 12 Nov 2026 the sheet's "S" is both the 890 Jump's "S/N" and an entry of its own.
+    const legend = { "S/N": "Not / Safe to Land", S: "needs vehicle support" };
+    expect(noteFor(legend, "S", new Set(["S", "N"]))).toBe(
+      "Not / Safe to Land",
+    );
+    expect(noteFor(legend, "S", new Set(["S"]))).toBe("needs vehicle support");
+    expect(noteFor(legend, "S")).toBe("needs vehicle support");
+    expect(noteFor(legend, "N", new Set(["N"]))).toBe("Not / Safe to Land");
+    expect(noteFor({ "S/N": "pair" }, "S/N")).toBe("pair");
+  });
+
+  it("gives the Galaxy's 'S' the legend's own words for it", () => {
+    const own = list.legend.marks.S;
+    expect(own).toMatch(/vehicle support/);
+    const ballista = list.vehicles.find((v) => v.label === "Ballista")!;
+    const galaxy = index
+      .carriedBy(ballista.class_names[0]!)
+      .find((c) => c.carrier.label === "Galaxy");
+    expect([galaxy?.mark, galaxy?.note]).toEqual(["S", own]);
+  });
+
+  it("counts a ship's marks across its columns, the 890 Jump's hangar and cargo", () => {
+    const base = list.carriers[0]!;
+    const car = (id: number) => ({
+      ...list.vehicles[0]!,
+      id,
+      class_names: [`TEST_Car${id}`],
+    });
+    const sheet = ShipFitList.parse({
+      ...list,
+      carriers: [
+        { ...base, id: 0, label: "Jump", slot: "hangar", class_names: ["J"] },
+        { ...base, id: 1, label: "Jump", slot: "cargo", class_names: ["J"] },
+        { ...base, id: 2, label: "Lifter", slot: null, class_names: ["L"] },
+      ],
+      vehicles: [car(0), car(1), car(2)],
+      legend: {
+        verdicts: list.legend.verdicts,
+        marks: { "S/N": "Not / Safe", S: "needs a lift" },
+      },
+      fits: [
+        { carrier: 0, vehicle: 0, verdict: "fits", mark: "N" },
+        { carrier: 1, vehicle: 1, verdict: "fits", mark: "S" },
+        { carrier: 2, vehicle: 2, verdict: "fits", mark: "S" },
+      ],
+    });
+    const built = buildFittingIndex(sheet);
+    expect(built.carries("J").map((c) => c.note)).toEqual([
+      "Not / Safe",
+      "Not / Safe",
+    ]);
+    expect(built.carries("L")[0]!.note).toBe("needs a lift");
+  });
+
+  it("drops words that open with another verdict's words, and keeps them under their own", () => {
+    const sheet = ShipFitList.parse({
+      ...list,
+      carriers: [
+        { ...list.carriers[0]!, id: 0, class_names: ["TEST_Carrier"] },
+      ],
+      vehicles: [{ ...list.vehicles[0]!, id: 0, class_names: ["TEST_Car"] }],
+      legend: {
+        verdicts: list.legend.verdicts,
+        marks: { "S/N": "Not / Safe", S: "Good Fit, but needs a lift" },
+      },
+      fits: [{ carrier: 0, vehicle: 0, verdict: "no", mark: "S" }],
+    });
+    const red = buildFittingIndex(sheet).carries("TEST_Carrier")[0]!;
+    expect([red.mark, red.note]).toEqual(["S", null]);
+    const green = buildFittingIndex({
+      ...sheet,
+      fits: [{ carrier: 0, vehicle: 0, verdict: "fits", mark: "S" }],
+    }).carries("TEST_Carrier")[0]!;
+    expect(green.note).toBe("Good Fit, but needs a lift");
   });
 });

@@ -2,9 +2,9 @@
   "article_url": "https://support.robertsspaceindustries.com/hc/en-us/articles/360003093114-Loaner-Ship-Matrix",
   "api_url": "https://support.robertsspaceindustries.com/api/v2/help_center/en-us/articles/360003093114.json",
   "title": "Loaner Ship Matrix",
-  "edited_at": "2026-08-26T18:35:09Z",
-  "stated_date": "August 26th, 2026",
-  "stated_build": "4.10.0-live.12519617",
+  "edited_at": "2026-11-12T17:18:59Z",
+  "stated_date": "November 12th, 2026",
+  "stated_build": "4.10.3-live.13165946",
   "rows": [
     {
       "ships": "600i Explorer and Executive",
@@ -129,12 +129,6 @@
       ]
     },
     {
-      "ships": "Galaxy",
-      "loaners": [
-        "Carrack"
-      ]
-    },
-    {
       "ships": "Genesis Starliner",
       "loaners": [
         "Hercules C2"
@@ -175,13 +169,6 @@
         "Polaris",
         "Ironclad",
         "Buccaneer"
-      ]
-    },
-    {
-      "ships": "Liberator",
-      "loaners": [
-        "Ironclad Assault",
-        "F7C-M Super Hornet"
       ]
     },
     {
@@ -352,5 +339,5 @@
       ]
     }
   ],
-  "fetched_at": "2026-11-08T21:54:47.307Z"
+  "fetched_at": "2026-11-13T06:24:29.531Z"
 }

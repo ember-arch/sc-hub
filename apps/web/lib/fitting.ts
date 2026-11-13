@@ -62,17 +62,28 @@ export interface FittingIndex {
   knows(className: string): boolean;
 }
 
-/** The legend's words for a mark: its own entry, or the entry whose "S/N" names it. */
+/**
+ * The legend's words for a mark: its own entry, or the entry whose pair ("S/N") names it. The
+ * sheet can use one letter twice: "S" is the 890 Jump's "Safe to Land" (its "S/N" pair) and,
+ * since 12 Nov 2026, the Galaxy's "needs vehicle support for lifting". So where a mark has its
+ * own entry and a pair names it too, the pair stands on a carrier that also uses the pair's
+ * other letter, and its own entry everywhere else. `used` is the marks of all the carrier's
+ * columns (the 890 Jump has a hangar and a cargo column).
+ */
 export function noteFor(
   marks: Readonly<Record<string, string>>,
   mark: string | null,
+  used: ReadonlySet<string> = new Set(),
 ): string | null {
   if (mark === null) return null;
-  if (marks[mark] !== undefined) return marks[mark];
+  const own = marks[mark];
   for (const [key, words] of Object.entries(marks)) {
-    if (key.split("/").some((part) => part.trim() === mark)) return words;
+    const parts = key.split("/").map((part) => part.trim());
+    if (parts.length < 2 || !parts.includes(mark)) continue;
+    if (own === undefined) return words;
+    if (parts.some((part) => part !== mark && used.has(part))) return words;
   }
-  return null;
+  return own ?? null;
 }
 
 export function buildFittingIndex(list: ShipFitList): FittingIndex {
@@ -90,6 +101,36 @@ export function buildFittingIndex(list: ShipFitList): FittingIndex {
     fitsByCarrier.set(f.carrier, [...(fitsByCarrier.get(f.carrier) ?? []), f]);
     fitsByVehicle.set(f.vehicle, [...(fitsByVehicle.get(f.vehicle) ?? []), f]);
   }
+  // The marks each carrier uses, across its columns: the sheet splits a ship into columns
+  // under one heading, so the heading is the ship.
+  const shipOf = (carrier: number): string =>
+    list.carriers[carrier]?.label ?? String(carrier);
+  const marksByShip = new Map<string, Set<string>>();
+  for (const f of list.fits)
+    if (f.mark !== null) {
+      const ship = shipOf(f.carrier);
+      marksByShip.set(ship, (marksByShip.get(ship) ?? new Set()).add(f.mark));
+    }
+  // Words that open with another verdict's own words ("Good Fit, but…" on a red cell) would
+  // contradict the cell's colour; the mark is then shown as written, like a mark the legend
+  // does not explain.
+  const verdictWords = Object.entries(list.legend.verdicts) as [
+    FitVerdict,
+    string,
+  ][];
+  const note = (f: ShipFitList["fits"][number]): string | null => {
+    const words = noteFor(
+      list.legend.marks,
+      f.mark,
+      marksByShip.get(shipOf(f.carrier)),
+    );
+    if (words === null) return null;
+    const opens = (w: string): boolean =>
+      words.toLowerCase().startsWith(w.toLowerCase());
+    return verdictWords.some(([v, w]) => v !== f.verdict && opens(w))
+      ? null
+      : words;
+  };
   const rank = (v: FitVerdict): number => VERDICT_ORDER.indexOf(v);
   return {
     list,
@@ -103,7 +144,7 @@ export function buildFittingIndex(list: ShipFitList): FittingIndex {
             vehicle,
             verdict: f.verdict,
             mark: f.mark,
-            note: noteFor(list.legend.marks, f.mark),
+            note: note(f),
             slot: carrier.slot,
             marker: carrier.marker,
           });
@@ -126,7 +167,7 @@ export function buildFittingIndex(list: ShipFitList): FittingIndex {
             carrier,
             verdict: f.verdict,
             mark: f.mark,
-            note: noteFor(list.legend.marks, f.mark),
+            note: note(f),
           });
         }
       }

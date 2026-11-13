@@ -296,7 +296,8 @@ test("Acquisition shows pledge and in-game prices with their sources", async ({
     await expect(page.locator("#sources")).toContainText("UEX Corp");
   } else {
     await expect(acq).toContainText("Buy in the game");
-    await expect(acq).toContainText("Not reported to UEX");
+    await expect(acq).toContainText("Not on file for this build yet");
+    await expect(acq).toContainText("No in-game prices are on file for LIVE");
   }
   await expect(acq.getByRole("table", { name: /Pledge store/ })).toBeVisible();
   await expect(page.locator("#sources")).toContainText("RSI pledge store");

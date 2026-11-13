@@ -150,10 +150,13 @@
   @apply text-right font-mono;
 }
 /* A figure keeps every digit the source gives (ADR-049): on a phone, 4.10.3's fuel use per Gm
-   (0.0000614632767165498) breaks across lines rather than push the table sideways. */
-.patch-table .num,
-.patch-table .mono {
-  overflow-wrap: anywhere;
+   (0.0000614632767165498) breaks across lines rather than push the table sideways. Phones only:
+   wider, the columns have room, and a number broken mid-way would read worse than a wide table. */
+@media (width < 40rem) {
+  .patch-table .num,
+  .patch-table .mono {
+    overflow-wrap: anywhere;
+  }
 }
 .patch-table .old {
   @apply text-secondary;

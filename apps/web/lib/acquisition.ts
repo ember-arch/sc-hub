@@ -249,6 +249,15 @@ export function pricesFor(slug: string, className: string | null): ShipPrices {
   };
 }
 
+/**
+ * Whether any shop price is on file for the current LIVE build. UEX Corp's reports reach the Star
+ * Citizen Wiki some time after a new build (4.10.3 had none on 13 November 2026): with none at
+ * all, a ship's page says the prices have not arrived rather than that no shop sells it.
+ */
+export function shopPricesOnFile(): boolean {
+  return load().shops.length > 0;
+}
+
 /** When the price fixtures were last copied, for credit lines; null without them. */
 export function pricesCopiedAt(): string | null {
   const a = load();

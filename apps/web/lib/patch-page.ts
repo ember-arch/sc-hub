@@ -11,9 +11,19 @@ import {
   notesBetween,
   ptuInTesting,
   previousOf,
+  type ReleasedAhead,
+  releasedAhead,
   shipMentions,
   totals,
 } from "./patches";
+
+/**
+ * The LIVE version CIG has released ahead of the newest build with figures (`releasedAhead`), or
+ * null. Its LIVE posts are Spectrum posts, so with the Spectrum module off it is null.
+ */
+export function currentRelease(): ReleasedAhead | null {
+  return releasedAhead(allPatchNotes(), latestLive()?.version ?? null);
+}
 
 /**
  * What a patch page needs, put together from the snapshots, the pack and the news pack

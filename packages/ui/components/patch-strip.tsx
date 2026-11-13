@@ -3,6 +3,11 @@ import type { Channel } from "schema";
 export interface ChannelVersion {
   readonly channel: Channel;
   readonly version: string;
+  /**
+   * A newer version CIG has already released on this channel while the figures on record are
+   * still `version`'s (ADR-049, amended): "4.10.3" beside "4.10.2-LIVE.12881860".
+   */
+  readonly released?: string | undefined;
 }
 
 export interface PatchStripProps {
@@ -33,8 +38,17 @@ export function PatchStrip({ versions }: PatchStripProps) {
                 <span className="font-sans text-secondary">
                   no build recorded
                 </span>
-              ) : (
+              ) : found.released === undefined ? (
                 found.version
+              ) : (
+                <>
+                  {found.released}
+                  <span className="font-sans text-secondary">
+                    {" "}
+                    · figures from{" "}
+                  </span>
+                  {found.version}
+                </>
               )}
             </dd>
           </div>

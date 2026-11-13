@@ -45,7 +45,16 @@ test.describe("the patch pages", () => {
     const headings = await page
       .getByRole("heading", { level: 2 })
       .allTextContents();
+    // A version CIG released ahead of its figures leads, and the comparison on record stands
+    // under its own heading (ADR-049, amended); the comparison's sections follow either way.
+    const ahead = /^\d+\.\d+\.\d+ is live$/.exec(headings[0] ?? "");
     expect(headings).toEqual([
+      ...(ahead === null
+        ? []
+        : [
+            ahead[0],
+            `Before it: ${version(newest!)} against ${version(previous!)}`,
+          ]),
       "Ships and vehicles",
       "Weapons and parts",
       "Crafting",
@@ -278,3 +287,28 @@ for (const viewport of [
     });
   }
 }
+
+// ADR-049, amended 2026-11-12: a version CIG has released on LIVE before the wiki publishes its
+// figures leads the latest patch, and the footer's strip names it beside the build the figures
+// are from. The release notes are Spectrum posts, so in CI (Spectrum off) neither shows; either
+// way the page and the strip agree.
+test("a version released ahead of its figures leads the latest patch, and the strip agrees", async ({
+  page,
+}) => {
+  await page.goto("/patches");
+  const released = page.locator("section#released");
+  const strip = page.locator("footer dl");
+  if ((await released.count()) === 0) {
+    await expect(strip).not.toContainText("figures from");
+    return;
+  }
+  const heading = released.getByRole("heading", { level: 2 });
+  await expect(heading).toHaveText(/^\d+\.\d+\.\d+ is live$/);
+  const version = (await heading.textContent())!.replace(" is live", "");
+  await expect(strip).toContainText(`${version} · figures from`);
+  await expect(
+    page.getByRole("link", { name: `Latest ${version}` }),
+  ).toBeVisible();
+  // The comparison on record stands under it, under its own heading.
+  await expect(page.locator("section#on-record")).toHaveCount(1);
+});

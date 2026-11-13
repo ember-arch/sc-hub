@@ -1,6 +1,6 @@
 # ADR-049: "What changed" patch pages, from a snapshot of every build
 
-- Status: accepted (owner direction 2026-11-11)
+- Status: accepted (owner direction 2026-11-11); amended 2026-11-12 for a version CIG releases on LIVE before the Star Citizen Wiki publishes its figures (below)
 - Date: 2026-11-11
 - Deciders: owner ("next thing we should build: 'What changed this patch' pages. Stat changes between builds for every ship, part and blueprint, LIVE vs PTU … a dedicated page that compares official patch to patch, as well as current patch to PTU … beautifully designed, very easy to navigate … broken into collapsible sections … clearer and easier to reach than patch notes alone, but patch notes linked"), Claude Code session 2026-11-11
 - Amends: spec 01's "Diff" note (patch pages arrive before the pipeline's `diff.json`), ADR-023 (the refresh gains a step), CLAUDE.md section 4 (no new folder; `fixtures/patches/` sits under `fixtures/`)
@@ -38,6 +38,17 @@ The news pack already holds CIG's patch notes: the Spectrum posts in the Patch N
 | Plain JSON snapshots | Readable in review, but twelve builds would take the fixtures past the 40 MB of CLAUDE.md section 4; gzip is a tenth of the size and `zcat` reads it |
 | Classify note lines by topic (missions, cargo, ships) | That is inferring a post's meaning (CLAUDE.md section 2); CIG's own headings are the structure |
 | Colour a change green or red | More is not better for every figure (signatures, damage taken, spool); colour would claim a judgement the data does not make |
+
+## Amendment, 2026-11-12: a release ahead of its figures
+
+4.10.3 went LIVE at 15:17 UTC on 12 November; the Star Citizen Wiki API, the site's one source of figures, still served 4.10.2 hours later and listed no 4.10.3, so the footer and the patch pages said 4.10.2 while CIG's release notes for 4.10.3 were on the pack. The owner: "update it and all the corresponding patch info on the patch pages"; and, offered an hourly check of the wiki, "hours is probably too frequent", so the daily refresh stays as it is (ADR-023, ADR-056).
+
+| Concern | Choice | Reason |
+| --- | --- | --- |
+| What counts | `releasedAhead` in `apps/web/lib/patches.ts`: the newest version with CIG's LIVE release notes, official notes or a hotfix post on the pack, newer than the newest LIVE build on record; released at the first of those posts. A Comm-Link announcement alone is not a release, as `ptuInTesting` already holds | The same test the PTU tab uses, so the two never disagree; the release notes are CIG's own word that the build is out |
+| The footer | The strip reads "LIVE 4.10.3 · figures from 4.10.2-LIVE.12881860" (`ChannelVersion.released`) | Every page says what is live and which build its figures are from |
+| The patch pages | The masthead names the release first ("LIVE 4.10.3, 12 Nov 2026", then "Figures from 4.10.2, …") and the latest tab reads "Latest 4.10.3". `/patches` opens on "4.10.3 is live": when, that its figures come from the wiki and follow the morning after it publishes them, a link to CIG's release notes, then CIG's notes between the two versions (the PTU's and RSI's). The comparison on record stands under it as "Before it: 4.10.2 against …" | Nothing is typed in: the figures stay the wiki's (CLAUDE.md section 2); the page says what it knows and what it does not |
+| Spectrum | The release notes are Spectrum posts, so with the module off nothing changes | ADR-027 |
 
 ## Consequences
 

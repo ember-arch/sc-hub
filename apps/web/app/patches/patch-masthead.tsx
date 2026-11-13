@@ -1,6 +1,6 @@
 import { FilterBar, FilterSelect, formatNumber } from "ui";
 import { spectrumOn } from "../../lib/data";
-import { currentPtu } from "../../lib/patch-page";
+import { currentPtu, currentRelease } from "../../lib/patch-page";
 import { type Build, builds, latestLive } from "../../lib/patches";
 import { Masthead } from "../masthead";
 import { type PatchTab, PatchTabs, day } from "./patch-view";
@@ -21,10 +21,15 @@ export function PatchMasthead({
   const list = builds();
   const live = latestLive(list);
   const ptu = currentPtu();
+  // A version CIG has released ahead of the figures on record leads (ADR-049, amended).
+  const ahead = currentRelease();
   const eyebrow = [
+    ...(ahead === null
+      ? []
+      : [`LIVE ${ahead.version}, ${day.format(new Date(ahead.releasedAt))}`]),
     live === null
       ? "No LIVE build on record"
-      : `LIVE ${live.version}${live.releasedAt === null ? "" : `, ${day.format(new Date(live.releasedAt))}`}`,
+      : `${ahead === null ? "LIVE" : "Figures from"} ${live.version}${live.releasedAt === null ? "" : `, ${day.format(new Date(live.releasedAt))}`}`,
     ptu !== null
       ? `PTU ${ptu.version} in testing`
       : spectrumOn()
@@ -40,7 +45,7 @@ export function PatchMasthead({
       aside={
         <PatchTabs
           current={tab}
-          live={live?.version ?? null}
+          live={ahead?.version ?? live?.version ?? null}
           ptu={ptu?.version ?? null}
         />
       }

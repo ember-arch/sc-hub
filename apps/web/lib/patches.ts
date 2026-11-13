@@ -254,6 +254,44 @@ export interface EntryChange {
   readonly ingredients: readonly IngredientChange[];
   /** The name patch notes would use ("Aegis Gladius"), for matching mentions. */
   readonly gameName: string | null;
+  /**
+   * For a new or removed ship, the other records of its name and maker in each build. The game
+   * keeps variants under one name: 4.10.3 brought a "Caterpillar" record of its own
+   * (DRAK_Caterpillar_Boarded_ShatteredBlade) while DRAK_Caterpillar stayed, and retired the old
+   * Hammerhead record while AEGS_Hammerhead_GS stayed. Empty when the name is its own.
+   */
+  readonly namesakes?: {
+    readonly before: readonly string[];
+    readonly after: readonly string[];
+  };
+}
+
+/** The ships of each name and maker in a build, by class name. */
+function recordsByName(
+  ships: Readonly<
+    Record<string, { name: string; manufacturer: string | null }>
+  >,
+): Map<string, string[]> {
+  const out = new Map<string, string[]>();
+  for (const [id, s] of Object.entries(ships)) {
+    const key = `${s.manufacturer ?? ""}\u0000${s.name.trim()}`;
+    out.set(key, [...(out.get(key) ?? []), id]);
+  }
+  for (const ids of out.values()) ids.sort();
+  return out;
+}
+
+/** The other records of a ship's name and maker in the two builds. */
+export function namesakesOf(
+  id: string,
+  ship: { name: string; manufacturer: string | null },
+  before: ReadonlyMap<string, readonly string[]>,
+  after: ReadonlyMap<string, readonly string[]>,
+): { before: string[]; after: string[] } {
+  const key = `${ship.manufacturer ?? ""}\u0000${ship.name.trim()}`;
+  const others = (m: ReadonlyMap<string, readonly string[]>) =>
+    (m.get(key) ?? []).filter((other) => other !== id);
+  return { before: others(before), after: others(after) };
 }
 
 export interface ChangeSet {
@@ -519,6 +557,8 @@ export function compareSnapshots(
     ...Object.keys(from.ships),
     ...Object.keys(to.ships),
   ]);
+  const namesBefore = recordsByName(from.ships);
+  const namesAfter = recordsByName(to.ships);
   for (const id of shipIds) {
     const a = from.ships[id];
     const b = to.ships[id];
@@ -541,6 +581,7 @@ export function compareSnapshots(
         detail: makerOf(b.manufacturer, links),
         figures: headline(b.figures, SHIP_HEADLINE, shipFigureLabel, "to"),
         loadout: [],
+        namesakes: namesakesOf(id, b, namesBefore, namesAfter),
       });
     } else if (a !== undefined && b === undefined) {
       // Still in the build's list, without figures: not removed, just not recorded.
@@ -556,6 +597,7 @@ export function compareSnapshots(
         detail: makerOf(a.manufacturer, links),
         figures: headline(a.figures, SHIP_HEADLINE, shipFigureLabel, "from"),
         loadout: [],
+        namesakes: namesakesOf(id, a, namesBefore, namesAfter),
       });
     } else if (a !== undefined && b !== undefined) {
       const figures = figureChanges(

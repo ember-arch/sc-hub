@@ -225,9 +225,14 @@ test.describe("the patch pages", () => {
     );
     test.skip((await fresh.count()) === 0, "no new ship in this patch");
     const entry = fresh.first();
-    await expect(entry.locator("summary [data-entry-tag]")).toHaveText("New");
+    // A new record of a ship that was there before reads "New variant" (ADR-054, amended).
+    const tag = entry.locator("summary [data-entry-tag]");
+    await expect(tag).toHaveText(/^New( variant)?$/);
     await entry.locator("summary").click();
-    await expect(entry.locator("[data-entry-note]")).toContainText(/^New in /);
+    const note = entry.locator("[data-entry-note]");
+    await expect(note).toContainText(/^New in /);
+    if ((await tag.textContent()) === "New variant")
+      await expect(note).toContainText("itself was in");
     const table = entry.locator("table").first();
     const heads = table.getByRole("columnheader");
     await expect(heads.filter({ hasText: "Before" })).toHaveCount(1);

@@ -100,6 +100,36 @@
     "external_id": "21420"
   },
   {
+    "file": "21415.jpg",
+    "page_url": "https://robertsspaceindustries.com/comm-link/transmission/21415-IAE-2956-Merchandise",
+    "image_url": "https://media.robertsspaceindustries.com/4diwg8xsniwj8/channel_item_full.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 160373,
+    "sha256": "8119abed454bdb59e781e43df57bb9ace8702c66a4e0406ec8e42c4d602e76e1",
+    "fetched_at": "2026-11-13T16:08:48.796Z",
+    "external_id": "21415"
+  },
+  {
+    "file": "21414.jpg",
+    "page_url": "https://robertsspaceindustries.com/comm-link/transmission/21414-IAE-2956-About",
+    "image_url": "https://media.robertsspaceindustries.com/kvt6h9xe4zw2p/channel_item_full.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 662608,
+    "sha256": "3d32de1421cee7f3cc9e7a6fc64cae061b69e532ec8be18757713f09b4770361",
+    "fetched_at": "2026-11-13T16:08:53.774Z",
+    "external_id": "21414"
+  },
+  {
+    "file": "21412.jpg",
+    "page_url": "https://robertsspaceindustries.com/comm-link/transmission/21412-IAE-2956-RSI",
+    "image_url": "https://media.robertsspaceindustries.com/u9ocacqvecvb1/channel_item_full.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 523794,
+    "sha256": "2f086e4db375bfeac0048351af0a0e13a405c1de1eee5e9a234fbde2dcd152b5",
+    "fetched_at": "2026-11-13T16:08:58.761Z",
+    "external_id": "21412"
+  },
+  {
     "file": "21390.png",
     "page_url": "https://robertsspaceindustries.com/comm-link/transmission/21390-Roadmap-Roundup-October-21-2026",
     "image_url": "https://media.robertsspaceindustries.com/5nw60s8x71rw5/channel_item_full.png",
@@ -208,6 +238,26 @@
     "sha256": "0de4ed06a84a38379e53ab4d2f8c61d9a2c8d57ab64249539f288539828df64e",
     "fetched_at": "2026-11-10T20:23:35.513Z",
     "external_id": "21350"
+  },
+  {
+    "file": "21347.jpg",
+    "page_url": "https://robertsspaceindustries.com/comm-link/transmission/21347-RSI-Skylark",
+    "image_url": "https://media.robertsspaceindustries.com/h2vl7oog03z33/channel_item_full.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 407732,
+    "sha256": "157d922f0d7078748f9bc29c094a95adc98385f8242a5f1bf8d735a246aa9e11",
+    "fetched_at": "2026-11-13T16:09:03.759Z",
+    "external_id": "21347"
+  },
+  {
+    "file": "21346.jpg",
+    "page_url": "https://robertsspaceindustries.com/comm-link/transmission/21346-RSI-Galaxy",
+    "image_url": "https://media.robertsspaceindustries.com/jqaau4quc5n1c/channel_item_full.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 442001,
+    "sha256": "ba2a5f88b7523bf79e0a5f57a365c44937605af8d7f96a88d1984455c45d1f98",
+    "fetched_at": "2026-11-13T16:09:08.759Z",
+    "external_id": "21346"
   },
   {
     "file": "21342.png",

@@ -48,7 +48,9 @@ The news pack already holds CIG's patch notes: the Spectrum posts in the Patch N
 | What counts | `releasedAhead` in `apps/web/lib/patches.ts`: the newest version with CIG's LIVE release notes, official notes or a hotfix post on the pack, newer than the newest LIVE build on record; released at the first of those posts. A Comm-Link announcement alone is not a release, as `ptuInTesting` already holds | The same test the PTU tab uses, so the two never disagree; the release notes are CIG's own word that the build is out |
 | The footer | The strip reads "LIVE 4.10.3 · figures from 4.10.2-LIVE.12881860" (`ChannelVersion.released`) | Every page says what is live and which build its figures are from |
 | The patch pages | The masthead names the release first ("LIVE 4.10.3, 12 Nov 2026", then "Figures from 4.10.2, …") and the latest tab reads "Latest 4.10.3". `/patches` opens on "4.10.3 is live": when, that its figures come from the wiki and follow the morning after it publishes them, a link to CIG's release notes, then CIG's notes between the two versions (the PTU's and RSI's). The comparison on record stands under it as "Before it: 4.10.2 against …" | Nothing is typed in: the figures stay the wiki's (CLAUDE.md section 2); the page says what it knows and what it does not |
-| Spectrum | The release notes are Spectrum posts, so with the module off nothing changes | ADR-027 |
+| Measured against | The pack's own LIVE build (`GameVersion`), which every page has; the patch snapshots are traced into the patch pages' functions only, and the footer is on every page | A page rendered per request would otherwise read no snapshot and drop the line |
+| Dated by | Its release notes or RSI's official notes; a hotfix post only when there are none | Hotfix Central is one long-lived thread CIG renames each patch, first posted months before |
+| Spectrum | CIG's release notes and hotfix posts are Spectrum posts, shown only with the module on; with it off, only RSI's own patch notes on the Comm-Link can name a release | ADR-027 |
 
 ## Consequences
 

@@ -16,6 +16,7 @@ import {
   parseCode,
   previousOf,
   ptuInTesting,
+  releaseNotesOf,
   releasedAhead,
   shipMentions,
   totals,
@@ -664,5 +665,31 @@ describe("releasedAhead", () => {
       post("4.10.3", "LIVE", "2026-11-12T15:17:47Z"),
     ];
     expect(releasedAhead(notes, "4.10.2")?.version).toBe("4.10.4");
+  });
+
+  it("dates a release by its release notes, not a Hotfix Central thread CIG renamed to it", () => {
+    // Hotfix Central is one long-lived thread, renamed for each patch: its first post is months old.
+    const notes = [
+      post("4.10.3", "LIVE", "2026-11-12T15:17:47Z"),
+      post("4.10.3", "LIVE", "2026-08-27T15:50:15Z", "hotfix"),
+    ];
+    expect(releasedAhead(notes, "4.10.2")?.releasedAt).toBe(
+      "2026-11-12T15:17:47Z",
+    );
+    // With only a hotfix post, it is what dates the release.
+    expect(releasedAhead([notes[1]!], "4.10.2")?.releasedAt).toBe(
+      "2026-08-27T15:50:15Z",
+    );
+  });
+
+  it("links the release notes first, RSI's official notes next, never a hotfix post", () => {
+    const hotfix = post("4.10.3", "LIVE", "2026-11-14T10:00:00Z", "hotfix");
+    const official = post("4.10.3", "LIVE", "2026-11-12T16:00:00Z", "official");
+    const live = post("4.10.3", "LIVE", "2026-11-12T15:17:47Z");
+    const of = (list: PatchNote[]) =>
+      releaseNotesOf(releasedAhead(list, "4.10.2")!)?.kind ?? null;
+    expect(of([hotfix, official, live])).toBe("live");
+    expect(of([hotfix, official])).toBe("official");
+    expect(of([hotfix])).toBeNull();
   });
 });

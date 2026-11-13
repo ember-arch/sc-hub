@@ -48,13 +48,15 @@ test.describe("the patch pages", () => {
     // A version CIG released ahead of its figures leads, and the comparison on record stands
     // under its own heading (ADR-049, amended); the comparison's sections follow either way.
     const ahead = /^\d+\.\d+\.\d+ is live$/.exec(headings[0] ?? "");
-    expect(headings).toEqual([
-      ...(ahead === null
-        ? []
-        : [
-            ahead[0],
-            `Before it: ${version(newest!)} against ${version(previous!)}`,
-          ]),
+    if (ahead !== null) {
+      // Against a hotfix of the same version the labels carry the build numbers too.
+      expect(headings[1]).toMatch(
+        new RegExp(
+          `^Before it: ${version(newest!).replace(/\./g, "\\.")}( \\(\\d+\\))? against `,
+        ),
+      );
+    }
+    expect(headings.slice(ahead === null ? 0 : 2)).toEqual([
       "Ships and vehicles",
       "Weapons and parts",
       "Crafting",

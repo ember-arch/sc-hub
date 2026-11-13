@@ -25,4 +25,25 @@ describe("PatchStrip", () => {
     expect(html).toContain("4.10.3-PTU.2");
     expect(html).not.toContain("no build recorded");
   });
+
+  // ADR-049, amended: a version CIG released ahead of the figures on record.
+  it("names a release ahead of the figures beside the build they are from", () => {
+    const html = renderToStaticMarkup(
+      <PatchStrip
+        versions={[
+          {
+            channel: "LIVE",
+            version: "4.10.2-LIVE.12881860",
+            released: "4.10.3",
+          },
+        ]}
+      />,
+    );
+    expect(html.indexOf("4.10.3")).toBeLessThan(
+      html.indexOf("4.10.2-LIVE.12881860"),
+    );
+    expect(html).toContain("figures from");
+    // The separator is not read aloud.
+    expect(html).toContain('<span aria-hidden="true">·</span>');
+  });
 });

@@ -45,7 +45,8 @@ export function PatchStrip({ versions }: PatchStripProps) {
                   {found.released}
                   <span className="font-sans text-secondary">
                     {" "}
-                    · figures from{" "}
+                    {/* The dot is a separator, not a word to read aloud. */}
+                    <span aria-hidden="true">·</span> figures from{" "}
                   </span>
                   {found.version}
                 </>

@@ -113,7 +113,7 @@ export function ptuInTesting(
 export interface ReleasedAhead {
   /** "4.10.3". */
   readonly version: string;
-  /** The first of CIG's LIVE posts for it: its release notes, official notes or a hotfix post. */
+  /** The first of its release notes or official notes; a hotfix post's only when there are none. */
   readonly releasedAt: string;
   /** CIG's posts for the versions after the LIVE build on record up to this one, newest first. */
   readonly notes: PatchNote[];
@@ -143,8 +143,11 @@ export function releasedAhead(
     .map((n) => n.version)
     .sort((a, b) => compareVersions(b, a))[0];
   if (newest === undefined) return null;
-  const releasedAt = releases
-    .filter((n) => n.version === newest)
+  // Dated by its release notes or official notes; a hotfix post only when there are none, since
+  // Hotfix Central is one long-lived thread CIG renames each patch, published months before.
+  const own = releases.filter((n) => n.version === newest);
+  const dated = own.filter((n) => n.kind === "live" || n.kind === "official");
+  const releasedAt = (dated.length > 0 ? dated : own)
     .map((n) => n.publishedAt)
     .sort()[0]!;
   return {
@@ -152,6 +155,18 @@ export function releasedAhead(
     releasedAt,
     notes: notesBetween(notes, liveVersion, newest),
   };
+}
+
+/** The post a release's notes link first: its LIVE release notes, else RSI's official notes. */
+export function releaseNotesOf(ahead: ReleasedAhead): PatchNote | null {
+  const own = ahead.notes.filter(
+    (n) => n.version === ahead.version && n.channel === "LIVE",
+  );
+  return (
+    own.find((n) => n.kind === "live") ??
+    own.find((n) => n.kind === "official") ??
+    null
+  );
 }
 
 let cached: { dir: string; snapshots: PatchSnapshot[] } | undefined;

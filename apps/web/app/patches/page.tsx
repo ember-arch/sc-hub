@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 import { EmptyState, TextLink } from "ui";
 import { currentRelease, patchPageData } from "../../lib/patch-page";
-import { latestLive, previousOf } from "../../lib/patches";
+import {
+  buildLabel,
+  latestLive,
+  previousOf,
+  releaseNotesOf,
+} from "../../lib/patches";
 import { Site } from "../../lib/site";
 import { AgainstControl, PatchMasthead } from "./patch-masthead";
 import { NotesList, PatchView, Section, day } from "./patch-view";
@@ -24,14 +29,9 @@ export default function PatchesPage() {
   const from = to === null ? null : previousOf(to);
   const data = to === null || from === null ? null : patchPageData(from, to);
   const ahead = currentRelease();
-  // CIG's own LIVE post for the version (its release notes), linked first: the pack may hold it
-  // as one run of text, which the list below folds away with the other linked posts.
-  const release = ahead?.notes.find(
-    (n) =>
-      n.version === ahead.version &&
-      n.channel === "LIVE" &&
-      n.kind !== "announcement",
-  );
+  // CIG's release notes for the version (else RSI's official notes), linked first: the pack may
+  // hold them as one run of text, which the list below folds away with the other linked posts.
+  const release = ahead === null ? null : releaseNotesOf(ahead);
   return (
     <Site
       current="patches"
@@ -57,20 +57,23 @@ export default function PatchesPage() {
               published this build yet; the daily refresh adds them the morning
               after it does, and this page then compares {ahead.version} with{" "}
               {to.version}.
-              {release === undefined ? null : (
+              {release === null ? null : (
                 <>
                   {" "}
                   CIG&apos;s{" "}
                   <TextLink href={release.url} external>
-                    release notes for {ahead.version}
+                    {release.kind === "official"
+                      ? "patch notes"
+                      : "release notes"}{" "}
+                    for {ahead.version}
                   </TextLink>{" "}
-                  say what it brings;
+                  say what it brings.
                 </>
               )}{" "}
-              {release === undefined ? "Its" : "its"} notes from the PTU and RSI
-              follow.
+              CIG&apos;s posts on it follow.
             </p>
-            <NotesList notes={ahead.notes} />
+            {/* Folded, so the comparison on record is not pushed far down the page. */}
+            <NotesList notes={ahead.notes} openFirst={false} />
           </Section>
         )}
         {data === null || to === null || from === null ? (
@@ -85,7 +88,7 @@ export default function PatchesPage() {
         ) : (
           <Section
             id="on-record"
-            title={`Before it: ${to.version} against ${from.version}`}
+            title={`Before it: ${buildLabel(to, from)} against ${buildLabel(from, to)}`}
             meta="The latest figures on record"
           >
             <PatchView

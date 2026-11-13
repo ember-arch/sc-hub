@@ -241,8 +241,23 @@ describe("offerFromJsonLd", () => {
       price_usd: 650,
       available: true,
     });
-    // No MSRP: one price when the lowest and highest agree, and a halt when they do not.
-    const bare: Record<string, unknown> = { ...orion };
+    // The standalone offer's own state: sold out while the upgrade stays on sale.
+    const [standalone, upgrade] = orion.offers;
+    expect(
+      offerFromJsonLd(
+        page({
+          ...orion,
+          offers: [
+            { ...standalone, availability: "https://schema.org/SoldOut" },
+            upgrade,
+          ],
+        }),
+      ),
+    ).toMatchObject({ price_usd: 650, available: false });
+    // No single standalone offer: the MSRP, else one price when the lowest and highest agree,
+    // else a halt.
+    const bare: Record<string, unknown> = { ...orion, offers: [upgrade] };
+    expect(offerFromJsonLd(page(bare))?.price_usd).toBe(650);
     delete bare["priceSpecification"];
     expect(offerFromJsonLd(page(bare))?.price_usd).toBe(650);
     expect(() =>

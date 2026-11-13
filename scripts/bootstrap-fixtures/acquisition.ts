@@ -243,8 +243,10 @@ const LdPrice = z.union([z.string(), z.number()]);
 
 /**
  * Several offers for one ship: during a sale (IAE 2956, 13 November 2026) RSI lists the
- * standalone ship and its upgrade together. The ship's price is the aggregate's MSRP, or its one
- * price when the lowest and highest agree; anything else halts.
+ * standalone ship and its upgrade together. The ship's price and availability are those of its one
+ * standalone offer (`/Standalone-Ships/`), which is what a pledge buys and can sell out while the
+ * upgrade stays on sale. With no single standalone offer, the aggregate's MSRP, or its one price
+ * when the lowest and highest agree, with the aggregate's availability; anything else halts.
  */
 const LdAggregateOffer = z
   .object({
@@ -261,6 +263,7 @@ const LdAggregateOffer = z
       })
       .loose()
       .optional(),
+    offers: z.array(z.unknown()).optional(),
   })
   .loose();
 
@@ -271,6 +274,17 @@ function priceOf(offers: unknown): { price: unknown; availability: string } {
     return { price: offer.price, availability: offer.availability };
   }
   const agg = LdAggregateOffer.parse(offers);
+  const standalone = (agg.offers ?? [])
+    .map((o) => LdOffer.safeParse(o))
+    .flatMap((o) => (o.success ? [o.data] : []))
+    .filter((o) =>
+      /\/pledge\/Standalone-Ships\//i.test(String(o["url"] ?? "")),
+    );
+  if (standalone.length === 1)
+    return {
+      price: standalone[0]!.price,
+      availability: standalone[0]!.availability,
+    };
   const spec = agg.priceSpecification;
   const msrp =
     spec !== undefined && (spec.priceType ?? "").endsWith("/MSRP")

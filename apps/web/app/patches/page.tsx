@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { EmptyState, TextLink } from "ui";
-import { currentRelease, patchPageData } from "../../lib/patch-page";
+import { patchPageData, patchRelease } from "../../lib/patch-page";
 import {
   buildLabel,
   latestLive,
@@ -28,7 +28,7 @@ export default function PatchesPage() {
   const to = latestLive();
   const from = to === null ? null : previousOf(to);
   const data = to === null || from === null ? null : patchPageData(from, to);
-  const ahead = currentRelease();
+  const ahead = patchRelease();
   // CIG's release notes for the version (else RSI's official notes), linked first: the pack may
   // hold them as one run of text, which the list below folds away with the other linked posts.
   const release = ahead === null ? null : releaseNotesOf(ahead);

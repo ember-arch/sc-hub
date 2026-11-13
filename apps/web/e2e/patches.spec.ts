@@ -45,18 +45,10 @@ test.describe("the patch pages", () => {
     const headings = await page
       .getByRole("heading", { level: 2 })
       .allTextContents();
-    // A version CIG released ahead of its figures leads, and the comparison on record stands
-    // under its own heading (ADR-049, amended); the comparison's sections follow either way.
+    // A version CIG released ahead of its figures leads in one line (ADR-049, amended); the
+    // comparison's sections follow straight after either way.
     const ahead = /^\d+\.\d+\.\d+ is live$/.exec(headings[0] ?? "");
-    if (ahead !== null) {
-      // Against a hotfix of the same version the labels carry the build numbers too.
-      expect(headings[1]).toMatch(
-        new RegExp(
-          `^Before it: ${version(newest!).replace(/\./g, "\\.")}( \\(\\d+\\))? against `,
-        ),
-      );
-    }
-    expect(headings.slice(ahead === null ? 0 : 2)).toEqual([
+    expect(headings.slice(ahead === null ? 0 : 1)).toEqual([
       "Ships and vehicles",
       "Weapons and parts",
       "Crafting",
@@ -311,6 +303,8 @@ test("a version released ahead of its figures leads the latest patch, and the st
   await expect(
     page.getByRole("link", { name: `Latest ${version}` }),
   ).toBeVisible();
-  // The comparison on record stands under it, under its own heading.
-  await expect(page.locator("section#on-record")).toHaveCount(1);
+  // One line, not a list of every post that led to the release (the owner, 2026-11-13); the
+  // comparison on record follows at once.
+  await expect(released.locator("details")).toHaveCount(0);
+  await expect(page.locator("[data-comparison]")).toHaveCount(1);
 });

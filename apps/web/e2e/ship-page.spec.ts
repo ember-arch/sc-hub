@@ -12,6 +12,7 @@ interface VehicleRow {
   class_name: string;
   slug: string;
   name: string;
+  status: string;
 }
 interface StatsRow {
   class_name: string;
@@ -262,26 +263,42 @@ test("Acquisition shows pledge and in-game prices with their sources", async ({
     shops.some((s) => s.class_name === v.class_name && s.kind === "purchase"),
   );
   const odin = offers.find((o) => o.slug === "odin");
-  if (sold === undefined || odin === undefined)
-    throw new Error(
-      "fixtures/acquisition needs a ship sold in the game and the Odin",
+  // Shop prices are UEX Corp's reports through the wiki, for the pack's build: a new build has
+  // none until the wiki imports them (4.10.3, on 13 November 2026), and a flying ship then says
+  // so. Pledge prices are RSI's own and follow at once.
+  const ship =
+    sold ??
+    vehicles.find(
+      (v) =>
+        v.status === "flight_ready" && offers.some((o) => o.slug === v.slug),
     );
-  const lowest = Math.min(
-    ...shops
-      .filter((s) => s.class_name === sold.class_name && s.kind === "purchase")
-      .map((s) => s.price_auec),
-  );
-  await page.goto(`/ships/${sold.slug}`);
+  if (ship === undefined || odin === undefined)
+    throw new Error(
+      "fixtures/acquisition needs a flying ship with a pledge price and the Odin",
+    );
+  await page.goto(`/ships/${ship.slug}`);
   const acq = page.locator("#acquisition");
-  await expect(acq).toContainText(
-    `From ${lowest.toLocaleString("en-US")} aUEC`,
-  );
-  await expect(
-    acq.getByRole("table", { name: /In-game shop terminals/ }),
-  ).toBeVisible();
+  if (sold !== undefined) {
+    const lowest = Math.min(
+      ...shops
+        .filter(
+          (s) => s.class_name === sold.class_name && s.kind === "purchase",
+        )
+        .map((s) => s.price_auec),
+    );
+    await expect(acq).toContainText(
+      `From ${lowest.toLocaleString("en-US")} aUEC`,
+    );
+    await expect(
+      acq.getByRole("table", { name: /In-game shop terminals/ }),
+    ).toBeVisible();
+    await expect(acq).toContainText("may not reflect live servers");
+    await expect(page.locator("#sources")).toContainText("UEX Corp");
+  } else {
+    await expect(acq).toContainText("Buy in the game");
+    await expect(acq).toContainText("Not reported to UEX");
+  }
   await expect(acq.getByRole("table", { name: /Pledge store/ })).toBeVisible();
-  await expect(acq).toContainText("may not reflect live servers");
-  await expect(page.locator("#sources")).toContainText("UEX Corp");
   await expect(page.locator("#sources")).toContainText("RSI pledge store");
 
   // A concept ship: RSI's own pledge page price, and no shops.
@@ -299,7 +316,7 @@ test("Acquisition shows pledge and in-game prices with their sources", async ({
     page.getByRole("columnheader", { name: /Pledge/ }),
   ).toBeVisible();
   await expect(page.getByText(/may not reflect live servers/)).toBeVisible();
-  await page.goto(`/compare?ships=${sold.slug}`);
+  await page.goto(`/compare?ships=${ship.slug}`);
   await expect(page.getByRole("main")).toContainText("Pledge status");
   // The front shows the first entries A to Z with their headline prices (ADR-020).
   await page.goto("/");

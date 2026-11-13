@@ -16,6 +16,8 @@ import {
   parseCode,
   previousOf,
   ptuInTesting,
+  releaseNotesOf,
+  releasedAhead,
   shipMentions,
   totals,
 } from "../lib/patches";
@@ -606,5 +608,88 @@ describe("ptuInTesting", () => {
 
   it("names nothing when every PTU post is at or behind LIVE", () => {
     expect(ptuInTesting([post("4.10.2", "PTU")], "4.10.2")).toEqual([]);
+  });
+});
+
+describe("releasedAhead", () => {
+  // A version CIG has put out on LIVE before the wiki publishes its figures (ADR-049, amended).
+  const post = (
+    version: string,
+    channel: "LIVE" | "PTU",
+    publishedAt: string,
+    kind: PatchNote["kind"] = channel === "LIVE" ? "live" : "ptu",
+  ) =>
+    ({
+      version,
+      channel,
+      kind,
+      publishedAt,
+      title: `Star Citizen Alpha ${version} ${channel} Notes`,
+    }) as PatchNote;
+
+  it("names the newest version CIG released on LIVE ahead of the figures, with its notes", () => {
+    const notes = [
+      post("4.10.3", "LIVE", "2026-11-12T17:17:00Z", "announcement"),
+      post("4.10.3", "LIVE", "2026-11-12T15:17:47Z"),
+      post("4.10.3", "PTU", "2026-11-10T21:32:16Z"),
+      post("4.10.2", "LIVE", "2026-10-09T00:00:00Z"),
+    ];
+    const ahead = releasedAhead(notes, "4.10.2");
+    expect(ahead?.version).toBe("4.10.3");
+    // Released when its release notes went up, not when RSI announced it.
+    expect(ahead?.releasedAt).toBe("2026-11-12T15:17:47Z");
+    expect(ahead?.notes.map((n) => n.kind)).toEqual([
+      "announcement",
+      "live",
+      "ptu",
+    ]);
+  });
+
+  it("is nothing while the figures on record are as new as CIG's latest release", () => {
+    const notes = [post("4.10.3", "LIVE", "2026-11-12T15:17:47Z")];
+    expect(releasedAhead(notes, "4.10.3")).toBeNull();
+    expect(releasedAhead(notes, null)).toBeNull();
+  });
+
+  it("takes neither an announcement nor a PTU as a release", () => {
+    const notes = [
+      post("4.11.0", "LIVE", "2026-12-01T17:00:00Z", "announcement"),
+      post("4.11.0", "PTU", "2026-11-28T17:00:00Z"),
+    ];
+    expect(releasedAhead(notes, "4.10.3")).toBeNull();
+  });
+
+  it("takes the newest of two releases ahead, a hotfix counting as one", () => {
+    const notes = [
+      post("4.10.4", "LIVE", "2026-11-20T15:00:00Z", "hotfix"),
+      post("4.10.3", "LIVE", "2026-11-12T15:17:47Z"),
+    ];
+    expect(releasedAhead(notes, "4.10.2")?.version).toBe("4.10.4");
+  });
+
+  it("dates a release by its release notes, not a Hotfix Central thread CIG renamed to it", () => {
+    // Hotfix Central is one long-lived thread, renamed for each patch: its first post is months old.
+    const notes = [
+      post("4.10.3", "LIVE", "2026-11-12T15:17:47Z"),
+      post("4.10.3", "LIVE", "2026-08-27T15:50:15Z", "hotfix"),
+    ];
+    expect(releasedAhead(notes, "4.10.2")?.releasedAt).toBe(
+      "2026-11-12T15:17:47Z",
+    );
+    // With only a hotfix post, it is what dates the release.
+    expect(releasedAhead([notes[1]!], "4.10.2")?.releasedAt).toBe(
+      "2026-08-27T15:50:15Z",
+    );
+  });
+
+  it("links the release notes first, RSI's official notes next, never a hotfix post", () => {
+    const hotfix = post("4.10.3", "LIVE", "2026-11-14T10:00:00Z", "hotfix");
+    const official = post("4.10.3", "LIVE", "2026-11-12T16:00:00Z", "official");
+    const live = post("4.10.3", "LIVE", "2026-11-12T15:17:47Z");
+    const of = (list: PatchNote[]) =>
+      releaseNotesOf(releasedAhead(list, "4.10.2")!)?.kind ?? null;
+    expect(of([hotfix, official, live])).toBe("live");
+    expect(of([hotfix, official])).toBe("official");
+    expect(of([hotfix])).toBeNull();
   });
 });

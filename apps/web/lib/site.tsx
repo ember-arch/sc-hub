@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { type NavSection, PageShell } from "ui";
 import { repo } from "./data";
+import { currentRelease } from "./patch-page";
 import { SEARCH_INDEX_PATH } from "./search-index";
 
 export interface SiteProps {
@@ -16,10 +17,19 @@ export interface SiteProps {
  */
 export function Site({ children, current, stage }: SiteProps) {
   const r = repo();
+  // A LIVE version CIG has released ahead of the figures on record (ADR-049, amended): the strip
+  // names it beside the build the figures are from.
+  const ahead = currentRelease();
+  const versions =
+    ahead === null
+      ? r.versions
+      : r.versions.map((v) =>
+          v.channel === "LIVE" ? { ...v, released: ahead.version } : v,
+        );
   return (
     <PageShell
       searchIndexUrl={SEARCH_INDEX_PATH}
-      versions={r.versions}
+      versions={versions}
       current={current}
       stage={stage}
       wikiCredit={r.credit !== null}

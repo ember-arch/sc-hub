@@ -204,6 +204,8 @@ test.describe("the dev tracker with Spectrum on", () => {
     // The home with the developers' section drawn (ADR-038).
     { name: "home-populated", path: "/" },
     { name: "news-dev-populated", path: "/news/dev" },
+    // The latest patch with CIG's release notes for a version ahead of its figures (ADR-049, amended).
+    { name: "patches-populated", path: "/patches" },
     {
       name: "news-dev-author",
       path:

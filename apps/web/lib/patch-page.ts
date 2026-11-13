@@ -9,11 +9,29 @@ import {
   compareBuilds,
   latestLive,
   notesBetween,
+  parseCode,
   ptuInTesting,
   previousOf,
+  type ReleasedAhead,
+  releasedAhead,
   shipMentions,
   totals,
 } from "./patches";
+
+/**
+ * The LIVE version CIG has released ahead of the figures on record (`releasedAhead`), or null.
+ * Measured against the pack's own LIVE build, which every page has (the patch snapshots are
+ * traced into the patch pages' functions only, and the footer is on every page). CIG's release
+ * notes are Spectrum posts, shown only with the module on (ADR-027); with it off, only RSI's own
+ * patch notes on the Comm-Link can name a release.
+ */
+export function currentRelease(): ReleasedAhead | null {
+  const live = repo().versions.find((v) => v.channel === "LIVE")?.version;
+  return releasedAhead(
+    allPatchNotes(),
+    live === undefined ? null : (parseCode(live)?.version ?? null),
+  );
+}
 
 /**
  * What a patch page needs, put together from the snapshots, the pack and the news pack

@@ -1097,7 +1097,14 @@ function Note({
   );
 }
 
-export function NotesList({ notes }: { readonly notes: readonly PatchNote[] }) {
+export function NotesList({
+  notes,
+  openFirst = true,
+}: {
+  readonly notes: readonly PatchNote[];
+  /** Open the first post laid out here; off where the list leads into a comparison below it. */
+  readonly openFirst?: boolean;
+}) {
   if (notes.length === 0) {
     return (
       <EmptyState>
@@ -1119,7 +1126,7 @@ export function NotesList({ notes }: { readonly notes: readonly PatchNote[] }) {
     (n) => !n.flat || n.kind === "official" || n.kind === "announcement",
   );
   const linked = notes.filter((n) => !shown.includes(n));
-  const firstOpen = shown.findIndex((n) => !n.flat);
+  const firstOpen = openFirst ? shown.findIndex((n) => !n.flat) : -1;
   return (
     <div className="flex flex-col">
       {shown.map((n, i) => (

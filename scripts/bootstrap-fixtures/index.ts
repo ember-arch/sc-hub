@@ -34,6 +34,7 @@ import {
   mapVehicle,
   mapVehicleStats,
 } from "./map.js";
+import { type ConceptRow, conceptSlugs } from "./concepts.js";
 import { linkEditions } from "./editions.js";
 import {
   stockListPath,
@@ -71,6 +72,14 @@ const startedAt = Date.now();
 const USER_AGENT = userAgent("bootstrap");
 
 type PackRows = Partial<Record<Entity, Record<string, unknown>[]>>;
+
+/** The concept pages the site has published (ADR-022), whose slugs a joining ship keeps. */
+function publishedConcepts(): ConceptRow[] {
+  const file = join(repoRoot, "fixtures", "ship-matrix", "ConceptShip.json");
+  return existsSync(file)
+    ? (JSON.parse(readFileSync(file, "utf8")) as ConceptRow[])
+    : [];
+}
 
 /**
  * The slugs the pack on disk has published, whatever its build: a slug never changes after first
@@ -279,9 +288,17 @@ async function main(): Promise<void> {
             slugify(cls),
           ];
     };
+  // A concept ship that joins the pack keeps its concept page's slug (concepts.ts).
+  const publishedSlugs = slugsOf(previous?.Vehicle ?? publishedRows("Vehicle"));
+  for (const [cls, slug] of conceptSlugs(
+    publishedConcepts(),
+    vehicleNames,
+    publishedSlugs,
+  ))
+    publishedSlugs.set(cls, slug);
   const vehicleSlugs = pinSlugs(
     assignSlugs(vehicleNames),
-    slugsOf(previous?.Vehicle ?? publishedRows("Vehicle")),
+    publishedSlugs,
     fallbacks(vehicleNames),
   );
 

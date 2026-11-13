@@ -4,10 +4,11 @@
  * for `.github/workflows/refresh.yml` to act on. It adds no fetcher of its own; each one keeps
  * its rules, halts on an unknown shape and writes nothing when it does.
  *
- *   pnpm --filter schema build && pnpm exec tsx scripts/refresh/index.ts [--force-rebuild] [--only <id,…>] [--out <dir>]
+ *   pnpm --filter schema build && pnpm exec tsx scripts/refresh/index.ts [--force-rebuild] [--only <id,…>] [--skip <id,…>] [--out <dir>]
  *
  * `--only patches` runs that step alone: the job runs it first and lands a new build's patch
- * comparison before the long rebuild (ADR-059); the full pass after it finds the build on file.
+ * comparison before the long rebuild (ADR-059), then runs the rest with `--skip patches`, so a
+ * run still fetches one build's snapshot (ADR-049).
  * With WIKI_RUN_CACHE_DIR set, the steps share their wiki reads (scripts/bootstrap-fixtures/fetch.ts):
  * the build the run reads is passed on as WIKI_RUN_BUILD, so a read naming it shares a key.
  *
@@ -66,6 +67,11 @@ const only =
   onlyFlag >= 0 && args[onlyFlag + 1] !== undefined
     ? args[onlyFlag + 1]!.split(",").filter((id) => id !== "")
     : null;
+const skipFlag = args.indexOf("--skip");
+const skip =
+  skipFlag >= 0 && args[skipFlag + 1] !== undefined
+    ? args[skipFlag + 1]!.split(",").filter((id) => id !== "")
+    : [];
 const outFlag = args.indexOf("--out");
 const outDir =
   outFlag >= 0 && args[outFlag + 1] !== undefined
@@ -274,19 +280,12 @@ async function patchesGate(): Promise<{ run: true; note?: string } | string> {
   });
   const versions = (
     (await client.getJson("/api/game-versions?page[size]=100")) as {
-      data?: { code?: unknown; is_default?: unknown }[];
+      data?: { code?: unknown }[];
     }
   ).data;
   const listed = versions
     ?.map((v) => v.code)
     .filter((c): c is string => typeof c === "string");
-  // A patches-only pass reads no catalog gate: the default build comes from the same list.
-  const fallback = versions?.find((v) => v.is_default === true)?.code;
-  if (
-    process.env["WIKI_RUN_BUILD"] === undefined &&
-    typeof fallback === "string"
-  )
-    process.env["WIKI_RUN_BUILD"] = fallback;
   if (listed === undefined || listed.length === 0)
     return "the Wiki API listed no builds";
   const dir = join(repoRoot, "fixtures", "patches");
@@ -301,15 +300,20 @@ async function patchesGate(): Promise<{ run: true; note?: string } | string> {
   const missing = listed
     .filter((c) => !filed.has(c))
     .sort((a, b) => buildNumber(a) - buildNumber(b));
-  return missing[0] === undefined
-    ? "every build the Wiki API lists is on file"
-    : {
-        run: true,
-        note:
-          missing.length === 1
-            ? missing[0]
-            : `${missing[0]} (${missing.length - 1} more waiting)`,
-      };
+  if (missing[0] === undefined)
+    return "every build the Wiki API lists is on file";
+  // A patches-only pass reads no catalog gate: one request names the build the run reads.
+  if (process.env["WIKI_RUN_BUILD"] === undefined)
+    process.env["WIKI_RUN_BUILD"] = WikiGameVersionResponse.parse(
+      await client.getJson("/api/game-versions/default"),
+    ).data.code;
+  return {
+    run: true,
+    note:
+      missing.length === 1
+        ? missing[0]
+        : `${missing[0]} (${missing.length - 1} more waiting)`,
+  };
 }
 
 const STEPS: readonly Step[] = [
@@ -468,7 +472,7 @@ async function runStep(
 
 const outcomes: Outcome[] = [];
 for (const step of STEPS)
-  if (only === null || only.includes(step.id))
+  if ((only === null || only.includes(step.id)) && !skip.includes(step.id))
     outcomes.push(await runStep(step, outcomes));
 
 const runUrl = process.env["REFRESH_RUN_URL"] ?? null;

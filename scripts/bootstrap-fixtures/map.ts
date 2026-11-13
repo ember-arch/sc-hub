@@ -198,6 +198,10 @@ export const VEHICLE_RAW_DROP: ReadonlySet<string> = new Set([
 
 /** Keys dropped from an item's `raw` remainder. */
 export const ITEM_RAW_DROP: ReadonlySet<string> = new Set([
+  // The game's entity tags: read by no page, and the item list and a single read give them
+  // differently, so a part's record would depend on how it was read (ADR-059).
+  "entity_tags",
+  "entity_tag_map",
   "uex_prices",
   "type_web_url",
   "shops",

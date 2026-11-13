@@ -35,7 +35,12 @@ import {
   mapVehicleStats,
 } from "./map.js";
 import { linkEditions } from "./editions.js";
-import { stockListPath, stockTypesOf } from "./stock.js";
+import {
+  stockListPath,
+  stockPage,
+  stockTypesOf,
+  takeFromList,
+} from "./stock.js";
 import {
   CATALOG_TYPES,
   ShipList,
@@ -234,6 +239,16 @@ async function main(): Promise<void> {
   // variants (ADR-022). The data model needs a status, so they are counted and left out.
   const unlisted = fetched.filter((v) => v.production_status == null);
   const vehicles = fetched.filter((v) => v.production_status != null);
+  // A build the wiki is still importing lists fewer ships, and its pack would freeze half a build:
+  // the early start (ADR-059) reads a build within half an hour of the wiki serving it. The patch
+  // snapshots' rule (ADR-049): under nine tenths of the ships on file halts, to be tried again.
+  const onFile = publishedRows("Vehicle").length;
+  if (onFile > 0 && vehicles.length < onFile * 0.9) {
+    throw new MapError(
+      `the wiki lists ${vehicles.length} ships for ${version}, under nine tenths of the ${onFile} on file: it is likely still importing the build; the next run tries again`,
+      { listed: vehicles.length, on_file: onFile },
+    );
+  }
   for (const v of unlisted) vehicleRaws.delete(v.class_name);
   if (unlisted.length > 0) {
     log({
@@ -330,21 +345,18 @@ async function main(): Promise<void> {
   const sortedStock = [...stockItems].sort(([a], [b]) => a.localeCompare(b));
   const stockTypes = stockTypesOf(vehicles, stockItems);
   const listed = new Map<string, Record<string, unknown>>();
+  let refused = 0;
   for (let page = 1; stockTypes.length > 0; page += 1) {
-    const json = await get(stockListPath(stockTypes, page));
-    const list = WikiItemListResponse.parse(json);
-    for (const record of (json as { data: Record<string, unknown>[] }).data)
-      if (typeof record["uuid"] === "string")
-        listed.set(record["uuid"], record);
-    if (page >= list.meta.last_page) break;
+    const list = stockPage(await get(stockListPath(stockTypes, page)));
+    refused += list.refused;
+    for (const record of list.records)
+      listed.set(String(record["uuid"]), record);
+    if (page >= list.lastPage) break;
   }
   let readAlone = 0;
   for (const [className, uuid] of sortedStock) {
     const record = listed.get(uuid);
-    const fromList =
-      record !== undefined &&
-      record["class_name"] === className &&
-      record["version"] === version;
+    const fromList = takeFromList(record, className, version);
     if (!fromList) readAlone += 1;
     const json = fromList
       ? { data: record }
@@ -369,6 +381,7 @@ async function main(): Promise<void> {
     count: items.length,
     types: stockTypes.length,
     listed: listed.size,
+    refused,
     read_alone: readAlone,
   });
 

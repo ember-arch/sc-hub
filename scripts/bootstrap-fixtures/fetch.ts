@@ -7,7 +7,10 @@
  * catalog, the descriptions and the prices each ask for every ship (ADR-059). With
  * `WIKI_RUN_CACHE_DIR` set (the refresh job sets it under RUNNER_TEMP) a ship, part or blueprint
  * read is kept on disk for the rest of the run and a later step's read of it costs no request.
- * Unset, as on a developer's machine, nothing is kept.
+ * `WIKI_RUN_BUILD`, the build the run read as the wiki's default, is named in every such read
+ * that names none, so the whole run reads one build even if the wiki moves its default meanwhile,
+ * and a kept read is only ever served to a read of the same build. Only reads that name their
+ * build are kept. Unset, as on a developer's machine, nothing is kept or changed.
  */
 
 import { createHash } from "node:crypto";
@@ -51,27 +54,35 @@ export interface WikiClient {
   readonly cached: number;
 }
 
+const KEPT = /^\/api\/(vehicles|items|blueprints)(\/|$)/;
+
 /**
- * The cache key of a read, or null for one that is never kept: only ships, parts and blueprints
- * are, so a check of the wiki's builds always asks. Two spellings of one read share a key: a
- * ship's record is the same with or without `include=hardpoints` (the plain read carries its
- * ports too), and `version=` naming the build the run read is the default the wiki serves.
+ * The read as the run sends it: a ship, part or blueprint read that names no build names the
+ * run's (`version=`, which every one of those endpoints takes). Anything else, or with no run
+ * build, is sent as written.
  */
-export function cacheKey(path: string, build: string | null): string | null {
+export function pinBuild(path: string, build: string | null): string {
+  if (build === null) return path;
   const url = new URL(path, "https://wiki.invalid");
-  if (!/^\/api\/(vehicles|items|blueprints)(\/|$)/.test(url.pathname))
-    return null;
+  if (!KEPT.test(url.pathname) || url.searchParams.has("version")) return path;
+  return `${path}${path.includes("?") ? "&" : "?"}version=${build}`;
+}
+
+/**
+ * The cache key of a read, or null for one that is never kept: only ship, part and blueprint
+ * reads that name their build are, so a check of the wiki's builds always asks and no read is
+ * served across builds. A ship's record is the same with or without `include=hardpoints` (the
+ * plain read carries its ports too), so the two share a key; the order of the parameters does
+ * not matter.
+ */
+export function cacheKey(path: string): string | null {
+  const url = new URL(path, "https://wiki.invalid");
+  if (!KEPT.test(url.pathname) || !url.searchParams.has("version")) return null;
   const ship = /^\/api\/vehicles\/[^/]+$/.test(url.pathname);
   const params = [...url.searchParams.entries()]
-    .filter(
-      ([k, v]) =>
-        !(k === "version" && build !== null && v === build) &&
-        !(ship && k === "include" && v === "hardpoints"),
-    )
+    .filter(([k, v]) => !(ship && k === "include" && v === "hardpoints"))
     .sort(([a, av], [b, bv]) => a.localeCompare(b) || av.localeCompare(bv));
-  return params.length === 0
-    ? url.pathname
-    : `${url.pathname}?${params.map(([k, v]) => `${k}=${v}`).join("&")}`;
+  return `${url.pathname}?${params.map(([k, v]) => `${k}=${v}`).join("&")}`;
 }
 
 export class FetchError extends Error {
@@ -108,7 +119,7 @@ export function createWikiClient(options: WikiClientOptions): WikiClient {
     options.build === undefined ? env("WIKI_RUN_BUILD") : options.build;
   const cacheFile = (path: string): string | null => {
     if (cacheDir === null) return null;
-    const key = cacheKey(path, build);
+    const key = cacheKey(path);
     return key === null
       ? null
       : join(
@@ -185,7 +196,8 @@ export function createWikiClient(options: WikiClientOptions): WikiClient {
   }
 
   return {
-    getJson(path: string): Promise<unknown> {
+    getJson(asked: string): Promise<unknown> {
+      const path = pinBuild(asked, build);
       const file = cacheFile(path);
       if (file !== null && existsSync(file)) {
         cached += 1;

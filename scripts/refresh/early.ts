@@ -11,6 +11,7 @@
  *   pnpm exec tsx scripts/refresh/early.ts            # decide
  *   pnpm exec tsx scripts/refresh/early.ts --record <build>
  */
+import { randomUUID } from "node:crypto";
 import {
   appendFileSync,
   existsSync,
@@ -30,6 +31,7 @@ import { userAgent } from "../user-agent.js";
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(here, "..", "..");
 const STATE = join(repoRoot, "fixtures", "refresh", "early.json");
+const runId = randomUUID();
 
 export interface EarlyState {
   /** The last build the check asked the refresh for. */
@@ -86,7 +88,7 @@ function output(name: string, value: string): void {
 
 function say(event: Record<string, unknown>): void {
   process.stderr.write(
-    `${JSON.stringify({ job: "refresh-early", ...event })}\n`,
+    `${JSON.stringify({ job: "refresh-early", run_id: runId, ...event })}\n`,
   );
 }
 

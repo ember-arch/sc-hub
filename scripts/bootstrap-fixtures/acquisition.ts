@@ -239,6 +239,57 @@ const LdOffer = z
   })
   .loose();
 
+const LdPrice = z.union([z.string(), z.number()]);
+
+/**
+ * Several offers for one ship: during a sale (IAE 2956, 13 November 2026) RSI lists the
+ * standalone ship and its upgrade together. The ship's price is the aggregate's MSRP, or its one
+ * price when the lowest and highest agree; anything else halts.
+ */
+const LdAggregateOffer = z
+  .object({
+    "@type": z.literal("AggregateOffer"),
+    priceCurrency: z.literal("USD"),
+    availability: z.string(),
+    lowPrice: LdPrice.optional(),
+    highPrice: LdPrice.optional(),
+    priceSpecification: z
+      .object({
+        priceType: z.string().optional(),
+        price: LdPrice,
+        priceCurrency: z.literal("USD"),
+      })
+      .loose()
+      .optional(),
+  })
+  .loose();
+
+function priceOf(offers: unknown): { price: unknown; availability: string } {
+  const type = (offers as { "@type"?: unknown } | null)?.["@type"];
+  if (type !== "AggregateOffer") {
+    const offer = LdOffer.parse(offers);
+    return { price: offer.price, availability: offer.availability };
+  }
+  const agg = LdAggregateOffer.parse(offers);
+  const spec = agg.priceSpecification;
+  const msrp =
+    spec !== undefined && (spec.priceType ?? "").endsWith("/MSRP")
+      ? spec.price
+      : undefined;
+  const one =
+    agg.lowPrice !== undefined &&
+    agg.highPrice !== undefined &&
+    Number(agg.lowPrice) === Number(agg.highPrice)
+      ? agg.lowPrice
+      : undefined;
+  const price = msrp ?? one;
+  if (price === undefined)
+    throw new Error(
+      `an AggregateOffer with no MSRP and prices from ${String(agg.lowPrice)} to ${String(agg.highPrice)}`,
+    );
+  return { price, availability: agg.availability };
+}
+
 /**
  * The schema.org Offer RSI embeds in a pledge page's JSON-LD. Returns null when the page carries
  * no Product; throws on an offer shape or availability this code does not know.
@@ -257,7 +308,7 @@ export function offerFromJsonLd(
       const record = node as Record<string, unknown>;
       if (record["@type"] !== "Product" || record["offers"] === undefined)
         continue;
-      const offer = LdOffer.parse(record["offers"]);
+      const offer = priceOf(record["offers"]);
       const state = offer.availability.replace(/^https?:\/\/schema\.org\//, "");
       const available = AVAILABILITY[state];
       if (available === undefined) {

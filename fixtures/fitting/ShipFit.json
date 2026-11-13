@@ -9,7 +9,7 @@
     "last_update": "2026-11-12",
     "consent": "granted"
   },
-  "fetched_at": "2026-11-13T17:55:51.708Z",
+  "fetched_at": "2026-11-13T18:05:22.431Z",
   "legend": {
     "verdicts": {
       "fits": "Good Fit",
@@ -1623,7 +1623,9 @@
       "maker_label": "Anvil",
       "row": 76,
       "group": "ground",
-      "class_names": []
+      "class_names": [
+        "ANVL_Ballista"
+      ]
     },
     {
       "id": 72,
@@ -1631,7 +1633,9 @@
       "maker_label": "Anvil",
       "row": 77,
       "group": "ground",
-      "class_names": []
+      "class_names": [
+        "ANVL_Centurion"
+      ]
     },
     {
       "id": 73,
@@ -1639,7 +1643,9 @@
       "maker_label": "Anvil",
       "row": 78,
       "group": "ground",
-      "class_names": []
+      "class_names": [
+        "ANVL_Spartan"
+      ]
     },
     {
       "id": 74,

@@ -39,6 +39,7 @@
   "ODIN": [],
   "PIONEER": [],
   "KRAKEN": [],
+  "KRAKEN / PRIVATEER": [],
   "BENGAL": [],
   "C8 PIsces": ["C8 Pisces"],
   "F7A/C-Variants": ["F7A *", "F7C *"],
@@ -48,6 +49,9 @@
     "F8C Lightning Executive Edition"
   ],
   "Ares": ["Ares Star Fighter Inferno", "Ares Star Fighter Ion"],
+  "Ballista": ["HM6 Ballista"],
+  "Centurion": ["HM6 Centurion"],
+  "Spartan": ["HM6 Spartan"],
   "A1/C1": ["A1 Spirit", "C1 Spirit"],
   "Bucaneer": ["Buccaneer"],
   "Marauder": [],

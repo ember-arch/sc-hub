@@ -69,13 +69,17 @@ describe("cargoGridsOf", () => {
   });
 
   it("keeps what the record does not say as not said: open to space, the largest box", () => {
-    const hammerhead = cargoGridsOf(stats("AEGS_Hammerhead").raw)!;
-    expect(hammerhead.length).toBeGreaterThan(0);
-    expect(hammerhead.every((g) => g.external === null)).toBe(true);
-    expect(hammerhead.every((g) => g.maxBox === null)).toBe(true);
+    // A record of the kind the old Hammerhead's was until 4.10.3, which retired that class name:
+    // its grid says neither whether it is open to space nor its largest box.
+    const silent = cargoGridsOf({
+      cargo_grids: [{ width: 10, height: 10, length: 10, scu: 512 }],
+    })!;
+    expect(silent.length).toBeGreaterThan(0);
+    expect(silent.every((g) => g.external === null)).toBe(true);
+    expect(silent.every((g) => g.maxBox === null)).toBe(true);
     // Such a grid admits every size, and the page says the record names no largest box.
-    expect(gridTakes(hammerhead[0]!, box(32))).toBe(true);
-    expect(largestBox(hammerhead)).toBeNull();
+    expect(gridTakes(silent[0]!, box(32))).toBe(true);
+    expect(largestBox(silent)).toBeNull();
     expect(
       cargoGridsOf({
         cargo_grids: [

@@ -59,7 +59,8 @@ test("a press on a video opens the player in place; Escape closes it and unloads
   // Nothing of YouTube's player is in the page until a reader asks for it.
   await expect(page.locator("iframe")).toHaveCount(0);
   const card = page.locator("article[data-video]").first();
-  const title = (await card.locator("h3 a").innerText()).trim();
+  // The player is named by the video's title; a Short's card heading adds "(Short)" beside it.
+  const title = (await card.getAttribute("data-video-title")) ?? "";
   await card.locator("h3 a").click();
   const player = page.getByRole("dialog", { name: title });
   await expect(player).toBeVisible();

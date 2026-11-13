@@ -18,6 +18,18 @@ The owner opened the Avenger Stalker on `/patches` and saw a plain list of its f
 | The columns | No Change and no bar columns for a new or removed entry, and no group headings (its few headline figures would make each group one line). The table keeps to prose width from `md` | They would say "New" on every row; the note says it once |
 | Recipes | What one craft takes shows Before → After for every recipe, a dash on the side it did not exist | The same rule |
 
+## Amended 2026-11-13: a record that shares a ship’s name
+
+The game keeps variants under one name. 4.10.3 brought a “Caterpillar” record of its own (`DRAK_Caterpillar_Boarded_ShatteredBlade`) while `DRAK_Caterpillar` stayed, and retired the old Hammerhead and Constellation Andromeda and Aquila records while their reworked `_GS` records stayed. The page listed a new “Caterpillar”, and the owner read it as the ship being new (“the drake caterpillar was definitely in the prior patch”).
+
+A new or removed ship that shares its name and maker with another record in either build now:
+
+- shows its class name under its name;
+- is tagged “New variant” when its namesake was in the build before, and “Record retired” when its namesake stays;
+- has a note naming the other records (`namesakesOf` in `apps/web/lib/patches.ts`).
+
+A name of its own reads as before.
+
 ## Consequences
 
 - A figure first stated, or no longer stated, in a changed entry shows the same dash, read as "none".

@@ -28,6 +28,44 @@ import { PatchFilter } from "./patch-filter";
  * folded to a line per entry that opens on its figures, then CIG's notes for the same builds.
  */
 
+/**
+ * A new or removed ship that shares its name with another record (the game keeps variants under
+ * one name): its class name is shown and its note says which record is new or gone, so a new
+ * Caterpillar variant never reads as the Caterpillar being new (the owner, 2026-11-13).
+ */
+function sharesName(entry: EntryChange): boolean {
+  const n = entry.namesakes;
+  return n !== undefined && n.before.length + n.after.length > 0;
+}
+
+const records = (ids: readonly string[]): string =>
+  ids.length === 1
+    ? ids[0]!
+    : `${ids.slice(0, -1).join(", ")} and ${ids.at(-1)!}`;
+
+function tagOf(entry: EntryChange): string {
+  const n = entry.namesakes;
+  if (entry.status === "added")
+    return n !== undefined && n.before.length > 0 ? "New variant" : "New";
+  return n !== undefined && n.after.length > 0 ? "Record retired" : "Removed";
+}
+
+function noteOf(entry: EntryChange, from: string, to: string): string {
+  const n = entry.namesakes ?? { before: [], after: [] };
+  if (entry.status === "added") {
+    if (n.before.length > 0)
+      return `New in ${to} as a record of its own. The ${entry.name} itself was in ${from} too, as ${records(n.before)}.`;
+    if (n.after.length > 0)
+      return `New in ${to}: it was not in ${from}, so it has no before. ${to} also has ${records(n.after)} under this name.`;
+    return `New in ${to}: it was not in ${from}, so it has no before.`;
+  }
+  if (n.after.length > 0)
+    return `This record is gone in ${to}; this is how it stood in ${from}. The ${entry.name} stays in ${to} as ${records(n.after)}.`;
+  if (n.before.length > 0)
+    return `Removed in ${to}: this is how it stood in ${from}, which also had ${records(n.before)} under this name.`;
+  return `Removed in ${to}: this is how it stood in ${from}.`;
+}
+
 export const day = new Intl.DateTimeFormat("en-GB", {
   day: "numeric",
   month: "short",
@@ -620,13 +658,19 @@ function Entry({
                   data-entry-tag=""
                   className="rounded-pill bg-inset px-2 text-caption text-secondary"
                 >
-                  {entry.status === "added" ? "New" : "Removed"}
+                  {tagOf(entry)}
                 </span>
               )}
             </span>
-            {entry.detail === null ? null : (
+            {entry.detail === null && !sharesName(entry) ? null : (
               <span className="text-caption text-secondary">
                 {entry.detail}
+                {sharesName(entry) ? (
+                  <>
+                    {entry.detail === null ? null : " · "}
+                    <span className="font-mono">{entry.id}</span>
+                  </>
+                ) : null}
               </span>
             )}
           </span>
@@ -696,9 +740,7 @@ function Entry({
       <div className="flex flex-col gap-4 pb-6 pl-6">
         {changed ? null : (
           <p className="m-0 text-ui text-secondary" data-entry-note="">
-            {entry.status === "added"
-              ? `New in ${to}: it was not in ${from}, so it has no before.`
-              : `Removed in ${to}: this is how it stood in ${from}.`}
+            {noteOf(entry, from, to)}
           </p>
         )}
         {entry.figures.length === 0 ? null : (

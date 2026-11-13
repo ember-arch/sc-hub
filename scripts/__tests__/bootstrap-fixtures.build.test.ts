@@ -96,7 +96,17 @@ describe("the committed bootstrap pack", () => {
       string,
       unknown
     >;
-    expect(trimItemSample(item)).toEqual(item);
+    // Less the entity tags, dropped since this build's sample was written (ADR-059).
+    expect(trimItemSample(item)).toEqual(
+      Object.fromEntries(
+        Object.entries(item).filter(
+          ([k]) =>
+            k !== "entity_tags" &&
+            k !== "entity_tag_map" &&
+            k !== "base_variant",
+        ),
+      ),
+    );
   });
 });
 

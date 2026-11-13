@@ -23,7 +23,22 @@ import {
   partFigureLabel,
   shipFigureLabel,
 } from "./patch-labels";
-import type { PatchNote } from "./patch-notes";
+import {
+  type PatchNote,
+  type ReleasedAhead,
+  compareVersions,
+  notesBetween,
+  releaseNotesOf,
+  releasedAhead,
+} from "./patch-notes";
+
+export {
+  type ReleasedAhead,
+  compareVersions,
+  notesBetween,
+  releaseNotesOf,
+  releasedAhead,
+};
 
 /**
  * What changed between two builds (ADR-049): every ship, part and blueprint the two snapshots in
@@ -62,17 +77,6 @@ export function parseCode(
   };
 }
 
-/** Orders versions as numbers: 4.9.0 before 4.10.0. */
-export function compareVersions(a: string, b: string): number {
-  const pa = a.split(".").map(Number);
-  const pb = b.split(".").map(Number);
-  for (let i = 0; i < Math.max(pa.length, pb.length); i += 1) {
-    const d = (pa[i] ?? 0) - (pb[i] ?? 0);
-    if (d !== 0) return d;
-  }
-  return 0;
-}
-
 /**
  * The PTU posts for the version in testing now, newest first, or empty (ADR-049, ADR-046): posts
  * for a version ahead of LIVE, leaving out a version CIG has marked closed on any of its posts
@@ -107,66 +111,6 @@ export function ptuInTesting(
   return newest === undefined
     ? []
     : open.filter((n) => n.version === newest.version);
-}
-
-/** A LIVE version CIG has released ahead of the newest build whose figures are on record. */
-export interface ReleasedAhead {
-  /** "4.10.3". */
-  readonly version: string;
-  /** The first of its release notes or official notes; a hotfix post's only when there are none. */
-  readonly releasedAt: string;
-  /** CIG's posts for the versions after the LIVE build on record up to this one, newest first. */
-  readonly notes: PatchNote[];
-}
-
-/**
- * The newest version CIG has put out on LIVE ahead of the newest LIVE build on record (the
- * owner, 2026-11-12, when 4.10.3 went LIVE before the Star Citizen Wiki published its data:
- * "update it and all the corresponding patch info on the patch pages"). Released means CIG's LIVE
- * release notes, official notes or a hotfix post for it are on the pack, the same test
- * `ptuInTesting` uses; a Comm-Link announcement alone is not a release. Its figures follow when
- * the wiki publishes the build (ADR-023, ADR-049); until then the site names it and shows its
- * notes. Null when no such version, or no LIVE build is on record.
- */
-export function releasedAhead(
-  notes: readonly PatchNote[],
-  liveVersion: string | null,
-): ReleasedAhead | null {
-  if (liveVersion === null) return null;
-  const releases = notes.filter(
-    (n) =>
-      n.channel === "LIVE" &&
-      n.kind !== "announcement" &&
-      compareVersions(n.version, liveVersion) > 0,
-  );
-  const newest = releases
-    .map((n) => n.version)
-    .sort((a, b) => compareVersions(b, a))[0];
-  if (newest === undefined) return null;
-  // Dated by its release notes or official notes; a hotfix post only when there are none, since
-  // Hotfix Central is one long-lived thread CIG renames each patch, published months before.
-  const own = releases.filter((n) => n.version === newest);
-  const dated = own.filter((n) => n.kind === "live" || n.kind === "official");
-  const releasedAt = (dated.length > 0 ? dated : own)
-    .map((n) => n.publishedAt)
-    .sort()[0]!;
-  return {
-    version: newest,
-    releasedAt,
-    notes: notesBetween(notes, liveVersion, newest),
-  };
-}
-
-/** The post a release's notes link first: its LIVE release notes, else RSI's official notes. */
-export function releaseNotesOf(ahead: ReleasedAhead): PatchNote | null {
-  const own = ahead.notes.filter(
-    (n) => n.version === ahead.version && n.channel === "LIVE",
-  );
-  return (
-    own.find((n) => n.kind === "live") ??
-    own.find((n) => n.kind === "official") ??
-    null
-  );
 }
 
 let cached: { dir: string; snapshots: PatchSnapshot[] } | undefined;
@@ -932,17 +876,4 @@ export function shipMentions(
     }
   }
   return out;
-}
-
-/** The notes for a comparison: every post for a version after `from` up to and including `to`. */
-export function notesBetween(
-  notes: readonly PatchNote[],
-  from: string | null,
-  to: string,
-): PatchNote[] {
-  return notes.filter(
-    (n) =>
-      compareVersions(n.version, to) <= 0 &&
-      (from === null || compareVersions(n.version, from) > 0),
-  );
 }

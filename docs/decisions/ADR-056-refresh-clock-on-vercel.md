@@ -3,6 +3,7 @@
 - Status: accepted
 - Date: 2026-11-12
 - Deciders: owner ("Yes, do it", 2026-11-12, to moving the daily refresh onto the Vercel timer after the overnight audit found it starting hours late), Claude Code session 2026-11-12
+- Amended by: ADR-059 (the News workflow also starts the refresh, once per build, when the wiki serves a build CIG has released)
 - Amends: ADR-023 (who starts the refresh), ADR-053 (the clock's token starts a second workflow), CLAUDE.md section 9
 
 ## Context

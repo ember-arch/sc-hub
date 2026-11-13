@@ -156,6 +156,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      # The early start of the refresh (ADR-059) lists refresh runs and starts one.
+      actions: write
     # Forty for the thread step, which sleeps five minutes between its requests (up to three
     # threads, a page each as a rule) and thirty on a refusal (ADR-037), and up to twelve more for
     # the cover step (ADR-051); a timeout would lose the run's news too.
@@ -215,6 +217,36 @@ jobs:
         env:
           SC_HUB_CONTACT_EMAIL: ${{ vars.SC_HUB_CONTACT_EMAIL }}
         run: pnpm exec tsx scripts/events/fetch.ts
+      # The early start (ADR-059): while CIG's release notes name a LIVE version newer than the
+      # pack's figures, one request asks the wiki which build it serves, and a newer one starts the
+      # refresh now instead of at 06:23 UTC the next day. Once per build (fixtures/refresh); never
+      # while a refresh runs or waits, or the build waits on a fix. A failure here never holds back
+      # the news commit; the daily refresh is the backstop.
+      - name: Ask the wiki for CIG's new build
+        id: early
+        continue-on-error: true
+        timeout-minutes: 3
+        run: pnpm exec tsx scripts/refresh/early.ts
+      - name: Start the refresh for it
+        if: steps.early.outputs.dispatch == 'true'
+        continue-on-error: true
+        timeout-minutes: 3
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BUILD: ${{ steps.early.outputs.build }}
+        run: |
+          busy=$(gh run list --workflow refresh.yml --limit 20 --json status --jq '[.[] | select(.status != "completed")] | length')
+          if [ "$busy" != "0" ]; then
+            echo "A refresh is running or waiting; the next check asks again."
+            exit 0
+          fi
+          if git ls-remote --exit-code --heads origin "data/refresh-build-$BUILD" > /dev/null; then
+            echo "$BUILD failed its checks on an earlier run and waits on a fix on its branch."
+            exit 0
+          fi
+          gh workflow run refresh.yml --ref main
+          pnpm exec tsx scripts/refresh/early.ts --record "$BUILD"
+          echo "Started the refresh for $BUILD."
       # After the polls, so a Comm-Link collected in this run is looked for in this run; before the
       # commit, so the push that redeploys the site comes once the CDN serves the new manifest.
       # A failure here never holds back the news commit (ADR-051).
@@ -230,7 +262,7 @@ jobs:
         run: pnpm exec tsx scripts/media/publish-covers.ts --dry-run-without-token --rehearse "$REHEARSE"
       - name: Commit what changed
         run: |
-          git add fixtures/news fixtures/spectrum/thread-state.json fixtures/spectrum/uploads.json fixtures/rsi-media/cover-sources.json fixtures/events
+          git add fixtures/news fixtures/spectrum/thread-state.json fixtures/spectrum/uploads.json fixtures/rsi-media/cover-sources.json fixtures/events fixtures/refresh
           if git diff --cached --quiet; then
             echo "Nothing new."
             exit 0
@@ -240,6 +272,9 @@ jobs:
           message="data: news pack, $(date -u +%Y-%m-%dT%H:%MZ) (ADR-027)"
           if ! git diff --cached --quiet -- fixtures/events; then
             message="${message}; the shows (ADR-057)"
+          fi
+          if ! git diff --cached --quiet -- fixtures/refresh; then
+            message="${message}; the refresh started for a new build (ADR-059)"
           fi
           git commit -m "$message"
           git pull --rebase origin main

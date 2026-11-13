@@ -2,10 +2,13 @@
 
 What keeps the site's figures current until Phase 1, and what to do when it needs a hand (ADR-023). Nothing here is run by hand on a normal day: `.github/workflows/refresh.yml` runs `scripts/refresh/index.ts` every day at 06:23 UTC. A Vercel cron job starts it then through the dispatch API (ADR-056); the workflow's own schedule is the backup, and its run stands aside when any dispatched run, the clock's or one started by hand, was created on the same UTC date.
 
+A new build does not wait for the next morning (ADR-059): while CIG's release notes name a LIVE version newer than the pack's figures, the News workflow asks the wiki for its build every half hour (one request) and starts the refresh as soon as the wiki serves it. A build is asked for once (`fixtures/refresh/early.json`); not while a refresh is running or waiting, nor while the build waits on a fix.
+
 ## What a run does
 
-1. **Catalog.** One request reads the build the Star Citizen Wiki API serves. If it differs from the pack's `fixtures/bootstrap/GameVersion.json`, the whole pack is rebuilt (`scripts/bootstrap-fixtures`, every vehicle in the build, about two hours at the polite limit) and the ships' descriptions follow. Otherwise nothing is fetched for the catalog.
-   **Patch snapshots** (ADR-049) follow: one request lists the builds the Wiki API keeps, and the oldest build without a file in `fixtures/patches/` is fetched (one a run, about 300 requests, some 13 minutes). A build already on file is never fetched again; a new build that lists under nine tenths of the newest file's vehicles or parts halts the step (the wiki is still importing it) and is tried again the next day.
+0. **A new build's patch comparison first** (ADR-059). The patch snapshot step runs alone (below), goes through `pnpm test` and `pnpm build`, and lands on `main` straight away, so `/patches` compares the new build some twenty minutes after the start. Failing its checks, it stays in the tree and lands or waits with the rest.
+1. **Catalog.** One request reads the build the Star Citizen Wiki API serves. If it differs from the pack's `fixtures/bootstrap/GameVersion.json`, the whole pack is rebuilt (`scripts/bootstrap-fixtures`, every vehicle in the build) and the ships' descriptions follow. Ships are read one at a time with their hardpoints (about 330); their stock parts come from the wiki's item list, some twenty pages, with a part the list lacks read alone (ADR-059). Within a run the steps share their ship reads (`WIKI_RUN_CACHE_DIR`), so the patch snapshot, the catalog, the descriptions and the prices read each ship once between them. A new build takes some fifteen minutes (4.10.3: the patch comparison in 12, the rest in 4). Otherwise nothing is fetched for the catalog.
+   **Patch snapshots** (ADR-049), run first as above and again in the full pass, which finds a build already on file: one request lists the builds the Wiki API keeps, and the oldest build without a file in `fixtures/patches/` is fetched (one a run, about 300 requests, some 13 minutes). A build already on file is never fetched again; a new build that lists under nine tenths of the newest file's vehicles or parts halts the step (the wiki is still importing it) and is tried again the next day.
 2. **Ship matrix, loaners, prices.** RSI's sources, one request each for the matrix and the loaner article, one per ship for the prices. They need the repository variable `SC_HUB_CONTACT_EMAIL`; without it they are skipped and the run says so.
 3. **Titles, funding.** The wiki's Titles article and its funding counters.
 4. Only real changes stay: a file rewritten with a new `fetched_at` and the same data is put back.
@@ -26,7 +29,7 @@ Actions, Refresh, Run workflow, tick "Rebuild the catalog even if the build is u
 ## Running it on a machine
 
 ```
-pnpm --filter schema build && pnpm exec tsx scripts/refresh/index.ts [--force-rebuild] [--out <folder>]
+pnpm --filter schema build && pnpm exec tsx scripts/refresh/index.ts [--force-rebuild] [--only <step,…>] [--out <folder>]
 ```
 
-Set `SC_HUB_CONTACT_EMAIL` for the RSI sources, and `BOOTSTRAP_CACHE_DIR` (a folder outside the repository) to replay wiki responses while developing. The summary, commit message and issue text are written to the `--out` folder (the system temp folder by default). Images and holoviewer models are not part of the refresh: RSI's pictures stay local (ADR-009); fetch them with `scripts/media/fetch-rsi.ts` after a concept ship gains an entry.
+Set `SC_HUB_CONTACT_EMAIL` for the RSI sources, and `BOOTSTRAP_CACHE_DIR` (a folder outside the repository) to replay wiki responses while developing. `WIKI_RUN_CACHE_DIR` (a folder outside the repository, emptied before each run) makes the steps share their reads as the job does; `--only patches` runs one step, as the job's first pass does. The summary, commit message and issue text are written to the `--out` folder (the system temp folder by default). Images and holoviewer models are not part of the refresh: RSI's pictures stay local (ADR-009); fetch them with `scripts/media/fetch-rsi.ts` after a concept ship gains an entry.

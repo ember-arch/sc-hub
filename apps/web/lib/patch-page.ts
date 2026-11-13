@@ -34,6 +34,16 @@ export function currentRelease(): ReleasedAhead | null {
 }
 
 /**
+ * The same on the patch pages, measured against the newest LIVE build whose patch snapshot is on
+ * file. A new build's comparison lands before the rest of its rebuild (ADR-059), so for a while
+ * the patch pages have the figures the pack has not: there the version is no longer ahead, while
+ * the footer on every page still says the site's figures are from the build before.
+ */
+export function patchRelease(): ReleasedAhead | null {
+  return releasedAhead(allPatchNotes(), latestLive()?.version ?? null);
+}
+
+/**
  * What a patch page needs, put together from the snapshots, the pack and the news pack
  * (ADR-049). The pages stay thin: each route picks the two builds and renders `PatchView`.
  */

@@ -36,6 +36,12 @@ import {
 } from "./map.js";
 import { linkEditions } from "./editions.js";
 import {
+  stockListPath,
+  stockPage,
+  stockTypesOf,
+  takeFromList,
+} from "./stock.js";
+import {
   CATALOG_TYPES,
   ShipList,
   WikiGameVersionResponse,
@@ -233,6 +239,16 @@ async function main(): Promise<void> {
   // variants (ADR-022). The data model needs a status, so they are counted and left out.
   const unlisted = fetched.filter((v) => v.production_status == null);
   const vehicles = fetched.filter((v) => v.production_status != null);
+  // A build the wiki is still importing lists fewer ships, and its pack would freeze half a build:
+  // the early start (ADR-059) reads a build within half an hour of the wiki serving it. The patch
+  // snapshots' rule (ADR-049): under nine tenths of the ships on file halts, to be tried again.
+  const onFile = publishedRows("Vehicle").length;
+  if (onFile > 0 && vehicles.length < onFile * 0.9) {
+    throw new MapError(
+      `the wiki lists ${vehicles.length} ships for ${version}, under nine tenths of the ${onFile} on file: it is likely still importing the build; the next run tries again`,
+      { listed: vehicles.length, on_file: onFile },
+    );
+  }
   for (const v of unlisted) vehicleRaws.delete(v.class_name);
   if (unlisted.length > 0) {
     log({
@@ -320,12 +336,33 @@ async function main(): Promise<void> {
     );
   }
 
-  // Every distinct stock component, once, by uuid.
+  // Every distinct stock component, once, by uuid. The wiki's item list holds the same record a
+  // single read does, 200 a page; with its placeholder-named parts (most thrusters, fuel intakes
+  // and armour) included, every stock type fits in some twenty pages where single reads took two
+  // thousand requests (ADR-059). A part the list lacks, or lists for another build, is read alone.
   const itemRaws = new Map<string, Record<string, unknown>>();
   const items = [];
   const sortedStock = [...stockItems].sort(([a], [b]) => a.localeCompare(b));
+  const stockTypes = stockTypesOf(vehicles, stockItems);
+  const listed = new Map<string, Record<string, unknown>>();
+  let refused = 0;
+  let total: number | null = null;
+  for (let page = 1; stockTypes.length > 0; page += 1) {
+    const list = stockPage(await get(stockListPath(stockTypes, page)));
+    refused += list.refused;
+    total = list.total;
+    for (const record of list.records)
+      listed.set(String(record["uuid"]), record);
+    if (page >= list.lastPage) break;
+  }
+  let readAlone = 0;
   for (const [className, uuid] of sortedStock) {
-    const json = await get(`/api/items/${encodeURIComponent(uuid)}`);
+    const record = listed.get(uuid);
+    const fromList = takeFromList(record, className, version);
+    if (!fromList) readAlone += 1;
+    const json = fromList
+      ? { data: record }
+      : await get(`/api/items/${encodeURIComponent(uuid)}`);
     const raw = WikiItemResponse.parse(json).data;
     if (raw.class_name !== className) {
       throw new MapError(
@@ -340,7 +377,18 @@ async function main(): Promise<void> {
     items.push(raw);
     manufacturerSources.push(raw.manufacturer);
   }
-  log({ event: "bootstrap.fetched", kind: "items", count: items.length });
+  log({
+    event: "bootstrap.fetched",
+    kind: "items",
+    count: items.length,
+    types: stockTypes.length,
+    listed: listed.size,
+    // Fewer than the list's own count means its pages overlapped; the parts it missed are read
+    // alone, so the pack is whole either way, only slower.
+    list_total: total,
+    refused,
+    read_alone: readAlone,
+  });
 
   // The catalogue the loadout editor offers (ADR-016), 200 records a page. Stock parts are already
   // in. A part that fits no port on the pack's ships, has the wiki's placeholder name or comes

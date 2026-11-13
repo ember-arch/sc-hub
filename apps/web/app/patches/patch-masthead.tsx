@@ -1,6 +1,6 @@
 import { FilterBar, FilterSelect, formatNumber } from "ui";
 import { spectrumOn } from "../../lib/data";
-import { currentPtu, currentRelease } from "../../lib/patch-page";
+import { currentPtu, patchRelease } from "../../lib/patch-page";
 import { type Build, builds, latestLive } from "../../lib/patches";
 import { Masthead } from "../masthead";
 import { type PatchTab, PatchTabs, day } from "./patch-view";
@@ -22,7 +22,7 @@ export function PatchMasthead({
   const live = latestLive(list);
   const ptu = currentPtu();
   // A version CIG has released ahead of the figures on record leads (ADR-049, amended).
-  const ahead = currentRelease();
+  const ahead = patchRelease();
   const eyebrow = [
     ...(ahead === null
       ? []

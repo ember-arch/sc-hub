@@ -9,7 +9,7 @@
     "last_update": "2026-11-12",
     "consent": "granted"
   },
-  "fetched_at": "2026-11-13T18:05:22.431Z",
+  "fetched_at": "2026-11-13T20:14:25.070Z",
   "legend": {
     "verdicts": {
       "fits": "Good Fit",
@@ -166,7 +166,9 @@
       "slot": null,
       "marker": null,
       "unreleased": false,
-      "class_names": [],
+      "class_names": [
+        "ANVL_Liberator"
+      ],
       "fabricator": "untested"
     },
     {
@@ -720,7 +722,11 @@
       "slot": "cargo_module",
       "marker": null,
       "unreleased": false,
-      "class_names": [],
+      "class_names": [
+        "RSI_Galaxy_TEMP_Cargo",
+        "RSI_Galaxy_TEMP_Medical",
+        "RSI_Galaxy"
+      ],
       "fabricator": "fits"
     },
     {
@@ -805,7 +811,9 @@
       "slot": null,
       "marker": null,
       "unreleased": true,
-      "class_names": [],
+      "class_names": [
+        "ANVL_Liberator"
+      ],
       "fabricator": "fits"
     },
     {

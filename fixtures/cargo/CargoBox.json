@@ -1,7 +1,7 @@
 {
   "channel": "LIVE",
   "game_version": "4.10.3-LIVE.13165946",
-  "fetched_at": "2026-11-13T17:33:01.885Z",
+  "fetched_at": "2026-11-13T20:09:32.898Z",
   "source_url": "https://api.star-citizen.wiki/api/items?filter[type]=Cargo",
   "via": "star_citizen_wiki_api",
   "rows": [

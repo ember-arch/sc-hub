@@ -277,8 +277,8 @@
         "classification_label": null,
         "is_base_variant": true,
         "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/ad9758a5-9dfc-4f16-8b8e-f4ec12394a24",
-        "web_url": "https://api.star-citizen.wiki/items/placeholder-711",
+        "link": "https://api.star-citizen.wiki/api/items/ad9758a5-9dfc-4f16-8b8e-f4ec12394a24?version=4.10.3-LIVE.13165946",
+        "web_url": "https://api.star-citizen.wiki/items/placeholder-711?version=4.10.3-LIVE.13165946",
         "size": 1,
         "mass": 10,
         "grade": 1,
@@ -314,7 +314,7 @@
       "category_label": "Crew Stations",
       "required_tags": null,
       "port_tags": null,
-      "version": null
+      "version": "4.10.3-LIVE.13165946"
     },
     {
       "name": "SeatAccess_ItemPort",
@@ -349,8 +349,8 @@
         "classification_label": null,
         "is_base_variant": true,
         "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/85291389-34d3-450e-a571-52384ed6bfc2",
-        "web_url": "https://api.star-citizen.wiki/items/access-24",
+        "link": "https://api.star-citizen.wiki/api/items/85291389-34d3-450e-a571-52384ed6bfc2?version=4.10.3-LIVE.13165946",
+        "web_url": "https://api.star-citizen.wiki/items/access-24?version=4.10.3-LIVE.13165946",
         "size": 1,
         "mass": 0,
         "grade": 1,
@@ -368,7 +368,7 @@
       "category_label": "Crew Stations",
       "required_tags": null,
       "port_tags": null,
-      "version": null
+      "version": "4.10.3-LIVE.13165946"
     },
     {
       "name": "LeftHandWeapon_ItemPort",
@@ -401,7 +401,7 @@
       "port_tags": [
         "PowerSuit"
       ],
-      "version": null
+      "version": "4.10.3-LIVE.13165946"
     },
     {
       "name": "RightHandWeapon_ItemPort",
@@ -442,8 +442,8 @@
         "classification_label": "Tractor",
         "is_base_variant": true,
         "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/83b3857b-d7d5-40bd-b79c-058026f29ec6",
-        "web_url": "https://api.star-citizen.wiki/items/durus-tractor-beam",
+        "link": "https://api.star-citizen.wiki/api/items/83b3857b-d7d5-40bd-b79c-058026f29ec6?version=4.10.3-LIVE.13165946",
+        "web_url": "https://api.star-citizen.wiki/items/durus-tractor-beam?version=4.10.3-LIVE.13165946",
         "size": 1,
         "mass": 70,
         "grade": "A",
@@ -752,7 +752,7 @@
           "category_label": null,
           "required_tags": null,
           "port_tags": null,
-          "version": null
+          "version": "4.10.3-LIVE.13165946"
         },
         {
           "name": "MEC",
@@ -783,7 +783,7 @@
           "category_label": null,
           "required_tags": null,
           "port_tags": null,
-          "version": null
+          "version": "4.10.3-LIVE.13165946"
         },
         {
           "name": "POW",
@@ -814,7 +814,7 @@
           "category_label": null,
           "required_tags": null,
           "port_tags": null,
-          "version": null
+          "version": "4.10.3-LIVE.13165946"
         },
         {
           "name": "VEN",
@@ -845,7 +845,7 @@
           "category_label": null,
           "required_tags": null,
           "port_tags": null,
-          "version": null
+          "version": "4.10.3-LIVE.13165946"
         }
       ],
       "category_label": "Tractor Beams",
@@ -853,7 +853,7 @@
       "port_tags": [
         "PowerSuit"
       ],
-      "version": null
+      "version": "4.10.3-LIVE.13165946"
     },
     {
       "name": "salvage_controller",
@@ -883,8 +883,8 @@
         "classification_label": null,
         "is_base_variant": true,
         "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/99b1d580-8fd8-4716-af13-c2e4287977f1",
-        "web_url": "https://api.star-citizen.wiki/items/placeholder-1895",
+        "link": "https://api.star-citizen.wiki/api/items/99b1d580-8fd8-4716-af13-c2e4287977f1?version=4.10.3-LIVE.13165946",
+        "web_url": "https://api.star-citizen.wiki/items/placeholder-1895?version=4.10.3-LIVE.13165946",
         "size": 1,
         "mass": 0,
         "grade": 1,
@@ -902,7 +902,7 @@
       "category_label": "Other",
       "required_tags": null,
       "port_tags": null,
-      "version": null
+      "version": "4.10.3-LIVE.13165946"
     },
     {
       "name": "Dashboard_ItemPort",
@@ -937,8 +937,8 @@
         "classification_label": null,
         "is_base_variant": true,
         "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/b8340787-1655-45c0-a5bd-4b76fb960157",
-        "web_url": "https://api.star-citizen.wiki/items/placeholder-710",
+        "link": "https://api.star-citizen.wiki/api/items/b8340787-1655-45c0-a5bd-4b76fb960157?version=4.10.3-LIVE.13165946",
+        "web_url": "https://api.star-citizen.wiki/items/placeholder-710?version=4.10.3-LIVE.13165946",
         "size": 1,
         "mass": 0,
         "grade": 1,
@@ -980,7 +980,7 @@
           "category_label": null,
           "required_tags": null,
           "port_tags": null,
-          "version": null
+          "version": "4.10.3-LIVE.13165946"
         },
         {
           "name": "Screen_Left",
@@ -1011,7 +1011,7 @@
             "ScreenCover"
           ],
           "port_tags": null,
-          "version": null
+          "version": "4.10.3-LIVE.13165946"
         },
         {
           "name": "itemport_miningHUD",
@@ -1035,13 +1035,13 @@
           "category_label": null,
           "required_tags": null,
           "port_tags": null,
-          "version": null
+          "version": "4.10.3-LIVE.13165946"
         }
       ],
       "category_label": "Crew Stations",
       "required_tags": null,
       "port_tags": null,
-      "version": null
+      "version": "4.10.3-LIVE.13165946"
     },
     {
       "name": "hardpoint_screen_left",
@@ -1076,8 +1076,8 @@
         "classification_label": null,
         "is_base_variant": true,
         "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/437f093f-305c-4d8a-92f1-210583303565",
-        "web_url": "https://api.star-citizen.wiki/items/placeholder-5494",
+        "link": "https://api.star-citizen.wiki/api/items/437f093f-305c-4d8a-92f1-210583303565?version=4.10.3-LIVE.13165946",
+        "web_url": "https://api.star-citizen.wiki/items/placeholder-5494?version=4.10.3-LIVE.13165946",
         "size": 1,
         "mass": 0,
         "grade": 1,
@@ -1095,7 +1095,7 @@
       "category_label": "Systems",
       "required_tags": null,
       "port_tags": null,
-      "version": null
+      "version": "4.10.3-LIVE.13165946"
     },
     {
       "name": "hardpoint_battery_storage",
@@ -1130,8 +1130,8 @@
         "classification_label": null,
         "is_base_variant": true,
         "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/6e4d388b-d3bf-40ec-9686-aa9cec5cda47",
-        "web_url": "https://api.star-citizen.wiki/items/placeholder-693",
+        "link": "https://api.star-citizen.wiki/api/items/6e4d388b-d3bf-40ec-9686-aa9cec5cda47?version=4.10.3-LIVE.13165946",
+        "web_url": "https://api.star-citizen.wiki/items/placeholder-693?version=4.10.3-LIVE.13165946",
         "size": 1,
         "mass": 1,
         "grade": 1,
@@ -1181,8 +1181,8 @@
             "classification_label": null,
             "is_base_variant": true,
             "variant_name": null,
-            "link": "https://api.star-citizen.wiki/api/items/3e4429cb-fb98-420b-aed2-648dad6144e0",
-            "web_url": "https://api.star-citizen.wiki/items/fuse",
+            "link": "https://api.star-citizen.wiki/api/items/3e4429cb-fb98-420b-aed2-648dad6144e0?version=4.10.3-LIVE.13165946",
+            "web_url": "https://api.star-citizen.wiki/items/fuse?version=4.10.3-LIVE.13165946",
             "size": 1,
             "mass": 0.2,
             "grade": 1,
@@ -1200,13 +1200,13 @@
           "category_label": null,
           "required_tags": null,
           "port_tags": null,
-          "version": null
+          "version": "4.10.3-LIVE.13165946"
         }
       ],
       "category_label": "Other",
       "required_tags": null,
       "port_tags": null,
-      "version": null
+      "version": "4.10.3-LIVE.13165946"
     },
     {
       "name": "hardpoint_headlight",
@@ -1241,8 +1241,8 @@
         "classification_label": null,
         "is_base_variant": true,
         "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/de9491ea-a5ef-463c-bf3f-252d74c54da1",
-        "web_url": "https://api.star-citizen.wiki/items/placeholder-700",
+        "link": "https://api.star-citizen.wiki/api/items/de9491ea-a5ef-463c-bf3f-252d74c54da1?version=4.10.3-LIVE.13165946",
+        "web_url": "https://api.star-citizen.wiki/items/placeholder-700?version=4.10.3-LIVE.13165946",
         "size": 1,
         "mass": 0,
         "grade": 1,
@@ -1260,7 +1260,7 @@
       "category_label": "Other",
       "required_tags": null,
       "port_tags": null,
-      "version": null
+      "version": "4.10.3-LIVE.13165946"
     }
   ],
   "career": "Ground",

@@ -162,30 +162,6 @@
   },
   "tags": [],
   "required_tags": [],
-  "entity_tags": [
-    "c08564a2-68d2-4eb1-903b-e3c3ecf12ac1",
-    "b3cb57ab-1d44-41b1-9794-6cb6489cbd7c",
-    "f891a653-8c82-4f27-a2bd-968a422afcf9",
-    "00ead468-9073-485b-a6df-ca6b94053603"
-  ],
-  "entity_tag_map": [
-    {
-      "uuid": "c08564a2-68d2-4eb1-903b-e3c3ecf12ac1",
-      "name": "PU"
-    },
-    {
-      "uuid": "b3cb57ab-1d44-41b1-9794-6cb6489cbd7c",
-      "name": "QuantumDrive"
-    },
-    {
-      "uuid": "f891a653-8c82-4f27-a2bd-968a422afcf9",
-      "name": "Size1"
-    },
-    {
-      "uuid": "00ead468-9073-485b-a6df-ca6b94053603",
-      "name": "ActionArea"
-    }
-  ],
   "interactions": [
     "Engagequantumtravel",
     "Disengagequantumtravel"

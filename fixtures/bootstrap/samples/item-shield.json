@@ -134,15 +134,6 @@
   },
   "tags": [],
   "required_tags": [],
-  "entity_tags": [
-    "8c71c1ea-dd41-45c4-9fc1-7880740552b7"
-  ],
-  "entity_tag_map": [
-    {
-      "uuid": "8c71c1ea-dd41-45c4-9fc1-7880740552b7",
-      "name": "disableTractorBeamDetach"
-    }
-  ],
   "interactions": [],
   "temperature": {
     "unit": "C",

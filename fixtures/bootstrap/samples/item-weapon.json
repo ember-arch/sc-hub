@@ -246,8 +246,6 @@
     "weaponMountUsable"
   ],
   "required_tags": [],
-  "entity_tags": [],
-  "entity_tag_map": [],
   "interactions": [],
   "durability": {
     "health": 1024,
@@ -350,30 +348,6 @@
     "em_min": 0,
     "em_max": 743,
     "em_decay": 0.15
-  },
-  "base_variant": {
-    "uuid": "26838ca7-418a-47d2-8429-7339ebbb8993",
-    "name": "Omnisky III Cannon",
-    "class_name": "AMRS_LaserCannon_S1",
-    "type": "WeaponGun",
-    "type_label": "Weapon Gun",
-    "sub_type": "Gun",
-    "sub_type_label": "Gun",
-    "classification": "Ship.Weapon.Gun",
-    "classification_label": "Gun",
-    "is_base_variant": true,
-    "variant_name": null,
-    "manufacturer": {
-      "name": "Amon & Reese Co.",
-      "code": "AMRS",
-      "uuid": "eccba58a-f6d9-42e8-95c6-d0a65763e583",
-      "link": "https://api.star-citizen.wiki/api/manufacturers/AMRS"
-    },
-    "link": "https://api.star-citizen.wiki/api/items/26838ca7-418a-47d2-8429-7339ebbb8993",
-    "web_url": "https://api.star-citizen.wiki/items/omnisky-iii-cannon",
-    "size": 1,
-    "updated_at": "2026-11-01T00:23:50.000000Z",
-    "version": "4.10.3-LIVE.13165946"
   },
   "updated_at": "2026-11-13T10:45:07.000000Z",
   "version": "4.10.3-LIVE.13165946"

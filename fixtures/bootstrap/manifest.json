@@ -2,7 +2,7 @@
   "schema_version": 1,
   "channel": "LIVE",
   "game_version": "4.10.3-LIVE.13165946",
-  "created_at": "2026-11-13T15:09:45.251Z",
+  "created_at": "2026-11-13T20:08:10.654Z",
   "source": "wiki-bootstrap",
   "source_url": "https://api.star-citizen.wiki",
   "credit": "Some game data via the Star Citizen Wiki API (api.star-citizen.wiki).",
@@ -10,7 +10,7 @@
     {
       "name": "GameVersion.json",
       "entity": "GameVersion",
-      "sha256": "ab5628397fbb378a78d98ecf628c2859f122b8a4c015bb22e36027c36128fca4",
+      "sha256": "8f14bbf45255cee9ffe78f6651062fa9db14db243dbb2efbf79c96f0d7ec53ed",
       "bytes": 253,
       "count": 1
     },
@@ -24,8 +24,8 @@
     {
       "name": "Vehicle.json",
       "entity": "Vehicle",
-      "sha256": "bbdf61b5abd70f9441f09010eaf93bcc30a7c851f08d3720cd558430fc3128f1",
-      "bytes": 74284,
+      "sha256": "af9f1ba236f7700fcacb7a44a456da9a811acb2d635a7e0a4cc87e0b2f5a1fab",
+      "bytes": 74280,
       "count": 253
     },
     {
@@ -52,8 +52,8 @@
     {
       "name": "ItemStats.json",
       "entity": "ItemStats",
-      "sha256": "7af9d3cc800233523be3d437934c8d2a59ad1f55bf9bf8058cb91bedb6843f22",
-      "bytes": 8515789,
+      "sha256": "6eb29ca865f49e3a6fce2e4770eb74e0082b52c5c66df1ad21e2d9393cb5e2d2",
+      "bytes": 8219103,
       "count": 2924
     }
   ]

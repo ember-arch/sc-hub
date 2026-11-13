@@ -76,7 +76,8 @@ jobs:
     # A gate that failed lets the refresh go: a second refresh costs requests, a missed one a day.
     if: ${{ !cancelled() && needs.gate.outputs.go != 'false' }}
     runs-on: ubuntu-latest
-    # A rebuild is some three thousand requests at the polite limit, about two hours.
+    # A rebuild was some three thousand requests at the polite limit, about two hours; with the
+    # parts read from the wiki's list and each ship read once a run (ADR-059), some five hundred.
     timeout-minutes: 300
     steps:
       - uses: actions/checkout@v7
@@ -97,6 +98,42 @@ jobs:
           echo "builds=$builds" >> "$GITHUB_OUTPUT"
           [ -z "$builds" ] || echo "Waiting on a fix: $builds"
 
+      # A new build's patch comparison goes first and lands on its own (ADR-059): about fifteen
+      # minutes of reads and its checks, where it used to wait out the whole rebuild. The full pass
+      # below skips the snapshots (one build's a run, ADR-049) and reads the same ships from the
+      # run's cache.
+      - name: Read a new build's patch comparison first
+        id: patches
+        continue-on-error: true
+        env:
+          SC_HUB_CONTACT_EMAIL: ${{ vars.SC_HUB_CONTACT_EMAIL }}
+          WIKI_RUN_CACHE_DIR: ${{ runner.temp }}/wiki-cache
+        run: pnpm exec tsx scripts/refresh/index.ts --only patches --out "$RUNNER_TEMP/refresh-patches"
+
+      - name: Land the patch comparison
+        if: steps.patches.outcome == 'success'
+        continue-on-error: true
+        run: |
+          if git diff --quiet -- fixtures/patches && [ -z "$(git ls-files --others --exclude-standard fixtures/patches)" ]; then
+            echo "No new build's patch comparison."
+            exit 0
+          fi
+          # Its own checks; failing them, it stays in the tree and lands or waits with the full pass.
+          if ! { pnpm test && pnpm build; }; then
+            echo "::warning title=Patch comparison::The checks failed on the new build's patch comparison; it goes with the full pass."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A fixtures/patches
+          git commit -F "$RUNNER_TEMP/refresh-patches/commit.txt"
+          if ! { git pull --rebase origin "${{ github.event.repository.default_branch }}" && git push origin HEAD:"${{ github.event.repository.default_branch }}"; }; then
+            # Back into the tree: the full pass sees it as a change and lands it with its own.
+            git rebase --abort 2> /dev/null || true
+            git reset HEAD~1
+            echo "::warning title=Patch comparison::Could not push the new build's patch comparison; it goes with the full pass."
+          fi
+
       - name: Run the fetchers
         id: fetch
         continue-on-error: true
@@ -105,14 +142,17 @@ jobs:
           REFRESH_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           REFRESH_WAITING_BUILDS: ${{ steps.waiting.outputs.builds }}
           FORCE: ${{ inputs.force_rebuild == true && '--force-rebuild' || '' }}
-        run: pnpm exec tsx scripts/refresh/index.ts $FORCE --out "$RUNNER_TEMP/refresh"
+          WIKI_RUN_CACHE_DIR: ${{ runner.temp }}/wiki-cache
+        run: pnpm exec tsx scripts/refresh/index.ts $FORCE --skip patches --out "$RUNNER_TEMP/refresh"
 
       - name: Summary
         if: always()
         run: |
           f="$RUNNER_TEMP/refresh/summary.md"
+          p="$RUNNER_TEMP/refresh-patches/summary.md"
+          [ -f "$p" ] && { sed '1s/^## Refresh /## First pass, the patch comparison: /' "$p"; echo; } >> "$GITHUB_STEP_SUMMARY"
           if [ -f "$f" ]; then cat "$f" >> "$GITHUB_STEP_SUMMARY"; else echo "The refresh job wrote no summary; see the log." >> "$GITHUB_STEP_SUMMARY"; fi
-          for log in "$RUNNER_TEMP"/refresh/*.log; do [ -f "$log" ] && { echo "== $(basename "$log")"; tail -n 40 "$log"; }; done || true
+          for log in "$RUNNER_TEMP"/refresh-patches/*.log "$RUNNER_TEMP"/refresh/*.log; do [ -f "$log" ] && { echo "== $(basename "$log")"; tail -n 40 "$log"; }; done || true
 
       - name: Did anything change
         id: changes
@@ -144,8 +184,11 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          msg="$RUNNER_TEMP/refresh/commit.txt"
+          [ -s "$msg" ] || msg="$RUNNER_TEMP/refresh-patches/commit.txt"
+          [ -s "$msg" ] || { echo "data: refresh $(date -u +%Y-%m-%d)" > "$RUNNER_TEMP/commit-fallback.txt"; msg="$RUNNER_TEMP/commit-fallback.txt"; }
           git add -A fixtures
-          git commit -F "$RUNNER_TEMP/refresh/commit.txt"
+          git commit -F "$msg"
           git pull --rebase origin "${{ github.event.repository.default_branch }}"
           git push origin HEAD:"${{ github.event.repository.default_branch }}"
 
@@ -163,8 +206,11 @@ jobs:
             branch="data/refresh-$day"
           fi
           git switch -c "$branch"
+          msg="$RUNNER_TEMP/refresh/commit.txt"
+          [ -s "$msg" ] || msg="$RUNNER_TEMP/refresh-patches/commit.txt"
+          [ -s "$msg" ] || { echo "data: refresh $(date -u +%Y-%m-%d)" > "$RUNNER_TEMP/commit-fallback.txt"; msg="$RUNNER_TEMP/commit-fallback.txt"; }
           git add -A fixtures
-          git commit -F "$RUNNER_TEMP/refresh/commit.txt"
+          git commit -F "$msg"
           git push --force origin "$branch"
           mkdir -p "$RUNNER_TEMP/refresh"
           if [ ! -s "$RUNNER_TEMP/refresh/issue-title.txt" ]; then
@@ -177,6 +223,26 @@ jobs:
             echo ""
             echo "Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           } >> "$RUNNER_TEMP/refresh/issue.md"
+
+      - name: Open or update the issue for the first pass's failure
+        if: always() && steps.patches.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          dir="$RUNNER_TEMP/refresh-patches"
+          title=""
+          [ -f "$dir/issue-title.txt" ] && title=$(cat "$dir/issue-title.txt")
+          if [ -z "$title" ]; then
+            title="Refresh needs attention: patch snapshots"
+            mkdir -p "$dir"
+            echo "The first pass (a new build's patch comparison) could not run; see ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" > "$dir/issue.md"
+          fi
+          existing=$(gh issue list --state open --search "in:title \"$title\"" --json number --jq '.[0].number')
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body-file "$dir/issue.md"
+          else
+            gh issue create --title "$title" --body-file "$dir/issue.md"
+          fi
 
       - name: Open or update the issue for a failure
         if: always() && (steps.fetch.outcome != 'success' || (steps.changes.outputs.changed == 'true' && steps.check.outcome != 'success'))
@@ -210,5 +276,5 @@ jobs:
           gh issue create --title "$title" --body "The daily refresh skips the ship matrix, the loaner matrix and the pledge prices because the repository variable SC_HUB_CONTACT_EMAIL is not set (CLAUDE.md section 9: requests to robertsspaceindustries.com carry a contact address, ADR-005). Set it once under Settings, Secrets and variables, Actions, Variables, and the next run refreshes them."
 
       - name: Fail the run when a source failed or the checks failed
-        if: always() && (steps.fetch.outcome != 'success' || (steps.changes.outputs.changed == 'true' && steps.check.outcome != 'success'))
+        if: always() && (steps.patches.outcome == 'failure' || steps.fetch.outcome != 'success' || (steps.changes.outputs.changed == 'true' && steps.check.outcome != 'success'))
         run: exit 1

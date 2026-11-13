@@ -52,7 +52,7 @@ pipeline/        Windows-only: detect, extract, normalize, optimize, publish
 apps/web/        Next.js app
 workers/         pollers (news, spectrum), import job, link-entities job (poll-news runs from CI every thirty minutes until Fly, started by the news clock on Vercel with the workflow's schedule as backup, ADR-053; poll-spectrum only with SPECTRUM_MODE on, ADR-027)
 fixtures/        real extracted records per game version; committed (the whole catalog since ADR-022, under 40 MB)
-scripts/         one-off dev scripts; nothing here runs in production (one orchestrator, scripts/refresh, runs daily in CI to refresh the fixtures from their sources and land real changes on main, ADR-023; and scripts/media/publish-covers.ts runs in the News workflow to put new Comm-Links' covers in the live media manifest, ADR-051; and scripts/events/fetch.ts runs in the News workflow to read CIG's shows from RSI's own schedule into fixtures/events, ADR-057)
+scripts/         one-off dev scripts; nothing here runs in production (one orchestrator, scripts/refresh, runs daily in CI to refresh the fixtures from their sources and land real changes on main, ADR-023; and scripts/media/publish-covers.ts runs in the News workflow to put new Comm-Links' covers in the live media manifest, ADR-051; and scripts/events/fetch.ts runs in the News workflow to read CIG's shows from RSI's own schedule into fixtures/events, ADR-057; and scripts/refresh/early.ts runs in the News workflow to start the refresh as soon as the wiki serves a build CIG has released, ADR-059)
 ```
 
 Create exactly this layout in Phase 0. Add folders only with an ADR.

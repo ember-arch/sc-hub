@@ -386,15 +386,29 @@ describe("mapping the vehicle sample", () => {
 describe("mapping the item samples", () => {
   const items = committed<Item>("Item");
   const stats = committed<ItemStats>("ItemStats");
+  // The entity tags are dropped since 13 Nov 2026 (ADR-059). A published build's rows never change
+  // (CLAUDE.md section 2), so the rows on file may still carry them until the next build.
+  const SINCE = new Set(["entity_tags", "entity_tag_map", "base_variant"]);
+  const asNow = <T>(row: T): T => {
+    const r = row as Record<string, unknown>;
+    const raw = r["raw"];
+    if (raw === null || typeof raw !== "object") return row;
+    return {
+      ...r,
+      raw: Object.fromEntries(
+        Object.entries(raw).filter(([k]) => !SINCE.has(k)),
+      ),
+    } as T;
+  };
 
   it.each(itemSamples.map((sample) => [sample.class_name, sample] as const))(
     "reproduces the committed rows for %s",
     (className, sample) => {
       const expected = items.find((i) => i.class_name === className);
       if (expected === undefined) throw new Error("sample not in pack");
-      expect(mapItem(sample, expected.slug, version)).toEqual(expected);
+      expect(mapItem(sample, expected.slug, version)).toEqual(asNow(expected));
       expect(mapItemStats(sample, channel, version)).toEqual(
-        stats.find((s) => s.class_name === className),
+        asNow(stats.find((s) => s.class_name === className)),
       );
     },
   );

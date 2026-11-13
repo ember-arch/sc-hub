@@ -3,6 +3,7 @@
 - Status: accepted (owner direction 2026-11-11); amended 2026-11-12 for a version CIG releases on LIVE before the Star Citizen Wiki publishes its figures (below)
 - Date: 2026-11-11
 - Deciders: owner ("next thing we should build: 'What changed this patch' pages. Stat changes between builds for every ship, part and blueprint, LIVE vs PTU … a dedicated page that compares official patch to patch, as well as current patch to PTU … beautifully designed, very easy to navigate … broken into collapsible sections … clearer and easier to reach than patch notes alone, but patch notes linked"), Claude Code session 2026-11-11
+- Amended by: ADR-059 (the patch pages measure a release ahead against the newest LIVE snapshot; a new build's comparison lands before the rest of the rebuild)
 - Amends: spec 01's "Diff" note (patch pages arrive before the pipeline's `diff.json`), ADR-023 (the refresh gains a step), CLAUDE.md section 4 (no new folder; `fixtures/patches/` sits under `fixtures/`)
 
 ## Context

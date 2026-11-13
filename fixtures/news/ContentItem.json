@@ -11541,5 +11541,22 @@
     "thread_title": "[4.10.3 LIVE Feedback] Anvil Liberator",
     "forum": "Feedback",
     "takedown": false
+  },
+  {
+    "id": "a3ab2b12-6599-5add-8fce-c960d23d96cb",
+    "source": "spectrum",
+    "external_id": "9229040",
+    "url": "https://robertsspaceindustries.com/spectrum/community/SC/forum/3/thread/cig-what-s-the-deal-with-the-liberator-rrr-on-top-/9229040",
+    "title": "Re: CIG what's the deal with the Liberator? RRR on top pads or not? It's a deal breaker for me.. can I get some clarification please?",
+    "summary": "Hey everyone,",
+    "body_html": "<p>Hey everyone,</p>\n<p>A quick clarification regarding the Anvil Liberator:</p>\n<p>Repair, Refuel, and Rearm (RRR): Currently in Alpha 4.10.3 the repair, refuel and rearm feature is limited to internal garages as a mitigation of current exploits, but given player feedback we are fast-tracking a potential solve in place for 5.0 that will enable RRR for all available landing pads and garages on the Liberator, as soon as possible.</p>\n<p>Pledge Store Classification: We&#39;ve also identified an issue where the Liberator is incorrectly listed as &quot;Dropship / Dropship&quot; on the Pledge Store. The Liberator is classified as a Light Carrier, and we&#39;re working to correct this listing as soon as possible.</p>\n<p>Thanks for your patience, we&#39;ll keep you posted as things progress :+1:</p>",
+    "published_at": "2026-11-13T12:45:00.000Z",
+    "fetched_at": "2026-11-13T13:08:16.267Z",
+    "revision": 1,
+    "author_id": "accb560c-7f1f-5e36-b6ee-085a7a1ddeb7",
+    "thread_id": "577125",
+    "thread_title": "CIG what's the deal with the Liberator? RRR on top pads or not? It's a deal breaker for me.. can I get some clarification please?",
+    "forum": "General",
+    "takedown": false
   }
 ]

@@ -100,7 +100,10 @@ describe("the committed bootstrap pack", () => {
     expect(trimItemSample(item)).toEqual(
       Object.fromEntries(
         Object.entries(item).filter(
-          ([k]) => k !== "entity_tags" && k !== "entity_tag_map",
+          ([k]) =>
+            k !== "entity_tags" &&
+            k !== "entity_tag_map" &&
+            k !== "base_variant",
         ),
       ),
     );

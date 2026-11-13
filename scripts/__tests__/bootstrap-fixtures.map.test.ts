@@ -388,7 +388,7 @@ describe("mapping the item samples", () => {
   const stats = committed<ItemStats>("ItemStats");
   // The entity tags are dropped since 13 Nov 2026 (ADR-059). A published build's rows never change
   // (CLAUDE.md section 2), so the rows on file may still carry them until the next build.
-  const SINCE = new Set(["entity_tags", "entity_tag_map"]);
+  const SINCE = new Set(["entity_tags", "entity_tag_map", "base_variant"]);
   const asNow = <T>(row: T): T => {
     const r = row as Record<string, unknown>;
     const raw = r["raw"];

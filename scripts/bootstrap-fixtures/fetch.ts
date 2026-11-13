@@ -3,14 +3,17 @@
  * retries, so the script can never exceed the CLAUDE.md section 9 limit of 30 requests per minute.
  * `fetch` and `sleep` are injected so unit tests run on fake timers with no network.
  *
- * Within one refresh run the steps read the same ships and parts: the patch snapshot, the
- * catalog, the descriptions and the prices each ask for every ship (ADR-059). With
- * `WIKI_RUN_CACHE_DIR` set (the refresh job sets it under RUNNER_TEMP) a ship, part or blueprint
- * read is kept on disk for the rest of the run and a later step's read of it costs no request.
- * `WIKI_RUN_BUILD`, the build the run read as the wiki's default, is named in every such read
- * that names none, so the whole run reads one build even if the wiki moves its default meanwhile,
- * and a kept read is only ever served to a read of the same build. Only reads that name their
- * build are kept. Unset, as on a developer's machine, nothing is kept or changed.
+ * Within one refresh run the steps read the same ships: the patch snapshot, the catalog, the
+ * descriptions and the prices each ask for every ship (ADR-059). With `WIKI_RUN_CACHE_DIR` set
+ * (the refresh job sets it under RUNNER_TEMP) a ship read is kept on disk for the rest of the run
+ * and a later step's read of it costs no request. `WIKI_RUN_BUILD`, the build the run read as
+ * the wiki's default, is named in every ship read that names none, so the whole run reads one
+ * build even if the wiki moves its default meanwhile, and a kept read is only ever served to a
+ * read of the same build. Ships only: a ship's record is the same whether its build is named or
+ * not (its links and its ports' build aside, which the pack does not keep), while a part's links
+ * kept in the pack (its blueprints') would name the build, so parts and blueprints are read as
+ * written. A second rebuild of 4.10.3 this way matched the first, row for row. Unset, nothing is
+ * kept or changed.
  */
 
 import { createHash } from "node:crypto";
@@ -54,12 +57,11 @@ export interface WikiClient {
   readonly cached: number;
 }
 
-const KEPT = /^\/api\/(vehicles|items|blueprints)(\/|$)/;
+const KEPT = /^\/api\/vehicles(\/|$)/;
 
 /**
- * The read as the run sends it: a ship, part or blueprint read that names no build names the
- * run's (`version=`, which every one of those endpoints takes). Anything else, or with no run
- * build, is sent as written.
+ * The read as the run sends it: a ship read that names no build names the run's (`version=`).
+ * Anything else, or with no run build, is sent as written.
  */
 export function pinBuild(path: string, build: string | null): string {
   if (build === null) return path;
@@ -69,9 +71,8 @@ export function pinBuild(path: string, build: string | null): string {
 }
 
 /**
- * The cache key of a read, or null for one that is never kept: only ship, part and blueprint
- * reads that name their build are, so a check of the wiki's builds always asks and no read is
- * served across builds. A ship's record is the same with or without `include=hardpoints` (the
+ * The cache key of a read, or null for one that is never kept: only ship reads that name their
+ * build are, so a check of the wiki's builds always asks and no read is served across builds. A ship's record is the same with or without `include=hardpoints` (the
  * plain read carries its ports too), so the two share a key; the order of the parameters does
  * not matter.
  */

@@ -32,10 +32,12 @@ export function stockTypesOf(
 /**
  * One page of the item list for those types. `filter[type]` takes several types at once, and
  * `filter[include_irrelevant]` keeps the parts the wiki names "<= PLACEHOLDER =>", which most
- * ship-specific thrusters, fuel intakes and armour are.
+ * ship-specific thrusters, fuel intakes and armour are. Sorted by class name: the list's own
+ * order is by name, and with hundreds of parts named alike its pages overlapped, 665 parts of
+ * 3,786 never coming back (13 Nov 2026).
  */
 export function stockListPath(types: readonly string[], page: number): string {
-  return `/api/items?filter[type]=${types.join(",")}&filter[include_irrelevant]=true&page[size]=200&page[number]=${page}`;
+  return `/api/items?filter[type]=${types.join(",")}&filter[include_irrelevant]=true&sort=class_name&page[size]=200&page[number]=${page}`;
 }
 
 /**
@@ -47,6 +49,8 @@ export function stockListPath(types: readonly string[], page: number): string {
 export function stockPage(json: unknown): {
   records: Record<string, unknown>[];
   lastPage: number;
+  /** The list's own count of its records, to check the pages gave every one. */
+  total: number | null;
   refused: number;
 } {
   const page = StockPage.parse(json);
@@ -57,12 +61,20 @@ export function stockPage(json: unknown): {
       records.push(record as Record<string, unknown>);
     else refused += 1;
   }
-  return { records, lastPage: page.meta.last_page, refused };
+  return {
+    records,
+    lastPage: page.meta.last_page,
+    total: page.meta.total ?? null,
+    refused,
+  };
 }
 
 const StockPage = z.looseObject({
   data: z.array(z.unknown()),
-  meta: z.looseObject({ last_page: z.number().int().positive() }),
+  meta: z.looseObject({
+    last_page: z.number().int().positive(),
+    total: z.number().int().nonnegative().optional(),
+  }),
 });
 
 /** A listed record stands for a stock part only when it is that part, for the pack's build. */

@@ -23,12 +23,20 @@ const BUILD = "4.10.3-LIVE.13165946";
 const OLD = "4.10.2-LIVE.12881860";
 
 describe("pinBuild", () => {
-  it("names the run's build in a ship, part or blueprint read that names none", () => {
+  it("names the run's build in a ship read that names none, and only there", () => {
     expect(pinBuild("/api/vehicles/abc", BUILD)).toBe(
       `/api/vehicles/abc?version=${BUILD}`,
     );
+    expect(pinBuild("/api/vehicles?page[size]=200", BUILD)).toBe(
+      `/api/vehicles?page[size]=200&version=${BUILD}`,
+    );
+    // A part's record changes when its build is named (a list record leaves out base_variant):
+    // parts and blueprints go as written.
     expect(pinBuild("/api/items?filter[type]=Cooler", BUILD)).toBe(
-      `/api/items?filter[type]=Cooler&version=${BUILD}`,
+      "/api/items?filter[type]=Cooler",
+    );
+    expect(pinBuild("/api/blueprints?page[size]=200", BUILD)).toBe(
+      "/api/blueprints?page[size]=200",
     );
     // A read that names a build, a check of the builds, and a run with no build go as written.
     expect(pinBuild(`/api/vehicles/abc?version=${OLD}`, BUILD)).toBe(
@@ -42,11 +50,13 @@ describe("pinBuild", () => {
 });
 
 describe("cacheKey", () => {
-  it("keeps only ship, part and blueprint reads that name their build", () => {
-    expect(cacheKey(`/api/items/abc?version=${BUILD}`)).toBe(
-      `/api/items/abc?version=${BUILD}`,
+  it("keeps only ship reads that name their build", () => {
+    expect(cacheKey(`/api/vehicles/abc?version=${BUILD}`)).toBe(
+      `/api/vehicles/abc?version=${BUILD}`,
     );
-    expect(cacheKey("/api/items/abc")).toBeNull();
+    expect(cacheKey("/api/vehicles/abc")).toBeNull();
+    expect(cacheKey(`/api/items/abc?version=${BUILD}`)).toBeNull();
+    expect(cacheKey(`/api/blueprints?version=${BUILD}`)).toBeNull();
     expect(cacheKey(`/api/game-versions?version=${BUILD}`)).toBeNull();
     expect(cacheKey("/api/game-versions/default")).toBeNull();
   });
@@ -63,13 +73,9 @@ describe("cacheKey", () => {
     );
     // Parameter order does not matter.
     expect(
-      cacheKey(
-        `/api/items?page[number]=2&filter[type]=Cooler&version=${BUILD}`,
-      ),
+      cacheKey(`/api/vehicles?page[number]=2&page[size]=50&version=${BUILD}`),
     ).toBe(
-      cacheKey(
-        `/api/items?filter[type]=Cooler&version=${BUILD}&page[number]=2`,
-      ),
+      cacheKey(`/api/vehicles?page[size]=50&version=${BUILD}&page[number]=2`),
     );
   });
 });
@@ -148,7 +154,9 @@ describe("the run's cache", () => {
       cacheDir: dir,
       build: BUILD,
     });
-    await expect(client.getJson("/api/items/gone")).rejects.toThrow("HTTP 404");
+    await expect(client.getJson("/api/vehicles/gone")).rejects.toThrow(
+      "HTTP 404",
+    );
     expect(readdirSync(dir)).toHaveLength(0);
     for (const options of [
       { cacheDir: dir, build: null },
@@ -160,8 +168,8 @@ describe("the run's cache", () => {
         spacingMs: 0,
         ...options,
       });
-      await none.getJson("/api/items/a");
-      await none.getJson("/api/items/a");
+      await none.getJson("/api/vehicles/a");
+      await none.getJson("/api/vehicles/a");
       expect(none.requests).toBe(2);
     }
     expect(readdirSync(dir)).toHaveLength(0);
@@ -216,7 +224,7 @@ describe("the stock parts' list read", () => {
 
   it("pages the list with every type at once and the placeholders in", () => {
     expect(stockListPath(["Cooler", "MainThruster"], 3)).toBe(
-      "/api/items?filter[type]=Cooler,MainThruster&filter[include_irrelevant]=true&page[size]=200&page[number]=3",
+      "/api/items?filter[type]=Cooler,MainThruster&filter[include_irrelevant]=true&sort=class_name&page[size]=200&page[number]=3",
     );
   });
 
@@ -238,6 +246,9 @@ describe("the stock parts' list read", () => {
       19,
       1,
     ]);
+    expect(
+      stockPage({ data: [], meta: { last_page: 19, total: 3786 } }).total,
+    ).toBe(3786);
     // A page that cannot say how many pages there are halts.
     expect(() => stockPage({ data: [good] })).toThrow();
   });

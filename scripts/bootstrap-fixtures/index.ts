@@ -346,9 +346,11 @@ async function main(): Promise<void> {
   const stockTypes = stockTypesOf(vehicles, stockItems);
   const listed = new Map<string, Record<string, unknown>>();
   let refused = 0;
+  let total: number | null = null;
   for (let page = 1; stockTypes.length > 0; page += 1) {
     const list = stockPage(await get(stockListPath(stockTypes, page)));
     refused += list.refused;
+    total = list.total;
     for (const record of list.records)
       listed.set(String(record["uuid"]), record);
     if (page >= list.lastPage) break;
@@ -381,6 +383,9 @@ async function main(): Promise<void> {
     count: items.length,
     types: stockTypes.length,
     listed: listed.size,
+    // Fewer than the list's own count means its pages overlapped; the parts it missed are read
+    // alone, so the pack is whole either way, only slower.
+    list_total: total,
     refused,
     read_alone: readAlone,
   });

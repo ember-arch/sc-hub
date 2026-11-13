@@ -54,9 +54,62 @@ describe("buildFittingIndex", () => {
     const jump = index.carries("ORIG_890Jump");
     const marked = jump.find((c) => c.mark === "S");
     expect(marked?.note).toMatch(/Safe to Land/);
+    expect(jump.find((c) => c.mark === "N")?.note).toMatch(/Safe to Land/);
     expect(noteFor({ "S/N": "Not / Safe" }, "N")).toBe("Not / Safe");
     expect(noteFor({ "*": "wheels" }, "*")).toBe("wheels");
     expect(noteFor({ "*": "wheels" }, "SRC")).toBeNull();
     expect(noteFor({}, null)).toBeNull();
+  });
+
+  it("reads a letter the legend uses twice by the column it is in", () => {
+    // Since 12 Nov 2026 the sheet's "S" is both the 890 Jump's "S/N" and an entry of its own.
+    const legend = { "S/N": "Not / Safe to Land", S: "needs vehicle support" };
+    expect(noteFor(legend, "S", new Set(["S", "N"]))).toBe(
+      "Not / Safe to Land",
+    );
+    expect(noteFor(legend, "S", new Set(["S"]))).toBe("needs vehicle support");
+    expect(noteFor(legend, "S")).toBe("needs vehicle support");
+    expect(noteFor(legend, "N", new Set(["N"]))).toBe("Not / Safe to Land");
+    expect(noteFor({ "S/N": "pair" }, "S/N")).toBe("pair");
+  });
+
+  it("gives a lone 'S' outside the 890 Jump the legend's own words for it", () => {
+    const own = list.legend.marks.S;
+    for (const f of list.fits) {
+      const carrier = list.carriers[f.carrier]!;
+      const vehicle = list.vehicles[f.vehicle]!;
+      if (f.mark !== "S" || carrier.label === "890 Jump") continue;
+      const entry = index
+        .carriedBy(vehicle.class_names[0] ?? "")
+        .find((c) => c.carrier.id === carrier.id);
+      if (entry === undefined) continue;
+      const words = own ?? list.legend.marks["S/N"] ?? null;
+      const contradicts = Object.entries(list.legend.verdicts).some(
+        ([v, w]) => v !== entry.verdict && words?.startsWith(w) === true,
+      );
+      expect(entry.note).toBe(contradicts ? null : words);
+    }
+  });
+
+  it("drops words that open with another verdict's words, and keeps them under their own", () => {
+    const sheet = ShipFitList.parse({
+      ...list,
+      carriers: [
+        { ...list.carriers[0]!, id: 0, class_names: ["TEST_Carrier"] },
+      ],
+      vehicles: [{ ...list.vehicles[0]!, id: 0, class_names: ["TEST_Car"] }],
+      legend: {
+        verdicts: list.legend.verdicts,
+        marks: { "S/N": "Not / Safe", S: "Good Fit, but needs a lift" },
+      },
+      fits: [{ carrier: 0, vehicle: 0, verdict: "no", mark: "S" }],
+    });
+    const red = buildFittingIndex(sheet).carries("TEST_Carrier")[0]!;
+    expect([red.mark, red.note]).toEqual(["S", null]);
+    const green = buildFittingIndex({
+      ...sheet,
+      fits: [{ carrier: 0, vehicle: 0, verdict: "fits", mark: "S" }],
+    }).carries("TEST_Carrier")[0]!;
+    expect(green.note).toBe("Good Fit, but needs a lift");
   });
 });

@@ -41,6 +41,13 @@ The owner sent the sheet's address the same day. What the sheet holds, read from
 | The author's agreement | The owner directed, the same day, "forget the agreement, assume we have it": the fixture's `source.consent` is recorded as granted on the owner's word, and `docs/legal/attribution.md` says so. The earlier row's "shown only once the author has agreed" is superseded; the credit, the build, the date and the link stay on every list | The owner owns the project's relationships and made the call |
 | Refresh | The daily refresh runs the script (one request); a sheet the script cannot read halts the step and files its report like any other | ADR-023 |
 
+## Amended 2026-11-13: one letter, two meanings
+
+The 13 November refresh held the sheet on a branch: its legend had gained an `S` of its own ("Good Fit, but needs vehicle support for lifting", on the Galaxy's ground vehicles) beside the 890 Jump's `S/N` ("Not / Safe to Land"), and the lookup gave every `S` the new words, the 890 Jump's included.
+
+- Where a mark has its own entry and a pair names it too, the pair's words stand on a carrier column that also uses the pair's other letter (the 890 Jump has both S and N), and the mark's own entry everywhere else (`noteFor` in `apps/web/lib/fitting.ts`). The rule reads the sheet; no carrier is named in code.
+- Words that open with another verdict's own words (a "Good Fit, but…" on a red cell, as the Starlancer's one `S` is) would contradict the cell's colour, so the mark is shown as written, like a mark the legend does not explain.
+
 ## Consequences
 
 - `packages/schema` gains `CargoBox` and `CargoBoxes`; `fixtures/cargo/` holds the shapes and the script's sample; `apps/web/lib/cargo.ts` and `showcase/cargo-grids.tsx` draw the section; the refresh gains the `cargo-boxes` step.

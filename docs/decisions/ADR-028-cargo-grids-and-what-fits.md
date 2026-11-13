@@ -45,8 +45,8 @@ The owner sent the sheet's address the same day. What the sheet holds, read from
 
 The 13 November refresh held the sheet on a branch: its legend had gained an `S` of its own ("Good Fit, but needs vehicle support for lifting", on the Galaxy's ground vehicles) beside the 890 Jump's `S/N` ("Not / Safe to Land"), and the lookup gave every `S` the new words, the 890 Jump's included.
 
-- Where a mark has its own entry and a pair names it too, the pair's words stand on a carrier column that also uses the pair's other letter (the 890 Jump has both S and N), and the mark's own entry everywhere else (`noteFor` in `apps/web/lib/fitting.ts`). The rule reads the sheet; no carrier is named in code.
-- Words that open with another verdict's own words (a "Good Fit, but…" on a red cell, as the Starlancer's one `S` is) would contradict the cell's colour, so the mark is shown as written, like a mark the legend does not explain.
+- Where a mark has its own entry and a pair names it too, the pair's words stand on a carrier that also uses the pair's other letter in any of its columns (the 890 Jump's hangar column has both S and N, and its cargo column reads the same), and the mark's own entry everywhere else (`noteFor` in `apps/web/lib/fitting.ts`). The rule reads the sheet; no carrier is named in code. If the sheet ever drops every N from the 890 Jump, its S marks take the Galaxy's words and the unit suite fails on the refresh, so the change waits on a branch rather than shipping.
+- Words that open with another verdict's own words (a "Good Fit, but…" on a red cell) would contradict the cell's colour, so the mark is shown as written, like a mark the legend does not explain. On today's sheet that is one cell: the Starlancer's cargo column against the F7A, a red `S` that predates the Galaxy's entry and that the page had shown with the 890 Jump's landing sentence. What it means there is unknown, so it now shows as a bare `S`.
 
 ## Consequences
 

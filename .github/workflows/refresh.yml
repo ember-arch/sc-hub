@@ -76,7 +76,8 @@ jobs:
     # A gate that failed lets the refresh go: a second refresh costs requests, a missed one a day.
     if: ${{ !cancelled() && needs.gate.outputs.go != 'false' }}
     runs-on: ubuntu-latest
-    # A rebuild is some three thousand requests at the polite limit, about two hours.
+    # A rebuild was some three thousand requests at the polite limit, about two hours; with the
+    # parts read from the wiki's list and each ship read once a run (ADR-059), some five hundred.
     timeout-minutes: 300
     steps:
       - uses: actions/checkout@v7
@@ -97,6 +98,37 @@ jobs:
           echo "builds=$builds" >> "$GITHUB_OUTPUT"
           [ -z "$builds" ] || echo "Waiting on a fix: $builds"
 
+      # A new build's patch comparison goes first and lands on its own (ADR-059): about fifteen
+      # minutes of reads and its checks, where it used to wait out the whole rebuild. The full pass
+      # below finds the build on file, and reads the same ships from the run's cache.
+      - name: Read a new build's patch comparison first
+        id: patches
+        continue-on-error: true
+        env:
+          SC_HUB_CONTACT_EMAIL: ${{ vars.SC_HUB_CONTACT_EMAIL }}
+          WIKI_RUN_CACHE_DIR: ${{ runner.temp }}/wiki-cache
+        run: pnpm exec tsx scripts/refresh/index.ts --only patches --out "$RUNNER_TEMP/refresh-patches"
+
+      - name: Land the patch comparison
+        if: steps.patches.outcome == 'success'
+        continue-on-error: true
+        run: |
+          if git diff --quiet -- fixtures/patches && [ -z "$(git ls-files --others --exclude-standard fixtures/patches)" ]; then
+            echo "No new build's patch comparison."
+            exit 0
+          fi
+          # Its own checks; failing them, it stays in the tree and lands or waits with the full pass.
+          if ! { pnpm test && pnpm build; }; then
+            echo "::warning title=Patch comparison::The checks failed on the new build's patch comparison; it goes with the full pass."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A fixtures/patches
+          git commit -F "$RUNNER_TEMP/refresh-patches/commit.txt"
+          git pull --rebase origin "${{ github.event.repository.default_branch }}"
+          git push origin HEAD:"${{ github.event.repository.default_branch }}"
+
       - name: Run the fetchers
         id: fetch
         continue-on-error: true
@@ -105,12 +137,15 @@ jobs:
           REFRESH_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           REFRESH_WAITING_BUILDS: ${{ steps.waiting.outputs.builds }}
           FORCE: ${{ inputs.force_rebuild == true && '--force-rebuild' || '' }}
+          WIKI_RUN_CACHE_DIR: ${{ runner.temp }}/wiki-cache
         run: pnpm exec tsx scripts/refresh/index.ts $FORCE --out "$RUNNER_TEMP/refresh"
 
       - name: Summary
         if: always()
         run: |
           f="$RUNNER_TEMP/refresh/summary.md"
+          p="$RUNNER_TEMP/refresh-patches/summary.md"
+          [ -f "$p" ] && { cat "$p"; echo; } >> "$GITHUB_STEP_SUMMARY"
           if [ -f "$f" ]; then cat "$f" >> "$GITHUB_STEP_SUMMARY"; else echo "The refresh job wrote no summary; see the log." >> "$GITHUB_STEP_SUMMARY"; fi
           for log in "$RUNNER_TEMP"/refresh/*.log; do [ -f "$log" ] && { echo "== $(basename "$log")"; tail -n 40 "$log"; }; done || true
 

@@ -35,6 +35,7 @@ import {
   mapVehicleStats,
 } from "./map.js";
 import { linkEditions } from "./editions.js";
+import { stockListPath, stockTypesOf } from "./stock.js";
 import {
   CATALOG_TYPES,
   ShipList,
@@ -320,12 +321,34 @@ async function main(): Promise<void> {
     );
   }
 
-  // Every distinct stock component, once, by uuid.
+  // Every distinct stock component, once, by uuid. The wiki's item list holds the same record a
+  // single read does, 200 a page; with its placeholder-named parts (most thrusters, fuel intakes
+  // and armour) included, every stock type fits in some twenty pages where single reads took two
+  // thousand requests (ADR-059). A part the list lacks, or lists for another build, is read alone.
   const itemRaws = new Map<string, Record<string, unknown>>();
   const items = [];
   const sortedStock = [...stockItems].sort(([a], [b]) => a.localeCompare(b));
+  const stockTypes = stockTypesOf(vehicles, stockItems);
+  const listed = new Map<string, Record<string, unknown>>();
+  for (let page = 1; stockTypes.length > 0; page += 1) {
+    const json = await get(stockListPath(stockTypes, page));
+    const list = WikiItemListResponse.parse(json);
+    for (const record of (json as { data: Record<string, unknown>[] }).data)
+      if (typeof record["uuid"] === "string")
+        listed.set(record["uuid"], record);
+    if (page >= list.meta.last_page) break;
+  }
+  let readAlone = 0;
   for (const [className, uuid] of sortedStock) {
-    const json = await get(`/api/items/${encodeURIComponent(uuid)}`);
+    const record = listed.get(uuid);
+    const fromList =
+      record !== undefined &&
+      record["class_name"] === className &&
+      record["version"] === version;
+    if (!fromList) readAlone += 1;
+    const json = fromList
+      ? { data: record }
+      : await get(`/api/items/${encodeURIComponent(uuid)}`);
     const raw = WikiItemResponse.parse(json).data;
     if (raw.class_name !== className) {
       throw new MapError(
@@ -340,7 +363,14 @@ async function main(): Promise<void> {
     items.push(raw);
     manufacturerSources.push(raw.manufacturer);
   }
-  log({ event: "bootstrap.fetched", kind: "items", count: items.length });
+  log({
+    event: "bootstrap.fetched",
+    kind: "items",
+    count: items.length,
+    types: stockTypes.length,
+    listed: listed.size,
+    read_alone: readAlone,
+  });
 
   // The catalogue the loadout editor offers (ADR-016), 200 records a page. Stock parts are already
   // in. A part that fits no port on the pack's ships, has the wiki's placeholder name or comes

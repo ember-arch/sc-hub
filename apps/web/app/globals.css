@@ -149,6 +149,16 @@
 .patch-table .num {
   @apply text-right font-mono;
 }
+/* A figure keeps every digit the source gives (ADR-049): on a phone, 4.10.3's fuel use per Gm
+   (0.0000614632767165498) breaks across lines rather than push the table sideways, as does a
+   part the pack has no name for yet, shown by its class name (Mount_Gimbal_S3_Vanguard_Harbinger).
+   Phones only: wider, the columns have room, and a word broken mid-way reads worse. */
+@media (width < 40rem) {
+  .patch-table th,
+  .patch-table td {
+    overflow-wrap: anywhere;
+  }
+}
 .patch-table .old {
   @apply text-secondary;
 }

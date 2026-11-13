@@ -93,6 +93,7 @@ const WikiVehicle = z.object({
   data: z.object({
     class_name: z.string(),
     version: z.string(),
+    pledge_url: z.string().nullable().optional(),
     skus: z.array(AnySku).nullable().optional(),
     uex_prices: z
       .object({ purchase: z.array(UexRow), rental: z.array(UexRow) })
@@ -107,7 +108,13 @@ const StatsRow = z.object({
   raw: z.object({ uuid: z.string() }).loose(),
 });
 const VehicleRow = z
-  .object({ class_name: z.string(), slug: z.string() })
+  .object({
+    class_name: z.string(),
+    slug: z.string(),
+    name: z.string(),
+    status: z.string(),
+    base_variant_of: z.string().nullable().optional(),
+  })
   .loose();
 
 const iso = (value: string): string => {
@@ -346,12 +353,46 @@ export function offerFromJsonLd(
 
 const sleep = (ms: number) => new Promise((done) => setTimeout(done, ms));
 
-async function conceptOffers(fetchedAt: string): Promise<PledgeOffer[]> {
-  const concepts = z
-    .array(ConceptShip)
-    .parse(JSON.parse(readFileSync(conceptFile, "utf8")));
+/** A ship whose price comes from its RSI pledge page. */
+interface PledgePage {
+  readonly slug: string;
+  /** The pack's class name; null for a concept the pack does not hold. */
+  readonly class_name: string | null;
+  readonly name: string;
+  readonly page_url: string;
+}
+
+/**
+ * The pledge pages to read: every concept page (ADR-022), and every concept ship the pack holds
+ * whose wiki record has no store price (a concept that joined the pack, as the Galaxy and the
+ * Liberator did in 4.10.3, ADR-059). A page is read once.
+ */
+export function pledgePages(
+  concepts: readonly { slug: string; name: string; page_url: string }[],
+  inPack: readonly PledgePage[],
+): PledgePage[] {
+  const out: PledgePage[] = [];
+  const seen = new Set<string>();
+  const packSlugs = new Set(inPack.map((p) => p.slug));
+  for (const page of [
+    ...inPack,
+    ...concepts
+      .filter((c) => !packSlugs.has(c.slug))
+      .map((c) => ({ ...c, class_name: null })),
+  ]) {
+    if (seen.has(page.page_url)) continue;
+    seen.add(page.page_url);
+    out.push(page);
+  }
+  return out.sort((a, b) => a.slug.localeCompare(b.slug));
+}
+
+async function pageOffers(
+  pages: readonly PledgePage[],
+  fetchedAt: string,
+): Promise<PledgeOffer[]> {
   const out: PledgeOffer[] = [];
-  for (const [i, concept] of concepts.entries()) {
+  for (const [i, concept] of pages.entries()) {
     if (i > 0) await sleep(RSI_SPACING_MS);
     // RSI redirects the matrix's old addresses to /en/...: follow only after the spacing.
     const response = await rsiGet(
@@ -377,7 +418,7 @@ async function conceptOffers(fetchedAt: string): Promise<PledgeOffer[]> {
     out.push(
       PledgeOffer.parse({
         slug: concept.slug,
-        class_name: null,
+        class_name: concept.class_name,
         title: offer.name ?? concept.name,
         kind: "standalone",
         store_section: null,
@@ -402,12 +443,14 @@ async function main(): Promise<void> {
   const runId = randomUUID();
   const manifest = Manifest.parse(readJson("manifest.json"));
   const stats = z.array(StatsRow).parse(readJson("VehicleStats.json"));
-  const slugs = new Map(
+  const vehicles = new Map(
     z
       .array(VehicleRow)
       .parse(readJson("Vehicle.json"))
-      .map((v) => [v.class_name, v.slug]),
+      .map((v) => [v.class_name, v]),
   );
+  const slugs = new Map([...vehicles].map(([cls, v]) => [cls, v.slug]));
+  const unpriced: PledgePage[] = [];
   const client = createWikiClient({
     fetch: (url, init) => globalThis.fetch(url, init),
     userAgent: USER_AGENT,
@@ -446,6 +489,20 @@ async function main(): Promise<void> {
       fetchedAt,
     );
     offers.push(...own.offers);
+    const vehicle = vehicles.get(row.class_name);
+    if (
+      own.offers.length === 0 &&
+      vehicle?.status === "concept" &&
+      (vehicle.base_variant_of ?? null) === null &&
+      typeof json.pledge_url === "string" &&
+      json.pledge_url !== ""
+    )
+      unpriced.push({
+        slug,
+        class_name: row.class_name,
+        name: vehicle.name,
+        page_url: json.pledge_url,
+      });
     shops.push(...prices.rows);
     skipped += prices.skipped;
     staleSkus += own.skipped;
@@ -467,7 +524,12 @@ async function main(): Promise<void> {
       }),
     );
   }
-  offers.push(...(await conceptOffers(fetchedAt)));
+  const concepts = z
+    .array(ConceptShip)
+    .parse(JSON.parse(readFileSync(conceptFile, "utf8")));
+  offers.push(
+    ...(await pageOffers(pledgePages(concepts, unpriced), fetchedAt)),
+  );
   offers.sort(
     (a, b) =>
       a.slug.localeCompare(b.slug) ||

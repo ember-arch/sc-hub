@@ -9,7 +9,7 @@
     "last_update": "2026-11-12",
     "consent": "granted"
   },
-  "fetched_at": "2026-11-13T06:39:53.325Z",
+  "fetched_at": "2026-11-13T17:55:51.708Z",
   "legend": {
     "verdicts": {
       "fits": "Good Fit",
@@ -54,8 +54,7 @@
       "marker": null,
       "unreleased": false,
       "class_names": [
-        "AEGS_Hammerhead_GS",
-        "AEGS_Hammerhead"
+        "AEGS_Hammerhead_GS"
       ],
       "fabricator": "fits"
     },
@@ -300,6 +299,7 @@
       "marker": null,
       "unreleased": false,
       "class_names": [
+        "DRAK_Caterpillar_Boarded_ShatteredBlade",
         "DRAK_Caterpillar"
       ],
       "fabricator": "fits"
@@ -658,8 +658,7 @@
       "unreleased": false,
       "class_names": [
         "RSI_Constellation_Andromeda_GS_Display",
-        "RSI_Constellation_Andromeda_GS",
-        "RSI_Constellation_Andromeda"
+        "RSI_Constellation_Andromeda_GS"
       ],
       "fabricator": "fits"
     },
@@ -671,8 +670,7 @@
       "marker": null,
       "unreleased": false,
       "class_names": [
-        "RSI_Constellation_Aquila_GS",
-        "RSI_Constellation_Aquila"
+        "RSI_Constellation_Aquila_GS"
       ],
       "fabricator": "fits"
     },
@@ -1625,9 +1623,7 @@
       "maker_label": "Anvil",
       "row": 76,
       "group": "ground",
-      "class_names": [
-        "ANVL_Ballista"
-      ]
+      "class_names": []
     },
     {
       "id": 72,
@@ -1635,9 +1631,7 @@
       "maker_label": "Anvil",
       "row": 77,
       "group": "ground",
-      "class_names": [
-        "ANVL_Centurion"
-      ]
+      "class_names": []
     },
     {
       "id": 73,
@@ -1645,9 +1639,7 @@
       "maker_label": "Anvil",
       "row": 78,
       "group": "ground",
-      "class_names": [
-        "ANVL_Spartan"
-      ]
+      "class_names": []
     },
     {
       "id": 74,

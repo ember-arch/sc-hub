@@ -2,7 +2,7 @@
 
 Some game data via the Star Citizen Wiki API (api.star-citizen.wiki).
 
-The catalog until Phase 1 (ADR-004, ADR-022): 253 ships and vehicles of LIVE 4.10.2-LIVE.12881860, their stock loadouts, the components those loadouts reference and the catalogue of ship guns, missiles and torpedoes, shields, power plants, coolers and quantum drives the loadout editor offers (ADR-016), fetched from the Star Citizen Wiki API by `scripts/bootstrap-fixtures` on 2026-11-09T21:51:08.379Z. Phase 1 replaces this pack with records extracted from the game files; until then every page that shows this data carries the credit line above (`docs/legal/attribution.md`).
+The catalog until Phase 1 (ADR-004, ADR-022): 253 ships and vehicles of LIVE 4.10.3-LIVE.13165946, their stock loadouts, the components those loadouts reference and the catalogue of ship guns, missiles and torpedoes, shields, power plants, coolers and quantum drives the loadout editor offers (ADR-016), fetched from the Star Citizen Wiki API by `scripts/bootstrap-fixtures` on 2026-11-13T15:09:45.251Z. Phase 1 replaces this pack with records extracted from the game files; until then every page that shows this data carries the credit line above (`docs/legal/attribution.md`).
 
 **Do not edit these files by hand.** Regenerate with:
 
@@ -14,7 +14,7 @@ pnpm --filter schema build && pnpm exec tsx scripts/bootstrap-fixtures/index.ts
 
 ## Contents
 
-Game version `4.10.2-LIVE.12881860`, channel LIVE, as reported by the API's default version at fetch time. `manifest.json` lists every file with its sha256, byte size and row count; `packages/schema` (`parsePack`) validates the whole pack before anything reads it.
+Game version `4.10.3-LIVE.13165946`, channel LIVE, as reported by the API's default version at fetch time. `manifest.json` lists every file with its sha256, byte size and row count; `packages/schema` (`parsePack`) validates the whole pack before anything reads it.
 
 | Ship | class_name | Manufacturer | Size | Status |
 | --- | --- | --- | --- | --- |
@@ -28,9 +28,7 @@ Game version `4.10.2-LIVE.12881860`, channel LIVE, as reported by the API's defa
 | Gladius | `AEGS_Gladius` | AEGS | small | flight_ready |
 | Gladius Pirate | `AEGS_Gladius_PIR` | AEGS | small | flight_ready |
 | Gladius Valiant | `AEGS_Gladius_Valiant` | AEGS | small | flight_ready |
-| Hammerhead | `AEGS_Hammerhead` | AEGS | large | flight_ready |
 | Hammerhead | `AEGS_Hammerhead_GS` | AEGS | large | flight_ready |
-| Hammerhead 2949 Best In Show Edition | `AEGS_Hammerhead_Showdown` | AEGS | large | flight_ready |
 | Idris-M | `AEGS_Idris_M` | AEGS | capital | flight_ready |
 | Idris-P | `AEGS_Idris_P` | AEGS | capital | flight_ready |
 | Idris-P | `AEGS_Idris_P_FW_25` | AEGS | capital | flight_ready |
@@ -53,16 +51,16 @@ Game version `4.10.2-LIVE.12881860`, channel LIVE, as reported by the API's defa
 | Vanguard Sentinel | `AEGS_Vanguard_Sentinel` | AEGS | medium | flight_ready |
 | Arrow | `ANVL_Arrow` | ANVL | small | flight_ready |
 | Asgard | `ANVL_Asgard` | ANVL | large | flight_ready |
-| Ballista | `ANVL_Ballista` | ANVL |  | flight_ready |
-| Ballista Dunestalker | `ANVL_Ballista_Dunestalker` | ANVL | vehicle | flight_ready |
-| Ballista Snowblind | `ANVL_Ballista_Snowblind` | ANVL | vehicle | flight_ready |
+| HM6 Ballista | `ANVL_Ballista` | ANVL |  | flight_ready |
+| HM6 Ballista Dunestalker | `ANVL_Ballista_Dunestalker` | ANVL | vehicle | flight_ready |
+| HM6 Ballista Snowblind | `ANVL_Ballista_Snowblind` | ANVL | vehicle | flight_ready |
 | C8 Pisces | `ANVL_C8_Pisces` | ANVL | small | flight_ready |
 | C8R Pisces Rescue | `ANVL_C8R_Pisces` | ANVL | small | flight_ready |
 | C8X Pisces Expedition | `ANVL_C8X_Pisces_Expedition` | ANVL | small | flight_ready |
 | Carrack | `ANVL_Carrack` | ANVL | large | flight_ready |
 | Carrack | `ANVL_Carrack_BIS2950` | ANVL | large | flight_ready |
 | Carrack Expedition | `ANVL_Carrack_Expedition` | ANVL | large | flight_ready |
-| Centurion | `ANVL_Centurion` | ANVL |  | flight_ready |
+| HM6 Centurion | `ANVL_Centurion` | ANVL |  | flight_ready |
 | Gladiator | `ANVL_Gladiator` | ANVL | small | flight_ready |
 | Hawk | `ANVL_Hawk` | ANVL | small | flight_ready |
 | F7A Hornet Mk I | `ANVL_Hornet_F7A_Mk1` | ANVL | small | flight_ready |
@@ -79,12 +77,13 @@ Game version `4.10.2-LIVE.12881860`, channel LIVE, as reported by the API's defa
 | F7C-S Hornet Ghost Mk I | `ANVL_Hornet_F7CS` | ANVL | small | flight_ready |
 | F7C-S Hornet Ghost Mk II | `ANVL_Hornet_F7CS_Mk2` | ANVL | small | flight_ready |
 | Hurricane | `ANVL_Hurricane` | ANVL | small | flight_ready |
+| Liberator | `ANVL_Liberator` | ANVL | large | concept |
 | F8A Lightning | `ANVL_Lightning_F8` | ANVL | small | flight_ready |
 | F8C Lightning | `ANVL_Lightning_F8C` | ANVL | small | flight_ready |
 | F8C Lightning Executive Edition | `ANVL_Lightning_F8C_Exec` | ANVL | small | flight_ready |
 | F8C Lightning | `ANVL_Lightning_F8C_Plat` | ANVL | small | flight_ready |
 | Paladin | `ANVL_Paladin` | ANVL | medium | flight_ready |
-| Spartan | `ANVL_Spartan` | ANVL |  | flight_ready |
+| HM6 Spartan | `ANVL_Spartan` | ANVL |  | flight_ready |
 | Terrapin | `ANVL_Terrapin` | ANVL | small | flight_ready |
 | Terrapin Medic | `ANVL_Terrapin_Medic` | ANVL | small | flight_ready |
 | Valkyrie | `ANVL_Valkyrie` | ANVL | large | flight_ready |
@@ -122,6 +121,7 @@ Game version `4.10.2-LIVE.12881860`, channel LIVE, as reported by the API's defa
 | M2 Hercules Starlifter | `CRUS_Starlifter_M2` | CRUS | large | flight_ready |
 | Buccaneer | `DRAK_Buccaneer` | DRAK | small | flight_ready |
 | Caterpillar | `DRAK_Caterpillar` | DRAK | large | flight_ready |
+| Caterpillar | `DRAK_Caterpillar_Boarded_ShatteredBlade` | DRAK | large | flight_ready |
 | Caterpillar Pirate | `DRAK_Caterpillar_Pirate` | DRAK | large | flight_ready |
 | Clipper | `DRAK_Clipper` | DRAK | small | flight_ready |
 | Corsair | `DRAK_Corsair` | DRAK | large | flight_ready |
@@ -224,18 +224,18 @@ Game version `4.10.2-LIVE.12881860`, channel LIVE, as reported by the API's defa
 | Aurora Mk I MR | `RSI_Aurora_GS_MR` | RSI | small | flight_ready |
 | Aurora Mk I SE | `RSI_Aurora_GS_SE` | RSI | small | flight_ready |
 | Aurora Mk II | `RSI_Aurora_Mk2` | RSI | small | flight_ready |
-| Constellation Mk IV Andromeda | `RSI_Constellation_Andromeda` | RSI | large | flight_ready |
 | Constellation Mk IV Andromeda | `RSI_Constellation_Andromeda_GS` | RSI | large | flight_ready |
 | Constellation Mk IV Andromeda | `RSI_Constellation_Andromeda_GS_Display` | RSI | large | flight_ready |
-| Constellation Mk IV Aquila | `RSI_Constellation_Aquila` | RSI | large | flight_ready |
 | Constellation Mk IV Aquila | `RSI_Constellation_Aquila_GS` | RSI | large | flight_ready |
 | Constellation Mk V Centaurus | `RSI_Constellation_Mk5_Centaurus` | RSI | large | flight_ready |
 | Constellation Mk V Centaurus | `RSI_Constellation_Mk5_Centaurus_Display` | RSI | large | flight_ready |
 | Constellation Mk IV Phoenix | `RSI_Constellation_Phoenix` | RSI | large | flight_ready |
-| Constellation Mk IV Phoenix Emerald | `RSI_Constellation_Phoenix_Emerald` | RSI | large | flight_ready |
 | Constellation Mk IV Phoenix | `RSI_Constellation_Phoenix_GS` | RSI | large | flight_ready |
 | Constellation Mk IV Taurus | `RSI_Constellation_Taurus` | RSI | large | flight_ready |
 | Constellation Mk IV Taurus | `RSI_Constellation_Taurus_GS` | RSI | large | flight_ready |
+| Galaxy | `RSI_Galaxy` | RSI | large | concept |
+| Galaxy | `RSI_Galaxy_TEMP_Cargo` | RSI | large | concept |
+| Galaxy | `RSI_Galaxy_TEMP_Medical` | RSI | large | concept |
 | Hermes | `RSI_Hermes` | RSI | large | flight_ready |
 | Lynx | `RSI_Lynx` | RSI |  | flight_ready |
 | Mantis | `RSI_Mantis` | RSI | small | flight_ready |
@@ -278,9 +278,9 @@ Game version `4.10.2-LIVE.12881860`, channel LIVE, as reported by the API's defa
 | Manufacturer | 60 |
 | Vehicle | 253 |
 | VehicleStats | 253 |
-| Port | 25100 |
-| Item | 2909 |
-| ItemStats | 2909 |
+| Port | 24789 |
+| Item | 2924 |
+| ItemStats | 2924 |
 
 ## How the API's vocabulary was mapped
 
@@ -292,8 +292,8 @@ Every value is the API's own; the script only maps the API's type names onto the
 - Units are the API's: metres, kilograms, SCU, metres per second, and degrees per second for the turn rates in `raw.agility` (ADR-043). No conversion was applied.
 - `Vehicle.base_variant_of` is null: the API exposes no base-variant relation.
 - `Vehicle.role` is the ship-matrix focus list joined with commas.
-- Ports of type `` (9085), `AmmoBox` (13), `Container` (50), `LifeSupportGenerator` (221), `Misc` (683), `Module` (13), `SalvageFieldEmitter` (6), `SalvageFieldSupporter` (2), `SalvageFillerStation` (10), `SalvageInternalStorage` (6), `ToolArm` (18), `UNDEFINED` (41), `WeaponAttachment` (712), `WeaponMount` (13) are kept as `other` and carry no stock item; `Paints` ports are kept as `paint` without one. Only component ports reference an `Item`.
-- Interior fittings and controllers are not hardpoints and have no row: `AIModule` (77), `AirTrafficController` (219), `AttachedPart` (364), `CapacitorAssignmentController` (245), `CommsController` (247), `ControlPanel` (22), `CoolerController` (247), `Decal` (4), `Display` (545), `DockingAnimator` (52), `DockingCollar` (268), `Door` (609), `DoorController` (247), `EnergyController` (248), `Flair_Floor` (3), `FlightController` (221), `FuelController` (217), `LandingSystem` (218), `Light` (3), `LightController` (252), `MiningController` (11), `MissileController` (267), `Relay` (552), `Room` (51), `SalvageController` (51), `Seat` (631), `SeatAccess` (714), `SeatDashboard` (418), `SelfDestruct` (250), `ShieldController` (241), `TargetSelector` (1), `Usable` (264), `WeaponController` (500), `WheeledController` (27), `unnamed` (1).
+- Ports of type `` (8878), `AmmoBox` (13), `Container` (50), `LifeSupportGenerator` (221), `Misc` (691), `Module` (16), `SalvageFieldEmitter` (6), `SalvageFieldSupporter` (2), `SalvageFillerStation` (10), `SalvageInternalStorage` (6), `ToolArm` (18), `UNDEFINED` (42), `WeaponAttachment` (712), `WeaponMount` (13) are kept as `other` and carry no stock item; `Paints` ports are kept as `paint` without one. Only component ports reference an `Item`.
+- Interior fittings and controllers are not hardpoints and have no row: `AIModule` (78), `AirTrafficController` (219), `AttachedPart` (364), `CapacitorAssignmentController` (245), `CommsController` (247), `ControlPanel` (22), `CoolerController` (247), `Decal` (4), `Display` (475), `DockingAnimator` (47), `DockingCollar` (265), `Door` (616), `DoorController` (247), `EnergyController` (248), `Flair_Floor` (2), `FlightController` (221), `FuelController` (217), `LandingSystem` (218), `Light` (3), `LightController` (252), `MiningController` (11), `MissileController` (267), `Relay` (573), `Room` (47), `SalvageController` (54), `Seat` (624), `SeatAccess` (707), `SeatDashboard` (416), `SelfDestruct` (250), `ShieldController` (241), `TargetSelector` (1), `Usable` (258), `WeaponController` (514), `WheeledController` (27), `unnamed` (1).
 - Slugs are the kebab-case display name, prefixed with the manufacturer code only on collision.
 
 ## Samples
@@ -320,9 +320,7 @@ Every value is the API's own; the script only maps the API's type names onto the
 - https://api.star-citizen.wiki/api/vehicles/b6b59889-7226-458e-a6b0-1c9392128a3c?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/b3d87a94-6858-4d3c-ba59-1ef29d727d1a?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/d6cb3db3-b1e0-47a5-8c62-a64285dbb675?include=hardpoints
-- https://api.star-citizen.wiki/api/vehicles/d46f4de1-8dc1-473b-9739-88c9ba7e75a6?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/395f30ae-f930-4929-b881-d711fde7e70f?include=hardpoints
-- https://api.star-citizen.wiki/api/vehicles/0b17b11f-4ac4-4e04-b973-beb6f299b99b?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/f0caa993-4c6b-4402-8ef1-d91879060f3b?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/4b0585b0-b60b-4c52-a744-d812e5e9ad58?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/deb6d97e-38ce-48a2-9e12-d63eb01a0207?include=hardpoints
@@ -378,6 +376,7 @@ Every value is the API's own; the script only maps the API's type names onto the
 - https://api.star-citizen.wiki/api/vehicles/63b90c8d-459c-4a27-8cf6-db706ffc49ae?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/6fa37a02-3d65-448c-a989-02d42d9574dc?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/3a586d52-4829-4504-8e3a-4ee300bb40cc?include=hardpoints
+- https://api.star-citizen.wiki/api/vehicles/609ce4ca-0f46-44a5-b6d3-2c2f87417126?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/1e837261-78d9-4d5b-b17c-90d312d6a3dd?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/663b6047-5b06-489c-a906-bc91fb7d6e63?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/71f76583-1061-4215-9d05-839a4fb6cabc?include=hardpoints
@@ -437,6 +436,7 @@ Every value is the API's own; the script only maps the API's type names onto the
 - https://api.star-citizen.wiki/api/vehicles/5cf39b3b-41d8-45c1-8ef2-d4678c7a7b85?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/efec4d48-77ab-4cba-9add-a3d96c5be8d8?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/dc39ca6b-1d76-4db5-9346-356f49954978?include=hardpoints
+- https://api.star-citizen.wiki/api/vehicles/0d4a1f2b-0fda-433e-a631-1071be157fcc?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/565d8121-50a9-4920-af50-f176caef0431?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/c03e7aef-6411-4e85-9c10-e89862884433?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/1b7318af-7607-40b5-ba1b-54134089c284?include=hardpoints
@@ -466,6 +466,7 @@ Every value is the API's own; the script only maps the API's type names onto the
 - https://api.star-citizen.wiki/api/vehicles/36726a9f-7e14-4942-bc4f-1a398b5bef6a?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/c42bf65e-f3f2-4234-8c19-8276bfd5de3a?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/4481572d-66c8-4f7a-90c3-0150052fde10?include=hardpoints
+- https://api.star-citizen.wiki/api/vehicles/16099337-179f-473e-8bc9-545e38ef0a32?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/fb484074-f33f-4977-a052-2937e8508acc?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/6585ae24-738f-42d2-8d3e-eff4a21eaca9?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/34077e67-5e2c-4903-a17c-2d0e163751c7?include=hardpoints
@@ -474,6 +475,7 @@ Every value is the API's own; the script only maps the API's type names onto the
 - https://api.star-citizen.wiki/api/vehicles/1b3a41ea-6942-44de-9514-315e81c36bb4?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/41a84db8-062b-4359-ad16-611ad540fbdb?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/2000c8d9-f151-4148-babe-6d9e413e2114?include=hardpoints
+- https://api.star-citizen.wiki/api/vehicles/e25212d6-2078-4a91-8f5a-5863e9a8d583?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/7aed1f98-fa95-4166-b8d2-73c1704346ab?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/11ebc47d-4763-4faa-9020-171cf6c2651f?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/48fa3c7c-1f29-2045-cd29-b5c8ab9aeabc?include=hardpoints
@@ -564,20 +566,19 @@ Every value is the API's own; the script only maps the API's type names onto the
 - https://api.star-citizen.wiki/api/vehicles/a6e1bb18-8a11-4bbc-865e-45fd84e7b469?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/8e27d568-f424-4dc9-a10f-ca4c34efab85?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/ec956be2-8e3a-460d-b3a8-97df4cb12b78?include=hardpoints
-- https://api.star-citizen.wiki/api/vehicles/d95fb013-60d5-43ac-ab2d-daa082f45411?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/9f4e2cea-f7dc-4155-9cb2-95bb42a74141?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/c21530fa-5ba9-4f10-9864-88622e8df974?include=hardpoints
-- https://api.star-citizen.wiki/api/vehicles/e7b40f5c-4099-4aa6-b226-b5b08bd68413?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/562b0c9b-4635-4b40-8e57-09feb3056073?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/d26ba152-8cfb-4f2c-9995-2c5ec3f0707f?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/7ecd6678-86b1-478a-8668-823f4e3ca016?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/ecadf2b2-a404-4776-9289-04af91538d76?include=hardpoints
-- https://api.star-citizen.wiki/api/vehicles/daf936a1-689f-4edb-980a-96947e2727c4?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/1e26a179-45cf-4541-ade6-0f0daf7c372b?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/d1c3fa10-b2d9-421e-8301-97dbf4d0c115?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/e4d9c1c3-d0d0-4581-b0a5-27a4c536b039?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/7a37e5c1-a659-4b8b-aa30-22a540f5df22?include=hardpoints
-- https://api.star-citizen.wiki/api/vehicles/80c96371-9c46-44f2-bee8-627a66b37dca?include=hardpoints
+- https://api.star-citizen.wiki/api/vehicles/01051d26-084e-4b4f-9566-ebd2251db0aa?include=hardpoints
+- https://api.star-citizen.wiki/api/vehicles/e50eb3fc-bbc1-4baf-8878-8e8ca7e832ce?include=hardpoints
+- https://api.star-citizen.wiki/api/vehicles/42724505-2d5b-41ec-adb1-e4c2ee4e855c?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/4ed10b1c-df4f-4ab0-430e-b5b9f33b0f94?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/4c034eef-329c-4336-850e-49bfb1f06a15?include=hardpoints
 - https://api.star-citizen.wiki/api/vehicles/43f4f9c3-70ad-4549-8a10-0045afbbda10?include=hardpoints
@@ -662,18 +663,6 @@ Every value is the API's own; the script only maps the API's type names onto the
 - https://api.star-citizen.wiki/api/items/ee42bb6d-9781-4e6b-8eaf-f6c1347ee088
 - https://api.star-citizen.wiki/api/items/3cc55f0e-dcce-439d-9322-84ed95e21d37
 - https://api.star-citizen.wiki/api/items/7535591c-c5eb-43b7-aea9-9ed25a02960f
-- https://api.star-citizen.wiki/api/items/7de3c63f-a8ef-4d7b-8022-97e189d33449
-- https://api.star-citizen.wiki/api/items/b497e796-4633-4093-a53d-494bdd24ab53
-- https://api.star-citizen.wiki/api/items/3614ff8a-d24d-4d56-84db-8efac6b6c70f
-- https://api.star-citizen.wiki/api/items/c2d1b008-c900-4d59-bc8f-b10f5b46cdf0
-- https://api.star-citizen.wiki/api/items/982ce3ab-41f4-40bf-a833-6237e7a97893
-- https://api.star-citizen.wiki/api/items/2228584b-0def-4713-8b40-1a9685f9a444
-- https://api.star-citizen.wiki/api/items/ae103cf6-d501-4b6a-bdaf-2b3d8bb27da8
-- https://api.star-citizen.wiki/api/items/4369917e-024c-4437-8a92-34888ba2e086
-- https://api.star-citizen.wiki/api/items/91bbb14b-040c-4723-b362-6c0a7acbf05c
-- https://api.star-citizen.wiki/api/items/cc741815-d17f-4579-8f78-715216a3ab00
-- https://api.star-citizen.wiki/api/items/0cbf9f9a-84c2-4f5b-bb82-bd3b80fc13be
-- https://api.star-citizen.wiki/api/items/eb8a3e01-8574-4c7f-96c7-156a18fdd990
 - https://api.star-citizen.wiki/api/items/6f1c5848-c01f-43fa-9b2a-00252fbd4d73
 - https://api.star-citizen.wiki/api/items/99064742-4961-4ff9-b3cc-a3bb36504359
 - https://api.star-citizen.wiki/api/items/5b3f8f7b-f645-448b-ab16-642c57c49df3
@@ -920,6 +909,18 @@ Every value is the API's own; the script only maps the API's type names onto the
 - https://api.star-citizen.wiki/api/items/76a41212-e285-4fb0-b225-0edb87847d48
 - https://api.star-citizen.wiki/api/items/3476a9c4-8061-4540-98bc-2fb3406f082c
 - https://api.star-citizen.wiki/api/items/14b339af-7ecf-4cbe-979d-7e18e77aa0fa
+- https://api.star-citizen.wiki/api/items/c13c4f77-3f39-4176-ab44-f9ad669db2d6
+- https://api.star-citizen.wiki/api/items/eac2d601-a481-4c0d-b7cc-edb984b4315b
+- https://api.star-citizen.wiki/api/items/aaaac082-218f-4850-9bb8-e57acb4e50cb
+- https://api.star-citizen.wiki/api/items/22c01fad-64cb-4ecb-add9-e4a2e52bb0ad
+- https://api.star-citizen.wiki/api/items/b52da226-8af4-4287-8a89-85ddffa6ed64
+- https://api.star-citizen.wiki/api/items/86af3b25-90ca-4b83-ac5f-f2df326d1879
+- https://api.star-citizen.wiki/api/items/99bee1c3-637a-4824-9d01-ccf732d31891
+- https://api.star-citizen.wiki/api/items/8177e116-6ca2-4845-bcee-9766758864ef
+- https://api.star-citizen.wiki/api/items/e0eef846-6c15-4ed0-8945-00d059e58865
+- https://api.star-citizen.wiki/api/items/674f65ce-1c65-4074-bc49-612ad472aa6a
+- https://api.star-citizen.wiki/api/items/f90cd2a4-ce96-440e-9e0a-302403a70069
+- https://api.star-citizen.wiki/api/items/e5fecbc2-cbee-4c6e-b2d9-e288bcbcbc44
 - https://api.star-citizen.wiki/api/items/efbe76b3-0b35-431f-a956-043418ed36de
 - https://api.star-citizen.wiki/api/items/a6710f95-d0df-422a-815d-11e31084feb8
 - https://api.star-citizen.wiki/api/items/4a84a3e6-7e44-4eaf-800a-da679f11ea36
@@ -1058,6 +1059,7 @@ Every value is the API's own; the script only maps the API's type names onto the
 - https://api.star-citizen.wiki/api/items/a1bde463-b3ce-4959-9bc2-6ef0f6fb1494
 - https://api.star-citizen.wiki/api/items/439741e2-2d5a-4d54-8a5c-92056a6cd281
 - https://api.star-citizen.wiki/api/items/3e75b2cd-1b99-46b2-91eb-2177a2024910
+- https://api.star-citizen.wiki/api/items/089f66d8-5ccf-41ee-a816-c8ead96cf2f4
 - https://api.star-citizen.wiki/api/items/d0a1f62b-9dca-4f0c-9977-fd685772ffdd
 - https://api.star-citizen.wiki/api/items/1578b810-9e39-4e6a-92ca-00d7f16d0afa
 - https://api.star-citizen.wiki/api/items/fa5be128-c861-4d4e-a44f-34832937a1aa
@@ -1090,6 +1092,7 @@ Every value is the API's own; the script only maps the API's type names onto the
 - https://api.star-citizen.wiki/api/items/17dce25c-f417-4f7f-bb5d-67895c4354f8
 - https://api.star-citizen.wiki/api/items/9339fe50-9d27-4c62-a3cd-e4e9fb11e596
 - https://api.star-citizen.wiki/api/items/2a4871cf-1b60-4979-9c47-1801f10855bb
+- https://api.star-citizen.wiki/api/items/1070474e-9ec1-4d51-955c-915c4c9b6aca
 - https://api.star-citizen.wiki/api/items/85e284ec-96ea-4de7-930a-2db6099585b3
 - https://api.star-citizen.wiki/api/items/e087882e-e595-4be9-9453-010962e20fbc
 - https://api.star-citizen.wiki/api/items/f6088b00-f889-4a7a-bd44-1f41f6ae9012
@@ -1146,6 +1149,7 @@ Every value is the API's own; the script only maps the API's type names onto the
 - https://api.star-citizen.wiki/api/items/a3182ef7-69e2-42b0-b115-8c49899d088e
 - https://api.star-citizen.wiki/api/items/fe391f6b-2f84-4fd4-8ddc-7be3ce581e74
 - https://api.star-citizen.wiki/api/items/dc878cca-7e93-4530-9f71-aeed4a13ffb8
+- https://api.star-citizen.wiki/api/items/7d6d82e1-ce7b-47b4-bec0-a826969cc501
 - https://api.star-citizen.wiki/api/items/421d50c1-4270-45be-b24d-0758462ec4fd
 - https://api.star-citizen.wiki/api/items/fc1a54f3-6dce-4ddb-912d-cb513377c28c
 - https://api.star-citizen.wiki/api/items/342111c9-e2c9-424f-8408-0fb23342cb72
@@ -1202,7 +1206,6 @@ Every value is the API's own; the script only maps the API's type names onto the
 - https://api.star-citizen.wiki/api/items/c523f087-c641-4470-970d-89346a987b80
 - https://api.star-citizen.wiki/api/items/b71bad28-d9ca-43c3-b256-9b4a7502dc25
 - https://api.star-citizen.wiki/api/items/26c1d2ac-8830-4171-a46b-44991748ddef
-- https://api.star-citizen.wiki/api/items/19f2a8ef-9817-4a52-888c-efbf77e155d9
 - https://api.star-citizen.wiki/api/items/30e1a1a9-77a9-4392-a927-e6455081a0f2
 - https://api.star-citizen.wiki/api/items/6e5faf6a-8660-425d-9bbc-62af6ee1937e
 - https://api.star-citizen.wiki/api/items/c117b130-a872-4fb1-9d3a-6dd5fbf72749
@@ -1212,6 +1215,7 @@ Every value is the API's own; the script only maps the API's type names onto the
 - https://api.star-citizen.wiki/api/items/4ddfb2fd-81ef-4e58-a3a7-2b438cf83fe8
 - https://api.star-citizen.wiki/api/items/1abd192b-0c87-4ea5-99d2-5dadee7bf275
 - https://api.star-citizen.wiki/api/items/893f282f-9133-45ea-ac5e-6f844531823a
+- https://api.star-citizen.wiki/api/items/3eaf6a35-2cdd-4a75-b172-22d680112639
 - https://api.star-citizen.wiki/api/items/485cbdb5-5ce5-23f3-186b-ed7bdf724aad
 - https://api.star-citizen.wiki/api/items/2fa21273-743b-48d2-ad67-7c064d97f05c
 - https://api.star-citizen.wiki/api/items/f9badbb2-4152-46fb-91c6-942842b0f036
@@ -1253,7 +1257,6 @@ Every value is the API's own; the script only maps the API's type names onto the
 - https://api.star-citizen.wiki/api/items/e4afc8b4-da61-4efb-af7e-f003d9900d96
 - https://api.star-citizen.wiki/api/items/f52975b5-d621-4c08-9dcc-3c4bd8170383
 - https://api.star-citizen.wiki/api/items/51264411-1e57-48b9-b1d8-6fab4fb3a687
-- https://api.star-citizen.wiki/api/items/d4ebab35-1d86-4259-82dc-cda6a7167c90
 - https://api.star-citizen.wiki/api/items/bbfbb4b5-c26e-4bee-9d41-9679e102e860
 - https://api.star-citizen.wiki/api/items/a4f4afa6-aa15-46e4-9327-c27250c3ea83
 - https://api.star-citizen.wiki/api/items/d60d2103-fdc4-446e-8a3b-0af114f2e23e
@@ -1331,6 +1334,7 @@ Every value is the API's own; the script only maps the API's type names onto the
 - https://api.star-citizen.wiki/api/items/d8059126-352a-4be5-bfc9-15cf4fb05439
 - https://api.star-citizen.wiki/api/items/ec636cbd-21c6-4b9c-a095-c8ef04f1a9fa
 - https://api.star-citizen.wiki/api/items/59a37716-f4d3-4dcb-a41e-0f2c3064e169
+- https://api.star-citizen.wiki/api/items/bea66e66-0d30-4f9c-8eaa-b15002fb2299
 - https://api.star-citizen.wiki/api/items/b2279e37-c5fb-49ab-b008-b32f3c528706
 - https://api.star-citizen.wiki/api/items/a5107834-61e1-481d-b836-7ed6c08b14d5
 - https://api.star-citizen.wiki/api/items/bba050c3-1348-45a8-91c6-73e4ecf5082f
@@ -1713,7 +1717,6 @@ Every value is the API's own; the script only maps the API's type names onto the
 - https://api.star-citizen.wiki/api/items/8a492116-41e4-49d3-90da-450da8d3bd27
 - https://api.star-citizen.wiki/api/items/c717ccc2-f372-440f-8207-8ffeb72bc3fc
 - https://api.star-citizen.wiki/api/items/b59528b8-7208-4ae2-a2f0-f38578cc0fad
-- https://api.star-citizen.wiki/api/items/44a9a6fd-cb6d-4e5f-bc22-5f17f4e8b096
 - https://api.star-citizen.wiki/api/items/e988e985-33a0-4452-b77c-57d3445b1442
 - https://api.star-citizen.wiki/api/items/5a16ce1f-f8f7-4eee-82cb-d6190493c5d4
 - https://api.star-citizen.wiki/api/items/cfb29484-a419-444c-8d34-31c01b564509
@@ -1744,6 +1747,7 @@ Every value is the API's own; the script only maps the API's type names onto the
 - https://api.star-citizen.wiki/api/items/3c058a4d-1ce9-4b3b-80fb-f2b76770b53d
 - https://api.star-citizen.wiki/api/items/b6c1a1f0-4f82-4939-9220-ce8a16fe77f8
 - https://api.star-citizen.wiki/api/items/abaac1d0-234e-4a5a-b3eb-6664604f025e
+- https://api.star-citizen.wiki/api/items/b5efd60a-786a-459d-8e6f-fb8d0fc8808e
 - https://api.star-citizen.wiki/api/items/ac3687d7-7092-4c75-b73c-738cb82afe4c
 - https://api.star-citizen.wiki/api/items/4a9ed578-ef2d-4d58-b3c8-e45259916276
 - https://api.star-citizen.wiki/api/items/18bffbeb-9471-494f-ba76-0e8d2ab3eabc
@@ -1848,12 +1852,12 @@ Every value is the API's own; the script only maps the API's type names onto the
 - https://api.star-citizen.wiki/api/items/148fd6bc-ffb7-4bc1-89a3-5f615f9ff594
 - https://api.star-citizen.wiki/api/items/7eb19d22-9ab6-469d-a9bf-c5b70ae7e876
 - https://api.star-citizen.wiki/api/items/8431845c-2e09-49fb-8be0-2daf3aed4b16
-- https://api.star-citizen.wiki/api/items/b2a06ccf-6e96-431e-97bc-950ce9d1a0fd
 - https://api.star-citizen.wiki/api/items/b827fab4-6838-4efa-aaac-789582742923
 - https://api.star-citizen.wiki/api/items/2bbf315a-2cca-4698-bb5a-e6a1f5c537dc
 - https://api.star-citizen.wiki/api/items/447fa0be-9465-42e8-8c70-a3b7a202e284
 - https://api.star-citizen.wiki/api/items/c36f6a0e-4f4a-4335-b788-f76fd9e998a6
 - https://api.star-citizen.wiki/api/items/2c50ea75-5048-4b9d-b495-fe21326719c4
+- https://api.star-citizen.wiki/api/items/47d2b9de-77b0-46c5-ae3a-c68898e82c25
 - https://api.star-citizen.wiki/api/items/45ff1a15-d526-6991-84ae-e74dd075509f
 - https://api.star-citizen.wiki/api/items/e767f85a-4ff7-48b0-b9dd-e04f96c2b071
 - https://api.star-citizen.wiki/api/items/e7e4320c-205d-4364-8b02-73d2f22ab5b8
@@ -1907,6 +1911,7 @@ Every value is the API's own; the script only maps the API's type names onto the
 - https://api.star-citizen.wiki/api/items/d41ad984-11cd-4a93-aaa6-f0f7e896f3fa
 - https://api.star-citizen.wiki/api/items/a657dc7b-44b7-4877-b719-37b8cf382456
 - https://api.star-citizen.wiki/api/items/4510de80-243e-4da1-a359-98cbd26ba03e
+- https://api.star-citizen.wiki/api/items/8b4fc549-d770-4303-b499-8d9d3bdd51a8
 - https://api.star-citizen.wiki/api/items/acd6d10b-9bdc-402a-a25d-f0ba1019c8db
 - https://api.star-citizen.wiki/api/items/759ca8a4-b397-4cd6-81c0-dfd4a1ca1815
 - https://api.star-citizen.wiki/api/items/9b6c1de9-5168-4236-b6f4-bec6fe47b1ce
@@ -2003,11 +2008,11 @@ Every value is the API's own; the script only maps the API's type names onto the
 - https://api.star-citizen.wiki/api/items/b34c21ff-7eee-41f9-967a-0acc0cadcafa
 - https://api.star-citizen.wiki/api/items/12112340-9f10-40c8-930f-c8dca8dad7a8
 - https://api.star-citizen.wiki/api/items/2f0bf12b-7785-4c9a-abc4-ad7eaaf6c72d
-- https://api.star-citizen.wiki/api/items/93692842-612d-4e34-9180-33c930572969
 - https://api.star-citizen.wiki/api/items/18947ce2-b7b6-4986-a01d-08a60037e5c2
 - https://api.star-citizen.wiki/api/items/0dded715-0359-4353-b18f-3165e6638d3a
 - https://api.star-citizen.wiki/api/items/f81b3137-06fd-434f-96c0-1f720bf30fa5
 - https://api.star-citizen.wiki/api/items/70ef3468-764d-4a29-a11a-72321eac8a81
+- https://api.star-citizen.wiki/api/items/160fb4e7-643c-48fe-b85c-ee58a63263e9
 - https://api.star-citizen.wiki/api/items/d7088f23-4067-4cbc-9495-f88cf3b1c995
 - https://api.star-citizen.wiki/api/items/910b6e4f-7a1e-4ede-be51-c396bc1e789e
 - https://api.star-citizen.wiki/api/items/837cccba-2136-472e-ae98-0aad430ca01b
@@ -2032,7 +2037,7 @@ Every value is the API's own; the script only maps the API's type names onto the
 - https://api.star-citizen.wiki/api/items/272328f0-326f-4461-ad55-cb6ddb490795
 - https://api.star-citizen.wiki/api/items/4896e3cd-b8ba-4ded-af9b-4c581e704a3c
 - https://api.star-citizen.wiki/api/items/d195eb47-24b8-45c0-a4d0-1771d60dc1a8
-- https://api.star-citizen.wiki/api/items/70a98c94-9252-4fd3-a673-5a584339e273
+- https://api.star-citizen.wiki/api/items/e09590d1-13a0-4d25-ad89-3dfc18a61c4a
 - https://api.star-citizen.wiki/api/items/85fd75f8-6c6c-4d3f-839f-988ae7660617
 - https://api.star-citizen.wiki/api/items/f03daac4-28e2-405c-b226-c258151cb9f1
 - https://api.star-citizen.wiki/api/items/c9c2bb19-3298-448e-a117-043e082a1c74
@@ -2041,6 +2046,7 @@ Every value is the API's own; the script only maps the API's type names onto the
 - https://api.star-citizen.wiki/api/items/bd13235d-1261-4b71-b32f-aed1a8beb526
 - https://api.star-citizen.wiki/api/items/ecac1df2-4f6f-49df-9cce-f188d118a789
 - https://api.star-citizen.wiki/api/items/4170fcb0-0cef-4228-a3d5-7efc41ba4ea3
+- https://api.star-citizen.wiki/api/items/35d956a4-8297-4327-bb05-415af9f6531a
 - https://api.star-citizen.wiki/api/items/26298097-2f16-4f25-b652-9c72170b5529
 - https://api.star-citizen.wiki/api/items/ea0217e9-cdbe-48d2-a192-1837c52130b9
 - https://api.star-citizen.wiki/api/items/d018aa87-d395-4935-8660-af9bda648b03
@@ -2326,6 +2332,7 @@ Every value is the API's own; the script only maps the API's type names onto the
 - https://api.star-citizen.wiki/api/items/7646e90a-4f99-4209-883e-07d429529115
 - https://api.star-citizen.wiki/api/items/5700db93-a193-4e4e-b3e8-e1500b60168f
 - https://api.star-citizen.wiki/api/items/7a642c58-090a-4480-af2b-25fda4201630
+- https://api.star-citizen.wiki/api/items/ac78f033-341f-47d0-95bb-6b5a63865e84
 - https://api.star-citizen.wiki/api/items/2616dd99-282a-493a-9f79-750a1ba6f329
 - https://api.star-citizen.wiki/api/items/ea49d194-0c0b-43e1-82fb-d72f35c1af05
 - https://api.star-citizen.wiki/api/items/548377fc-ca9a-47ab-ac1c-f30371001463
@@ -2455,6 +2462,7 @@ Every value is the API's own; the script only maps the API's type names onto the
 - https://api.star-citizen.wiki/api/items/3d6d90ab-b2d4-4bf5-b98a-c9890a8ca434
 - https://api.star-citizen.wiki/api/items/df646ab8-8525-42a2-be1e-97c2000bd145
 - https://api.star-citizen.wiki/api/items/f5fa6fad-3821-4c2c-9d9d-cca46bfc51df
+- https://api.star-citizen.wiki/api/items/ed604875-756b-4a94-ad77-9ec1512bdfda
 - https://api.star-citizen.wiki/api/items/4455fed7-094e-4844-a97e-f2f890e2369f
 - https://api.star-citizen.wiki/api/items/6c32193d-15e0-486f-a833-1db0b1f93d05
 - https://api.star-citizen.wiki/api/items/4bbb99be-faa8-460f-91d4-296aeb389f15
@@ -2652,6 +2660,7 @@ Every value is the API's own; the script only maps the API's type names onto the
 - https://api.star-citizen.wiki/api/items/796642bf-92fa-48ee-92aa-bf9ba38487a6
 - https://api.star-citizen.wiki/api/items/a117d541-aa61-49fd-ae53-469b0fdf7ccd
 - https://api.star-citizen.wiki/api/items/fda65886-0ccb-4a80-a5ee-528b186d4584
+- https://api.star-citizen.wiki/api/items/397bd43e-fdbf-45b3-ba56-79647656f23e
 - https://api.star-citizen.wiki/api/items/0a713a9d-7e70-4586-87a6-ce08c337a8ea
 - https://api.star-citizen.wiki/api/items/92fc134c-4d10-48fb-b439-aec44e36fe4e
 - https://api.star-citizen.wiki/api/items/ad089033-7cfc-479f-b7d4-49a93e1e3bd4
@@ -2681,6 +2690,7 @@ Every value is the API's own; the script only maps the API's type names onto the
 - https://api.star-citizen.wiki/api/items/27a34dd7-30aa-4eca-ae37-1f87e343e238
 - https://api.star-citizen.wiki/api/items/4702547f-fa0f-4f6c-b2ed-9782ee9f518b
 - https://api.star-citizen.wiki/api/items/16ba45f1-bd70-4b58-96d6-0ef822f59803
+- https://api.star-citizen.wiki/api/items/9e3ee84d-86f3-48f3-a4e0-e26899575c5b
 - https://api.star-citizen.wiki/api/items/b5cbef86-f37f-4e05-8aff-e0f61afe166e
 - https://api.star-citizen.wiki/api/items/995c2de5-f7e6-4646-83e3-4627ba5a5865
 - https://api.star-citizen.wiki/api/items/9e3a3bcb-d90a-46c5-912b-079fd15157cc
@@ -2723,6 +2733,7 @@ Every value is the API's own; the script only maps the API's type names onto the
 - https://api.star-citizen.wiki/api/items/a8410d5b-4adb-490c-836b-7acbbeff8e10
 - https://api.star-citizen.wiki/api/items/7443c014-3705-42b2-b967-d08ba688475e
 - https://api.star-citizen.wiki/api/items/7dfe991e-ee0b-4e59-9f04-63a7b1b7db03
+- https://api.star-citizen.wiki/api/items/23d1a8ad-de94-4be0-9502-e24d81847cf0
 - https://api.star-citizen.wiki/api/items/0d72db6f-09f8-4455-8930-68316798be22
 - https://api.star-citizen.wiki/api/items/2ac19dfa-cffb-43d0-98a6-00a951265692
 - https://api.star-citizen.wiki/api/items/2ae682c9-7877-4a15-b34a-ba564a42706f
@@ -2814,12 +2825,12 @@ Every value is the API's own; the script only maps the API's type names onto the
 - https://api.star-citizen.wiki/api/items/ab4b9e04-b599-401e-b529-394727c64c5a
 - https://api.star-citizen.wiki/api/items/9a7c9328-1cd7-4043-8079-65db61da1e6a
 - https://api.star-citizen.wiki/api/items/4ffb9251-82a1-4884-bcfb-407fb4c69245
-- https://api.star-citizen.wiki/api/items/bbb6a95d-5820-4a89-a1aa-2d03c14a6c07
 - https://api.star-citizen.wiki/api/items/8f955131-2fe1-4d8b-ba03-422f70fddda1
 - https://api.star-citizen.wiki/api/items/01120bfb-9ba1-4afc-b83d-572d3aa096ca
 - https://api.star-citizen.wiki/api/items/77d7e61a-1b9d-44df-8696-04fa7e4b3a80
 - https://api.star-citizen.wiki/api/items/779ef01c-de46-490b-b4cf-2dddab0156ee
 - https://api.star-citizen.wiki/api/items/167147fe-216b-4bb7-81a2-3e9117d37d97
+- https://api.star-citizen.wiki/api/items/3f37ef4f-6f84-45f0-bd88-23a85de09351
 - https://api.star-citizen.wiki/api/items/452cc498-a39d-487c-d08e-2a277a7e4c97
 - https://api.star-citizen.wiki/api/items/bdd3c4fc-1599-4a25-aaa0-0ee08c98d78a
 - https://api.star-citizen.wiki/api/items/3a799e1e-54d6-47a7-801d-2e82af2612fd
@@ -2920,11 +2931,6 @@ Every value is the API's own; the script only maps the API's type names onto the
 - https://api.star-citizen.wiki/api/items/61d5e767-fcee-4e70-ae9e-7671b6692404
 - https://api.star-citizen.wiki/api/items/50926a92-a8b4-415c-a140-5b34b54ba256
 - https://api.star-citizen.wiki/api/items/12552886-9cd0-4ca2-8923-ca3a810c6d03
-- https://api.star-citizen.wiki/api/items/d3d287b8-947a-4b9c-8c24-ab69e5e8db42
-- https://api.star-citizen.wiki/api/items/e992d170-2343-4d88-b8e3-45794f1b54b6
-- https://api.star-citizen.wiki/api/items/8a2d7dd9-45d4-4c86-9626-5308abeb6da1
-- https://api.star-citizen.wiki/api/items/ce0b433b-8221-42e8-a969-fd97c67da844
-- https://api.star-citizen.wiki/api/items/27b07cc6-887a-4d35-bcf6-03fd6fafd9d0
 - https://api.star-citizen.wiki/api/items/9bb30915-6a50-4afa-9608-626f3b03cdb4
 - https://api.star-citizen.wiki/api/items/10e0dc1f-99c7-4487-ba16-f1685936cb19
 - https://api.star-citizen.wiki/api/items/15bcf728-9b28-4b20-94f0-c38491d3519e
@@ -2934,12 +2940,6 @@ Every value is the API's own; the script only maps the API's type names onto the
 - https://api.star-citizen.wiki/api/items/493ac05f-96cb-4c01-8650-fd61603d5b62
 - https://api.star-citizen.wiki/api/items/0086da47-c274-4ae5-8566-d58212aecafc
 - https://api.star-citizen.wiki/api/items/86f9e8c1-8813-4a95-9bc7-7aba946e30e0
-- https://api.star-citizen.wiki/api/items/1b4aed53-1098-407e-b152-72236b374906
-- https://api.star-citizen.wiki/api/items/cdde51ef-d7f4-46a8-9c90-00b260f26cab
-- https://api.star-citizen.wiki/api/items/5ba6ffd4-2263-408b-966f-05c0a9ece08e
-- https://api.star-citizen.wiki/api/items/f506b09d-5f6a-415f-9e36-9f58a7d1d271
-- https://api.star-citizen.wiki/api/items/f3bd8a29-1326-470f-b3fe-f6efdbd28af1
-- https://api.star-citizen.wiki/api/items/35cb4e17-0530-4e7b-8319-3ce6d510a44b
 - https://api.star-citizen.wiki/api/items/60768416-609a-4663-9939-3bcbd612abc3
 - https://api.star-citizen.wiki/api/items/0bb8cd37-41ed-4bc9-a4b2-681c249d2418
 - https://api.star-citizen.wiki/api/items/5ae148be-0a13-4d8e-aff9-e16f3396dc8e
@@ -2987,7 +2987,6 @@ Every value is the API's own; the script only maps the API's type names onto the
 - https://api.star-citizen.wiki/api/items/22a2c651-18ba-4b63-b455-ec39f73cb616
 - https://api.star-citizen.wiki/api/items/b0aa88f6-56d5-440e-acab-b3a2811360fb
 - https://api.star-citizen.wiki/api/items/b692e35b-faa5-43c4-8700-eded659149d3
-- https://api.star-citizen.wiki/api/items/76efc85b-599e-46d7-a4b7-fb5ced61cc08
 - https://api.star-citizen.wiki/api/items/63b53762-0561-4abc-9462-eeb0340a5c30
 - https://api.star-citizen.wiki/api/items/b26b29e4-4876-48a2-80ea-742a09b79522
 - https://api.star-citizen.wiki/api/items/16d596bf-972b-405d-b743-e1bf354afa8d
@@ -3004,6 +3003,22 @@ Every value is the API's own; the script only maps the API's type names onto the
 - https://api.star-citizen.wiki/api/items/be8e4983-0345-4f3c-9ec9-15fd9b86d8c0
 - https://api.star-citizen.wiki/api/items/e564e22f-bd12-40c1-8a26-83cc52be7cb6
 - https://api.star-citizen.wiki/api/items/d73e604b-72ec-4310-a21d-83beae6f65df
+- https://api.star-citizen.wiki/api/items/0e54939c-107e-40e1-8a11-608d49b644ca
+- https://api.star-citizen.wiki/api/items/816d7199-2d09-49b4-b875-b2fb9b0c5123
+- https://api.star-citizen.wiki/api/items/3eac1a2b-9c07-40b2-9ab5-c410441aa4e8
+- https://api.star-citizen.wiki/api/items/b11d32d5-eb27-41c5-bcbb-1b61f446deb3
+- https://api.star-citizen.wiki/api/items/de1abd68-ba0f-4421-8c0e-f9f04860176e
+- https://api.star-citizen.wiki/api/items/1bba15cd-9279-47f6-8d75-6a61b54420e6
+- https://api.star-citizen.wiki/api/items/e8939b5d-9e75-47e3-892b-6b88e0f118e5
+- https://api.star-citizen.wiki/api/items/f571a029-a2f5-4b51-a626-cadc39751284
+- https://api.star-citizen.wiki/api/items/27b14f96-8fd7-4314-9f85-311b5499f57f
+- https://api.star-citizen.wiki/api/items/fc4cfc75-6f79-4e1a-a596-b917cadd138b
+- https://api.star-citizen.wiki/api/items/e5f67b0a-fdce-4d2c-acfd-152d5ea212d7
+- https://api.star-citizen.wiki/api/items/70f5de44-62db-463b-808d-71955f2999d8
+- https://api.star-citizen.wiki/api/items/af5ce5cf-d997-4f31-9fb4-cc13a44db5a3
+- https://api.star-citizen.wiki/api/items/d24e4435-af78-445f-b61c-c7fbaf7506c9
+- https://api.star-citizen.wiki/api/items/ff79361f-0c01-429e-add6-33d4af9aec8b
+- https://api.star-citizen.wiki/api/items/a2e4439e-a2b4-476f-b007-1f993c5a46fe
 - https://api.star-citizen.wiki/api/items/6ab1e8c7-a2ae-41f9-b046-578841110b59
 - https://api.star-citizen.wiki/api/items/9964b83a-08bc-48ee-bf29-f52ac0b8c550
 - https://api.star-citizen.wiki/api/items/4d720b5e-469e-e4e2-d405-52c1d7831ebc
@@ -3261,4 +3276,4 @@ Every value is the API's own; the script only maps the API's type names onto the
 - https://api.star-citizen.wiki/api/items?filter[type]=Cooler&page[size]=200&page[number]=1
 - https://api.star-citizen.wiki/api/items?filter[type]=QuantumDrive&page[size]=200&page[number]=1
 
-2958 requests, spaced at least 2.5 seconds apart. Non-commercial use; "Please credit api.star-citizen.wiki in public projects."
+2973 requests, spaced at least 2.5 seconds apart. Non-commercial use; "Please credit api.star-citizen.wiki in public projects."

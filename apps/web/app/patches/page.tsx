@@ -54,9 +54,9 @@ export default function PatchesPage() {
               CIG put {ahead.version} out on LIVE on{" "}
               {day.format(new Date(ahead.releasedAt))}. Its ship, part and
               blueprint figures come from the Star Citizen Wiki, which has not
-              published this build yet. The site checks every half hour and adds
-              them within the hour of the wiki publishing them; this page then
-              compares {ahead.version} with {to.version}.
+              published this build yet; the daily refresh adds them the morning
+              after it does, and this page then compares {ahead.version} with{" "}
+              {to.version}.
               {release === null ? null : (
                 <>
                   {" "}

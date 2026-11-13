@@ -1,60 +1,60 @@
 {
-  "uuid": "e2599be8-160c-4d20-87d0-3c080109842d",
-  "slug": "kama",
-  "name": "Kama",
-  "class_name": "QDRV_JUST_S03_Kama_SCItem",
+  "uuid": "dadc9318-d0f2-48c2-aad4-f2dd0c5f7fd3",
+  "slug": "foxfire",
+  "name": "FoxFire",
+  "class_name": "QDRV_ACAS_S01_FoxFire_SCItem",
   "classification": "Ship.QuantumDrive",
   "classification_label": "Quantum Drive",
-  "size": 3,
-  "mass": 2500,
+  "size": 1,
+  "mass": 140,
   "event_source": [],
   "is_base_variant": true,
   "is_craftable": true,
   "is_lootable": false,
   "blueprint": [
     {
-      "uuid": "700c7cbb-989f-4ce9-bec1-cf503791590c",
-      "name": "Kama",
-      "link": "https://api.star-citizen.wiki/api/blueprints/700c7cbb-989f-4ce9-bec1-cf503791590c"
+      "uuid": "31f17a5a-9d7b-4d42-a3b0-a0865f0160c4",
+      "name": "FoxFire",
+      "link": "https://api.star-citizen.wiki/api/blueprints/31f17a5a-9d7b-4d42-a3b0-a0865f0160c4"
     }
   ],
-  "grade": "C",
-  "class": "Industrial",
-  "manufacturer_description": "Juno Starwerk",
+  "grade": "B",
+  "class": "Competition",
+  "manufacturer_description": "Ace Astrogation",
   "manufacturer": {
-    "name": "Juno Starwerk",
-    "code": "JUST",
-    "uuid": "d7cc897f-b760-4a73-93c0-27e23c52db0a",
-    "link": "https://api.star-citizen.wiki/api/manufacturers/JUST"
+    "name": "Ace Astrogation",
+    "code": "ACAS",
+    "uuid": "cfc0122d-5275-415a-a656-3dcb3346feb5",
+    "link": "https://api.star-citizen.wiki/api/manufacturers/ACAS"
   },
   "type": "QuantumDrive",
   "type_label": "Quantum Drive",
   "sub_type": "UNDEFINED",
   "sub_type_label": "Undefined",
   "quantum_drive": {
-    "quantum_fuel_requirement": 0.03864,
+    "quantum_fuel_requirement": 0.00588,
     "jump_range": 3.402823e+38,
     "jump_range_formatted": "Unlimited",
-    "disconnect_range": 69893,
-    "disconnect_range_formatted": "70 km",
-    "fuel_rate": 3.864e-8,
+    "disconnect_range": 20001,
+    "disconnect_range_formatted": "20 km",
+    "fuel_rate": 5.8799999999999995e-9,
     "thermal_energy_draw": {
-      "pre_ramp_up": 18750,
-      "ramp_up": 18750,
-      "in_flight": 18750,
-      "ramp_down": 18750,
-      "post_ramp_down": 18750
+      "pre_ramp_up": 573,
+      "ramp_up": 573,
+      "in_flight": 573,
+      "ramp_down": 573,
+      "post_ramp_down": 573
     },
     "standard_jump": {
-      "drive_speed": 532468700,
-      "drive_speed_formatted": "532.5 Mm/s",
-      "cooldown_time": 24,
-      "stage_one_accel_rate": 4259250,
-      "stage_one_accel_rate_formatted": "4.3 Mm/s²",
-      "stage_two_accel_rate": 5427125,
-      "stage_two_accel_rate_formatted": "5.4 Mm/s²",
-      "engage_speed": 190000000,
-      "engage_speed_formatted": "190 Mm/s",
+      "drive_speed": 263040000,
+      "drive_speed_formatted": "263 Mm/s",
+      "cooldown_time": 11.9,
+      "stage_one_accel_rate": 10848920,
+      "stage_one_accel_rate_formatted": "10.8 Mm/s²",
+      "stage_two_accel_rate": 28291720,
+      "stage_two_accel_rate_formatted": "28.3 Mm/s²",
+      "engage_speed": 1500,
+      "engage_speed_formatted": "1.5 km/s",
       "interdiction_effect_time": 2.5,
       "calibration_rate": 1000,
       "min_calibration_requirement": 5000,
@@ -62,12 +62,12 @@
       "calibration_process_angle_limit": 5,
       "calibration_warning_angle_limit": 8,
       "calibration_delay_in_seconds": 1.5,
-      "spool_up_time": 9.3
+      "spool_up_time": 4.8
     },
     "spline_jump": {
-      "drive_speed": 400000,
-      "drive_speed_formatted": "400 km/s",
-      "cooldown_time": 22,
+      "drive_speed": 500000,
+      "drive_speed_formatted": "500 km/s",
+      "cooldown_time": 10,
       "stage_one_accel_rate": 250,
       "stage_one_accel_rate_formatted": "250 m/s²",
       "stage_two_accel_rate": 50000,
@@ -81,20 +81,20 @@
       "calibration_process_angle_limit": 5,
       "calibration_warning_angle_limit": 8,
       "calibration_delay_in_seconds": 1.5,
-      "spool_up_time": 7
+      "spool_up_time": 4
     },
     "modes": [
       {
         "type": "normal_jump",
-        "drive_speed": 532468700,
-        "drive_speed_formatted": "532.5 Mm/s",
-        "cooldown_time": 24,
-        "stage_one_accel_rate": 4259250,
-        "stage_one_accel_rate_formatted": "4.3 Mm/s²",
-        "stage_two_accel_rate": 5427125,
-        "stage_two_accel_rate_formatted": "5.4 Mm/s²",
-        "engage_speed": 190000000,
-        "engage_speed_formatted": "190 Mm/s",
+        "drive_speed": 263040000,
+        "drive_speed_formatted": "263 Mm/s",
+        "cooldown_time": 11.9,
+        "stage_one_accel_rate": 10848920,
+        "stage_one_accel_rate_formatted": "10.8 Mm/s²",
+        "stage_two_accel_rate": 28291720,
+        "stage_two_accel_rate_formatted": "28.3 Mm/s²",
+        "engage_speed": 1500,
+        "engage_speed_formatted": "1.5 km/s",
         "interdiction_effect_time": 2.5,
         "calibration_rate": 1000,
         "min_calibration_requirement": 5000,
@@ -102,13 +102,13 @@
         "calibration_process_angle_limit": 5,
         "calibration_warning_angle_limit": 8,
         "calibration_delay_in_seconds": 1.5,
-        "spool_up_time": 9.3
+        "spool_up_time": 4.8
       },
       {
         "type": "spline_jump",
-        "drive_speed": 400000,
-        "drive_speed_formatted": "400 km/s",
-        "cooldown_time": 22,
+        "drive_speed": 500000,
+        "drive_speed_formatted": "500 km/s",
+        "cooldown_time": 10,
         "stage_one_accel_rate": 250,
         "stage_one_accel_rate_formatted": "250 m/s²",
         "stage_two_accel_rate": 50000,
@@ -122,37 +122,37 @@
         "calibration_process_angle_limit": 5,
         "calibration_warning_angle_limit": 8,
         "calibration_delay_in_seconds": 1.5,
-        "spool_up_time": 7
+        "spool_up_time": 4
       }
     ],
-    "fuel_consumption_scu_per_gm": 0.036,
-    "fuel_efficiency": 1.48,
+    "fuel_consumption_scu_per_gm": 0.00001900851581508516,
+    "fuel_efficiency": 52608,
     "travel_time_10gm": {
-      "seconds": 95,
-      "formatted": "1:35"
+      "seconds": 53,
+      "formatted": "0:53"
     }
   },
   "dimension": {
     "width": 0.75,
     "height": 0.75,
     "length": 0.75,
-    "volume": 0.756,
-    "volume_converted": 756000,
+    "volume": 0.084,
+    "volume_converted": 84000,
     "volume_converted_unit": "µSCU",
     "true_dimension": {
-      "width": 3.012,
-      "height": 2.17,
-      "length": 2.014
+      "width": 0.75,
+      "height": 0.54,
+      "length": 0.504
     },
     "dimensions": {
-      "width": 3.012,
-      "height": 2.17,
-      "length": 2.014
+      "width": 0.75,
+      "height": 0.54,
+      "length": 0.504
     },
     "cargo_dimension": {
-      "width": 0.67,
-      "height": 1.2,
-      "length": 4.42
+      "width": 0.22,
+      "height": 0.8,
+      "length": 2.21
     },
     "ui_dimension": {
       "width": 0.75,
@@ -162,50 +162,21 @@
   },
   "tags": [],
   "required_tags": [],
-  "entity_tags": [
-    "c08564a2-68d2-4eb1-903b-e3c3ecf12ac1",
-    "8c71c1ea-dd41-45c4-9fc1-7880740552b7",
-    "b3cb57ab-1d44-41b1-9794-6cb6489cbd7c",
-    "4a6eb4b1-dfbc-42dd-b502-95deb495a8b2",
-    "00ead468-9073-485b-a6df-ca6b94053603"
-  ],
-  "entity_tag_map": [
-    {
-      "uuid": "c08564a2-68d2-4eb1-903b-e3c3ecf12ac1",
-      "name": "PU"
-    },
-    {
-      "uuid": "8c71c1ea-dd41-45c4-9fc1-7880740552b7",
-      "name": "disableTractorBeamDetach"
-    },
-    {
-      "uuid": "b3cb57ab-1d44-41b1-9794-6cb6489cbd7c",
-      "name": "QuantumDrive"
-    },
-    {
-      "uuid": "4a6eb4b1-dfbc-42dd-b502-95deb495a8b2",
-      "name": "Size3"
-    },
-    {
-      "uuid": "00ead468-9073-485b-a6df-ca6b94053603",
-      "name": "ActionArea"
-    }
-  ],
   "interactions": [
     "Engagequantumtravel",
     "Disengagequantumtravel"
   ],
   "temperature": {
     "unit": "C",
-    "cooling_threshold": 29.9,
-    "ir_threshold": 49.9,
-    "overheat_threshold": 109.9,
-    "overheat_temperature": 109.9,
-    "max_temperature": 119.9,
-    "recovery_temperature": 114.9
+    "cooling_threshold": 34.9,
+    "ir_threshold": 37.9,
+    "overheat_threshold": 79.9,
+    "overheat_temperature": 79.9,
+    "max_temperature": 98.9,
+    "recovery_temperature": 93.9
   },
   "durability": {
-    "health": 1400,
+    "health": 120,
     "lifetime": 0,
     "max_lifetime": 0,
     "repairable": true,
@@ -220,17 +191,17 @@
     }
   },
   "distortion": {
-    "decay_rate": 433.33,
-    "decay_delay": 4.5,
-    "max": 6500,
-    "maximum": 6500,
+    "decay_rate": 120,
+    "decay_delay": 1.5,
+    "max": 1800,
+    "maximum": 1800,
     "overload_ratio": null,
     "warning_ratio": 0.75,
     "recovery_ratio": 0,
     "recovery_time": null,
     "power_ratio_at_max_distortion": 0,
     "power_change_only_at_max_distortion": 0,
-    "shutdown_time": 19.5
+    "shutdown_time": 16.5
   },
   "resource_network": {
     "is_networked": true,
@@ -240,14 +211,14 @@
       {
         "name": "Online",
         "signature": {
-          "em": 44600,
+          "em": 21600,
           "ir": null
         },
         "deltas": [
           {
             "type": "Consumption",
             "resource": "Power",
-            "rate": 5,
+            "rate": 2,
             "minimum_fraction": 1,
             "generated_resource": null,
             "generated_rate": null,
@@ -290,14 +261,14 @@
       {
         "name": "Travelling",
         "signature": {
-          "em": 44600,
+          "em": 21600,
           "ir": null
         },
         "deltas": [
           {
             "type": "Consumption",
             "resource": "Power",
-            "rate": 5,
+            "rate": 2,
             "minimum_fraction": 1,
             "generated_resource": null,
             "generated_rate": null,
@@ -309,7 +280,7 @@
           {
             "type": "Consumption",
             "resource": "QuantumFuel",
-            "rate": 0.000036,
+            "rate": 0.0000049999999999999996,
             "minimum_fraction": 1,
             "generated_resource": null,
             "generated_rate": null,
@@ -352,21 +323,21 @@
     ],
     "repair": {
       "max_repair_count": 1,
-      "time_to_repair": 98,
+      "time_to_repair": 29.1,
       "health_ratio": 0.2
     },
     "usage": {
       "power": {
-        "min": 5,
-        "max": 5,
-        "minimum": 5,
-        "maximum": 5
+        "min": 2,
+        "max": 2,
+        "minimum": 2,
+        "maximum": 2
       },
       "coolant": {
         "min": 0,
-        "max": 5,
+        "max": 2,
         "minimum": 0,
-        "maximum": 5
+        "maximum": 2
       }
     },
     "generation": {
@@ -376,10 +347,10 @@
   },
   "emission": {
     "ir": 0,
-    "em_min": 44600,
-    "em_max": 44600,
+    "em_min": 21600,
+    "em_max": 21600,
     "em_decay": 0.15
   },
-  "updated_at": "2026-11-07T00:16:52.000000Z",
-  "version": "4.10.2-LIVE.12881860"
+  "updated_at": "2026-11-13T10:44:57.000000Z",
+  "version": "4.10.3-LIVE.13165946"
 }

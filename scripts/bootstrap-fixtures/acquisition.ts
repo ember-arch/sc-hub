@@ -246,6 +246,71 @@ const LdOffer = z
   })
   .loose();
 
+const LdPrice = z.union([z.string(), z.number()]);
+
+/**
+ * Several offers for one ship: during a sale (IAE 2956, 13 November 2026) RSI lists the
+ * standalone ship and its upgrade together. The ship's price and availability are those of its one
+ * standalone offer (`/Standalone-Ships/`), which is what a pledge buys and can sell out while the
+ * upgrade stays on sale. With no single standalone offer, the aggregate's MSRP, or its one price
+ * when the lowest and highest agree, with the aggregate's availability; anything else halts.
+ */
+const LdAggregateOffer = z
+  .object({
+    "@type": z.literal("AggregateOffer"),
+    priceCurrency: z.literal("USD"),
+    availability: z.string(),
+    lowPrice: LdPrice.optional(),
+    highPrice: LdPrice.optional(),
+    priceSpecification: z
+      .object({
+        priceType: z.string().optional(),
+        price: LdPrice,
+        priceCurrency: z.literal("USD"),
+      })
+      .loose()
+      .optional(),
+    offers: z.array(z.unknown()).optional(),
+  })
+  .loose();
+
+function priceOf(offers: unknown): { price: unknown; availability: string } {
+  const type = (offers as { "@type"?: unknown } | null)?.["@type"];
+  if (type !== "AggregateOffer") {
+    const offer = LdOffer.parse(offers);
+    return { price: offer.price, availability: offer.availability };
+  }
+  const agg = LdAggregateOffer.parse(offers);
+  const standalone = (agg.offers ?? [])
+    .map((o) => LdOffer.safeParse(o))
+    .flatMap((o) => (o.success ? [o.data] : []))
+    .filter((o) =>
+      /\/pledge\/Standalone-Ships\//i.test(String(o["url"] ?? "")),
+    );
+  if (standalone.length === 1)
+    return {
+      price: standalone[0]!.price,
+      availability: standalone[0]!.availability,
+    };
+  const spec = agg.priceSpecification;
+  const msrp =
+    spec !== undefined && (spec.priceType ?? "").endsWith("/MSRP")
+      ? spec.price
+      : undefined;
+  const one =
+    agg.lowPrice !== undefined &&
+    agg.highPrice !== undefined &&
+    Number(agg.lowPrice) === Number(agg.highPrice)
+      ? agg.lowPrice
+      : undefined;
+  const price = msrp ?? one;
+  if (price === undefined)
+    throw new Error(
+      `an AggregateOffer with no MSRP and prices from ${String(agg.lowPrice)} to ${String(agg.highPrice)}`,
+    );
+  return { price, availability: agg.availability };
+}
+
 /**
  * The schema.org Offer RSI embeds in a pledge page's JSON-LD. Returns null when the page carries
  * no Product; throws on an offer shape or availability this code does not know.
@@ -264,7 +329,7 @@ export function offerFromJsonLd(
       const record = node as Record<string, unknown>;
       if (record["@type"] !== "Product" || record["offers"] === undefined)
         continue;
-      const offer = LdOffer.parse(record["offers"]);
+      const offer = priceOf(record["offers"]);
       const state = offer.availability.replace(/^https?:\/\/schema\.org\//, "");
       const available = AVAILABILITY[state];
       if (available === undefined) {

@@ -9,7 +9,7 @@
     "last_update": "2026-11-12",
     "consent": "granted"
   },
-  "fetched_at": "2026-11-13T06:39:53.325Z",
+  "fetched_at": "2026-11-13T20:14:25.070Z",
   "legend": {
     "verdicts": {
       "fits": "Good Fit",
@@ -54,8 +54,7 @@
       "marker": null,
       "unreleased": false,
       "class_names": [
-        "AEGS_Hammerhead_GS",
-        "AEGS_Hammerhead"
+        "AEGS_Hammerhead_GS"
       ],
       "fabricator": "fits"
     },
@@ -167,7 +166,9 @@
       "slot": null,
       "marker": null,
       "unreleased": false,
-      "class_names": [],
+      "class_names": [
+        "ANVL_Liberator"
+      ],
       "fabricator": "untested"
     },
     {
@@ -300,6 +301,7 @@
       "marker": null,
       "unreleased": false,
       "class_names": [
+        "DRAK_Caterpillar_Boarded_ShatteredBlade",
         "DRAK_Caterpillar"
       ],
       "fabricator": "fits"
@@ -658,8 +660,7 @@
       "unreleased": false,
       "class_names": [
         "RSI_Constellation_Andromeda_GS_Display",
-        "RSI_Constellation_Andromeda_GS",
-        "RSI_Constellation_Andromeda"
+        "RSI_Constellation_Andromeda_GS"
       ],
       "fabricator": "fits"
     },
@@ -671,8 +672,7 @@
       "marker": null,
       "unreleased": false,
       "class_names": [
-        "RSI_Constellation_Aquila_GS",
-        "RSI_Constellation_Aquila"
+        "RSI_Constellation_Aquila_GS"
       ],
       "fabricator": "fits"
     },
@@ -722,7 +722,11 @@
       "slot": "cargo_module",
       "marker": null,
       "unreleased": false,
-      "class_names": [],
+      "class_names": [
+        "RSI_Galaxy_TEMP_Cargo",
+        "RSI_Galaxy_TEMP_Medical",
+        "RSI_Galaxy"
+      ],
       "fabricator": "fits"
     },
     {
@@ -807,7 +811,9 @@
       "slot": null,
       "marker": null,
       "unreleased": true,
-      "class_names": [],
+      "class_names": [
+        "ANVL_Liberator"
+      ],
       "fabricator": "fits"
     },
     {

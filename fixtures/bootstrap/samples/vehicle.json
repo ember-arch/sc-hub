@@ -1,63 +1,34 @@
 {
-  "uuid": "96b11061-68ce-4896-9424-fc8804a410ae",
-  "name": "Fury",
-  "game_name": "Mirai Fury",
-  "slug": "misc-fury",
-  "class_name": "MISC_Fury",
-  "port_tags": [
-    "MISC_Fury"
-  ],
+  "uuid": "09c9fa95-5b5a-4200-9ff8-3b288df9925b",
+  "name": "ATLS",
+  "game_name": "Argo ATLS",
+  "slug": "argo-atls",
+  "class_name": "ARGO_ATLS",
+  "port_tags": [],
   "sizes": {
-    "length": 7,
-    "beam": 5.4,
-    "height": 3
+    "length": 3.2,
+    "beam": 1.6,
+    "height": 1.6
   },
   "dimension": {
-    "length": 7,
-    "width": 5.4,
-    "height": 3
+    "length": 3.2,
+    "width": 1.6,
+    "height": 1.6
   },
   "emission": {
-    "ir": 6219,
-    "em_idle": 18130,
-    "em_max": 17842
+    "ir": null,
+    "em_idle": 0,
+    "em_max": 0
   },
-  "mass": 13939,
-  "mass_hull": 13939,
-  "mass_loadout": 5062,
-  "mass_total": 19001,
+  "mass": 1440,
+  "mass_hull": 1440,
+  "mass_loadout": 81,
+  "mass_total": 1521,
   "cargo_capacity": 0,
   "ore_capacity": null,
   "cargo_grids": [],
-  "vehicle_inventory": 670000,
-  "inventory_containers": [
-    {
-      "uuid": "132d298c-2165-40eb-b1e4-21d1f4611b1a",
-      "width": 2,
-      "height": 2,
-      "length": 2,
-      "volume": 8,
-      "scu": 0.22,
-      "scu_converted": null,
-      "unit": null,
-      "open": false,
-      "external": false,
-      "closed": true
-    },
-    {
-      "uuid": "cb67c0fc-bee2-476d-8c2e-effab677483e",
-      "width": 1,
-      "height": 2,
-      "length": 1,
-      "volume": 2,
-      "scu": 0.45,
-      "scu_converted": null,
-      "unit": null,
-      "open": false,
-      "external": false,
-      "closed": true
-    }
-  ],
+  "vehicle_inventory": 0,
+  "inventory_containers": [],
   "crew": {
     "min": 1,
     "max": 1,
@@ -73,132 +44,113 @@
     "beds": 0,
     "medical_beds": null
   },
-  "health": 5830,
-  "shield_hp": 2244,
-  "shield_face_type": "Bubble",
+  "health": 0,
+  "shield_hp": null,
+  "shield_face_type": null,
   "shield": {
-    "hp": 2244,
-    "regeneration": 404,
-    "regeneration_time": 5.55,
-    "face_type": "Bubble",
-    "max_reallocation": 1,
-    "reconfiguration_cooldown": 2.5,
-    "max_electrical_charge_damage_rate": 100,
+    "hp": 0,
+    "regeneration": null,
+    "regeneration_time": null,
+    "face_type": null,
+    "max_reallocation": null,
+    "reconfiguration_cooldown": null,
+    "max_electrical_charge_damage_rate": null,
     "resistance": {
       "physical": {
-        "minimum": 0,
-        "maximum": 0.25
+        "minimum": null,
+        "maximum": null
       },
       "energy": {
-        "minimum": 0,
-        "maximum": 0
+        "minimum": null,
+        "maximum": null
       },
       "distortion": {
-        "minimum": 0.75,
-        "maximum": 0.95
+        "minimum": null,
+        "maximum": null
       },
       "thermal": {
-        "minimum": 0,
-        "maximum": 0
+        "minimum": null,
+        "maximum": null
       },
       "biochemical": {
-        "minimum": 0,
-        "maximum": 0
+        "minimum": null,
+        "maximum": null
       },
       "stun": {
-        "minimum": 0,
-        "maximum": 0
+        "minimum": null,
+        "maximum": null
       }
     },
     "absorption": {
       "physical": {
-        "minimum": 0,
-        "maximum": 0.45
+        "minimum": null,
+        "maximum": null
       },
       "energy": {
-        "minimum": 1,
-        "maximum": 1
+        "minimum": null,
+        "maximum": null
       },
       "distortion": {
-        "minimum": 1,
-        "maximum": 1
+        "minimum": null,
+        "maximum": null
       },
       "thermal": {
-        "minimum": 1,
-        "maximum": 1
+        "minimum": null,
+        "maximum": null
       },
       "biochemical": {
-        "minimum": 1,
-        "maximum": 1
+        "minimum": null,
+        "maximum": null
       },
       "stun": {
-        "minimum": 1,
-        "maximum": 1
+        "minimum": null,
+        "maximum": null
       }
     }
   },
   "speed": {
-    "scm": 230,
-    "max": 1263,
-    "boost_forward": 550,
-    "boost_backward": 260,
-    "zero_to_scm": 1.33,
-    "zero_to_max": 7.29,
+    "scm": null,
+    "max": null,
+    "boost_forward": null,
+    "boost_backward": null,
+    "zero_to_scm": null,
+    "zero_to_max": null,
     "scm_to_zero": null,
     "max_to_zero": null
   },
   "afterburner": {
-    "pitch_boost_multiplier": 1.2,
-    "roll_boost_multiplier": 1.2,
-    "yaw_boost_multiplier": 1.2,
-    "capacitor": 20,
-    "idle_cost": 1,
-    "linear_cost": 0,
-    "angular_cost": 0,
-    "regen_per_second": 0.75,
-    "regen_delay_after_use": 0.2,
-    "pre_delay_time": 0,
-    "ramp_up_time": 0.6,
-    "ramp_down_time": 0.2,
-    "regen_time": 26.9,
-    "regen_delay": 0.2
+    "pitch_boost_multiplier": null,
+    "roll_boost_multiplier": null,
+    "yaw_boost_multiplier": null,
+    "capacitor": null,
+    "idle_cost": null,
+    "linear_cost": null,
+    "angular_cost": null,
+    "regen_per_second": null,
+    "regen_delay_after_use": null,
+    "pre_delay_time": null,
+    "ramp_up_time": null,
+    "ramp_down_time": null,
+    "regen_time": null,
+    "regen_delay": null
   },
   "fuel": {
-    "capacity": 0.5,
+    "capacity": 0,
     "intake_rate": 0,
     "usage": {
-      "main": 6.04,
+      "main": 0,
       "retro": 0,
       "vtol": 0,
-      "maneuvering": 16.27
+      "maneuvering": 0
     }
   },
   "propulsion": {
-    "thrusters": [
-      {
-        "type": "Main",
-        "count": 4,
-        "capacity": 2.42,
-        "g": 17.68
-      },
-      {
-        "type": "Maneuver",
-        "count": 12,
-        "capacity": 5.42,
-        "g": 39.67
-      },
-      {
-        "type": "Retro",
-        "count": 4,
-        "capacity": 0,
-        "g": 0
-      }
-    ],
+    "thrusters": [],
     "thrust_capacity": {
-      "main": 2416393.1999999997,
+      "main": 0,
       "retro": 0,
       "vtol": 0,
-      "maneuvering": 5423338.800000001
+      "maneuvering": 0
     }
   },
   "quantum": {
@@ -209,243 +161,199 @@
     "port_olisar_to_arccorp_time": null,
     "port_olisar_to_arccorp_fuel": null
   },
-  "no_fuel_params": {
-    "linear_acceleration_modifier": 0.1,
-    "angular_acceleration_modifier": 0.1,
-    "angular_velocity_modifier": 0.1,
-    "legacy_max_speed": 20
+  "drive": {
+    "stance_speed": {
+      "walk_kph": 7.164,
+      "sprint_kph": 10.368,
+      "acceleration": 1.5,
+      "rotation_speed": 60
+    }
   },
   "agility": {
-    "pitch": 69,
-    "yaw": 69,
-    "roll": 215,
-    "pitch_boosted": 82.8,
-    "yaw_boosted": 82.8,
-    "roll_boosted": 258,
-    "acceleration": {
-      "vtol": 0
-    }
+    "pitch": null,
+    "yaw": null,
+    "roll": null,
+    "pitch_boosted": null,
+    "yaw_boosted": null,
+    "roll_boosted": null,
+    "acceleration": []
   },
-  "armor": {
-    "uuid": "0b08ffbf-7c5a-410b-911c-98715c92e978",
-    "health": 1650,
-    "signal_infrared": 1.15,
-    "signal_electromagnetic": 1.15,
-    "signal_cross_section": 1.15,
-    "damage_physical": 0.85,
-    "damage_energy": 0.7,
-    "damage_distortion": 1,
-    "damage_thermal": 1,
-    "damage_biochemical": 1,
-    "damage_stun": 1,
-    "signal_multiplier": {
-      "cross_section": 1.15,
-      "cross_section_change": 0.15,
-      "infrared": 1.15,
-      "infrared_change": 0.15,
-      "electromagnetic": 1.15,
-      "electromagnetic_change": 0.15
-    },
-    "damage_multiplier": {
-      "physical": 0.85,
-      "physical_change": -0.15,
-      "energy": 0.7,
-      "energy_change": -0.3,
-      "distortion": 1,
-      "distortion_change": 0,
-      "thermal": 1,
-      "thermal_change": 0,
-      "biochemical": 1,
-      "biochemical_change": 0,
-      "stun": 1,
-      "stun_change": 0
-    },
-    "resistance_multiplier": {
-      "physical": 0.85,
-      "physical_change": -0.15,
-      "energy": 1.15,
-      "energy_change": 0.15,
-      "distortion": 1,
-      "distortion_change": 0,
-      "thermal": 1,
-      "thermal_change": 0,
-      "biochemical": 1,
-      "biochemical_change": 0,
-      "stun": 1,
-      "stun_change": 0
-    },
-    "penetration_resistance": {
-      "base": 1,
-      "physical": 1,
-      "energy": 1,
-      "distortion": 0,
-      "thermal": 1,
-      "biochemical": 1,
-      "stun": 1
-    },
-    "deflection": {
-      "physical": 5,
-      "energy": 5,
-      "distortion": 0,
-      "thermal": 0,
-      "biochemical": 0,
-      "stun": 0
-    },
-    "signal_multipliers": {
-      "cross_section": 1.15,
-      "infrared": 1.15,
-      "electromagnetic": 1.15
-    },
-    "damage_multipliers": {
-      "physical": 0.85,
-      "energy": 0.7,
-      "distortion": 1,
-      "thermal": 1,
-      "biochemical": 1,
-      "stun": 1
-    },
-    "resistance_multipliers": {
-      "physical": 0.85,
-      "energy": 1.15,
-      "distortion": 1,
-      "thermal": 1,
-      "biochemical": 1,
-      "stun": 1
-    }
-  },
+  "armor": [],
   "manufacturer": {
-    "name": "Mirai",
-    "code": "MRAI",
-    "uuid": "cdf6ea1e-7de3-4b58-bf9d-13c5fbafc49a",
-    "link": "https://api.star-citizen.wiki/api/manufacturers/MRAI"
+    "name": "Argo Astronautics",
+    "code": "ARGO",
+    "uuid": "9e1f5a35-edcc-4d19-bede-08e2730043c5",
+    "link": "https://api.star-citizen.wiki/api/manufacturers/ARGO"
   },
   "size_class": 1,
   "cross_section": {
-    "length": 4592,
-    "width": 2332,
-    "height": 4327
+    "length": null,
+    "width": null,
+    "height": null
   },
-  "cross_section_max": 4592,
-  "is_vehicle": false,
+  "cross_section_max": null,
+  "is_vehicle": true,
   "is_gravlev": false,
-  "is_spaceship": true,
-  "is_power_suit": false,
+  "is_spaceship": false,
+  "is_power_suit": true,
   "signature": {
-    "ir_quantum": 5747,
-    "ir_shields": 6219,
-    "em_quantum": 17842,
-    "em_shields": 18130,
-    "em_groups_quantum": {
-      "Radar": 2070,
-      "Cooler": 3427,
-      "WeaponGun": 934,
-      "PowerPlant": 11051,
-      "LifeSupportGenerator": 360
-    },
-    "em_groups_shields": {
-      "Radar": 2070,
-      "Cooler": 3427,
-      "Shield": 288,
-      "WeaponGun": 934,
-      "PowerPlant": 11051,
-      "LifeSupportGenerator": 360
-    },
+    "ir_quantum": null,
+    "ir_shields": null,
+    "em_quantum": 0,
+    "em_shields": 0,
+    "em_groups_quantum": [],
+    "em_groups_shields": [],
     "em_segment_groups_quantum": {
-      "Radar": 5,
-      "Cooler": 6,
-      "Shield": 1,
-      "WeaponGun": 2.4,
-      "FlightController": 4,
-      "LifeSupportGenerator": 1
+      "TractorBeam": 1
     },
     "em_segment_groups_shields": {
-      "Radar": 5,
-      "Cooler": 6,
-      "WeaponGun": 2.4,
-      "FlightController": 4,
-      "LifeSupportGenerator": 1
+      "TractorBeam": 1
     },
-    "em_per_segment": 495.3333333333333
+    "em_per_segment": 0
   },
   "cooling": {
-    "generation_segments": 58,
-    "usage_shields_pct": 0.46,
-    "usage_quantum_pct": 0.42,
-    "used_segments_shields": 26.4,
-    "used_segments_quantum": 24.4,
+    "generation_segments": 0,
+    "usage_shields_pct": 0,
+    "usage_quantum_pct": 0,
+    "used_segments_shields": 2,
+    "used_segments_quantum": 2,
     "used_segments_shields_grouped": {
-      "Radar": 5,
-      "Shield": 1,
-      "PowerPlant": 19.4,
-      "LifeSupportGenerator": 1
+      "PowerPlant": 1,
+      "TractorBeam": 1
     },
     "used_segments_quantum_grouped": {
-      "Radar": 5,
-      "PowerPlant": 18.4,
-      "LifeSupportGenerator": 1
+      "PowerPlant": 1,
+      "TractorBeam": 1
     }
   },
   "power": {
-    "generation_segments": 15,
-    "used_segments_shields": 19.4,
-    "used_segments_quantum": 18.4,
+    "generation_segments": null,
+    "used_segments_shields": 1,
+    "used_segments_quantum": 1,
     "used_segments_grouped": {
-      "Radar": 5,
-      "Cooler": 6,
-      "Shield": 1,
-      "WeaponGun": 2.4,
-      "FlightController": 4,
-      "LifeSupportGenerator": 1
+      "TractorBeam": 1
     }
   },
   "penetration_multiplier": {
-    "fuse": 0,
-    "components": 0.5
+    "fuse": null,
+    "components": []
   },
   "insurance": {
-    "claim_time": 1.89,
+    "claim_time": 2.5,
     "expedite_time": 0.63,
-    "expedite_cost": 1483
+    "expedite_cost": 850
   },
   "ports": [
     {
-      "name": "hardpoint_thruster_front_side_left",
+      "name": "Seat_ItemPort",
       "position": null,
-      "class_name": "MISC_Fury_Thruster_FixedMav",
+      "class_name": "ARGO_ATLS_PowerSuit_SCItem_Seat_Driver",
       "editable": false,
       "editable_children": false,
-      "equipped_item_uuid": "7bf0536b-e299-4043-a47b-bfe83e6ecdb8",
-      "type": "ManneuverThruster",
-      "sub_type": "FixedThruster",
-      "subtype": "FixedThruster",
+      "equipped_item_uuid": "ad9758a5-9dfc-4f16-8b8e-f4ec12394a24",
+      "type": "Seat",
+      "sub_type": "UNDEFINED",
+      "subtype": "UNDEFINED",
       "sizes": {
-        "min": 1,
-        "max": 2
+        "min": 0,
+        "max": 4
       },
       "compatible_types": [
         {
-          "type": "ManneuverThruster",
+          "type": "Seat",
           "sub_types": []
         }
       ],
-      "health": 7000,
+      "health": null,
       "equipped_item": {
-        "uuid": "7bf0536b-e299-4043-a47b-bfe83e6ecdb8",
+        "uuid": "ad9758a5-9dfc-4f16-8b8e-f4ec12394a24",
         "name": "<= PLACEHOLDER =>",
-        "class_name": "MISC_Fury_Thruster_FixedMav",
-        "type": "ManneuverThruster",
-        "type_label": "Manneuver Thruster",
-        "sub_type": "FixedThruster",
-        "sub_type_label": "Fixed Thruster",
-        "classification": "Ship.ManneuverThruster.FixedThruster",
-        "classification_label": "Fixed Thruster",
+        "class_name": "ARGO_ATLS_PowerSuit_SCItem_Seat_Driver",
+        "type": "Seat",
+        "type_label": "Seat",
+        "sub_type": "UNDEFINED",
+        "sub_type_label": "Undefined",
+        "classification": null,
+        "classification_label": null,
         "is_base_variant": true,
         "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/7bf0536b-e299-4043-a47b-bfe83e6ecdb8",
-        "web_url": "https://api.star-citizen.wiki/items/placeholder-4122",
+        "link": "https://api.star-citizen.wiki/api/items/ad9758a5-9dfc-4f16-8b8e-f4ec12394a24?version=4.10.3-LIVE.13165946",
+        "web_url": "https://api.star-citizen.wiki/items/placeholder-711?version=4.10.3-LIVE.13165946",
         "size": 1,
-        "mass": 30,
-        "grade": "A",
+        "mass": 10,
+        "grade": 1,
+        "class": null,
+        "manufacturer": {
+          "name": "Argo Astronautics",
+          "code": "ARGO",
+          "uuid": "9e1f5a35-edcc-4d19-bede-08e2730043c5",
+          "link": "https://api.star-citizen.wiki/api/manufacturers/ARGO"
+        },
+        "seat": {
+          "seat_type": "HOTAS_C_L",
+          "yaw": {
+            "min": -117,
+            "max": 117,
+            "minimum": -117,
+            "maximum": 117
+          },
+          "pitch": {
+            "min": -180,
+            "max": 76,
+            "minimum": -180,
+            "maximum": 76
+          },
+          "set_yaw_pitch_limits": true,
+          "has_ejection": false,
+          "ejection": null
+        },
+        "version": "4.10.3-LIVE.13165946"
+      },
+      "attached_vehicle": null,
+      "ports": null,
+      "category_label": "Crew Stations",
+      "required_tags": null,
+      "port_tags": null,
+      "version": "4.10.3-LIVE.13165946"
+    },
+    {
+      "name": "SeatAccess_ItemPort",
+      "position": null,
+      "class_name": "ARGO_ATLS_PowerSuit_SCItem_SeatAccess",
+      "editable": false,
+      "editable_children": false,
+      "equipped_item_uuid": "85291389-34d3-450e-a571-52384ed6bfc2",
+      "type": "SeatAccess",
+      "sub_type": "UNDEFINED",
+      "subtype": "UNDEFINED",
+      "sizes": {
+        "min": 0,
+        "max": 4
+      },
+      "compatible_types": [
+        {
+          "type": "SeatAccess",
+          "sub_types": []
+        }
+      ],
+      "health": null,
+      "equipped_item": {
+        "uuid": "85291389-34d3-450e-a571-52384ed6bfc2",
+        "name": "Access",
+        "class_name": "ARGO_ATLS_PowerSuit_SCItem_SeatAccess",
+        "type": "SeatAccess",
+        "type_label": "Seat Access",
+        "sub_type": "UNDEFINED",
+        "sub_type_label": "Undefined",
+        "classification": null,
+        "classification_label": null,
+        "is_base_variant": true,
+        "variant_name": null,
+        "link": "https://api.star-citizen.wiki/api/items/85291389-34d3-450e-a571-52384ed6bfc2?version=4.10.3-LIVE.13165946",
+        "web_url": "https://api.star-citizen.wiki/items/access-24?version=4.10.3-LIVE.13165946",
+        "size": 1,
+        "mass": 0,
+        "grade": 1,
         "class": null,
         "manufacturer": {
           "name": "Unknown",
@@ -453,360 +361,178 @@
           "uuid": "00000000-0000-0000-0000-000000000000",
           "link": "https://api.star-citizen.wiki/api/manufacturers/UNKN"
         },
-        "thruster": {
-          "performance": {
-            "thrust_capacity": 929201.4,
-            "max_supported_atmospheric_efficiency": null,
-            "min_health_thrust_multiplier": 0.25
-          },
-          "fuel": {
-            "burn_rate_per_10k_newton": 0.03
-          },
-          "role": "Maneuver",
-          "vtol_only": false,
-          "backwash": {
-            "enabled": 1,
-            "automate_size": 0,
-            "max_speed": 110,
-            "max_density": 5,
-            "max_resistance": 100,
-            "afterburner_multiplier": 1.1
-          },
-          "handling": {
-            "strength_smoothing": 0.2
-          },
-          "thrust_capacity": 929201.4,
-          "min_health_thrust_multiplier": 0.25,
-          "fuel_burn_per_10k_newton": 0.03,
-          "type": "Maneuver"
-        },
-        "resource_network": {
-          "is_networked": true,
-          "is_relay": false,
-          "default_priority": 50,
-          "states": [
-            {
-              "name": "Online",
-              "signature": {
-                "em": null,
-                "ir": null
-              },
-              "deltas": [
-                {
-                  "type": "Consumption",
-                  "resource": "Fuel",
-                  "rate": 0.01,
-                  "minimum_fraction": 1,
-                  "generated_resource": null,
-                  "generated_rate": null,
-                  "discharge": null,
-                  "no_over_generation": null,
-                  "binary_evaluation": null,
-                  "composition": null
-                },
-                {
-                  "type": "Consumption",
-                  "resource": "Coolant",
-                  "rate": 0,
-                  "minimum_fraction": 0,
-                  "generated_resource": null,
-                  "generated_rate": null,
-                  "discharge": null,
-                  "no_over_generation": null,
-                  "binary_evaluation": null,
-                  "composition": null
-                }
-              ],
-              "power_ranges": [
-                {
-                  "start": 0,
-                  "modifier": 1,
-                  "register_range": 0
-                },
-                {
-                  "start": 0,
-                  "modifier": 1,
-                  "register_range": 0
-                },
-                {
-                  "start": 0,
-                  "modifier": 1,
-                  "register_range": 0
-                }
-              ]
-            }
-          ],
-          "repair": {
-            "max_repair_count": 1,
-            "time_to_repair": 120,
-            "health_ratio": 0.2
-          },
-          "usage": {
-            "power": {
-              "min": 0,
-              "max": 0,
-              "minimum": 0,
-              "maximum": 0
-            },
-            "coolant": {
-              "min": 0,
-              "max": 0,
-              "minimum": 0,
-              "maximum": 0
-            }
-          },
-          "generation": {
-            "coolant": null,
-            "power": null
-          }
-        },
-        "emission": {
-          "ir": 0,
-          "em_min": 0,
-          "em_max": 0,
-          "em_decay": 0.15
-        },
-        "version": "4.10.2-LIVE.12881860"
+        "version": "4.10.3-LIVE.13165946"
       },
       "attached_vehicle": null,
       "ports": null,
-      "category_label": "Thrusters",
+      "category_label": "Crew Stations",
       "required_tags": null,
       "port_tags": null,
-      "version": null
+      "version": "4.10.3-LIVE.13165946"
     },
     {
-      "name": "hardpoint_power_plant",
+      "name": "LeftHandWeapon_ItemPort",
       "position": null,
-      "class_name": "POWR_JUST_S01_Roughneck_SCItem",
-      "editable": true,
-      "editable_children": true,
-      "equipped_item_uuid": "9a5c71d4-12c0-4994-a41f-98b6e6018151",
-      "type": "PowerPlant",
-      "sub_type": "Power",
-      "subtype": "Power",
-      "sizes": {
-        "min": 1,
-        "max": 1
-      },
-      "compatible_types": [
-        {
-          "type": "PowerPlant",
-          "sub_types": []
-        }
-      ],
-      "health": 200,
-      "equipped_item": {
-        "uuid": "9a5c71d4-12c0-4994-a41f-98b6e6018151",
-        "name": "Roughneck",
-        "class_name": "POWR_JUST_S01_Roughneck_SCItem",
-        "type": "PowerPlant",
-        "type_label": "Power Plant",
-        "sub_type": "Power",
-        "sub_type_label": "Power",
-        "classification": "Ship.PowerPlant.Power",
-        "classification_label": "Power",
-        "is_base_variant": true,
-        "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/9a5c71d4-12c0-4994-a41f-98b6e6018151",
-        "web_url": "https://api.star-citizen.wiki/items/roughneck",
-        "size": 1,
-        "mass": 280,
-        "grade": "D",
-        "class": "Industrial",
-        "manufacturer": {
-          "name": "Juno Starwerk",
-          "code": "JUST",
-          "uuid": "d7cc897f-b760-4a73-93c0-27e23c52db0a",
-          "link": "https://api.star-citizen.wiki/api/manufacturers/JUST"
-        },
-        "power_plant": {
-          "power_output": null,
-          "power_segment_generation": 15
-        },
-        "resource_network": {
-          "is_networked": true,
-          "is_relay": false,
-          "default_priority": 50,
-          "states": [
-            {
-              "name": "Online",
-              "signature": {
-                "em": 7430,
-                "ir": null
-              },
-              "deltas": [
-                {
-                  "type": "Generation",
-                  "resource": "Power",
-                  "rate": 15,
-                  "minimum_fraction": null,
-                  "generated_resource": null,
-                  "generated_rate": null,
-                  "discharge": null,
-                  "no_over_generation": 0,
-                  "binary_evaluation": null,
-                  "composition": [
-                    {
-                      "Ratio": 1,
-                      "ContainerResource": "bcc8cde9-de58-4e6b-8ee9-37d4aaa507eb"
-                    }
-                  ]
-                },
-                {
-                  "type": "Consumption",
-                  "resource": "Coolant",
-                  "rate": 0,
-                  "minimum_fraction": 0,
-                  "generated_resource": null,
-                  "generated_rate": null,
-                  "discharge": null,
-                  "no_over_generation": null,
-                  "binary_evaluation": null,
-                  "composition": null
-                }
-              ],
-              "power_ranges": [
-                {
-                  "start": 0,
-                  "modifier": 1,
-                  "register_range": 0
-                },
-                {
-                  "start": 0,
-                  "modifier": 1,
-                  "register_range": 0
-                },
-                {
-                  "start": 0,
-                  "modifier": 1,
-                  "register_range": 0
-                }
-              ]
-            }
-          ],
-          "repair": {
-            "max_repair_count": 1,
-            "time_to_repair": 45.8,
-            "health_ratio": 0.2
-          },
-          "usage": {
-            "power": {
-              "min": 15,
-              "max": 15,
-              "minimum": 15,
-              "maximum": 15
-            },
-            "coolant": {
-              "min": 15,
-              "max": 15,
-              "minimum": 15,
-              "maximum": 15
-            }
-          },
-          "generation": {
-            "coolant": null,
-            "power": 15
-          }
-        },
-        "emission": {
-          "ir": 0,
-          "em_min": 0,
-          "em_max": 7430,
-          "em_decay": 0.15,
-          "em_per_segment": 495
-        },
-        "version": "4.10.2-LIVE.12881860"
-      },
-      "attached_vehicle": null,
-      "ports": null,
-      "category_label": "Power Plants",
-      "required_tags": null,
-      "port_tags": null,
-      "version": null
-    },
-    {
-      "name": "hardpoint_countermeasures_left",
-      "position": null,
-      "class_name": "MISC_Fury_CML_Flare",
+      "class_name": null,
       "editable": false,
       "editable_children": false,
-      "equipped_item_uuid": "594e5e7a-1016-43f2-9999-4287bb7890ca",
-      "type": "WeaponDefensive",
-      "sub_type": "CountermeasureLauncher",
-      "subtype": "CountermeasureLauncher",
+      "equipped_item_uuid": null,
+      "type": "",
+      "sub_type": "",
+      "subtype": "",
       "sizes": {
-        "min": 1,
-        "max": 1
+        "min": 0,
+        "max": 4
       },
       "compatible_types": [
         {
-          "type": "WeaponDefensive",
+          "type": "WeaponGun",
           "sub_types": [
-            "CountermeasureLauncher"
+            "Gun"
           ]
         }
       ],
-      "health": 1000,
+      "health": null,
+      "equipped_item": null,
+      "attached_vehicle": null,
+      "ports": null,
+      "category_label": "Other",
+      "required_tags": null,
+      "port_tags": [
+        "PowerSuit"
+      ],
+      "version": "4.10.3-LIVE.13165946"
+    },
+    {
+      "name": "RightHandWeapon_ItemPort",
+      "position": null,
+      "class_name": "ARGO_ATLS_TractorBeam_S1",
+      "editable": false,
+      "editable_children": false,
+      "equipped_item_uuid": "83b3857b-d7d5-40bd-b79c-058026f29ec6",
+      "type": "TractorBeam",
+      "sub_type": "UNDEFINED",
+      "subtype": "UNDEFINED",
+      "sizes": {
+        "min": 0,
+        "max": 4
+      },
+      "compatible_types": [
+        {
+          "type": "WeaponGun",
+          "sub_types": [
+            "Gun"
+          ]
+        },
+        {
+          "type": "TractorBeam",
+          "sub_types": []
+        }
+      ],
+      "health": 1050,
       "equipped_item": {
-        "uuid": "594e5e7a-1016-43f2-9999-4287bb7890ca",
-        "name": "Aegis Gladius - Decoy Launcher",
-        "class_name": "MISC_Fury_CML_Flare",
-        "type": "WeaponDefensive",
-        "type_label": "Weapon Defensive",
-        "sub_type": "CountermeasureLauncher",
-        "sub_type_label": "Countermeasure Launcher",
-        "classification": "Ship.WeaponDefensive.CountermeasureLauncher",
-        "classification_label": "Countermeasure Launcher",
+        "uuid": "83b3857b-d7d5-40bd-b79c-058026f29ec6",
+        "name": "Durus Tractor Beam",
+        "class_name": "ARGO_ATLS_TractorBeam_S1",
+        "type": "TractorBeam",
+        "type_label": "Tractor Beam",
+        "sub_type": "UNDEFINED",
+        "sub_type_label": "Undefined",
+        "classification": "Ship.Beam.Tractor",
+        "classification_label": "Tractor",
         "is_base_variant": true,
         "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/594e5e7a-1016-43f2-9999-4287bb7890ca",
-        "web_url": "https://api.star-citizen.wiki/items/aegis-gladius-decoy-launcher-26",
+        "link": "https://api.star-citizen.wiki/api/items/83b3857b-d7d5-40bd-b79c-058026f29ec6?version=4.10.3-LIVE.13165946",
+        "web_url": "https://api.star-citizen.wiki/items/durus-tractor-beam?version=4.10.3-LIVE.13165946",
         "size": 1,
-        "mass": 150,
+        "mass": 70,
         "grade": "A",
         "class": null,
         "manufacturer": {
-          "name": "Aegis Dynamics",
-          "code": "AEGS",
-          "uuid": "cf4a74bf-eb2c-462a-9b78-f7f2724c31d2",
-          "link": "https://api.star-citizen.wiki/api/manufacturers/AEGS"
+          "name": "Greycat Industrial",
+          "code": "GRIN",
+          "uuid": "819545f4-18af-49a6-814e-ca4fd08f56e5",
+          "link": "https://api.star-citizen.wiki/api/manufacturers/GRIN"
         },
-        "counter_measure": {
-          "type": "Flare",
-          "signature": {
-            "infrared": 20000,
-            "cross_section": 6500,
-            "electromagnetic": 20000,
-            "decibel": 0
-          }
+        "tractor_beam": {
+          "force": {
+            "min": 1500,
+            "max": 500000,
+            "max_volume": 300000,
+            "volume_force_coefficient": 0.3
+          },
+          "range": {
+            "min": 0.5,
+            "max": 75,
+            "full_strength_distance": 45,
+            "max_angle": 60,
+            "hit_radius": 0.1
+          },
+          "tether": {
+            "tether_break_time": 1.5,
+            "safe_range_value_factor": 0.85,
+            "allow_scrolling_into_breaking_range": true
+          },
+          "cargo_mode_override": {
+            "min_force": 9450000,
+            "max_force": 9500000,
+            "min_acceleration": 15,
+            "max_acceleration": 75,
+            "min_speed": 12.5,
+            "max_speed": 25,
+            "acceleration_factor": 10,
+            "degrees_per_action": 10,
+            "max_angular_acceleration": 150,
+            "max_angular_velocity": 55,
+            "degrees_per_action_scroll_wheel": 1000,
+            "force_fraction_rotation": 0.1,
+            "min_distance": 0.5,
+            "max_distance": 225,
+            "full_strength_distance": 100
+          },
+          "towing": {
+            "force": null,
+            "max_acceleration": null,
+            "max_distance": null,
+            "qt_mass_limit": null
+          },
+          "min_force": 1500,
+          "max_force": 500000,
+          "min_distance": 0.5,
+          "max_distance": 75,
+          "full_strength_distance": 45,
+          "max_angle": 60,
+          "max_volume": 300000,
+          "volume_force_coefficient": 0.3,
+          "tether_break_time": 1.5,
+          "safe_range_value_factor": 0.85
         },
         "vehicle_weapon": {
-          "class": "CountermeasureLauncher",
-          "type": null,
-          "capacity": 48,
-          "range": 520,
-          "damage_per_shot": 0,
+          "class": "UNDEFINED",
+          "type": "Tractor Beam",
+          "capacity": 0,
+          "range": 75,
+          "damage_per_shot": null,
           "regeneration": null,
-          "rpm": 450,
+          "rpm": null,
           "damages": [],
           "modes": [
             {
-              "mode": "Burst",
-              "localised": "[BURST]",
-              "type": "burst",
-              "rpm": 450,
-              "rounds_per_minute": 450,
-              "ammo_per_shot": 1,
-              "pellets_per_shot": 1,
-              "damage_per_second": 0,
-              "heat_per_shot": 0,
-              "wear_per_shot": 0,
-              "heat_per_second": null,
-              "wear_per_second": null,
+              "mode": "TractorBeam",
+              "localised": "Tractor Beam",
+              "type": "tractorbeam",
+              "rpm": null,
+              "rounds_per_minute": null,
+              "ammo_per_shot": null,
+              "pellets_per_shot": null,
+              "damage_per_second": null,
+              "heat_per_shot": null,
+              "wear_per_shot": null,
+              "heat_per_second": 0,
+              "wear_per_second": 0,
               "fire_during_spin_up": null,
-              "shot_count": 1,
-              "cooldown_time": 0.5,
+              "shot_count": null,
+              "cooldown_time": null,
               "sequence_mode": null,
               "charge_up_time": null,
               "charge_down_time": null,
@@ -844,659 +570,81 @@
               "collection_rate": null,
               "energy_draw": null,
               "mining_extractor_tag": null,
-              "toggle_mode": null
+              "toggle_mode": "IsNotToggle"
             }
           ],
           "damage": {
             "sustained_60s": null,
-            "burst": 0,
-            "alpha_total": 0,
-            "max": "Infinite",
-            "maximum": "Infinite",
+            "burst": null,
+            "alpha_total": null,
+            "max": null,
+            "maximum": null,
             "dps": {
-              "physical": 0,
-              "energy": 0,
-              "distortion": 0,
-              "thermal": 0,
-              "biochemical": 0,
-              "stun": 0
+              "physical": null,
+              "energy": null,
+              "distortion": null,
+              "thermal": null,
+              "biochemical": null,
+              "stun": null
             },
             "alpha": {
-              "physical": 0,
-              "energy": 0,
-              "distortion": 0,
-              "thermal": 0,
-              "biochemical": 0,
-              "stun": 0
+              "physical": null,
+              "energy": null,
+              "distortion": null,
+              "thermal": null,
+              "biochemical": null,
+              "stun": null
             }
           },
-          "spread": {
-            "min": 4,
-            "max": 10,
-            "minimum": 4,
-            "maximum": 10,
-            "first_attack": 0,
-            "per_attack": 0,
-            "decay": 0
-          },
           "ammunition": {
-            "uuid": "9621efe3-86b7-4da3-ac4a-430394f53bf4",
+            "uuid": "d1bf2537-ee41-4b73-a8dd-bdb901590233",
             "size": 0,
-            "lifetime": 8,
-            "speed": 65,
-            "range": 520,
-            "capacity": 48,
-            "initial_capacity": 48,
-            "damage_falloff_level_1": null,
-            "damage_falloff_level_2": null,
-            "damage_falloff_level_3": null,
-            "max_penetration_thickness": null,
-            "penetration": null,
-            "conversion_rate": 503,
-            "impulse_scale": 2,
+            "lifetime": 1,
+            "speed": 0,
+            "range": 0,
+            "capacity": 0,
+            "initial_capacity": 0,
+            "damage_falloff_level_1": 0,
+            "damage_falloff_level_2": 0,
+            "damage_falloff_level_3": 0,
+            "max_penetration_thickness": 0.5,
+            "penetration": {
+              "base_distance": 0,
+              "near_radius": 1,
+              "far_radius": 2,
+              "angle": null
+            },
+            "conversion_rate": 129,
+            "impulse_scale": 1,
             "bullet_type": -1
           },
           "magazine_volume": {
-            "micro_scu": 24144,
-            "scu": 0.024144
+            "micro_scu": 0,
+            "scu": 0
           }
         },
         "ammunition": {
-          "uuid": "9621efe3-86b7-4da3-ac4a-430394f53bf4",
+          "uuid": "d1bf2537-ee41-4b73-a8dd-bdb901590233",
           "size": 0,
-          "lifetime": 8,
-          "speed": 65,
-          "range": 520,
-          "capacity": 48,
-          "initial_capacity": 48,
-          "damage_falloff_level_1": null,
-          "damage_falloff_level_2": null,
-          "damage_falloff_level_3": null,
-          "max_penetration_thickness": null,
-          "penetration": null,
-          "conversion_rate": 503,
-          "impulse_scale": 2,
+          "lifetime": 1,
+          "speed": 0,
+          "range": 0,
+          "capacity": 0,
+          "initial_capacity": 0,
+          "damage_falloff_level_1": 0,
+          "damage_falloff_level_2": 0,
+          "damage_falloff_level_3": 0,
+          "max_penetration_thickness": 0.5,
+          "penetration": {
+            "base_distance": 0,
+            "near_radius": 1,
+            "far_radius": 2,
+            "angle": null
+          },
+          "conversion_rate": 129,
+          "impulse_scale": 1,
           "bullet_type": -1
         },
-        "version": "4.10.2-LIVE.12881860"
-      },
-      "attached_vehicle": null,
-      "ports": null,
-      "category_label": "Counter Measures",
-      "required_tags": null,
-      "port_tags": null,
-      "version": null
-    },
-    {
-      "name": "hardpoint_controller_light",
-      "position": null,
-      "class_name": "Controller_Light",
-      "editable": false,
-      "editable_children": false,
-      "equipped_item_uuid": "056628be-ecee-41b9-9dd2-bb32215e6e34",
-      "type": "LightController",
-      "sub_type": "UNDEFINED",
-      "subtype": "UNDEFINED",
-      "sizes": {
-        "min": 1,
-        "max": 1
-      },
-      "compatible_types": [
-        {
-          "type": "LightController",
-          "sub_types": []
-        }
-      ],
-      "health": null,
-      "equipped_item": {
-        "uuid": "056628be-ecee-41b9-9dd2-bb32215e6e34",
-        "name": "LIGHTS",
-        "class_name": "Controller_Light",
-        "type": "LightController",
-        "type_label": "Light Controller",
-        "sub_type": "UNDEFINED",
-        "sub_type_label": "Undefined",
-        "classification": null,
-        "classification_label": null,
-        "is_base_variant": true,
-        "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/056628be-ecee-41b9-9dd2-bb32215e6e34",
-        "web_url": "https://api.star-citizen.wiki/items/lights",
-        "size": 1,
-        "mass": 0,
-        "grade": 1,
-        "class": null,
-        "manufacturer": {
-          "name": "Unknown",
-          "code": "UNKN",
-          "uuid": "00000000-0000-0000-0000-000000000000",
-          "link": "https://api.star-citizen.wiki/api/manufacturers/UNKN"
-        },
-        "version": "4.10.2-LIVE.12881860"
-      },
-      "attached_vehicle": null,
-      "ports": null,
-      "category_label": "Controllers",
-      "required_tags": null,
-      "port_tags": null,
-      "version": null
-    },
-    {
-      "name": "hardpoint_controller_comms",
-      "position": null,
-      "class_name": "Controller_Comms",
-      "editable": false,
-      "editable_children": false,
-      "equipped_item_uuid": "ae1a186e-0f8c-4deb-8079-bfb54df4a8a7",
-      "type": "CommsController",
-      "sub_type": "UNDEFINED",
-      "subtype": "UNDEFINED",
-      "sizes": {
-        "min": 1,
-        "max": 1
-      },
-      "compatible_types": [
-        {
-          "type": "CommsController",
-          "sub_types": []
-        }
-      ],
-      "health": null,
-      "equipped_item": {
-        "uuid": "ae1a186e-0f8c-4deb-8079-bfb54df4a8a7",
-        "name": "COMMS",
-        "class_name": "Controller_Comms",
-        "type": "CommsController",
-        "type_label": "Comms Controller",
-        "sub_type": "UNDEFINED",
-        "sub_type_label": "Undefined",
-        "classification": null,
-        "classification_label": null,
-        "is_base_variant": true,
-        "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/ae1a186e-0f8c-4deb-8079-bfb54df4a8a7",
-        "web_url": "https://api.star-citizen.wiki/items/comms",
-        "size": 1,
-        "mass": 0,
-        "grade": 1,
-        "class": null,
-        "manufacturer": {
-          "name": "Unknown",
-          "code": "UNKN",
-          "uuid": "00000000-0000-0000-0000-000000000000",
-          "link": "https://api.star-citizen.wiki/api/manufacturers/UNKN"
-        },
-        "version": "4.10.2-LIVE.12881860"
-      },
-      "attached_vehicle": null,
-      "ports": null,
-      "category_label": "Controllers",
-      "required_tags": null,
-      "port_tags": null,
-      "version": null
-    },
-    {
-      "name": "hardpoint_controller_capacitor_assignment",
-      "position": null,
-      "class_name": "Controller_CapacitorAssignment",
-      "editable": false,
-      "editable_children": false,
-      "equipped_item_uuid": "0219b443-6f28-4aa2-bcc3-cfbff843729d",
-      "type": "CapacitorAssignmentController",
-      "sub_type": "UNDEFINED",
-      "subtype": "UNDEFINED",
-      "sizes": {
-        "min": 1,
-        "max": 1
-      },
-      "compatible_types": [
-        {
-          "type": "CapacitorAssignmentController",
-          "sub_types": []
-        }
-      ],
-      "health": null,
-      "equipped_item": {
-        "uuid": "0219b443-6f28-4aa2-bcc3-cfbff843729d",
-        "name": "<= PLACEHOLDER =>",
-        "class_name": "Controller_CapacitorAssignment",
-        "type": "CapacitorAssignmentController",
-        "type_label": "Capacitor Assignment Controller",
-        "sub_type": "UNDEFINED",
-        "sub_type_label": "Undefined",
-        "classification": null,
-        "classification_label": null,
-        "is_base_variant": true,
-        "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/0219b443-6f28-4aa2-bcc3-cfbff843729d",
-        "web_url": "https://api.star-citizen.wiki/items/placeholder-1874",
-        "size": 1,
-        "mass": 0,
-        "grade": 1,
-        "class": null,
-        "manufacturer": {
-          "name": "Unknown",
-          "code": "UNKN",
-          "uuid": "00000000-0000-0000-0000-000000000000",
-          "link": "https://api.star-citizen.wiki/api/manufacturers/UNKN"
-        },
-        "version": "4.10.2-LIVE.12881860"
-      },
-      "attached_vehicle": null,
-      "ports": null,
-      "category_label": "Controllers",
-      "required_tags": null,
-      "port_tags": null,
-      "version": null
-    },
-    {
-      "name": "hardpoint_paint",
-      "position": null,
-      "class_name": null,
-      "editable": true,
-      "editable_children": true,
-      "equipped_item_uuid": null,
-      "type": "",
-      "sub_type": "",
-      "subtype": "",
-      "sizes": {
-        "min": 1,
-        "max": 1
-      },
-      "compatible_types": [
-        {
-          "type": "Paints",
-          "sub_types": []
-        }
-      ],
-      "health": null,
-      "equipped_item": null,
-      "attached_vehicle": null,
-      "ports": null,
-      "category_label": "Paints",
-      "required_tags": [
-        "Paint_Fury"
-      ],
-      "port_tags": null,
-      "version": null
-    },
-    {
-      "name": "hardpoint_controller_weapon",
-      "position": null,
-      "class_name": "Controller_Weapon",
-      "editable": false,
-      "editable_children": false,
-      "equipped_item_uuid": "c78851f1-ded8-4e8d-91ec-905e3dae075e",
-      "type": "WeaponController",
-      "sub_type": "UNDEFINED",
-      "subtype": "UNDEFINED",
-      "sizes": {
-        "min": 1,
-        "max": 1
-      },
-      "compatible_types": [
-        {
-          "type": "WeaponController",
-          "sub_types": []
-        }
-      ],
-      "health": null,
-      "equipped_item": {
-        "uuid": "c78851f1-ded8-4e8d-91ec-905e3dae075e",
-        "name": "WEAPONS",
-        "class_name": "Controller_Weapon",
-        "type": "WeaponController",
-        "type_label": "Weapon Controller",
-        "sub_type": "UNDEFINED",
-        "sub_type_label": "Undefined",
-        "classification": null,
-        "classification_label": null,
-        "is_base_variant": true,
-        "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/c78851f1-ded8-4e8d-91ec-905e3dae075e",
-        "web_url": "https://api.star-citizen.wiki/items/weapons",
-        "size": 1,
-        "mass": 0,
-        "grade": 1,
-        "class": null,
-        "manufacturer": {
-          "name": "Unknown",
-          "code": "UNKN",
-          "uuid": "00000000-0000-0000-0000-000000000000",
-          "link": "https://api.star-citizen.wiki/api/manufacturers/UNKN"
-        },
-        "version": "4.10.2-LIVE.12881860"
-      },
-      "attached_vehicle": null,
-      "ports": null,
-      "category_label": "Controllers",
-      "required_tags": null,
-      "port_tags": null,
-      "version": null
-    },
-    {
-      "name": "hardpoint_controller_shield",
-      "position": null,
-      "class_name": "Controller_Shield_MISC_Fury",
-      "editable": false,
-      "editable_children": false,
-      "equipped_item_uuid": "dcb7ef02-fff2-460f-bea0-fab5dd11e186",
-      "type": "ShieldController",
-      "sub_type": "UNDEFINED",
-      "subtype": "UNDEFINED",
-      "sizes": {
-        "min": 1,
-        "max": 1
-      },
-      "compatible_types": [
-        {
-          "type": "ShieldController",
-          "sub_types": []
-        }
-      ],
-      "health": null,
-      "equipped_item": {
-        "uuid": "dcb7ef02-fff2-460f-bea0-fab5dd11e186",
-        "name": "SHIELDS",
-        "class_name": "Controller_Shield_MISC_Fury",
-        "type": "ShieldController",
-        "type_label": "Shield Controller",
-        "sub_type": "UNDEFINED",
-        "sub_type_label": "Undefined",
-        "classification": null,
-        "classification_label": null,
-        "is_base_variant": true,
-        "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/dcb7ef02-fff2-460f-bea0-fab5dd11e186",
-        "web_url": "https://api.star-citizen.wiki/items/shields-77",
-        "size": 1,
-        "mass": 0,
-        "grade": 1,
-        "class": null,
-        "manufacturer": {
-          "name": "Unknown",
-          "code": "UNKN",
-          "uuid": "00000000-0000-0000-0000-000000000000",
-          "link": "https://api.star-citizen.wiki/api/manufacturers/UNKN"
-        },
-        "shield_controller": {
-          "face_type": "Bubble",
-          "max_reallocation": 1,
-          "reconfiguration_cooldown": 2.5,
-          "max_electrical_charge_damage_rate": 100
-        },
-        "resource_network": {
-          "is_networked": true,
-          "is_relay": false,
-          "default_priority": 50,
-          "states": [
-            {
-              "name": "Online",
-              "signature": {
-                "em": null,
-                "ir": null
-              },
-              "deltas": [
-                {
-                  "type": "Consumption",
-                  "resource": "Shield",
-                  "rate": 1000000,
-                  "minimum_fraction": 0,
-                  "generated_resource": null,
-                  "generated_rate": null,
-                  "discharge": null,
-                  "no_over_generation": null,
-                  "binary_evaluation": null,
-                  "composition": null
-                }
-              ],
-              "power_ranges": [
-                {
-                  "start": 0,
-                  "modifier": 1,
-                  "register_range": 0
-                },
-                {
-                  "start": 0,
-                  "modifier": 1,
-                  "register_range": 0
-                },
-                {
-                  "start": 0,
-                  "modifier": 1,
-                  "register_range": 0
-                }
-              ]
-            }
-          ],
-          "repair": {
-            "max_repair_count": 1,
-            "time_to_repair": 120,
-            "health_ratio": 0.2
-          },
-          "usage": {
-            "power": {
-              "min": 0,
-              "max": 0,
-              "minimum": 0,
-              "maximum": 0
-            },
-            "coolant": {
-              "min": 0,
-              "max": null,
-              "minimum": 0,
-              "maximum": null
-            }
-          },
-          "generation": {
-            "coolant": null,
-            "power": null
-          }
-        },
-        "emission": {
-          "ir": 0,
-          "em_min": 0,
-          "em_max": 0,
-          "em_decay": 0.15
-        },
-        "version": "4.10.2-LIVE.12881860"
-      },
-      "attached_vehicle": null,
-      "ports": null,
-      "category_label": "Controllers",
-      "required_tags": null,
-      "port_tags": null,
-      "version": null
-    },
-    {
-      "name": "hardpoint_controller_missile",
-      "position": null,
-      "class_name": "Controller_Missile",
-      "editable": false,
-      "editable_children": false,
-      "equipped_item_uuid": "4750556e-1afc-45be-86f7-f7adbc1fb7aa",
-      "type": "MissileController",
-      "sub_type": "UNDEFINED",
-      "subtype": "UNDEFINED",
-      "sizes": {
-        "min": 1,
-        "max": 1
-      },
-      "compatible_types": [
-        {
-          "type": "MissileController",
-          "sub_types": []
-        }
-      ],
-      "health": null,
-      "equipped_item": {
-        "uuid": "4750556e-1afc-45be-86f7-f7adbc1fb7aa",
-        "name": "MISSILES",
-        "class_name": "Controller_Missile",
-        "type": "MissileController",
-        "type_label": "Missile Controller",
-        "sub_type": "UNDEFINED",
-        "sub_type_label": "Undefined",
-        "classification": null,
-        "classification_label": null,
-        "is_base_variant": true,
-        "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/4750556e-1afc-45be-86f7-f7adbc1fb7aa",
-        "web_url": "https://api.star-citizen.wiki/items/missiles",
-        "size": 1,
-        "mass": 0,
-        "grade": 1,
-        "class": null,
-        "manufacturer": {
-          "name": "Unknown",
-          "code": "UNKN",
-          "uuid": "00000000-0000-0000-0000-000000000000",
-          "link": "https://api.star-citizen.wiki/api/manufacturers/UNKN"
-        },
-        "version": "4.10.2-LIVE.12881860"
-      },
-      "attached_vehicle": null,
-      "ports": null,
-      "category_label": "Controllers",
-      "required_tags": null,
-      "port_tags": null,
-      "version": null
-    },
-    {
-      "name": "hardpoint_controller_flight",
-      "position": null,
-      "class_name": "Controller_Flight_MISC_Fury",
-      "editable": false,
-      "editable_children": false,
-      "equipped_item_uuid": "b46d531c-f64a-4771-bb56-b01916a39d50",
-      "type": "FlightController",
-      "sub_type": "UNDEFINED",
-      "subtype": "UNDEFINED",
-      "sizes": {
-        "min": 1,
-        "max": 1
-      },
-      "compatible_types": [
-        {
-          "type": "FlightController",
-          "sub_types": []
-        }
-      ],
-      "health": null,
-      "equipped_item": {
-        "uuid": "b46d531c-f64a-4771-bb56-b01916a39d50",
-        "name": "Flight Blade",
-        "class_name": "Controller_Flight_MISC_Fury",
-        "type": "FlightController",
-        "type_label": "Flight Controller",
-        "sub_type": "UNDEFINED",
-        "sub_type_label": "Undefined",
-        "classification": "Ship.FlightController",
-        "classification_label": "Flight Controller",
-        "is_base_variant": true,
-        "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/b46d531c-f64a-4771-bb56-b01916a39d50",
-        "web_url": "https://api.star-citizen.wiki/items/flight-blade-94",
-        "size": 1,
-        "mass": 35,
-        "grade": "A",
-        "class": null,
-        "manufacturer": {
-          "name": "Unknown",
-          "code": "UNKN",
-          "uuid": "00000000-0000-0000-0000-000000000000",
-          "link": "https://api.star-citizen.wiki/api/manufacturers/UNKN"
-        },
-        "flight_controller": {
-          "scm_speed": 230,
-          "boost_speed_forward": 550,
-          "boost_speed_backward": 260,
-          "max_speed": 1263,
-          "pitch": 69,
-          "yaw": 69,
-          "roll": 215,
-          "pitch_boosted": 83,
-          "yaw_boosted": 83,
-          "roll_boosted": 258,
-          "boost_capacitor": {
-            "capacity": 20,
-            "threshold_ratio": 0.25,
-            "idle_cost": 1,
-            "linear_cost": 0,
-            "angular_cost": 0,
-            "regen_per_sec": 0.75,
-            "regen_delay": 0.2,
-            "regen_time": 26.9
-          },
-          "boost_activation": {
-            "pre_delay_time": 0,
-            "ramp_up_time": 0.6,
-            "ramp_down_time": 0.2
-          },
-          "thruster_decay": {
-            "linear_accel": 3.15,
-            "angular_accel": 11
-          },
-          "multiplier": {
-            "torque_imbalance": 1,
-            "lift": 7,
-            "drag": 5,
-            "scm_max_drag": 4,
-            "precision_landing": 1
-          },
-          "boost_multiplier": {
-            "accel_x": {
-              "positive": 1.3,
-              "negative": 1.3
-            },
-            "accel_y": {
-              "positive": 1.55,
-              "negative": 1.4
-            },
-            "accel_z": {
-              "positive": 1.3,
-              "negative": 1.3
-            },
-            "pitch": 1.2,
-            "yaw": 1.2,
-            "roll": 1.2,
-            "pitch_accel": 1.2,
-            "yaw_accel": 1.2,
-            "roll_accel": 1.2
-          },
-          "precision_mode": {
-            "max_speed_full_proximity_assist": 10,
-            "max_speed_zero_proximity_assist": 30,
-            "min_distance": 5,
-            "max_distance": 90
-          },
-          "recall_params": {
-            "hover_height_at_destination": 30,
-            "forward_offset": 20,
-            "obstruction_detection_range": 1.2,
-            "default_platform_detection_range": 50,
-            "minimum_recall_distance": 400,
-            "braking_distance_offset": 30
-          },
-          "collision_detection": {
-            "collision_warn_speed": 6,
-            "collision_warn_time": 4,
-            "collision_danger_close_warn_time": 2
-          },
-          "gravlev": {
-            "max_speed": null,
-            "turn_friction": null,
-            "air_controller_multiplier": null,
-            "anti_fall_multiplier": null,
-            "lateral_strafe_multiplier": null
-          },
-          "no_fuel_params": {
-            "linear_acceleration_modifier": 0.1,
-            "angular_acceleration_modifier": 0.1,
-            "angular_velocity_modifier": 0.1,
-            "legacy_max_speed": 20
-          }
-        },
         "resource_network": {
           "is_networked": true,
           "is_relay": false,
@@ -1512,20 +660,8 @@
                 {
                   "type": "Consumption",
                   "resource": "Power",
-                  "rate": 4,
-                  "minimum_fraction": 0.25,
-                  "generated_resource": null,
-                  "generated_rate": null,
-                  "discharge": null,
-                  "no_over_generation": null,
-                  "binary_evaluation": null,
-                  "composition": null
-                },
-                {
-                  "type": "Consumption",
-                  "resource": "Fuel",
-                  "rate": 0,
-                  "minimum_fraction": 0,
+                  "rate": 1,
+                  "minimum_fraction": 1,
                   "generated_resource": null,
                   "generated_rate": null,
                   "discharge": null,
@@ -1561,15 +697,15 @@
           "usage": {
             "power": {
               "min": 1,
-              "max": 4,
+              "max": 1,
               "minimum": 1,
-              "maximum": 4
+              "maximum": 1
             },
             "coolant": {
               "min": 1,
-              "max": 4,
+              "max": 1,
               "minimum": 1,
-              "maximum": 4
+              "maximum": 1
             }
           },
           "generation": {
@@ -1583,577 +719,242 @@
           "em_max": 0,
           "em_decay": 0.15
         },
-        "version": "4.10.2-LIVE.12881860"
-      },
-      "attached_vehicle": null,
-      "ports": null,
-      "category_label": "Flight Controller",
-      "required_tags": null,
-      "port_tags": null,
-      "version": null
-    },
-    {
-      "name": "hardpoint_controller_energy",
-      "position": null,
-      "class_name": "Controller_Energy",
-      "editable": false,
-      "editable_children": false,
-      "equipped_item_uuid": "61cc7bf5-6666-40f7-8c0a-ee8a8092f51e",
-      "type": "EnergyController",
-      "sub_type": "UNDEFINED",
-      "subtype": "UNDEFINED",
-      "sizes": {
-        "min": 1,
-        "max": 1
-      },
-      "compatible_types": [
-        {
-          "type": "EnergyController",
-          "sub_types": []
-        }
-      ],
-      "health": null,
-      "equipped_item": {
-        "uuid": "61cc7bf5-6666-40f7-8c0a-ee8a8092f51e",
-        "name": "POWER",
-        "class_name": "Controller_Energy",
-        "type": "EnergyController",
-        "type_label": "Energy Controller",
-        "sub_type": "UNDEFINED",
-        "sub_type_label": "Undefined",
-        "classification": null,
-        "classification_label": null,
-        "is_base_variant": true,
-        "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/61cc7bf5-6666-40f7-8c0a-ee8a8092f51e",
-        "web_url": "https://api.star-citizen.wiki/items/power",
-        "size": 1,
-        "mass": 0,
-        "grade": 1,
-        "class": null,
-        "manufacturer": {
-          "name": "Unknown",
-          "code": "UNKN",
-          "uuid": "00000000-0000-0000-0000-000000000000",
-          "link": "https://api.star-citizen.wiki/api/manufacturers/UNKN"
-        },
-        "version": "4.10.2-LIVE.12881860"
-      },
-      "attached_vehicle": null,
-      "ports": null,
-      "category_label": "Controllers",
-      "required_tags": null,
-      "port_tags": null,
-      "version": null
-    },
-    {
-      "name": "hardpoint_controller_door",
-      "position": null,
-      "class_name": "Controller_Door",
-      "editable": false,
-      "editable_children": false,
-      "equipped_item_uuid": "4a9ebf31-a405-4b68-9886-b4a47bd1b61d",
-      "type": "DoorController",
-      "sub_type": "UNDEFINED",
-      "subtype": "UNDEFINED",
-      "sizes": {
-        "min": 1,
-        "max": 1
-      },
-      "compatible_types": [
-        {
-          "type": "DoorController",
-          "sub_types": []
-        }
-      ],
-      "health": null,
-      "equipped_item": {
-        "uuid": "4a9ebf31-a405-4b68-9886-b4a47bd1b61d",
-        "name": "SECURITY",
-        "class_name": "Controller_Door",
-        "type": "DoorController",
-        "type_label": "Door Controller",
-        "sub_type": "UNDEFINED",
-        "sub_type_label": "Undefined",
-        "classification": null,
-        "classification_label": null,
-        "is_base_variant": true,
-        "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/4a9ebf31-a405-4b68-9886-b4a47bd1b61d",
-        "web_url": "https://api.star-citizen.wiki/items/security",
-        "size": 1,
-        "mass": 0,
-        "grade": 1,
-        "class": null,
-        "manufacturer": {
-          "name": "Unknown",
-          "code": "UNKN",
-          "uuid": "00000000-0000-0000-0000-000000000000",
-          "link": "https://api.star-citizen.wiki/api/manufacturers/UNKN"
-        },
-        "version": "4.10.2-LIVE.12881860"
-      },
-      "attached_vehicle": null,
-      "ports": null,
-      "category_label": "Controllers",
-      "required_tags": null,
-      "port_tags": null,
-      "version": null
-    },
-    {
-      "name": "hardpoint_controller_cooler",
-      "position": null,
-      "class_name": "Controller_Cooler",
-      "editable": false,
-      "editable_children": false,
-      "equipped_item_uuid": "b935e5d8-dead-47c5-8937-382c3aa11682",
-      "type": "CoolerController",
-      "sub_type": "UNDEFINED",
-      "subtype": "UNDEFINED",
-      "sizes": {
-        "min": 1,
-        "max": 1
-      },
-      "compatible_types": [
-        {
-          "type": "CoolerController",
-          "sub_types": []
-        }
-      ],
-      "health": null,
-      "equipped_item": {
-        "uuid": "b935e5d8-dead-47c5-8937-382c3aa11682",
-        "name": "HEAT",
-        "class_name": "Controller_Cooler",
-        "type": "CoolerController",
-        "type_label": "Cooler Controller",
-        "sub_type": "UNDEFINED",
-        "sub_type_label": "Undefined",
-        "classification": null,
-        "classification_label": null,
-        "is_base_variant": true,
-        "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/b935e5d8-dead-47c5-8937-382c3aa11682",
-        "web_url": "https://api.star-citizen.wiki/items/heat",
-        "size": 1,
-        "mass": 0,
-        "grade": 1,
-        "class": null,
-        "manufacturer": {
-          "name": "Unknown",
-          "code": "UNKN",
-          "uuid": "00000000-0000-0000-0000-000000000000",
-          "link": "https://api.star-citizen.wiki/api/manufacturers/UNKN"
-        },
-        "version": "4.10.2-LIVE.12881860"
-      },
-      "attached_vehicle": null,
-      "ports": null,
-      "category_label": "Controllers",
-      "required_tags": null,
-      "port_tags": null,
-      "version": null
-    },
-    {
-      "name": "hardpoint_cockpit_selfDestruct",
-      "position": null,
-      "class_name": "VHCL_SelfDestruct_20s",
-      "editable": false,
-      "editable_children": false,
-      "equipped_item_uuid": "e9655bd9-dd74-46ee-8a15-2ac3bd3dfde1",
-      "type": "SelfDestruct",
-      "sub_type": "UNDEFINED",
-      "subtype": "UNDEFINED",
-      "sizes": {
-        "min": 1,
-        "max": 1
-      },
-      "compatible_types": [
-        {
-          "type": "SelfDestruct",
-          "sub_types": []
-        }
-      ],
-      "health": null,
-      "equipped_item": {
-        "uuid": "e9655bd9-dd74-46ee-8a15-2ac3bd3dfde1",
-        "name": "Self Destruct Unit",
-        "class_name": "VHCL_SelfDestruct_20s",
-        "type": "SelfDestruct",
-        "type_label": "Self Destruct",
-        "sub_type": "UNDEFINED",
-        "sub_type_label": "Undefined",
-        "classification": "Ship.SelfDestruct",
-        "classification_label": "Self Destruct",
-        "is_base_variant": true,
-        "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/e9655bd9-dd74-46ee-8a15-2ac3bd3dfde1",
-        "web_url": "https://api.star-citizen.wiki/items/self-destruct-unit-3",
-        "size": 1,
-        "mass": 0,
-        "grade": "A",
-        "class": null,
-        "manufacturer": {
-          "name": "Unknown",
-          "code": "UNKN",
-          "uuid": "00000000-0000-0000-0000-000000000000",
-          "link": "https://api.star-citizen.wiki/api/manufacturers/UNKN"
-        },
-        "self_destruct": {
-          "damage": 2500,
-          "radius": 30,
-          "min_radius": 10,
-          "phys_radius": 30,
-          "min_phys_radius": 15,
-          "time": 20,
-          "countdown": 20
-        },
-        "resource_network": {
-          "is_networked": true,
-          "is_relay": false,
-          "default_priority": 50,
-          "states": [
-            {
-              "name": "Online",
-              "signature": {
-                "em": null,
-                "ir": null
-              },
-              "deltas": [
-                {
-                  "type": "NetworkReflection",
-                  "resource": "Power",
-                  "rate": null,
-                  "minimum_fraction": null,
-                  "generated_resource": null,
-                  "generated_rate": null,
-                  "discharge": null,
-                  "no_over_generation": null,
-                  "binary_evaluation": 0,
-                  "composition": null
-                }
-              ],
-              "power_ranges": [
-                {
-                  "start": 0,
-                  "modifier": 1,
-                  "register_range": 0
-                },
-                {
-                  "start": 0,
-                  "modifier": 1,
-                  "register_range": 0
-                },
-                {
-                  "start": 0,
-                  "modifier": 1,
-                  "register_range": 0
-                }
-              ]
-            }
-          ],
-          "repair": {
-            "max_repair_count": 1,
-            "time_to_repair": 120,
-            "health_ratio": 0.2
-          },
-          "usage": {
-            "power": {
-              "min": 0,
-              "max": 0,
-              "minimum": 0,
-              "maximum": 0
-            },
-            "coolant": {
-              "min": 0,
-              "max": null,
-              "minimum": 0,
-              "maximum": null
-            }
-          },
-          "generation": {
-            "coolant": null,
-            "power": null
-          }
-        },
-        "emission": {
-          "ir": 0,
-          "em_min": 0,
-          "em_max": 0,
-          "em_decay": 0.15
-        },
-        "version": "4.10.2-LIVE.12881860"
-      },
-      "attached_vehicle": null,
-      "ports": null,
-      "category_label": "Systems",
-      "required_tags": null,
-      "port_tags": null,
-      "version": null
-    },
-    {
-      "name": "hardpoint_armor",
-      "position": null,
-      "class_name": "ARMR_MISC_Fury",
-      "editable": false,
-      "editable_children": false,
-      "equipped_item_uuid": "0b08ffbf-7c5a-410b-911c-98715c92e978",
-      "type": "Armor",
-      "sub_type": "Medium",
-      "subtype": "Medium",
-      "sizes": {
-        "min": 1,
-        "max": 1
-      },
-      "compatible_types": [
-        {
-          "type": "Armor",
-          "sub_types": []
-        }
-      ],
-      "health": 1650,
-      "equipped_item": {
-        "uuid": "0b08ffbf-7c5a-410b-911c-98715c92e978",
-        "name": "<= PLACEHOLDER =>",
-        "class_name": "ARMR_MISC_Fury",
-        "type": "Armor",
-        "type_label": "Armor",
-        "sub_type": "Medium",
-        "sub_type_label": "Medium",
-        "classification": "Ship.Armor.Medium",
-        "classification_label": "Medium",
-        "is_base_variant": true,
-        "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/0b08ffbf-7c5a-410b-911c-98715c92e978",
-        "web_url": "https://api.star-citizen.wiki/items/placeholder-899",
-        "size": 1,
-        "mass": 0,
-        "grade": "A",
-        "class": null,
-        "manufacturer": {
-          "name": "Musashi Industrial and Starflight Concern",
-          "code": "MISC",
-          "uuid": "b28a5c61-63a4-478b-8047-5fba545d5b8a",
-          "link": "https://api.star-citizen.wiki/api/manufacturers/MISC"
-        },
-        "armor": {
-          "uuid": "0b08ffbf-7c5a-410b-911c-98715c92e978",
-          "health": 1650,
-          "signal_infrared": 1.15,
-          "signal_electromagnetic": 1.15,
-          "signal_cross_section": 1.15,
-          "damage_physical": 0.85,
-          "damage_energy": 0.7,
-          "damage_distortion": 1,
-          "damage_thermal": 1,
-          "damage_biochemical": 1,
-          "damage_stun": 1,
-          "signal_multiplier": {
-            "cross_section": 1.15,
-            "cross_section_change": 0.15,
-            "infrared": 1.15,
-            "infrared_change": 0.15,
-            "electromagnetic": 1.15,
-            "electromagnetic_change": 0.15
-          },
-          "damage_multiplier": {
-            "physical": 0.85,
-            "physical_change": -0.15,
-            "energy": 0.7,
-            "energy_change": -0.3,
-            "distortion": 1,
-            "distortion_change": 0,
-            "thermal": 1,
-            "thermal_change": 0,
-            "biochemical": 1,
-            "biochemical_change": 0,
-            "stun": 1,
-            "stun_change": 0
-          },
-          "resistance_multiplier": {
-            "physical": 0.85,
-            "physical_change": -0.15,
-            "energy": 1.15,
-            "energy_change": 0.15,
-            "distortion": 1,
-            "distortion_change": 0,
-            "thermal": 1,
-            "thermal_change": 0,
-            "biochemical": 1,
-            "biochemical_change": 0,
-            "stun": 1,
-            "stun_change": 0
-          },
-          "penetration_resistance": {
-            "base": 1,
-            "physical": 1,
-            "energy": 1,
-            "distortion": 0,
-            "thermal": 1,
-            "biochemical": 1,
-            "stun": 1
-          },
-          "deflection": {
-            "physical": 5,
-            "energy": 5,
-            "distortion": 0,
-            "thermal": 0,
-            "biochemical": 0,
-            "stun": 0
-          }
-        },
-        "version": "4.10.2-LIVE.12881860"
-      },
-      "attached_vehicle": null,
-      "ports": null,
-      "category_label": "Armor",
-      "required_tags": null,
-      "port_tags": null,
-      "version": null
-    },
-    {
-      "name": "hardpoint_seat_pilot",
-      "position": null,
-      "class_name": "MISC_Fury_SCItem_SeatDashboard",
-      "editable": false,
-      "editable_children": false,
-      "equipped_item_uuid": "ff9d15db-f2b2-4cc6-b364-daae75184b04",
-      "type": "Seat",
-      "sub_type": "UNDEFINED",
-      "subtype": "UNDEFINED",
-      "sizes": {
-        "min": 1,
-        "max": 1
-      },
-      "compatible_types": [
-        {
-          "type": "Seat",
-          "sub_types": []
-        }
-      ],
-      "health": 1,
-      "equipped_item": {
-        "uuid": "ff9d15db-f2b2-4cc6-b364-daae75184b04",
-        "name": "TRGT. STATUS",
-        "class_name": "MISC_Fury_SCItem_SeatDashboard",
-        "type": "Seat",
-        "type_label": "Seat",
-        "sub_type": "UNDEFINED",
-        "sub_type_label": "Undefined",
-        "classification": null,
-        "classification_label": null,
-        "is_base_variant": true,
-        "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/ff9d15db-f2b2-4cc6-b364-daae75184b04",
-        "web_url": "https://api.star-citizen.wiki/items/trgt-status-150",
-        "size": 1,
-        "mass": 10,
-        "grade": 1,
-        "class": null,
-        "manufacturer": {
-          "name": "Mirai",
-          "code": "MRAI",
-          "uuid": "cdf6ea1e-7de3-4b58-bf9d-13c5fbafc49a",
-          "link": "https://api.star-citizen.wiki/api/manufacturers/MRAI"
-        },
-        "seat": {
-          "seat_type": "DUAL_STICK",
-          "yaw": {
-            "min": -70,
-            "max": 70,
-            "minimum": -70,
-            "maximum": 70
-          },
-          "pitch": {
-            "min": -60,
-            "max": 50,
-            "minimum": -60,
-            "maximum": 50
-          },
-          "set_yaw_pitch_limits": false,
-          "has_ejection": false,
-          "ejection": null
-        },
-        "resource_network": {
-          "is_networked": true,
-          "is_relay": false,
-          "default_priority": 50,
-          "states": [
-            {
-              "name": "Online",
-              "signature": {
-                "em": null,
-                "ir": null
-              },
-              "deltas": [
-                {
-                  "type": "NetworkReflection",
-                  "resource": "Power",
-                  "rate": null,
-                  "minimum_fraction": null,
-                  "generated_resource": null,
-                  "generated_rate": null,
-                  "discharge": null,
-                  "no_over_generation": null,
-                  "binary_evaluation": 1,
-                  "composition": null
-                }
-              ],
-              "power_ranges": [
-                {
-                  "start": 0,
-                  "modifier": 1,
-                  "register_range": 0
-                },
-                {
-                  "start": 0,
-                  "modifier": 1,
-                  "register_range": 0
-                },
-                {
-                  "start": 0,
-                  "modifier": 1,
-                  "register_range": 0
-                }
-              ]
-            }
-          ],
-          "repair": {
-            "max_repair_count": 1,
-            "time_to_repair": 120,
-            "health_ratio": 0.2
-          },
-          "usage": {
-            "power": {
-              "min": 0,
-              "max": 0,
-              "minimum": 0,
-              "maximum": 0
-            },
-            "coolant": {
-              "min": 0,
-              "max": null,
-              "minimum": 0,
-              "maximum": null
-            }
-          },
-          "generation": {
-            "coolant": null,
-            "power": null
-          }
-        },
-        "emission": {
-          "ir": 0,
-          "em_min": 0,
-          "em_max": 0,
-          "em_decay": 0.15
-        },
-        "version": "4.10.2-LIVE.12881860"
+        "version": "4.10.3-LIVE.13165946"
       },
       "attached_vehicle": null,
       "ports": [
         {
-          "name": "Radar_Helper",
+          "name": "BAR1",
+          "position": null,
+          "class_name": null,
+          "editable": false,
+          "editable_children": false,
+          "equipped_item_uuid": null,
+          "type": "",
+          "sub_type": "",
+          "subtype": "",
+          "sizes": {
+            "min": 1,
+            "max": 1
+          },
+          "compatible_types": [
+            {
+              "type": "WeaponAttachment",
+              "sub_types": [
+                "Barrel"
+              ]
+            }
+          ],
+          "health": null,
+          "equipped_item": null,
+          "attached_vehicle": null,
+          "ports": null,
+          "category_label": null,
+          "required_tags": null,
+          "port_tags": null,
+          "version": "4.10.3-LIVE.13165946"
+        },
+        {
+          "name": "MEC",
+          "position": null,
+          "class_name": null,
+          "editable": false,
+          "editable_children": false,
+          "equipped_item_uuid": null,
+          "type": "",
+          "sub_type": "",
+          "subtype": "",
+          "sizes": {
+            "min": 1,
+            "max": 1
+          },
+          "compatible_types": [
+            {
+              "type": "WeaponAttachment",
+              "sub_types": [
+                "FiringMechanism"
+              ]
+            }
+          ],
+          "health": null,
+          "equipped_item": null,
+          "attached_vehicle": null,
+          "ports": null,
+          "category_label": null,
+          "required_tags": null,
+          "port_tags": null,
+          "version": "4.10.3-LIVE.13165946"
+        },
+        {
+          "name": "POW",
+          "position": null,
+          "class_name": null,
+          "editable": false,
+          "editable_children": false,
+          "equipped_item_uuid": null,
+          "type": "",
+          "sub_type": "",
+          "subtype": "",
+          "sizes": {
+            "min": 1,
+            "max": 1
+          },
+          "compatible_types": [
+            {
+              "type": "WeaponAttachment",
+              "sub_types": [
+                "PowerArray"
+              ]
+            }
+          ],
+          "health": null,
+          "equipped_item": null,
+          "attached_vehicle": null,
+          "ports": null,
+          "category_label": null,
+          "required_tags": null,
+          "port_tags": null,
+          "version": "4.10.3-LIVE.13165946"
+        },
+        {
+          "name": "VEN",
+          "position": null,
+          "class_name": null,
+          "editable": false,
+          "editable_children": false,
+          "equipped_item_uuid": null,
+          "type": "",
+          "sub_type": "",
+          "subtype": "",
+          "sizes": {
+            "min": 1,
+            "max": 1
+          },
+          "compatible_types": [
+            {
+              "type": "WeaponAttachment",
+              "sub_types": [
+                "Ventilation"
+              ]
+            }
+          ],
+          "health": null,
+          "equipped_item": null,
+          "attached_vehicle": null,
+          "ports": null,
+          "category_label": null,
+          "required_tags": null,
+          "port_tags": null,
+          "version": "4.10.3-LIVE.13165946"
+        }
+      ],
+      "category_label": "Tractor Beams",
+      "required_tags": null,
+      "port_tags": [
+        "PowerSuit"
+      ],
+      "version": "4.10.3-LIVE.13165946"
+    },
+    {
+      "name": "salvage_controller",
+      "position": null,
+      "class_name": "Controller_Salvage_TractorBeamOnly_PowerSuit",
+      "editable": false,
+      "editable_children": false,
+      "equipped_item_uuid": "99b1d580-8fd8-4716-af13-c2e4287977f1",
+      "type": "SalvageController",
+      "sub_type": "UNDEFINED",
+      "subtype": "UNDEFINED",
+      "sizes": {
+        "min": 0,
+        "max": 1
+      },
+      "compatible_types": null,
+      "health": null,
+      "equipped_item": {
+        "uuid": "99b1d580-8fd8-4716-af13-c2e4287977f1",
+        "name": "<= PLACEHOLDER =>",
+        "class_name": "Controller_Salvage_TractorBeamOnly_PowerSuit",
+        "type": "SalvageController",
+        "type_label": "Salvage Controller",
+        "sub_type": "UNDEFINED",
+        "sub_type_label": "Undefined",
+        "classification": null,
+        "classification_label": null,
+        "is_base_variant": true,
+        "variant_name": null,
+        "link": "https://api.star-citizen.wiki/api/items/99b1d580-8fd8-4716-af13-c2e4287977f1?version=4.10.3-LIVE.13165946",
+        "web_url": "https://api.star-citizen.wiki/items/placeholder-1895?version=4.10.3-LIVE.13165946",
+        "size": 1,
+        "mass": 0,
+        "grade": 1,
+        "class": null,
+        "manufacturer": {
+          "name": "Unknown",
+          "code": "UNKN",
+          "uuid": "00000000-0000-0000-0000-000000000000",
+          "link": "https://api.star-citizen.wiki/api/manufacturers/UNKN"
+        },
+        "version": "4.10.3-LIVE.13165946"
+      },
+      "attached_vehicle": null,
+      "ports": null,
+      "category_label": "Other",
+      "required_tags": null,
+      "port_tags": null,
+      "version": "4.10.3-LIVE.13165946"
+    },
+    {
+      "name": "Dashboard_ItemPort",
+      "position": null,
+      "class_name": "ARGO_ATLS_PowerSuit_SCItem_Dashboard",
+      "editable": false,
+      "editable_children": false,
+      "equipped_item_uuid": "b8340787-1655-45c0-a5bd-4b76fb960157",
+      "type": "SeatDashboard",
+      "sub_type": "UNDEFINED",
+      "subtype": "UNDEFINED",
+      "sizes": {
+        "min": 0,
+        "max": 1
+      },
+      "compatible_types": [
+        {
+          "type": "SeatDashboard",
+          "sub_types": []
+        }
+      ],
+      "health": null,
+      "equipped_item": {
+        "uuid": "b8340787-1655-45c0-a5bd-4b76fb960157",
+        "name": "<= PLACEHOLDER =>",
+        "class_name": "ARGO_ATLS_PowerSuit_SCItem_Dashboard",
+        "type": "SeatDashboard",
+        "type_label": "Seat Dashboard",
+        "sub_type": "UNDEFINED",
+        "sub_type_label": "Undefined",
+        "classification": null,
+        "classification_label": null,
+        "is_base_variant": true,
+        "variant_name": null,
+        "link": "https://api.star-citizen.wiki/api/items/b8340787-1655-45c0-a5bd-4b76fb960157?version=4.10.3-LIVE.13165946",
+        "web_url": "https://api.star-citizen.wiki/items/placeholder-710?version=4.10.3-LIVE.13165946",
+        "size": 1,
+        "mass": 0,
+        "grade": 1,
+        "class": null,
+        "manufacturer": {
+          "name": "Argo Astronautics",
+          "code": "ARGO",
+          "uuid": "9e1f5a35-edcc-4d19-bede-08e2730043c5",
+          "link": "https://api.star-citizen.wiki/api/manufacturers/ARGO"
+        },
+        "version": "4.10.3-LIVE.13165946"
+      },
+      "attached_vehicle": null,
+      "ports": [
+        {
+          "name": "Screen_Right",
           "position": null,
           "class_name": null,
           "editable": true,
@@ -2163,7 +964,7 @@
           "sub_type": "",
           "subtype": "",
           "sizes": {
-            "min": 0,
+            "min": 1,
             "max": 1
           },
           "compatible_types": [
@@ -2179,137 +980,45 @@
           "category_label": null,
           "required_tags": null,
           "port_tags": null,
-          "version": null
+          "version": "4.10.3-LIVE.13165946"
         },
         {
-          "name": "Display_HUD",
+          "name": "Screen_Left",
           "position": null,
-          "class_name": "H_Dashboard_Projector_HUD_MISC_Fury",
+          "class_name": null,
           "editable": true,
           "editable_children": true,
-          "equipped_item_uuid": "35ec1823-8be0-4645-8959-cf63efb0f033",
-          "type": "Display",
-          "sub_type": "UNDEFINED",
-          "subtype": "UNDEFINED",
+          "equipped_item_uuid": null,
+          "type": "",
+          "sub_type": "",
+          "subtype": "",
           "sizes": {
-            "min": 0,
+            "min": 1,
             "max": 1
           },
-          "compatible_types": null,
+          "compatible_types": [
+            {
+              "type": "Display",
+              "sub_types": []
+            }
+          ],
           "health": null,
-          "equipped_item": {
-            "uuid": "35ec1823-8be0-4645-8959-cf63efb0f033",
-            "name": "<= PLACEHOLDER =>",
-            "class_name": "H_Dashboard_Projector_HUD_MISC_Fury",
-            "type": "Display",
-            "type_label": "Display",
-            "sub_type": "UNDEFINED",
-            "sub_type_label": "Undefined",
-            "classification": null,
-            "classification_label": null,
-            "is_base_variant": true,
-            "variant_name": null,
-            "link": "https://api.star-citizen.wiki/api/items/35ec1823-8be0-4645-8959-cf63efb0f033",
-            "web_url": "https://api.star-citizen.wiki/items/placeholder-3367",
-            "size": 1,
-            "mass": 0,
-            "grade": 1,
-            "class": null,
-            "manufacturer": {
-              "name": "Unknown",
-              "code": "UNKN",
-              "uuid": "00000000-0000-0000-0000-000000000000",
-              "link": "https://api.star-citizen.wiki/api/manufacturers/UNKN"
-            },
-            "resource_network": {
-              "is_networked": true,
-              "is_relay": false,
-              "default_priority": 50,
-              "states": [
-                {
-                  "name": "Online",
-                  "signature": {
-                    "em": null,
-                    "ir": null
-                  },
-                  "deltas": [
-                    {
-                      "type": "NetworkReflection",
-                      "resource": "Power",
-                      "rate": null,
-                      "minimum_fraction": null,
-                      "generated_resource": null,
-                      "generated_rate": null,
-                      "discharge": null,
-                      "no_over_generation": null,
-                      "binary_evaluation": 1,
-                      "composition": null
-                    }
-                  ],
-                  "power_ranges": [
-                    {
-                      "start": 0,
-                      "modifier": 1,
-                      "register_range": 0
-                    },
-                    {
-                      "start": 0,
-                      "modifier": 1,
-                      "register_range": 0
-                    },
-                    {
-                      "start": 0,
-                      "modifier": 1,
-                      "register_range": 0
-                    }
-                  ]
-                }
-              ],
-              "repair": {
-                "max_repair_count": 1,
-                "time_to_repair": 120,
-                "health_ratio": 0.2
-              },
-              "usage": {
-                "power": {
-                  "min": 0,
-                  "max": 0,
-                  "minimum": 0,
-                  "maximum": 0
-                },
-                "coolant": {
-                  "min": 0,
-                  "max": null,
-                  "minimum": 0,
-                  "maximum": null
-                }
-              },
-              "generation": {
-                "coolant": null,
-                "power": null
-              }
-            },
-            "emission": {
-              "ir": 0,
-              "em_min": 0,
-              "em_max": 0,
-              "em_decay": 0.15
-            },
-            "version": "4.10.2-LIVE.12881860"
-          },
+          "equipped_item": null,
           "attached_vehicle": null,
           "ports": null,
           "category_label": null,
-          "required_tags": null,
+          "required_tags": [
+            "ScreenCover"
+          ],
           "port_tags": null,
-          "version": null
+          "version": "4.10.3-LIVE.13165946"
         },
         {
-          "name": "hardpoint_btn_cover",
+          "name": "itemport_miningHUD",
           "position": null,
           "class_name": null,
-          "editable": false,
-          "editable_children": false,
+          "editable": true,
+          "editable_children": true,
           "equipped_item_uuid": null,
           "type": "",
           "sub_type": "",
@@ -2318,455 +1027,84 @@
             "min": 0,
             "max": 0
           },
-          "compatible_types": [
-            {
-              "type": "Misc",
-              "sub_types": []
-            }
-          ],
+          "compatible_types": null,
           "health": null,
           "equipped_item": null,
           "attached_vehicle": null,
           "ports": null,
           "category_label": null,
-          "required_tags": [
-            "MISC_Fury"
-          ],
-          "port_tags": null,
-          "version": null
-        },
-        {
-          "name": "Screen_Radar",
-          "position": null,
-          "class_name": "Radar_Display_Screen_Template",
-          "editable": true,
-          "editable_children": true,
-          "equipped_item_uuid": "7a37dc17-4984-4418-a70d-04bf22fea031",
-          "type": "Display",
-          "sub_type": "UNDEFINED",
-          "subtype": "UNDEFINED",
-          "sizes": {
-            "min": 1,
-            "max": 1
-          },
-          "compatible_types": [
-            {
-              "type": "Display",
-              "sub_types": []
-            }
-          ],
-          "health": null,
-          "equipped_item": {
-            "uuid": "7a37dc17-4984-4418-a70d-04bf22fea031",
-            "name": "<= PLACEHOLDER =>",
-            "class_name": "Radar_Display_Screen_Template",
-            "type": "Display",
-            "type_label": "Display",
-            "sub_type": "UNDEFINED",
-            "sub_type_label": "Undefined",
-            "classification": null,
-            "classification_label": null,
-            "is_base_variant": true,
-            "variant_name": null,
-            "link": "https://api.star-citizen.wiki/api/items/7a37dc17-4984-4418-a70d-04bf22fea031",
-            "web_url": "https://api.star-citizen.wiki/items/placeholder-4928",
-            "size": 1,
-            "mass": 0,
-            "grade": 1,
-            "class": null,
-            "manufacturer": {
-              "name": "Unknown",
-              "code": "UNKN",
-              "uuid": "00000000-0000-0000-0000-000000000000",
-              "link": "https://api.star-citizen.wiki/api/manufacturers/UNKN"
-            },
-            "version": "4.10.2-LIVE.12881860"
-          },
-          "attached_vehicle": null,
-          "ports": null,
-          "category_label": null,
           "required_tags": null,
           "port_tags": null,
-          "version": null
-        },
-        {
-          "name": "screen_right",
-          "position": null,
-          "class_name": "Vehicle_Screen_MFD",
-          "editable": true,
-          "editable_children": true,
-          "equipped_item_uuid": "c08cedfa-fafc-4ea6-9737-59faeb4b1510",
-          "type": "Display",
-          "sub_type": "UNDEFINED",
-          "subtype": "UNDEFINED",
-          "sizes": {
-            "min": 1,
-            "max": 1
-          },
-          "compatible_types": [
-            {
-              "type": "Display",
-              "sub_types": []
-            }
-          ],
-          "health": null,
-          "equipped_item": {
-            "uuid": "c08cedfa-fafc-4ea6-9737-59faeb4b1510",
-            "name": "<= PLACEHOLDER =>",
-            "class_name": "Vehicle_Screen_MFD",
-            "type": "Display",
-            "type_label": "Display",
-            "sub_type": "UNDEFINED",
-            "sub_type_label": "Undefined",
-            "classification": null,
-            "classification_label": null,
-            "is_base_variant": true,
-            "variant_name": null,
-            "link": "https://api.star-citizen.wiki/api/items/c08cedfa-fafc-4ea6-9737-59faeb4b1510",
-            "web_url": "https://api.star-citizen.wiki/items/placeholder-6061",
-            "size": 1,
-            "mass": 0,
-            "grade": 1,
-            "class": null,
-            "manufacturer": {
-              "name": "Unknown",
-              "code": "UNKN",
-              "uuid": "00000000-0000-0000-0000-000000000000",
-              "link": "https://api.star-citizen.wiki/api/manufacturers/UNKN"
-            },
-            "version": "4.10.2-LIVE.12881860"
-          },
-          "attached_vehicle": null,
-          "ports": null,
-          "category_label": null,
-          "required_tags": null,
-          "port_tags": null,
-          "version": null
-        },
-        {
-          "name": "screen_left",
-          "position": null,
-          "class_name": "Vehicle_Screen_MFD",
-          "editable": true,
-          "editable_children": true,
-          "equipped_item_uuid": "c08cedfa-fafc-4ea6-9737-59faeb4b1510",
-          "type": "Display",
-          "sub_type": "UNDEFINED",
-          "subtype": "UNDEFINED",
-          "sizes": {
-            "min": 1,
-            "max": 1
-          },
-          "compatible_types": [
-            {
-              "type": "Display",
-              "sub_types": []
-            }
-          ],
-          "health": null,
-          "equipped_item": {
-            "uuid": "c08cedfa-fafc-4ea6-9737-59faeb4b1510",
-            "name": "<= PLACEHOLDER =>",
-            "class_name": "Vehicle_Screen_MFD",
-            "type": "Display",
-            "type_label": "Display",
-            "sub_type": "UNDEFINED",
-            "sub_type_label": "Undefined",
-            "classification": null,
-            "classification_label": null,
-            "is_base_variant": true,
-            "variant_name": null,
-            "link": "https://api.star-citizen.wiki/api/items/c08cedfa-fafc-4ea6-9737-59faeb4b1510",
-            "web_url": "https://api.star-citizen.wiki/items/placeholder-6061",
-            "size": 1,
-            "mass": 0,
-            "grade": 1,
-            "class": null,
-            "manufacturer": {
-              "name": "Unknown",
-              "code": "UNKN",
-              "uuid": "00000000-0000-0000-0000-000000000000",
-              "link": "https://api.star-citizen.wiki/api/manufacturers/UNKN"
-            },
-            "version": "4.10.2-LIVE.12881860"
-          },
-          "attached_vehicle": null,
-          "ports": null,
-          "category_label": null,
-          "required_tags": null,
-          "port_tags": null,
-          "version": null
-        },
-        {
-          "name": "screen_annunciator_right",
-          "position": null,
-          "class_name": "Vehicle_Screen_Physical_Holo",
-          "editable": true,
-          "editable_children": true,
-          "equipped_item_uuid": "89d12a4d-4327-45ba-954f-d81d91a6fd13",
-          "type": "Display",
-          "sub_type": "UNDEFINED",
-          "subtype": "UNDEFINED",
-          "sizes": {
-            "min": 1,
-            "max": 1
-          },
-          "compatible_types": [
-            {
-              "type": "Display",
-              "sub_types": []
-            }
-          ],
-          "health": null,
-          "equipped_item": {
-            "uuid": "89d12a4d-4327-45ba-954f-d81d91a6fd13",
-            "name": "<= PLACEHOLDER =>",
-            "class_name": "Vehicle_Screen_Physical_Holo",
-            "type": "Display",
-            "type_label": "Display",
-            "sub_type": "UNDEFINED",
-            "sub_type_label": "Undefined",
-            "classification": null,
-            "classification_label": null,
-            "is_base_variant": true,
-            "variant_name": null,
-            "link": "https://api.star-citizen.wiki/api/items/89d12a4d-4327-45ba-954f-d81d91a6fd13",
-            "web_url": "https://api.star-citizen.wiki/items/placeholder-6131",
-            "size": 1,
-            "mass": 0,
-            "grade": 1,
-            "class": null,
-            "manufacturer": {
-              "name": "Unknown",
-              "code": "UNKN",
-              "uuid": "00000000-0000-0000-0000-000000000000",
-              "link": "https://api.star-citizen.wiki/api/manufacturers/UNKN"
-            },
-            "resource_network": {
-              "is_networked": true,
-              "is_relay": false,
-              "default_priority": 50,
-              "states": [
-                {
-                  "name": "Online",
-                  "signature": {
-                    "em": null,
-                    "ir": null
-                  },
-                  "deltas": [
-                    {
-                      "type": "NetworkReflection",
-                      "resource": "Power",
-                      "rate": null,
-                      "minimum_fraction": null,
-                      "generated_resource": null,
-                      "generated_rate": null,
-                      "discharge": null,
-                      "no_over_generation": null,
-                      "binary_evaluation": 1,
-                      "composition": null
-                    }
-                  ],
-                  "power_ranges": [
-                    {
-                      "start": 0,
-                      "modifier": 1,
-                      "register_range": 0
-                    },
-                    {
-                      "start": 0,
-                      "modifier": 1,
-                      "register_range": 0
-                    },
-                    {
-                      "start": 0,
-                      "modifier": 1,
-                      "register_range": 0
-                    }
-                  ]
-                }
-              ],
-              "repair": {
-                "max_repair_count": 1,
-                "time_to_repair": 120,
-                "health_ratio": 0.2
-              },
-              "usage": {
-                "power": {
-                  "min": 0,
-                  "max": 0,
-                  "minimum": 0,
-                  "maximum": 0
-                },
-                "coolant": {
-                  "min": 0,
-                  "max": null,
-                  "minimum": 0,
-                  "maximum": null
-                }
-              },
-              "generation": {
-                "coolant": null,
-                "power": null
-              }
-            },
-            "emission": {
-              "ir": 0,
-              "em_min": 0,
-              "em_max": 0,
-              "em_decay": 0.15
-            },
-            "version": "4.10.2-LIVE.12881860"
-          },
-          "attached_vehicle": null,
-          "ports": null,
-          "category_label": null,
-          "required_tags": null,
-          "port_tags": null,
-          "version": null
-        },
-        {
-          "name": "screen_annunciator_left",
-          "position": null,
-          "class_name": "Vehicle_Screen_Physical_Holo",
-          "editable": true,
-          "editable_children": true,
-          "equipped_item_uuid": "89d12a4d-4327-45ba-954f-d81d91a6fd13",
-          "type": "Display",
-          "sub_type": "UNDEFINED",
-          "subtype": "UNDEFINED",
-          "sizes": {
-            "min": 1,
-            "max": 1
-          },
-          "compatible_types": [
-            {
-              "type": "Display",
-              "sub_types": []
-            }
-          ],
-          "health": null,
-          "equipped_item": {
-            "uuid": "89d12a4d-4327-45ba-954f-d81d91a6fd13",
-            "name": "<= PLACEHOLDER =>",
-            "class_name": "Vehicle_Screen_Physical_Holo",
-            "type": "Display",
-            "type_label": "Display",
-            "sub_type": "UNDEFINED",
-            "sub_type_label": "Undefined",
-            "classification": null,
-            "classification_label": null,
-            "is_base_variant": true,
-            "variant_name": null,
-            "link": "https://api.star-citizen.wiki/api/items/89d12a4d-4327-45ba-954f-d81d91a6fd13",
-            "web_url": "https://api.star-citizen.wiki/items/placeholder-6131",
-            "size": 1,
-            "mass": 0,
-            "grade": 1,
-            "class": null,
-            "manufacturer": {
-              "name": "Unknown",
-              "code": "UNKN",
-              "uuid": "00000000-0000-0000-0000-000000000000",
-              "link": "https://api.star-citizen.wiki/api/manufacturers/UNKN"
-            },
-            "resource_network": {
-              "is_networked": true,
-              "is_relay": false,
-              "default_priority": 50,
-              "states": [
-                {
-                  "name": "Online",
-                  "signature": {
-                    "em": null,
-                    "ir": null
-                  },
-                  "deltas": [
-                    {
-                      "type": "NetworkReflection",
-                      "resource": "Power",
-                      "rate": null,
-                      "minimum_fraction": null,
-                      "generated_resource": null,
-                      "generated_rate": null,
-                      "discharge": null,
-                      "no_over_generation": null,
-                      "binary_evaluation": 1,
-                      "composition": null
-                    }
-                  ],
-                  "power_ranges": [
-                    {
-                      "start": 0,
-                      "modifier": 1,
-                      "register_range": 0
-                    },
-                    {
-                      "start": 0,
-                      "modifier": 1,
-                      "register_range": 0
-                    },
-                    {
-                      "start": 0,
-                      "modifier": 1,
-                      "register_range": 0
-                    }
-                  ]
-                }
-              ],
-              "repair": {
-                "max_repair_count": 1,
-                "time_to_repair": 120,
-                "health_ratio": 0.2
-              },
-              "usage": {
-                "power": {
-                  "min": 0,
-                  "max": 0,
-                  "minimum": 0,
-                  "maximum": 0
-                },
-                "coolant": {
-                  "min": 0,
-                  "max": null,
-                  "minimum": 0,
-                  "maximum": null
-                }
-              },
-              "generation": {
-                "coolant": null,
-                "power": null
-              }
-            },
-            "emission": {
-              "ir": 0,
-              "em_min": 0,
-              "em_max": 0,
-              "em_decay": 0.15
-            },
-            "version": "4.10.2-LIVE.12881860"
-          },
-          "attached_vehicle": null,
-          "ports": null,
-          "category_label": null,
-          "required_tags": null,
-          "port_tags": null,
-          "version": null
+          "version": "4.10.3-LIVE.13165946"
         }
       ],
       "category_label": "Crew Stations",
       "required_tags": null,
       "port_tags": null,
-      "version": null
+      "version": "4.10.3-LIVE.13165946"
     },
     {
-      "name": "hardpoint_seat_access",
+      "name": "hardpoint_screen_left",
       "position": null,
-      "class_name": "MISC_Fury_SeatAccess",
+      "class_name": "SCItemDisplayScreen_ATLS_Battery",
       "editable": false,
       "editable_children": false,
-      "equipped_item_uuid": "d3f4204c-ae2b-4579-9575-ec5d749eadc3",
-      "type": "SeatAccess",
+      "equipped_item_uuid": "437f093f-305c-4d8a-92f1-210583303565",
+      "type": "Display",
+      "sub_type": "Default",
+      "subtype": "Default",
+      "sizes": {
+        "min": 1,
+        "max": 1
+      },
+      "compatible_types": [
+        {
+          "type": "Display",
+          "sub_types": []
+        }
+      ],
+      "health": 50,
+      "equipped_item": {
+        "uuid": "437f093f-305c-4d8a-92f1-210583303565",
+        "name": "<= PLACEHOLDER =>",
+        "class_name": "SCItemDisplayScreen_ATLS_Battery",
+        "type": "Display",
+        "type_label": "Display",
+        "sub_type": "Default",
+        "sub_type_label": "Default",
+        "classification": null,
+        "classification_label": null,
+        "is_base_variant": true,
+        "variant_name": null,
+        "link": "https://api.star-citizen.wiki/api/items/437f093f-305c-4d8a-92f1-210583303565?version=4.10.3-LIVE.13165946",
+        "web_url": "https://api.star-citizen.wiki/items/placeholder-5494?version=4.10.3-LIVE.13165946",
+        "size": 1,
+        "mass": 0,
+        "grade": 1,
+        "class": null,
+        "manufacturer": {
+          "name": "Unknown",
+          "code": "UNKN",
+          "uuid": "00000000-0000-0000-0000-000000000000",
+          "link": "https://api.star-citizen.wiki/api/manufacturers/UNKN"
+        },
+        "version": "4.10.3-LIVE.13165946"
+      },
+      "attached_vehicle": null,
+      "ports": null,
+      "category_label": "Systems",
+      "required_tags": null,
+      "port_tags": null,
+      "version": "4.10.3-LIVE.13165946"
+    },
+    {
+      "name": "hardpoint_battery_storage",
+      "position": null,
+      "class_name": "ARGO_ATLS_Battery_Storage",
+      "editable": false,
+      "editable_children": false,
+      "equipped_item_uuid": "6e4d388b-d3bf-40ec-9686-aa9cec5cda47",
+      "type": "Usable",
       "sub_type": "UNDEFINED",
       "subtype": "UNDEFINED",
       "sizes": {
@@ -2775,2406 +1113,46 @@
       },
       "compatible_types": [
         {
-          "type": "SeatAccess",
+          "type": "Usable",
           "sub_types": []
         }
       ],
-      "health": null,
+      "health": 1,
       "equipped_item": {
-        "uuid": "d3f4204c-ae2b-4579-9575-ec5d749eadc3",
-        "name": "Access",
-        "class_name": "MISC_Fury_SeatAccess",
-        "type": "SeatAccess",
-        "type_label": "Seat Access",
+        "uuid": "6e4d388b-d3bf-40ec-9686-aa9cec5cda47",
+        "name": "<= PLACEHOLDER =>",
+        "class_name": "ARGO_ATLS_Battery_Storage",
+        "type": "Usable",
+        "type_label": "Usable",
         "sub_type": "UNDEFINED",
         "sub_type_label": "Undefined",
         "classification": null,
         "classification_label": null,
         "is_base_variant": true,
         "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/d3f4204c-ae2b-4579-9575-ec5d749eadc3",
-        "web_url": "https://api.star-citizen.wiki/items/access-56",
+        "link": "https://api.star-citizen.wiki/api/items/6e4d388b-d3bf-40ec-9686-aa9cec5cda47?version=4.10.3-LIVE.13165946",
+        "web_url": "https://api.star-citizen.wiki/items/placeholder-693?version=4.10.3-LIVE.13165946",
         "size": 1,
         "mass": 1,
         "grade": 1,
         "class": null,
         "manufacturer": {
-          "name": "Musashi Industrial and Starflight Concern",
-          "code": "MISC",
-          "uuid": "b28a5c61-63a4-478b-8047-5fba545d5b8a",
-          "link": "https://api.star-citizen.wiki/api/manufacturers/MISC"
-        },
-        "version": "4.10.2-LIVE.12881860"
-      },
-      "attached_vehicle": null,
-      "ports": null,
-      "category_label": "Crew Stations",
-      "required_tags": null,
-      "port_tags": null,
-      "version": null
-    },
-    {
-      "name": "hardpoint_fuel_tank",
-      "position": null,
-      "class_name": "HTNK_MISC_Fury",
-      "editable": false,
-      "editable_children": false,
-      "equipped_item_uuid": "2d9a37a3-e49e-4eab-8c37-bfd97b68880b",
-      "type": "FuelTank",
-      "sub_type": "Fuel",
-      "subtype": "Fuel",
-      "sizes": {
-        "min": 1,
-        "max": 1
-      },
-      "compatible_types": [
-        {
-          "type": "FuelTank",
-          "sub_types": []
-        }
-      ],
-      "health": null,
-      "equipped_item": {
-        "uuid": "2d9a37a3-e49e-4eab-8c37-bfd97b68880b",
-        "name": "Internal Tank",
-        "class_name": "HTNK_MISC_Fury",
-        "type": "FuelTank",
-        "type_label": "Fuel Tank",
-        "sub_type": "Fuel",
-        "sub_type_label": "Fuel",
-        "classification": "Ship.FuelTank.Fuel",
-        "classification_label": "Fuel",
-        "is_base_variant": true,
-        "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/2d9a37a3-e49e-4eab-8c37-bfd97b68880b",
-        "web_url": "https://api.star-citizen.wiki/items/internal-tank-93",
-        "size": 1,
-        "mass": 0,
-        "grade": "A",
-        "class": null,
-        "manufacturer": {
           "name": "Unknown",
           "code": "UNKN",
           "uuid": "00000000-0000-0000-0000-000000000000",
           "link": "https://api.star-citizen.wiki/api/manufacturers/UNKN"
         },
-        "fuel_tank": {
-          "fill_rate": null,
-          "drain_rate": 0,
-          "capacity": 0.5,
-          "discharge_rate": 0.5
-        },
-        "resource_network": {
-          "is_networked": true,
-          "is_relay": false,
-          "default_priority": 100,
-          "states": [
-            {
-              "name": "Online",
-              "signature": {
-                "em": null,
-                "ir": null
-              },
-              "deltas": [
-                {
-                  "type": "Storage",
-                  "resource": "Fuel",
-                  "rate": 10,
-                  "minimum_fraction": null,
-                  "generated_resource": "Fuel",
-                  "generated_rate": 10,
-                  "discharge": 0,
-                  "no_over_generation": null,
-                  "binary_evaluation": null,
-                  "composition": null
-                }
-              ],
-              "power_ranges": [
-                {
-                  "start": 0,
-                  "modifier": 1,
-                  "register_range": 0
-                },
-                {
-                  "start": 0,
-                  "modifier": 1,
-                  "register_range": 0
-                },
-                {
-                  "start": 0,
-                  "modifier": 1,
-                  "register_range": 0
-                }
-              ]
-            }
-          ],
-          "repair": {
-            "max_repair_count": 1,
-            "time_to_repair": 120,
-            "health_ratio": 0.2
-          },
-          "usage": {
-            "power": {
-              "min": 0,
-              "max": 0,
-              "minimum": 0,
-              "maximum": 0
-            },
-            "coolant": {
-              "min": 0,
-              "max": null,
-              "minimum": 0,
-              "maximum": null
-            }
-          },
-          "generation": {
-            "coolant": null,
-            "power": null
-          }
-        },
-        "emission": {
-          "ir": 0,
-          "em_min": 0,
-          "em_max": 0,
-          "em_decay": 0.15
-        },
-        "version": "4.10.2-LIVE.12881860"
-      },
-      "attached_vehicle": null,
-      "ports": null,
-      "category_label": "Fuel",
-      "required_tags": null,
-      "port_tags": null,
-      "version": null
-    },
-    {
-      "name": "landingpad_helper",
-      "position": null,
-      "class_name": "Default_LandingSystem",
-      "editable": false,
-      "editable_children": false,
-      "equipped_item_uuid": "613bf1ef-7882-4e8a-9017-35e9e1af0687",
-      "type": "LandingSystem",
-      "sub_type": "UNDEFINED",
-      "subtype": "UNDEFINED",
-      "sizes": {
-        "min": 1,
-        "max": 1
-      },
-      "compatible_types": [
-        {
-          "type": "LandingSystem",
-          "sub_types": []
-        }
-      ],
-      "health": null,
-      "equipped_item": {
-        "uuid": "613bf1ef-7882-4e8a-9017-35e9e1af0687",
-        "name": "<= PLACEHOLDER =>",
-        "class_name": "Default_LandingSystem",
-        "type": "LandingSystem",
-        "type_label": "Landing System",
-        "sub_type": "UNDEFINED",
-        "sub_type_label": "Undefined",
-        "classification": null,
-        "classification_label": null,
-        "is_base_variant": true,
-        "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/613bf1ef-7882-4e8a-9017-35e9e1af0687",
-        "web_url": "https://api.star-citizen.wiki/items/placeholder-2130",
-        "size": 1,
-        "mass": 0,
-        "grade": 1,
-        "class": null,
-        "manufacturer": {
-          "name": "Unknown",
-          "code": "UNKN",
-          "uuid": "00000000-0000-0000-0000-000000000000",
-          "link": "https://api.star-citizen.wiki/api/manufacturers/UNKN"
-        },
-        "version": "4.10.2-LIVE.12881860"
-      },
-      "attached_vehicle": null,
-      "ports": null,
-      "category_label": "Landing Systems",
-      "required_tags": null,
-      "port_tags": null,
-      "version": null
-    },
-    {
-      "name": "hardpoint_fuel_intake",
-      "position": null,
-      "class_name": "INTK_MISC_Fury",
-      "editable": false,
-      "editable_children": false,
-      "equipped_item_uuid": "51b09c51-df17-48e0-ba5e-8c36395ed4ad",
-      "type": "FuelIntake",
-      "sub_type": "Fuel",
-      "subtype": "Fuel",
-      "sizes": {
-        "min": 1,
-        "max": 1
-      },
-      "compatible_types": [
-        {
-          "type": "FuelIntake",
-          "sub_types": []
-        }
-      ],
-      "health": null,
-      "equipped_item": {
-        "uuid": "51b09c51-df17-48e0-ba5e-8c36395ed4ad",
-        "name": "<= PLACEHOLDER =>",
-        "class_name": "INTK_MISC_Fury",
-        "type": "FuelIntake",
-        "type_label": "Fuel Intake",
-        "sub_type": "Fuel",
-        "sub_type_label": "Fuel",
-        "classification": "Ship.FuelIntake.Fuel",
-        "classification_label": "Fuel",
-        "is_base_variant": true,
-        "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/51b09c51-df17-48e0-ba5e-8c36395ed4ad",
-        "web_url": "https://api.star-citizen.wiki/items/placeholder-3639",
-        "size": 1,
-        "mass": 10,
-        "grade": "A",
-        "class": null,
-        "manufacturer": {
-          "name": "Unknown",
-          "code": "UNKN",
-          "uuid": "00000000-0000-0000-0000-000000000000",
-          "link": "https://api.star-citizen.wiki/api/manufacturers/UNKN"
-        },
-        "fuel_intake": {
-          "fuel_push_rate": 0,
-          "minimum_rate": 0.2
-        },
-        "version": "4.10.2-LIVE.12881860"
-      },
-      "attached_vehicle": null,
-      "ports": null,
-      "category_label": "Fuel",
-      "required_tags": null,
-      "port_tags": null,
-      "version": null
-    },
-    {
-      "name": "hardpoint_cooler_left",
-      "position": null,
-      "class_name": "COOL_JUST_S01_Hydrocel_SCItem",
-      "editable": true,
-      "editable_children": true,
-      "equipped_item_uuid": "a5107834-61e1-481d-b836-7ed6c08b14d5",
-      "type": "Cooler",
-      "sub_type": "UNDEFINED",
-      "subtype": "UNDEFINED",
-      "sizes": {
-        "min": 1,
-        "max": 1
-      },
-      "compatible_types": [
-        {
-          "type": "Cooler",
-          "sub_types": []
-        }
-      ],
-      "health": 130,
-      "equipped_item": {
-        "uuid": "a5107834-61e1-481d-b836-7ed6c08b14d5",
-        "name": "Hydrocel",
-        "class_name": "COOL_JUST_S01_Hydrocel_SCItem",
-        "type": "Cooler",
-        "type_label": "Cooler",
-        "sub_type": "UNDEFINED",
-        "sub_type_label": "Undefined",
-        "classification": "Ship.Cooler",
-        "classification_label": "Cooler",
-        "is_base_variant": true,
-        "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/a5107834-61e1-481d-b836-7ed6c08b14d5",
-        "web_url": "https://api.star-citizen.wiki/items/hydrocel",
-        "size": 1,
-        "mass": 240,
-        "grade": "D",
-        "class": "Industrial",
-        "manufacturer": {
-          "name": "Juno Starwerk",
-          "code": "JUST",
-          "uuid": "d7cc897f-b760-4a73-93c0-27e23c52db0a",
-          "link": "https://api.star-citizen.wiki/api/manufacturers/JUST"
-        },
-        "cooler": {
-          "cooling_rate": null,
-          "suppression_ir_factor": null,
-          "suppression_heat_factor": null,
-          "coolant_segment_generation": 29
-        },
-        "resource_network": {
-          "is_networked": true,
-          "is_relay": false,
-          "default_priority": 30,
-          "states": [
-            {
-              "name": "Online",
-              "signature": {
-                "em": 1490,
-                "ir": 5940
-              },
-              "deltas": [
-                {
-                  "type": "Conversion",
-                  "resource": "Power",
-                  "rate": 3,
-                  "minimum_fraction": 0.6666667,
-                  "generated_resource": "Coolant",
-                  "generated_rate": 29,
-                  "discharge": null,
-                  "no_over_generation": 0,
-                  "binary_evaluation": null,
-                  "composition": null
-                }
-              ],
-              "power_ranges": [
-                {
-                  "start": 0,
-                  "modifier": 0.7,
-                  "register_range": 0
-                },
-                {
-                  "start": 1,
-                  "modifier": 0.85,
-                  "register_range": 1
-                },
-                {
-                  "start": 3,
-                  "modifier": 1,
-                  "register_range": 1
-                }
-              ]
-            }
-          ],
-          "repair": {
-            "max_repair_count": 1,
-            "time_to_repair": 29.9,
-            "health_ratio": 0.2
-          },
-          "usage": {
-            "power": {
-              "min": 2,
-              "max": 3,
-              "minimum": 2,
-              "maximum": 3
-            },
-            "coolant": {
-              "min": 1.7,
-              "max": 3,
-              "minimum": 1.7,
-              "maximum": 3
-            }
-          },
-          "generation": {
-            "coolant": 29,
-            "power": null
-          }
-        },
-        "emission": {
-          "ir": 5940,
-          "em_min": 844,
-          "em_max": 1490,
-          "em_decay": 0.15
-        },
-        "version": "4.10.2-LIVE.12881860"
-      },
-      "attached_vehicle": null,
-      "ports": null,
-      "category_label": "Coolers",
-      "required_tags": null,
-      "port_tags": null,
-      "version": null
-    },
-    {
-      "name": "hardpoint_lifesupport",
-      "position": null,
-      "class_name": "LFSP_TYDT_S00_ComfortAirLite",
-      "editable": true,
-      "editable_children": false,
-      "equipped_item_uuid": "b9c57c11-2e49-4098-9475-671b7788e318",
-      "type": "LifeSupportGenerator",
-      "sub_type": "UNDEFINED",
-      "subtype": "UNDEFINED",
-      "sizes": {
-        "min": 1,
-        "max": 1
-      },
-      "compatible_types": [
-        {
-          "type": "LifeSupportGenerator",
-          "sub_types": []
-        }
-      ],
-      "health": 55,
-      "equipped_item": {
-        "uuid": "b9c57c11-2e49-4098-9475-671b7788e318",
-        "name": "ComfortAir Lite",
-        "class_name": "LFSP_TYDT_S00_ComfortAirLite",
-        "type": "LifeSupportGenerator",
-        "type_label": "Life Support Generator",
-        "sub_type": "UNDEFINED",
-        "sub_type_label": "Undefined",
-        "classification": "Ship.LifeSupportGenerator",
-        "classification_label": "Life Support Generator",
-        "is_base_variant": true,
-        "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/b9c57c11-2e49-4098-9475-671b7788e318",
-        "web_url": "https://api.star-citizen.wiki/items/comfortair-lite",
-        "size": 0,
-        "mass": 30,
-        "grade": "C",
-        "class": "Civilian",
-        "manufacturer": {
-          "name": "Tyler Design & Tech",
-          "code": "TYDT",
-          "uuid": "a2a97679-2a6e-4e89-80d8-439c88a01427",
-          "link": "https://api.star-citizen.wiki/api/manufacturers/TYDT"
-        },
-        "resource_network": {
-          "is_networked": true,
-          "is_relay": false,
-          "default_priority": 50,
-          "states": [
-            {
-              "name": "Online",
-              "signature": {
-                "em": 313,
-                "ir": null
-              },
-              "deltas": [
-                {
-                  "type": "Conversion",
-                  "resource": "Power",
-                  "rate": 1,
-                  "minimum_fraction": 1,
-                  "generated_resource": "LifeSupport",
-                  "generated_rate": 0.033,
-                  "discharge": null,
-                  "no_over_generation": 0,
-                  "binary_evaluation": null,
-                  "composition": null
-                },
-                {
-                  "type": "Consumption",
-                  "resource": "Coolant",
-                  "rate": 0,
-                  "minimum_fraction": 0,
-                  "generated_resource": null,
-                  "generated_rate": null,
-                  "discharge": null,
-                  "no_over_generation": null,
-                  "binary_evaluation": null,
-                  "composition": null
-                }
-              ],
-              "power_ranges": [
-                {
-                  "start": 0,
-                  "modifier": 0.7,
-                  "register_range": 0
-                },
-                {
-                  "start": 0,
-                  "modifier": 0.85,
-                  "register_range": 0
-                },
-                {
-                  "start": 1,
-                  "modifier": 1,
-                  "register_range": 1
-                }
-              ]
-            }
-          ],
-          "repair": {
-            "max_repair_count": 1,
-            "time_to_repair": 20.6,
-            "health_ratio": 0.2
-          },
-          "usage": {
-            "power": {
-              "min": 1,
-              "max": 1,
-              "minimum": 1,
-              "maximum": 1
-            },
-            "coolant": {
-              "min": 1,
-              "max": 1,
-              "minimum": 1,
-              "maximum": 1
-            }
-          },
-          "generation": {
-            "coolant": null,
-            "power": null
-          }
-        },
-        "emission": {
-          "ir": 0,
-          "em_min": 313,
-          "em_max": 313,
-          "em_decay": 0.15
-        },
-        "version": "4.10.2-LIVE.12881860"
+        "version": "4.10.3-LIVE.13165946"
       },
       "attached_vehicle": null,
       "ports": [
         {
-          "name": "$slot_01",
+          "name": "$IP_battery",
           "position": null,
-          "class_name": "LFSP_Filter_subItem_standard",
+          "class_name": "ARGO_ATLS_Battery",
           "editable": true,
           "editable_children": true,
-          "equipped_item_uuid": "b44ec4bd-854d-48ef-9ac1-c4183edf1d0a",
-          "type": "Misc",
-          "sub_type": "Utility",
-          "subtype": "Utility",
-          "sizes": {
-            "min": 0,
-            "max": 1
-          },
-          "compatible_types": [
-            {
-              "type": "Misc",
-              "sub_types": [
-                "Utility"
-              ]
-            }
-          ],
-          "health": 100,
-          "equipped_item": {
-            "uuid": "b44ec4bd-854d-48ef-9ac1-c4183edf1d0a",
-            "name": "lfsp_filter_subitem_standard",
-            "class_name": "LFSP_Filter_subItem_standard",
-            "type": "Misc",
-            "type_label": "Misc",
-            "sub_type": "Utility",
-            "sub_type_label": "Utility",
-            "classification": null,
-            "classification_label": null,
-            "is_base_variant": true,
-            "variant_name": null,
-            "link": "https://api.star-citizen.wiki/api/items/b44ec4bd-854d-48ef-9ac1-c4183edf1d0a",
-            "web_url": "https://api.star-citizen.wiki/items/lfsp-filter-subitem-standard",
-            "size": 1,
-            "mass": 0.25,
-            "grade": 1,
-            "class": null,
-            "manufacturer": {
-              "name": "Unknown",
-              "code": "UNKN",
-              "uuid": "00000000-0000-0000-0000-000000000000",
-              "link": "https://api.star-citizen.wiki/api/manufacturers/UNKN"
-            },
-            "version": "4.10.2-LIVE.12881860"
-          },
-          "attached_vehicle": null,
-          "ports": null,
-          "category_label": null,
-          "required_tags": [
-            "filter"
-          ],
-          "port_tags": null,
-          "version": null
-        },
-        {
-          "name": "$slot_02",
-          "position": null,
-          "class_name": null,
-          "editable": true,
-          "editable_children": true,
-          "equipped_item_uuid": null,
-          "type": "",
-          "sub_type": "",
-          "subtype": "",
-          "sizes": {
-            "min": 0,
-            "max": 1
-          },
-          "compatible_types": [
-            {
-              "type": "Misc",
-              "sub_types": [
-                "Utility"
-              ]
-            }
-          ],
-          "health": null,
-          "equipped_item": null,
-          "attached_vehicle": null,
-          "ports": null,
-          "category_label": null,
-          "required_tags": [
-            "filter"
-          ],
-          "port_tags": null,
-          "version": null
-        },
-        {
-          "name": "$slot_03",
-          "position": null,
-          "class_name": null,
-          "editable": true,
-          "editable_children": true,
-          "equipped_item_uuid": null,
-          "type": "",
-          "sub_type": "",
-          "subtype": "",
-          "sizes": {
-            "min": 0,
-            "max": 1
-          },
-          "compatible_types": [
-            {
-              "type": "Misc",
-              "sub_types": [
-                "Utility"
-              ]
-            }
-          ],
-          "health": null,
-          "equipped_item": null,
-          "attached_vehicle": null,
-          "ports": null,
-          "category_label": null,
-          "required_tags": [
-            "filter"
-          ],
-          "port_tags": null,
-          "version": null
-        }
-      ],
-      "category_label": "Life Support",
-      "required_tags": null,
-      "port_tags": null,
-      "version": null
-    },
-    {
-      "name": "hardpoint_avionics",
-      "position": null,
-      "class_name": "COMP_BEHR_S01_CSR-RP",
-      "editable": true,
-      "editable_children": true,
-      "equipped_item_uuid": "6a717799-51a3-48ec-bded-917b870216f6",
-      "type": "Misc",
-      "sub_type": "UNDEFINED",
-      "subtype": "UNDEFINED",
-      "sizes": {
-        "min": 1,
-        "max": 1
-      },
-      "compatible_types": [
-        {
-          "type": "Misc",
-          "sub_types": []
-        }
-      ],
-      "health": 500,
-      "equipped_item": {
-        "uuid": "6a717799-51a3-48ec-bded-917b870216f6",
-        "name": "CSR-RP",
-        "class_name": "COMP_BEHR_S01_CSR-RP",
-        "type": "Misc",
-        "type_label": "Misc",
-        "sub_type": "UNDEFINED",
-        "sub_type_label": "Undefined",
-        "classification": null,
-        "classification_label": null,
-        "is_base_variant": true,
-        "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/6a717799-51a3-48ec-bded-917b870216f6",
-        "web_url": "https://api.star-citizen.wiki/items/placeholder-1867",
-        "size": 1,
-        "mass": 1000,
-        "grade": 1,
-        "class": "Military",
-        "manufacturer": {
-          "name": "Behring Applied Technology",
-          "code": "BEHR",
-          "uuid": "65a5d887-3b21-4046-a718-6912c0c7c3be",
-          "link": "https://api.star-citizen.wiki/api/manufacturers/BEHR"
-        },
-        "version": "4.10.2-LIVE.12881860"
-      },
-      "attached_vehicle": null,
-      "ports": null,
-      "category_label": "Other",
-      "required_tags": null,
-      "port_tags": null,
-      "version": null
-    },
-    {
-      "name": "hardpoint_personal_inv",
-      "position": null,
-      "class_name": "PersonalStorage_MISC_Fury",
-      "editable": true,
-      "editable_children": true,
-      "equipped_item_uuid": "c7d08e83-71f1-4894-9e43-d5fb20efae7b",
-      "type": "Cargo",
-      "sub_type": "UNDEFINED",
-      "subtype": "UNDEFINED",
-      "sizes": {
-        "min": 1,
-        "max": 1
-      },
-      "compatible_types": [
-        {
-          "type": "Cargo",
-          "sub_types": []
-        }
-      ],
-      "health": 1000,
-      "equipped_item": {
-        "uuid": "c7d08e83-71f1-4894-9e43-d5fb20efae7b",
-        "name": "Personal Storage",
-        "class_name": "PersonalStorage_MISC_Fury",
-        "type": "Cargo",
-        "type_label": "Cargo",
-        "sub_type": "UNDEFINED",
-        "sub_type_label": "Undefined",
-        "classification": null,
-        "classification_label": null,
-        "is_base_variant": true,
-        "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/c7d08e83-71f1-4894-9e43-d5fb20efae7b",
-        "web_url": "https://api.star-citizen.wiki/items/personal-storage-32",
-        "size": 1,
-        "mass": 0,
-        "grade": 1,
-        "class": null,
-        "manufacturer": {
-          "name": "Unknown",
-          "code": "UNKN",
-          "uuid": "00000000-0000-0000-0000-000000000000",
-          "link": "https://api.star-citizen.wiki/api/manufacturers/UNKN"
-        },
-        "version": "4.10.2-LIVE.12881860"
-      },
-      "attached_vehicle": null,
-      "ports": null,
-      "category_label": "Other",
-      "required_tags": null,
-      "port_tags": null,
-      "version": null
-    },
-    {
-      "name": "hardpoint_radar",
-      "position": null,
-      "class_name": "RADR_GRNP_S01_Ecouter",
-      "editable": true,
-      "editable_children": false,
-      "equipped_item_uuid": "b0ccd135-4424-417c-95e4-594a88d9b72f",
-      "type": "Radar",
-      "sub_type": "MidRangeRadar",
-      "subtype": "MidRangeRadar",
-      "sizes": {
-        "min": 1,
-        "max": 1
-      },
-      "compatible_types": [
-        {
-          "type": "Radar",
-          "sub_types": [
-            "ShortRangeRadar",
-            "MidRangeRadar"
-          ]
-        }
-      ],
-      "health": 600,
-      "equipped_item": {
-        "uuid": "b0ccd135-4424-417c-95e4-594a88d9b72f",
-        "name": "Ecouter",
-        "class_name": "RADR_GRNP_S01_Ecouter",
-        "type": "Radar",
-        "type_label": "Radar",
-        "sub_type": "MidRangeRadar",
-        "sub_type_label": "Mid Range Radar",
-        "classification": "Ship.Radar.MidRangeRadar",
-        "classification_label": "Mid Range Radar",
-        "is_base_variant": true,
-        "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/b0ccd135-4424-417c-95e4-594a88d9b72f",
-        "web_url": "https://api.star-citizen.wiki/items/ecouter",
-        "size": 1,
-        "mass": 120,
-        "grade": "C",
-        "class": "Military",
-        "manufacturer": {
-          "name": "Groupe Nouveau Paradigme",
-          "code": "GRNP",
-          "uuid": "3909dad3-eab3-4da7-9d90-74d7064d5900",
-          "link": "https://api.star-citizen.wiki/api/manufacturers/GRNP"
-        },
-        "radar": {
-          "detection_lifetime": null,
-          "altitude_ceiling": null,
-          "enable_cross_section_occlusion": null,
-          "cooldown": 2.5,
-          "sensitivity": {
-            "infrared": 0.8,
-            "cross_section": 0.8,
-            "electromagnetic": 0.8,
-            "resource": 1,
-            "db": 0
-          },
-          "ground_vehicle_sensitivity": {
-            "infrared": 0.25,
-            "cross_section": 0.25,
-            "electromagnetic": 0.25,
-            "resource": 0.25,
-            "db": 0.25
-          },
-          "piercing": {
-            "infrared": 0.25,
-            "cross_section": 0.25,
-            "electromagnetic": 0.25,
-            "resource": 1,
-            "db": 0.25
-          },
-          "aim_assist": {
-            "distance_min_assignment": 845,
-            "distance_max_assignment": 1105,
-            "outside_range_buffer_distance": 60
-          }
-        },
-        "resource_network": {
-          "is_networked": true,
-          "is_relay": false,
-          "default_priority": 50,
-          "states": [
-            {
-              "name": "Online",
-              "signature": {
-                "em": 1800,
-                "ir": null
-              },
-              "deltas": [
-                {
-                  "type": "Consumption",
-                  "resource": "Power",
-                  "rate": 5,
-                  "minimum_fraction": 0.4,
-                  "generated_resource": null,
-                  "generated_rate": null,
-                  "discharge": null,
-                  "no_over_generation": null,
-                  "binary_evaluation": null,
-                  "composition": null
-                },
-                {
-                  "type": "Consumption",
-                  "resource": "Coolant",
-                  "rate": 0,
-                  "minimum_fraction": 0,
-                  "generated_resource": null,
-                  "generated_rate": null,
-                  "discharge": null,
-                  "no_over_generation": null,
-                  "binary_evaluation": null,
-                  "composition": null
-                }
-              ],
-              "power_ranges": [
-                {
-                  "start": 0,
-                  "modifier": 0.7,
-                  "register_range": 0
-                },
-                {
-                  "start": 0,
-                  "modifier": 0.85,
-                  "register_range": 0
-                },
-                {
-                  "start": 1,
-                  "modifier": 1,
-                  "register_range": 1
-                }
-              ]
-            }
-          ],
-          "repair": {
-            "max_repair_count": 1,
-            "time_to_repair": 30.7,
-            "health_ratio": 0.2
-          },
-          "usage": {
-            "power": {
-              "min": 2,
-              "max": 5,
-              "minimum": 2,
-              "maximum": 5
-            },
-            "coolant": {
-              "min": 2,
-              "max": 5,
-              "minimum": 2,
-              "maximum": 5
-            }
-          },
-          "generation": {
-            "coolant": null,
-            "power": null
-          }
-        },
-        "emission": {
-          "ir": 0,
-          "em_min": 720,
-          "em_max": 1800,
-          "em_decay": 0.15
-        },
-        "version": "4.10.2-LIVE.12881860"
-      },
-      "attached_vehicle": null,
-      "ports": [
-        {
-          "name": "BatteryPort",
-          "position": null,
-          "class_name": null,
-          "editable": false,
-          "editable_children": false,
-          "equipped_item_uuid": null,
-          "type": "",
-          "sub_type": "",
-          "subtype": "",
-          "sizes": {
-            "min": 1,
-            "max": 2
-          },
-          "compatible_types": [
-            {
-              "type": "Battery",
-              "sub_types": []
-            }
-          ],
-          "health": null,
-          "equipped_item": null,
-          "attached_vehicle": null,
-          "ports": null,
-          "category_label": null,
-          "required_tags": null,
-          "port_tags": null,
-          "version": null
-        }
-      ],
-      "category_label": "Radars",
-      "required_tags": null,
-      "port_tags": null,
-      "version": null
-    },
-    {
-      "name": "hardpoint_shield_generator",
-      "position": null,
-      "class_name": "SHLD_ASAS_S01_Cloak_SCItem",
-      "editable": true,
-      "editable_children": true,
-      "equipped_item_uuid": "48e2b865-a936-4346-a621-582568ebd008",
-      "type": "Shield",
-      "sub_type": "UNDEFINED",
-      "subtype": "UNDEFINED",
-      "sizes": {
-        "min": 1,
-        "max": 1
-      },
-      "compatible_types": [
-        {
-          "type": "Shield",
-          "sub_types": []
-        }
-      ],
-      "health": 110,
-      "equipped_item": {
-        "uuid": "48e2b865-a936-4346-a621-582568ebd008",
-        "name": "Cloak",
-        "class_name": "SHLD_ASAS_S01_Cloak_SCItem",
-        "type": "Shield",
-        "type_label": "Shield",
-        "sub_type": "UNDEFINED",
-        "sub_type_label": "Undefined",
-        "classification": "Ship.Shield",
-        "classification_label": "Shield",
-        "is_base_variant": true,
-        "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/48e2b865-a936-4346-a621-582568ebd008",
-        "web_url": "https://api.star-citizen.wiki/items/cloak",
-        "size": 1,
-        "mass": 63,
-        "grade": "D",
-        "class": "Stealth",
-        "manufacturer": {
-          "name": "Ascension Astro",
-          "code": "ASAS",
-          "uuid": "abca0ae0-a819-4aeb-a1a7-f8f1d7e277cf",
-          "link": "https://api.star-citizen.wiki/api/manufacturers/ASAS"
-        },
-        "shield": {
-          "max_health": 2244,
-          "regen_rate": 404,
-          "regen_time": 5.55,
-          "decay_ratio": 0.25,
-          "reserve_pool": {
-            "regen_rate": 1010,
-            "regen_time": 2.22,
-            "initial_health_ratio": 1,
-            "max_health_ratio": 1,
-            "regen_rate_ratio": 1,
-            "drain_rate_ratio": 2.5
-          },
-          "regen_delay": {
-            "downed": 7.7,
-            "damage": 3.85
-          },
-          "electrical_charge_damage_resistance": 0,
-          "absorption": {
-            "physical": {
-              "min": 0,
-              "max": 0.45
-            },
-            "energy": {
-              "min": 1,
-              "max": 1
-            },
-            "distortion": {
-              "min": 1,
-              "max": 1
-            },
-            "thermal": {
-              "min": 1,
-              "max": 1
-            },
-            "biochemical": {
-              "min": 1,
-              "max": 1
-            },
-            "stun": {
-              "min": 1,
-              "max": 1
-            }
-          },
-          "resistance": {
-            "physical": {
-              "min": 0,
-              "max": 0.25
-            },
-            "energy": {
-              "min": 0,
-              "max": 0
-            },
-            "distortion": {
-              "min": 0.75,
-              "max": 0.95
-            },
-            "thermal": {
-              "min": 0,
-              "max": 0
-            },
-            "biochemical": {
-              "min": 0,
-              "max": 0
-            },
-            "stun": {
-              "min": 0,
-              "max": 0
-            }
-          },
-          "max_shield_health": 2244,
-          "max_shield_regen": 404
-        },
-        "resource_network": {
-          "is_networked": true,
-          "is_relay": false,
-          "default_priority": 50,
-          "states": [
-            {
-              "name": "Online",
-              "signature": {
-                "em": 250,
-                "ir": null
-              },
-              "deltas": [
-                {
-                  "type": "Conversion",
-                  "resource": "Power",
-                  "rate": 1,
-                  "minimum_fraction": 1,
-                  "generated_resource": "Shield",
-                  "generated_rate": 404,
-                  "discharge": null,
-                  "no_over_generation": 0,
-                  "binary_evaluation": null,
-                  "composition": null
-                },
-                {
-                  "type": "Consumption",
-                  "resource": "Coolant",
-                  "rate": 0,
-                  "minimum_fraction": 0,
-                  "generated_resource": null,
-                  "generated_rate": null,
-                  "discharge": null,
-                  "no_over_generation": null,
-                  "binary_evaluation": null,
-                  "composition": null
-                }
-              ],
-              "power_ranges": [
-                {
-                  "start": 0,
-                  "modifier": 0.7,
-                  "register_range": 0
-                },
-                {
-                  "start": 0,
-                  "modifier": 0.85,
-                  "register_range": 0
-                },
-                {
-                  "start": 1,
-                  "modifier": 1,
-                  "register_range": 1
-                }
-              ]
-            }
-          ],
-          "repair": {
-            "max_repair_count": 1,
-            "time_to_repair": 39.6,
-            "health_ratio": 0.2
-          },
-          "usage": {
-            "power": {
-              "min": 1,
-              "max": 1,
-              "minimum": 1,
-              "maximum": 1
-            },
-            "coolant": {
-              "min": 1,
-              "max": 1,
-              "minimum": 1,
-              "maximum": 1
-            }
-          },
-          "generation": {
-            "coolant": null,
-            "power": null
-          }
-        },
-        "emission": {
-          "ir": 0,
-          "em_min": 250,
-          "em_max": 250,
-          "em_decay": 0.15
-        },
-        "version": "4.10.2-LIVE.12881860"
-      },
-      "attached_vehicle": null,
-      "ports": null,
-      "category_label": "Shields",
-      "required_tags": null,
-      "port_tags": null,
-      "version": null
-    },
-    {
-      "name": "hardpoint_thruster_main_top_left",
-      "position": null,
-      "class_name": "MISC_Fury_Thruster_Main",
-      "editable": false,
-      "editable_children": false,
-      "equipped_item_uuid": "00003571-11df-4b9d-a30d-1392d2a4bde7",
-      "type": "MainThruster",
-      "sub_type": "JointThruster",
-      "subtype": "JointThruster",
-      "sizes": {
-        "min": 1,
-        "max": 1
-      },
-      "compatible_types": [
-        {
-          "type": "MainThruster",
-          "sub_types": []
-        }
-      ],
-      "health": 7500,
-      "equipped_item": {
-        "uuid": "00003571-11df-4b9d-a30d-1392d2a4bde7",
-        "name": "<= PLACEHOLDER =>",
-        "class_name": "MISC_Fury_Thruster_Main",
-        "type": "MainThruster",
-        "type_label": "Main Thruster",
-        "sub_type": "JointThruster",
-        "sub_type_label": "Joint Thruster",
-        "classification": "Ship.MainThruster.JointThruster",
-        "classification_label": "Joint Thruster",
-        "is_base_variant": true,
-        "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/00003571-11df-4b9d-a30d-1392d2a4bde7",
-        "web_url": "https://api.star-citizen.wiki/items/placeholder-4125",
-        "size": 1,
-        "mass": 350,
-        "grade": "A",
-        "class": null,
-        "manufacturer": {
-          "name": "Unknown",
-          "code": "UNKN",
-          "uuid": "00000000-0000-0000-0000-000000000000",
-          "link": "https://api.star-citizen.wiki/api/manufacturers/UNKN"
-        },
-        "thruster": {
-          "performance": {
-            "thrust_capacity": 591491.7,
-            "max_supported_atmospheric_efficiency": null,
-            "min_health_thrust_multiplier": 0.25
-          },
-          "fuel": {
-            "burn_rate_per_10k_newton": 0.025
-          },
-          "role": "Main",
-          "vtol_only": false,
-          "backwash": {
-            "enabled": 1,
-            "automate_size": 0,
-            "max_speed": 90,
-            "max_density": 3,
-            "max_resistance": 100,
-            "afterburner_multiplier": 1.1
-          },
-          "handling": {
-            "strength_smoothing": 0.2
-          },
-          "thrust_capacity": 591491.7,
-          "min_health_thrust_multiplier": 0.25,
-          "fuel_burn_per_10k_newton": 0.025,
-          "type": "Main"
-        },
-        "resource_network": {
-          "is_networked": true,
-          "is_relay": false,
-          "default_priority": 50,
-          "states": [
-            {
-              "name": "Online",
-              "signature": {
-                "em": null,
-                "ir": null
-              },
-              "deltas": [
-                {
-                  "type": "Consumption",
-                  "resource": "Fuel",
-                  "rate": 0.01,
-                  "minimum_fraction": 1,
-                  "generated_resource": null,
-                  "generated_rate": null,
-                  "discharge": null,
-                  "no_over_generation": null,
-                  "binary_evaluation": null,
-                  "composition": null
-                },
-                {
-                  "type": "Consumption",
-                  "resource": "Coolant",
-                  "rate": 0,
-                  "minimum_fraction": 0,
-                  "generated_resource": null,
-                  "generated_rate": null,
-                  "discharge": null,
-                  "no_over_generation": null,
-                  "binary_evaluation": null,
-                  "composition": null
-                }
-              ],
-              "power_ranges": [
-                {
-                  "start": 0,
-                  "modifier": 1,
-                  "register_range": 0
-                },
-                {
-                  "start": 0,
-                  "modifier": 1,
-                  "register_range": 0
-                },
-                {
-                  "start": 0,
-                  "modifier": 1,
-                  "register_range": 0
-                }
-              ]
-            }
-          ],
-          "repair": {
-            "max_repair_count": 1,
-            "time_to_repair": 120,
-            "health_ratio": 0.2
-          },
-          "usage": {
-            "power": {
-              "min": 0,
-              "max": 0,
-              "minimum": 0,
-              "maximum": 0
-            },
-            "coolant": {
-              "min": 0,
-              "max": 0,
-              "minimum": 0,
-              "maximum": 0
-            }
-          },
-          "generation": {
-            "coolant": null,
-            "power": null
-          }
-        },
-        "emission": {
-          "ir": 0,
-          "em_min": 0,
-          "em_max": 0,
-          "em_decay": 0.15
-        },
-        "version": "4.10.2-LIVE.12881860"
-      },
-      "attached_vehicle": null,
-      "ports": null,
-      "category_label": "Thrusters",
-      "required_tags": null,
-      "port_tags": null,
-      "version": null
-    },
-    {
-      "name": "hardpoint_weapon_top_left",
-      "position": null,
-      "class_name": "Mount_Gimbal_S2",
-      "editable": true,
-      "editable_children": false,
-      "equipped_item_uuid": "7fedca61-dfeb-4ecb-b421-e7c3ba55a584",
-      "type": "Turret",
-      "sub_type": "GunTurret",
-      "subtype": "GunTurret",
-      "sizes": {
-        "min": 2,
-        "max": 2
-      },
-      "compatible_types": [
-        {
-          "type": "Turret",
-          "sub_types": [
-            "GunTurret"
-          ]
-        },
-        {
-          "type": "WeaponGun",
-          "sub_types": [
-            "Gun"
-          ]
-        }
-      ],
-      "health": 850,
-      "equipped_item": {
-        "uuid": "7fedca61-dfeb-4ecb-b421-e7c3ba55a584",
-        "name": "VariPuck S2 Gimbal Mount",
-        "class_name": "Mount_Gimbal_S2",
-        "type": "Turret",
-        "type_label": "Turret",
-        "sub_type": "GunTurret",
-        "sub_type_label": "Gun Turret",
-        "classification": "Ship.Turret.GunTurret",
-        "classification_label": "Gun Turret",
-        "is_base_variant": true,
-        "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/7fedca61-dfeb-4ecb-b421-e7c3ba55a584",
-        "web_url": "https://api.star-citizen.wiki/items/varipuck-s2-gimbal-mount",
-        "size": 2,
-        "mass": 50,
-        "grade": "A",
-        "class": null,
-        "manufacturer": {
-          "name": "Flashfire Systems",
-          "code": "FFSY",
-          "uuid": "b9b97673-c585-4e0a-b229-a0a3c79668c3",
-          "link": "https://api.star-citizen.wiki/api/manufacturers/FFSY"
-        },
-        "turret": {
-          "rotation_style": "SingleAxis",
-          "mounts": 1,
-          "min_size": 2,
-          "max_size": 2,
-          "yaw_axis": {
-            "slaved_only": false,
-            "speed": 80,
-            "time_to_full_speed": 0.3,
-            "acceleration_decay": 5
-          },
-          "pitch_axis": {
-            "slaved_only": false,
-            "speed": 80,
-            "time_to_full_speed": 0.3,
-            "acceleration_decay": 5
-          }
-        },
-        "version": "4.10.2-LIVE.12881860"
-      },
-      "attached_vehicle": null,
-      "ports": [
-        {
-          "name": "hardpoint_class_2",
-          "position": null,
-          "class_name": "KLWE_LaserRepeater_S2",
-          "editable": true,
-          "editable_children": false,
-          "equipped_item_uuid": "5453a817-dfd4-4143-aa11-840ca428540c",
-          "type": "WeaponGun",
-          "sub_type": "Gun",
-          "subtype": "Gun",
-          "sizes": {
-            "min": 2,
-            "max": 2
-          },
-          "compatible_types": [
-            {
-              "type": "WeaponGun",
-              "sub_types": [
-                "Gun"
-              ]
-            }
-          ],
-          "health": 850,
-          "equipped_item": {
-            "uuid": "5453a817-dfd4-4143-aa11-840ca428540c",
-            "name": "CF-227 Badger Repeater",
-            "class_name": "KLWE_LaserRepeater_S2",
-            "type": "WeaponGun",
-            "type_label": "Weapon Gun",
-            "sub_type": "Gun",
-            "sub_type_label": "Gun",
-            "classification": "Ship.Weapon.Gun",
-            "classification_label": "Gun",
-            "is_base_variant": false,
-            "variant_name": null,
-            "link": "https://api.star-citizen.wiki/api/items/5453a817-dfd4-4143-aa11-840ca428540c",
-            "web_url": "https://api.star-citizen.wiki/items/cf-227-badger-repeater-3",
-            "size": 2,
-            "mass": 60,
-            "grade": "A",
-            "class": null,
-            "manufacturer": {
-              "name": "Klaus & Werner",
-              "code": "KLWE",
-              "uuid": "1aa076d5-ac29-4c61-a905-d3ea39cf167a",
-              "link": "https://api.star-citizen.wiki/api/manufacturers/KLWE"
-            },
-            "vehicle_weapon": {
-              "class": "Gun",
-              "type": "Laser Repeater",
-              "capacity": 0,
-              "range": 1734,
-              "damage_per_shot": 26.2,
-              "regeneration": 15,
-              "rpm": 750,
-              "damages": [
-                {
-                  "type": "impact",
-                  "name": "energy",
-                  "damage": 26.244
-                }
-              ],
-              "modes": [
-                {
-                  "mode": "Single",
-                  "localised": "[SEMI]",
-                  "type": "sequence",
-                  "rpm": 750,
-                  "rounds_per_minute": 750,
-                  "ammo_per_shot": 1,
-                  "pellets_per_shot": 1,
-                  "damage_per_second": 328.1,
-                  "heat_per_shot": 0,
-                  "wear_per_shot": 0,
-                  "heat_per_second": null,
-                  "wear_per_second": null,
-                  "fire_during_spin_up": null,
-                  "shot_count": null,
-                  "cooldown_time": null,
-                  "sequence_mode": "Looping",
-                  "charge_up_time": null,
-                  "charge_down_time": null,
-                  "full_damage_range": null,
-                  "zero_damage_range": null,
-                  "hit_type": null,
-                  "hit_radius": null,
-                  "min_energy_draw": null,
-                  "max_energy_draw": null,
-                  "healing_mode": null,
-                  "healing_per_second": null,
-                  "ammo_per_mscu": null,
-                  "medical_ammo_type": null,
-                  "external_healing": null,
-                  "toggle": null,
-                  "max_distance": null,
-                  "max_sensor_distance": null,
-                  "auto_dosage_modifier": null,
-                  "healing_break_time": null,
-                  "max_dose_for_auto_adjustment": null,
-                  "battery_drain_per_second": null,
-                  "material_efficiency": null,
-                  "max_health_repair_rate": null,
-                  "max_damage_map_repair_rate": null,
-                  "health_to_ammo_ratio": null,
-                  "ramp_up_time": null,
-                  "ramp_down_time": null,
-                  "max_vehicle_damage_ratio": null,
-                  "repaired_material_ratio": null,
-                  "salvage_can_fire_on_full": null,
-                  "damage_threshold": null,
-                  "minimum_distance": null,
-                  "maximum_distance": null,
-                  "beam_radius": null,
-                  "collection_rate": null,
-                  "energy_draw": null,
-                  "mining_extractor_tag": null,
-                  "toggle_mode": null
-                }
-              ],
-              "damage": {
-                "sustained_60s": 167.3,
-                "burst": 328.1,
-                "alpha_total": 26.2,
-                "max": "Infinite",
-                "maximum": "Infinite",
-                "dps": {
-                  "physical": 0,
-                  "energy": 328.1,
-                  "distortion": 0,
-                  "thermal": 0,
-                  "biochemical": 0,
-                  "stun": 0
-                },
-                "alpha": {
-                  "physical": 0,
-                  "energy": 26.244,
-                  "distortion": 0,
-                  "thermal": 0,
-                  "biochemical": 0,
-                  "stun": 0
-                }
-              },
-              "spread": {
-                "min": 0.6,
-                "max": 0.6,
-                "minimum": 0.6,
-                "maximum": 0.6,
-                "first_attack": 0.022,
-                "per_attack": 0.022,
-                "decay": 2
-              },
-              "capacitor": {
-                "max_ammo_load": 75,
-                "regen_per_second": 15,
-                "cooldown": 0.762,
-                "requested_ammo_load": 12150,
-                "costs_per_shot": 32.4
-              },
-              "ammunition": {
-                "uuid": "465abcbb-ae04-4096-b32f-f40e0b06e588",
-                "size": 2,
-                "lifetime": 1.16,
-                "speed": 1495,
-                "range": 1734,
-                "capacity": 0,
-                "initial_capacity": 0,
-                "damage_falloff_level_1": 0,
-                "damage_falloff_level_2": 0,
-                "damage_falloff_level_3": 0,
-                "max_penetration_thickness": 0.5,
-                "penetration": {
-                  "base_distance": 0.075,
-                  "near_radius": 0,
-                  "far_radius": 0,
-                  "angle": null
-                },
-                "impact_damage": [
-                  {
-                    "type": "impact",
-                    "name": "Energy",
-                    "damage": 26.244
-                  }
-                ],
-                "impact_damage_map": {
-                  "energy": 26.244
-                },
-                "conversion_rate": 129,
-                "impulse_scale": 1,
-                "bullet_type": -1
-              },
-              "magazine_volume": {
-                "micro_scu": 0,
-                "scu": 0
-              }
-            },
-            "ammunition": {
-              "uuid": "465abcbb-ae04-4096-b32f-f40e0b06e588",
-              "size": 2,
-              "lifetime": 1.16,
-              "speed": 1495,
-              "range": 1734,
-              "capacity": 0,
-              "initial_capacity": 0,
-              "damage_falloff_level_1": 0,
-              "damage_falloff_level_2": 0,
-              "damage_falloff_level_3": 0,
-              "max_penetration_thickness": 0.5,
-              "penetration": {
-                "base_distance": 0.075,
-                "near_radius": 0,
-                "far_radius": 0,
-                "angle": null
-              },
-              "impact_damage": [
-                {
-                  "type": "impact",
-                  "name": "Energy",
-                  "damage": 26.244
-                }
-              ],
-              "impact_damage_map": {
-                "energy": 26.244
-              },
-              "conversion_rate": 129,
-              "impulse_scale": 1,
-              "bullet_type": -1
-            },
-            "resource_network": {
-              "is_networked": true,
-              "is_relay": false,
-              "default_priority": 50,
-              "states": [
-                {
-                  "name": "Online",
-                  "signature": {
-                    "em": 203,
-                    "ir": null
-                  },
-                  "deltas": [
-                    {
-                      "type": "Consumption",
-                      "resource": "Power",
-                      "rate": 0.6,
-                      "minimum_fraction": 0,
-                      "generated_resource": null,
-                      "generated_rate": null,
-                      "discharge": null,
-                      "no_over_generation": null,
-                      "binary_evaluation": null,
-                      "composition": null
-                    }
-                  ],
-                  "power_ranges": [
-                    {
-                      "start": 0,
-                      "modifier": 1,
-                      "register_range": 0
-                    },
-                    {
-                      "start": 0,
-                      "modifier": 1,
-                      "register_range": 0
-                    },
-                    {
-                      "start": 0,
-                      "modifier": 1,
-                      "register_range": 0
-                    }
-                  ]
-                }
-              ],
-              "repair": {
-                "max_repair_count": 1,
-                "time_to_repair": 20.6,
-                "health_ratio": 0.2
-              },
-              "usage": {
-                "power": {
-                  "min": 0,
-                  "max": 0.6,
-                  "minimum": 0,
-                  "maximum": 0.6
-                },
-                "coolant": {
-                  "min": 0,
-                  "max": 0.6,
-                  "minimum": 0,
-                  "maximum": 0.6
-                }
-              },
-              "generation": {
-                "coolant": null,
-                "power": null
-              }
-            },
-            "emission": {
-              "ir": 0,
-              "em_min": 0,
-              "em_max": 203,
-              "em_decay": 0.15
-            },
-            "version": "4.10.2-LIVE.12881860"
-          },
-          "attached_vehicle": null,
-          "ports": [
-            {
-              "name": "BAR1",
-              "position": null,
-              "class_name": null,
-              "editable": false,
-              "editable_children": false,
-              "equipped_item_uuid": null,
-              "type": "",
-              "sub_type": "",
-              "subtype": "",
-              "sizes": {
-                "min": 1,
-                "max": 1
-              },
-              "compatible_types": [
-                {
-                  "type": "WeaponAttachment",
-                  "sub_types": [
-                    "Barrel"
-                  ]
-                }
-              ],
-              "health": null,
-              "equipped_item": null,
-              "attached_vehicle": null,
-              "ports": null,
-              "category_label": null,
-              "required_tags": null,
-              "port_tags": null,
-              "version": null
-            },
-            {
-              "name": "MEC",
-              "position": null,
-              "class_name": null,
-              "editable": false,
-              "editable_children": false,
-              "equipped_item_uuid": null,
-              "type": "",
-              "sub_type": "",
-              "subtype": "",
-              "sizes": {
-                "min": 1,
-                "max": 1
-              },
-              "compatible_types": [
-                {
-                  "type": "WeaponAttachment",
-                  "sub_types": [
-                    "FiringMechanism"
-                  ]
-                }
-              ],
-              "health": null,
-              "equipped_item": null,
-              "attached_vehicle": null,
-              "ports": null,
-              "category_label": null,
-              "required_tags": null,
-              "port_tags": null,
-              "version": null
-            },
-            {
-              "name": "POW",
-              "position": null,
-              "class_name": null,
-              "editable": false,
-              "editable_children": false,
-              "equipped_item_uuid": null,
-              "type": "",
-              "sub_type": "",
-              "subtype": "",
-              "sizes": {
-                "min": 1,
-                "max": 1
-              },
-              "compatible_types": [
-                {
-                  "type": "WeaponAttachment",
-                  "sub_types": [
-                    "PowerArray"
-                  ]
-                }
-              ],
-              "health": null,
-              "equipped_item": null,
-              "attached_vehicle": null,
-              "ports": null,
-              "category_label": null,
-              "required_tags": null,
-              "port_tags": null,
-              "version": null
-            },
-            {
-              "name": "VEN",
-              "position": null,
-              "class_name": null,
-              "editable": false,
-              "editable_children": false,
-              "equipped_item_uuid": null,
-              "type": "",
-              "sub_type": "",
-              "subtype": "",
-              "sizes": {
-                "min": 1,
-                "max": 1
-              },
-              "compatible_types": [
-                {
-                  "type": "WeaponAttachment",
-                  "sub_types": [
-                    "Ventilation"
-                  ]
-                }
-              ],
-              "health": null,
-              "equipped_item": null,
-              "attached_vehicle": null,
-              "ports": null,
-              "category_label": null,
-              "required_tags": null,
-              "port_tags": null,
-              "version": null
-            }
-          ],
-          "category_label": null,
-          "required_tags": null,
-          "port_tags": null,
-          "version": null
-        }
-      ],
-      "category_label": "Turrets",
-      "required_tags": null,
-      "port_tags": null,
-      "version": null
-    },
-    {
-      "name": "hardpoint_missile_top_left",
-      "position": null,
-      "class_name": "MRCK_S02_MISC_Fury",
-      "editable": true,
-      "editable_children": false,
-      "equipped_item_uuid": "09030367-c1fd-48cd-a981-7115a4d43371",
-      "type": "MissileLauncher",
-      "sub_type": "MissileRack",
-      "subtype": "MissileRack",
-      "sizes": {
-        "min": 2,
-        "max": 2
-      },
-      "compatible_types": [
-        {
-          "type": "MissileLauncher",
-          "sub_types": [
-            "MissileRack"
-          ]
-        }
-      ],
-      "health": 200,
-      "equipped_item": {
-        "uuid": "09030367-c1fd-48cd-a981-7115a4d43371",
-        "name": "Mirai Fury 1xS2 Missile Rack",
-        "class_name": "MRCK_S02_MISC_Fury",
-        "type": "MissileLauncher",
-        "type_label": "Missile Launcher",
-        "sub_type": "MissileRack",
-        "sub_type_label": "Missile Rack",
-        "classification": "Ship.MissileLauncher.MissileRack",
-        "classification_label": "Missile Rack",
-        "is_base_variant": true,
-        "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/09030367-c1fd-48cd-a981-7115a4d43371",
-        "web_url": "https://api.star-citizen.wiki/items/mirai-fury-1xs2-missile-rack",
-        "size": 2,
-        "mass": 20,
-        "grade": "A",
-        "class": null,
-        "manufacturer": {
-          "name": "Mirai",
-          "code": "MRAI",
-          "uuid": "cdf6ea1e-7de3-4b58-bf9d-13c5fbafc49a",
-          "link": "https://api.star-citizen.wiki/api/manufacturers/MRAI"
-        },
-        "missile_rack": {
-          "missile_count": 1,
-          "missile_size": 2
-        },
-        "resource_network": {
-          "is_networked": true,
-          "is_relay": false,
-          "default_priority": 50,
-          "states": [
-            {
-              "name": "Idle",
-              "signature": {
-                "em": null,
-                "ir": null
-              },
-              "deltas": [
-                {
-                  "type": "NetworkReflection",
-                  "resource": "Power",
-                  "rate": null,
-                  "minimum_fraction": null,
-                  "generated_resource": null,
-                  "generated_rate": null,
-                  "discharge": null,
-                  "no_over_generation": null,
-                  "binary_evaluation": 0,
-                  "composition": null
-                }
-              ],
-              "power_ranges": [
-                {
-                  "start": 0,
-                  "modifier": 1,
-                  "register_range": 0
-                },
-                {
-                  "start": 0,
-                  "modifier": 1,
-                  "register_range": 0
-                },
-                {
-                  "start": 0,
-                  "modifier": 1,
-                  "register_range": 0
-                }
-              ]
-            }
-          ],
-          "repair": {
-            "max_repair_count": 1,
-            "time_to_repair": 120,
-            "health_ratio": 0.2
-          },
-          "usage": {
-            "power": {
-              "min": 0,
-              "max": 0,
-              "minimum": 0,
-              "maximum": 0
-            },
-            "coolant": {
-              "min": null,
-              "max": null,
-              "minimum": null,
-              "maximum": null
-            }
-          },
-          "generation": {
-            "coolant": null,
-            "power": null
-          }
-        },
-        "emission": null,
-        "version": "4.10.2-LIVE.12881860"
-      },
-      "attached_vehicle": null,
-      "ports": [
-        {
-          "name": "missile_01_attach",
-          "position": null,
-          "class_name": "MISL_S02_IR_FSKI_Ignite",
-          "editable": true,
-          "editable_children": true,
-          "equipped_item_uuid": "d358cf84-9c78-4929-a2ad-b9caade81962",
-          "type": "Missile",
-          "sub_type": "Missile",
-          "subtype": "Missile",
-          "sizes": {
-            "min": 2,
-            "max": 2
-          },
-          "compatible_types": [
-            {
-              "type": "Missile",
-              "sub_types": [
-                "Missile"
-              ]
-            }
-          ],
-          "health": 25,
-          "equipped_item": {
-            "uuid": "d358cf84-9c78-4929-a2ad-b9caade81962",
-            "name": "Ignite II Missile",
-            "class_name": "MISL_S02_IR_FSKI_Ignite",
-            "type": "Missile",
-            "type_label": "Missile",
-            "sub_type": "Missile",
-            "sub_type_label": "Missile",
-            "classification": "Ship.Missile.Missile",
-            "classification_label": "Missile",
-            "is_base_variant": true,
-            "variant_name": null,
-            "link": "https://api.star-citizen.wiki/api/items/d358cf84-9c78-4929-a2ad-b9caade81962",
-            "web_url": "https://api.star-citizen.wiki/items/ignite-ii-missile",
-            "size": 2,
-            "mass": 113,
-            "grade": "A",
-            "class": null,
-            "manufacturer": {
-              "name": "FireStorm Kinetics",
-              "code": "FSKI",
-              "uuid": "5f81335d-44e6-4104-841e-c5af9df06829",
-              "link": "https://api.star-citizen.wiki/api/manufacturers/FSKI"
-            },
-            "missile": {
-              "cluster_size": null,
-              "signal_type": "Infrared",
-              "tracking_signal_min": 17.8,
-              "lock_time": 0.3,
-              "lock_range_max": 10000,
-              "lock_range_min": 1800,
-              "lock_angle": 60,
-              "speed": 1029,
-              "fuel_tank_size": 40,
-              "explosion_radius_min": 7,
-              "explosion_radius_max": 8,
-              "flight": {
-                "enable_lifetime": 1,
-                "max_lifetime": 30,
-                "range": 30870,
-                "speed": 1029,
-                "boost_speed": 200,
-                "intercept_speed": 450,
-                "terminal_speed": 500,
-                "boost_phase_duration": 1,
-                "terminal_phase_engagement_time": 0.5,
-                "terminal_phase_engagement_angle": 120,
-                "fuel_tank_size": 40
-              },
-              "target_lock": {
-                "signal_resilience_min": 1,
-                "signal_resilience_max": 1.7,
-                "range_max": 10000,
-                "range_min": 1800,
-                "angle": 60,
-                "signal_amplifier": 2.5,
-                "increase_rate": 1.6,
-                "allow_dumb_firing": 1
-              },
-              "explosion": {
-                "is_cluster": false,
-                "cluster_size": null,
-                "requires_launcher": 1,
-                "allow_dumb_firing": 1,
-                "radius_min": 7,
-                "radius_max": 8,
-                "safety_distance": 5,
-                "proximity": 0.5
-              },
-              "delays": {
-                "arm_time": 1.25,
-                "ignite_time": 0.2,
-                "collision_delay_time": 0.5,
-                "lock_time": 0.3
-              },
-              "damage_total": 1440,
-              "damages": [
-                {
-                  "type": "detonation",
-                  "name": "Physical",
-                  "damage": 1440
-                }
-              ],
-              "damage_map": {
-                "physical": 1440,
-                "energy": 0,
-                "distortion": 0,
-                "thermal": 0,
-                "biochemical": 0,
-                "stun": 0
-              }
-            },
-            "version": "4.10.2-LIVE.12881860"
-          },
-          "attached_vehicle": null,
-          "ports": null,
-          "category_label": null,
-          "required_tags": null,
-          "port_tags": null,
-          "version": null
-        }
-      ],
-      "category_label": "Missile & Bomb Racks",
-      "required_tags": [
-        "MISC_Fury"
-      ],
-      "port_tags": null,
-      "version": null
-    },
-    {
-      "name": "hardpoint_controller_fuel",
-      "position": null,
-      "class_name": "Controller_Fuel",
-      "editable": false,
-      "editable_children": false,
-      "equipped_item_uuid": "9925488b-127a-4fc3-b7bb-9e4f5a46bbbd",
-      "type": "FuelController",
-      "sub_type": "UNDEFINED",
-      "subtype": "UNDEFINED",
-      "sizes": {
-        "min": 1,
-        "max": 1
-      },
-      "compatible_types": null,
-      "health": null,
-      "equipped_item": {
-        "uuid": "9925488b-127a-4fc3-b7bb-9e4f5a46bbbd",
-        "name": "<= PLACEHOLDER =>",
-        "class_name": "Controller_Fuel",
-        "type": "FuelController",
-        "type_label": "Fuel Controller",
-        "sub_type": "UNDEFINED",
-        "sub_type_label": "Undefined",
-        "classification": null,
-        "classification_label": null,
-        "is_base_variant": true,
-        "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/9925488b-127a-4fc3-b7bb-9e4f5a46bbbd",
-        "web_url": "https://api.star-citizen.wiki/items/placeholder-1875",
-        "size": 1,
-        "mass": 0,
-        "grade": 1,
-        "class": null,
-        "manufacturer": {
-          "name": "Unknown",
-          "code": "UNKN",
-          "uuid": "00000000-0000-0000-0000-000000000000",
-          "link": "https://api.star-citizen.wiki/api/manufacturers/UNKN"
-        },
-        "version": "4.10.2-LIVE.12881860"
-      },
-      "attached_vehicle": null,
-      "ports": null,
-      "category_label": "Controllers",
-      "required_tags": null,
-      "port_tags": null,
-      "version": null
-    },
-    {
-      "name": "hardpoint_fuel_port",
-      "position": null,
-      "class_name": "DockingTube_Fuel_Ports_MISC_Fury",
-      "editable": false,
-      "editable_children": false,
-      "equipped_item_uuid": "e94255c4-4036-4805-82d7-a5dd836e8bf8",
-      "type": "DockingCollar",
-      "sub_type": "UNDEFINED",
-      "subtype": "UNDEFINED",
-      "sizes": {
-        "min": 1,
-        "max": 1
-      },
-      "compatible_types": [
-        {
-          "type": "DockingCollar",
-          "sub_types": []
-        }
-      ],
-      "health": 100,
-      "equipped_item": {
-        "uuid": "e94255c4-4036-4805-82d7-a5dd836e8bf8",
-        "name": "<= PLACEHOLDER =>",
-        "class_name": "DockingTube_Fuel_Ports_MISC_Fury",
-        "type": "DockingCollar",
-        "type_label": "Docking Collar",
-        "sub_type": "UNDEFINED",
-        "sub_type_label": "Undefined",
-        "classification": null,
-        "classification_label": null,
-        "is_base_variant": true,
-        "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/e94255c4-4036-4805-82d7-a5dd836e8bf8",
-        "web_url": "https://api.star-citizen.wiki/items/placeholder-2325",
-        "size": 1,
-        "mass": 0,
-        "grade": 1,
-        "class": null,
-        "manufacturer": {
-          "name": "Unknown",
-          "code": "UNKN",
-          "uuid": "00000000-0000-0000-0000-000000000000",
-          "link": "https://api.star-citizen.wiki/api/manufacturers/UNKN"
-        },
-        "version": "4.10.2-LIVE.12881860"
-      },
-      "attached_vehicle": null,
-      "ports": [
-        {
-          "name": "itemport_vehicle_attach",
-          "position": null,
-          "class_name": null,
-          "editable": true,
-          "editable_children": true,
-          "equipped_item_uuid": null,
-          "type": "",
-          "sub_type": "",
-          "subtype": "",
-          "sizes": {
-            "min": 0,
-            "max": 8
-          },
-          "compatible_types": [
-            {
-              "type": "NOITEM_Vehicle",
-              "sub_types": []
-            }
-          ],
-          "health": null,
-          "equipped_item": null,
-          "attached_vehicle": null,
-          "ports": null,
-          "category_label": null,
-          "required_tags": [
-            "Ship_Dock_Refuel"
-          ],
-          "port_tags": null,
-          "version": null
-        }
-      ],
-      "category_label": "Docking",
-      "required_tags": null,
-      "port_tags": [
-        "Ship_Dock_Refuel"
-      ],
-      "version": null
-    },
-    {
-      "name": "hardpoint_air_traffic_controller",
-      "position": null,
-      "class_name": "MISC_Fury_ShipATCDataManager",
-      "editable": false,
-      "editable_children": false,
-      "equipped_item_uuid": "fb76add7-5c65-4946-85e4-7df33efb5382",
-      "type": "AirTrafficController",
-      "sub_type": "UNDEFINED",
-      "subtype": "UNDEFINED",
-      "sizes": {
-        "min": 1,
-        "max": 1
-      },
-      "compatible_types": [
-        {
-          "type": "AirTrafficController",
-          "sub_types": []
-        }
-      ],
-      "health": null,
-      "equipped_item": null,
-      "attached_vehicle": null,
-      "ports": null,
-      "category_label": "Controllers",
-      "required_tags": null,
-      "port_tags": null,
-      "version": null
-    },
-    {
-      "name": "hardpoint_relay_cockpit",
-      "position": null,
-      "class_name": "RELAY_1slot_MRAI_Pulse",
-      "editable": false,
-      "editable_children": false,
-      "equipped_item_uuid": "bcc8fa77-c177-4ee3-983f-bd528ae3676c",
-      "type": "Relay",
-      "sub_type": "UNDEFINED",
-      "subtype": "UNDEFINED",
-      "sizes": {
-        "min": 1,
-        "max": 1
-      },
-      "compatible_types": [
-        {
-          "type": "Relay",
-          "sub_types": []
-        }
-      ],
-      "health": null,
-      "equipped_item": {
-        "uuid": "bcc8fa77-c177-4ee3-983f-bd528ae3676c",
-        "name": "Relay",
-        "class_name": "RELAY_1slot_MRAI_Pulse",
-        "type": "Relay",
-        "type_label": "Relay",
-        "sub_type": "UNDEFINED",
-        "sub_type_label": "Undefined",
-        "classification": null,
-        "classification_label": null,
-        "is_base_variant": true,
-        "variant_name": null,
-        "link": "https://api.star-citizen.wiki/api/items/bcc8fa77-c177-4ee3-983f-bd528ae3676c",
-        "web_url": "https://api.star-citizen.wiki/items/relay-3",
-        "size": 0,
-        "mass": 0,
-        "grade": 1,
-        "class": null,
-        "manufacturer": {
-          "name": "Unknown",
-          "code": "UNKN",
-          "uuid": "00000000-0000-0000-0000-000000000000",
-          "link": "https://api.star-citizen.wiki/api/manufacturers/UNKN"
-        },
-        "resource_network": {
-          "is_networked": true,
-          "is_relay": true,
-          "default_priority": 50,
-          "states": [],
-          "repair": {
-            "max_repair_count": 1,
-            "time_to_repair": 120,
-            "health_ratio": 0.2
-          },
-          "usage": {
-            "power": {
-              "min": 0,
-              "max": 0,
-              "minimum": 0,
-              "maximum": 0
-            },
-            "coolant": {
-              "min": null,
-              "max": null,
-              "minimum": null,
-              "maximum": null
-            }
-          },
-          "generation": {
-            "coolant": null,
-            "power": null
-          }
-        },
-        "emission": null,
-        "version": "4.10.2-LIVE.12881860"
-      },
-      "attached_vehicle": null,
-      "ports": [
-        {
-          "name": "$slot_fuse_01",
-          "position": null,
-          "class_name": "Fuse_subItem_standard",
-          "editable": true,
-          "editable_children": true,
-          "equipped_item_uuid": "8cf8dd1b-756e-496c-a1ae-e88ebbf999f7",
+          "equipped_item_uuid": "3e4429cb-fb98-420b-aed2-648dad6144e0",
           "type": "Misc",
           "sub_type": "Fuse",
           "subtype": "Fuse",
@@ -5192,9 +1170,9 @@
           ],
           "health": 150,
           "equipped_item": {
-            "uuid": "8cf8dd1b-756e-496c-a1ae-e88ebbf999f7",
+            "uuid": "3e4429cb-fb98-420b-aed2-648dad6144e0",
             "name": "Fuse",
-            "class_name": "Fuse_subItem_standard",
+            "class_name": "ARGO_ATLS_Battery",
             "type": "Misc",
             "type_label": "Misc",
             "sub_type": "Fuse",
@@ -5203,48 +1181,100 @@
             "classification_label": null,
             "is_base_variant": true,
             "variant_name": null,
-            "link": "https://api.star-citizen.wiki/api/items/8cf8dd1b-756e-496c-a1ae-e88ebbf999f7",
-            "web_url": "https://api.star-citizen.wiki/items/fuse-2",
+            "link": "https://api.star-citizen.wiki/api/items/3e4429cb-fb98-420b-aed2-648dad6144e0?version=4.10.3-LIVE.13165946",
+            "web_url": "https://api.star-citizen.wiki/items/fuse?version=4.10.3-LIVE.13165946",
             "size": 1,
             "mass": 0.2,
             "grade": 1,
             "class": null,
             "manufacturer": {
-              "name": "Lightning Power Ltd.",
-              "code": "LPLT",
-              "uuid": "60d0f346-0c22-4869-81d3-1168b526a258",
-              "link": "https://api.star-citizen.wiki/api/manufacturers/LPLT"
+              "name": "Unknown",
+              "code": "UNKN",
+              "uuid": "00000000-0000-0000-0000-000000000000",
+              "link": "https://api.star-citizen.wiki/api/manufacturers/UNKN"
             },
-            "version": "4.10.2-LIVE.12881860"
+            "version": "4.10.3-LIVE.13165946"
           },
           "attached_vehicle": null,
           "ports": null,
           "category_label": null,
-          "required_tags": [
-            "fuse"
-          ],
+          "required_tags": null,
           "port_tags": null,
-          "version": null
+          "version": "4.10.3-LIVE.13165946"
         }
       ],
-      "category_label": "Relays",
+      "category_label": "Other",
       "required_tags": null,
       "port_tags": null,
-      "version": null
+      "version": "4.10.3-LIVE.13165946"
+    },
+    {
+      "name": "hardpoint_headlight",
+      "position": null,
+      "class_name": "ARGO_ATLS_Headlights",
+      "editable": false,
+      "editable_children": false,
+      "equipped_item_uuid": "de9491ea-a5ef-463c-bf3f-252d74c54da1",
+      "type": "Misc",
+      "sub_type": "UNDEFINED",
+      "subtype": "UNDEFINED",
+      "sizes": {
+        "min": 1,
+        "max": 1
+      },
+      "compatible_types": [
+        {
+          "type": "Misc",
+          "sub_types": []
+        }
+      ],
+      "health": 50,
+      "equipped_item": {
+        "uuid": "de9491ea-a5ef-463c-bf3f-252d74c54da1",
+        "name": "<= PLACEHOLDER =>",
+        "class_name": "ARGO_ATLS_Headlights",
+        "type": "Misc",
+        "type_label": "Misc",
+        "sub_type": "UNDEFINED",
+        "sub_type_label": "Undefined",
+        "classification": null,
+        "classification_label": null,
+        "is_base_variant": true,
+        "variant_name": null,
+        "link": "https://api.star-citizen.wiki/api/items/de9491ea-a5ef-463c-bf3f-252d74c54da1?version=4.10.3-LIVE.13165946",
+        "web_url": "https://api.star-citizen.wiki/items/placeholder-700?version=4.10.3-LIVE.13165946",
+        "size": 1,
+        "mass": 0,
+        "grade": 1,
+        "class": null,
+        "manufacturer": {
+          "name": "Argo Astronautics",
+          "code": "ARGO",
+          "uuid": "9e1f5a35-edcc-4d19-bede-08e2730043c5",
+          "link": "https://api.star-citizen.wiki/api/manufacturers/ARGO"
+        },
+        "version": "4.10.3-LIVE.13165946"
+      },
+      "attached_vehicle": null,
+      "ports": null,
+      "category_label": "Other",
+      "required_tags": null,
+      "port_tags": null,
+      "version": "4.10.3-LIVE.13165946"
     }
   ],
-  "career": "Combat",
-  "role": "Snub Fighter",
-  "updated_at": "2026-11-06T00:34:44.000000Z",
-  "version": "4.10.2-LIVE.12881860",
-  "id": 246,
-  "chassis_id": 104,
-  "shipmatrix_name": "Fury",
+  "career": "Ground",
+  "role": "Cargo",
+  "updated_at": "2026-11-13T10:44:48.000000Z",
+  "version": "4.10.3-LIVE.13165946",
+  "id": 277,
+  "chassis_id": 115,
+  "shipmatrix_name": "ATLS",
   "foci": [
-    "Snub Fighter"
+    "Cargo"
   ],
   "production_status": "flight-ready",
   "production_note": "None",
-  "type": "Combat",
-  "size": "snub"
+  "type": "ground",
+  "size": "Medium"
 }

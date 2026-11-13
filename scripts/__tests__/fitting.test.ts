@@ -73,7 +73,8 @@ describe("the words and names", () => {
       "MISC_Starlancer_Max",
       "MISC_Starlancer_TAC",
     ]);
-    expect(resolveLabel("Galaxy", pack, names)).toEqual([]);
+    // The Galaxy joined the pack in 4.10.3, with its two module placeholders as editions.
+    expect(resolveLabel("Galaxy", pack, names)).toContain("RSI_Galaxy");
     expect(resolveLabel("Nothing of the kind", pack, names)).toEqual([]);
     expect(() =>
       resolveLabel("Wrong", pack, { Wrong: ["No such ship"] }),

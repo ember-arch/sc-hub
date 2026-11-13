@@ -202,6 +202,69 @@ describe("offerFromJsonLd", () => {
     ).toEqual({ name: "Test Ship", price_usd: 5900, available: false });
   });
 
+  it("reads the ship's price from several offers at once, as during IAE 2956", () => {
+    // RSI's Orion page on 13 November 2026: the standalone ship and its upgrade together.
+    const each = (url: string, name: string) => ({
+      "@type": "Offer",
+      url,
+      priceCurrency: "USD",
+      price: "650.00",
+      availability: "https://schema.org/InStock",
+      name,
+    });
+    const orion = {
+      "@type": "AggregateOffer",
+      priceCurrency: "USD",
+      offerCount: 2,
+      offers: [
+        each(
+          "https://robertsspaceindustries.com/en/pledge/Standalone-Ships/Orion-10-Year",
+          "Orion - 10 Year",
+        ),
+        each(
+          "https://robertsspaceindustries.com/en/pledge/Upgrades/Orion",
+          "Orion",
+        ),
+      ],
+      lowPrice: "650.00",
+      highPrice: "650.00",
+      availability: "https://schema.org/InStock",
+      priceSpecification: {
+        "@type": "UnitPriceSpecification",
+        priceType: "https://schema.org/MSRP",
+        price: "650.00",
+        priceCurrency: "USD",
+      },
+    };
+    expect(offerFromJsonLd(page(orion))).toEqual({
+      name: "Test Ship",
+      price_usd: 650,
+      available: true,
+    });
+    // The standalone offer's own state: sold out while the upgrade stays on sale.
+    const [standalone, upgrade] = orion.offers;
+    expect(
+      offerFromJsonLd(
+        page({
+          ...orion,
+          offers: [
+            { ...standalone, availability: "https://schema.org/SoldOut" },
+            upgrade,
+          ],
+        }),
+      ),
+    ).toMatchObject({ price_usd: 650, available: false });
+    // No single standalone offer: the MSRP, else one price when the lowest and highest agree,
+    // else a halt.
+    const bare: Record<string, unknown> = { ...orion, offers: [upgrade] };
+    expect(offerFromJsonLd(page(bare))?.price_usd).toBe(650);
+    delete bare["priceSpecification"];
+    expect(offerFromJsonLd(page(bare))?.price_usd).toBe(650);
+    expect(() =>
+      offerFromJsonLd(page({ ...bare, highPrice: "700.00" })),
+    ).toThrow(/AggregateOffer/);
+  });
+
   it("returns null without a product and halts on an availability it does not know", () => {
     expect(offerFromJsonLd("<html></html>")).toBeNull();
     expect(() =>

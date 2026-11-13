@@ -47,6 +47,20 @@ const { channel, game_version: version } = manifest;
 const committed = <T>(entity: string): T[] => readJson(`${entity}.json`) as T[];
 
 const vehicleSample = WikiVehicle.parse(readJson("samples/vehicle.json"));
+/** The sample's first port the mapper keeps: a seat or a room is skipped before any check. */
+function firstKept(): NonNullable<typeof vehicleSample.ports>[number] {
+  const kept = (vehicleSample.ports ?? []).find(
+    (p) =>
+      mapPorts(
+        { ...vehicleSample, ports: [{ ...p, ports: null }] },
+        channel,
+        version,
+      ).ports.length > 0,
+  );
+  if (kept === undefined)
+    throw new Error("the sample has no port the mapper keeps");
+  return kept;
+}
 const itemSamples = ["weapon", "shield", "quantum-drive"].map((kind) =>
   WikiItem.parse(readJson(`samples/item-${kind}.json`)),
 );
@@ -270,8 +284,7 @@ describe("mapping the vehicle sample", () => {
   });
 
   it("accepts a missing port version and halts on a different one", () => {
-    const [first] = vehicleSample.ports ?? [];
-    if (first === undefined) throw new Error("sample has no ports");
+    const first = firstKept();
     const withoutVersion = {
       ...vehicleSample,
       ports: [{ ...first, version: null }],
@@ -346,8 +359,7 @@ describe("mapping the vehicle sample", () => {
       "rack_right",
       "rack_right/missile_01_attach",
     ]);
-    const [first] = vehicleSample.ports ?? [];
-    if (first === undefined) throw new Error("sample has no ports");
+    const first = firstKept();
     expect(() =>
       mapPorts(
         { ...vehicleSample, ports: [first, { ...first, ports: null }] },

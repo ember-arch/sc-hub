@@ -25,6 +25,7 @@ import {
   loanerValue,
   lowestShopPrice,
   pledgeValue,
+  shopPricesOnFile,
   shopRows,
 } from "../../../lib/acquisition";
 import { armament, armamentPlan } from "../../../lib/armament";
@@ -362,7 +363,9 @@ function StoreAndShops({
           <Gap>Not sold or rented in the game: it is in concept.</Gap>
         ) : shops.length === 0 ? (
           <Gap>
-            No shop terminal has been reported to UEX for LIVE {build ?? ""}.
+            {shopPricesOnFile()
+              ? `No shop terminal has been reported to UEX for LIVE ${build ?? ""}.`
+              : `No in-game prices are on file for LIVE ${build ?? ""} yet: they follow when the Star Citizen Wiki adds UEX Corp's reports for this build.`}
           </Gap>
         ) : (
           <>
@@ -856,14 +859,18 @@ export function packShipFile(ship: ShipView): ShipFileProps {
       label: "Buy in the game",
       value:
         buy === null
-          ? "Not reported to UEX"
+          ? shopPricesOnFile()
+            ? "Not reported to UEX"
+            : "Not on file for this build yet"
           : `From ${n0(buy.price_auec)} aUEC, ${plural(buy.terminals, "shop")}`,
     },
     {
       label: "Rent in the game",
       value:
         rent === null
-          ? "Not reported to UEX"
+          ? shopPricesOnFile()
+            ? "Not reported to UEX"
+            : "Not on file for this build yet"
           : `From ${n0(rent.price_auec)} aUEC, ${plural(rent.terminals, "shop")}`,
     },
     {

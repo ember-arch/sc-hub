@@ -11847,5 +11847,39 @@
     "thread_title": null,
     "forum": null,
     "takedown": false
+  },
+  {
+    "id": "8ec399bf-e89a-59c4-af11-7363979654a1",
+    "source": "video",
+    "external_id": "nB8SsUPkKB0",
+    "url": "https://www.youtube.com/shorts/nB8SsUPkKB0",
+    "title": "Star Citizen | Getting to IAE 2956",
+    "summary": "Ready to explore the biggest ship show in the 'verse?",
+    "body_html": "<p>Ready to explore the biggest ship show in the &#39;verse?</p>\n<p>Here&#39;s how to find your way to #IAE2956.</p>",
+    "published_at": "2026-11-14T16:51:52.000Z",
+    "fetched_at": "2026-11-14T18:08:16.099Z",
+    "revision": 1,
+    "author_id": null,
+    "thread_id": null,
+    "thread_title": null,
+    "forum": "Star Citizen",
+    "takedown": false
+  },
+  {
+    "id": "7677b28b-38c6-5cb2-a381-de82b442f8a7",
+    "source": "video",
+    "external_id": "Up9o7aPPPrM",
+    "url": "https://www.youtube.com/shorts/Up9o7aPPPrM",
+    "title": "Star Citizen | Origin: IAE 2956 - Day 2",
+    "summary": "Welcome to Day 2 of #IAE2956!",
+    "body_html": "<p>Welcome to Day 2 of #IAE2956!</p>\n<p>Today, we&#39;re stepping into the world of Origin Jumpworks. Expect sleek designs, refined luxury, and performance that&#39;s hard to ignore.</p>\n<p>Which Origin ship are you checking out first? 👉 iae2956.com</p>",
+    "published_at": "2026-11-14T16:04:14.000Z",
+    "fetched_at": "2026-11-14T18:08:16.099Z",
+    "revision": 1,
+    "author_id": null,
+    "thread_id": null,
+    "thread_title": null,
+    "forum": "Star Citizen",
+    "takedown": false
   }
 ]

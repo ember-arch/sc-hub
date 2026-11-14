@@ -205,11 +205,32 @@ test("the latest funding figures are RSI's own counter, with the time it was rea
     await expect(sources).not.toContainText("RSI's counter itself");
     return;
   }
-  // Year on year stays on the wiki's snapshots, and says to which day when that is not today's.
+  // Year on year runs to the same moment last year, or says to which day when it falls back to
+  // the wiki's comparison; the top figure and the card show the same change (ADR-018, amended).
   const pledgesPanel = section.locator("[data-measure=pledges]");
-  await expect(
-    pledgesPanel.getByText(/^(to \d+ \w{3}, )?on the same days of \d{4}$/),
-  ).toBeVisible();
+  const cardNote = pledgesPanel.getByText(
+    /^(to \d+ \w{3}, )?on the same days of \d{4}$/,
+  );
+  await expect(cardNote).toBeVisible();
+  const thisYear = page.locator("dl div", { hasText: /^This year/ }).first();
+  const topNote = (await thisYear.locator("dd span").last().innerText()).trim();
+  expect(topNote).toMatch(
+    /^(so far|[+−-]?\d+(\.\d)?% on the same days of \d{4}(, to \d+ \w{3})?)$/,
+  );
+  const cardValue = (
+    await pledgesPanel
+      .locator("dl div", { hasText: /^Year on year/ })
+      .locator("dd span")
+      .first()
+      .innerText()
+  ).trim();
+  if (topNote !== "so far") {
+    expect(topNote.startsWith(`${cardValue} `)).toBe(true);
+    // The two name the same day, or neither does.
+    expect(/, to \d+ \w{3}$/.test(topNote)).toBe(
+      /^to \d+ \w{3}, /.test((await cardNote.innerText()).trim()),
+    );
+  }
   const hhmm = rsiCounter.read_at.slice(11, 16);
   // The figure is RSI's, to the dollar, and the notes give the hour it was read.
   const dollars = Math.round(rsiCounter.funds_usd).toLocaleString("en-US");

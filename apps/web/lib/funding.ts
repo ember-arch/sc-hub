@@ -387,8 +387,13 @@ export function formatReadAt(iso: string, short = false): string {
   const day = iso.slice(0, 10);
   const time = `${iso.slice(11, 16)} UTC`;
   if (!short) return `${formatDay(day)}, ${time}`;
+  return `${formatShortDay(day)}, ${time}`;
+}
+
+/** "12 Nov". */
+export function formatShortDay(day: string): string {
   const month = MONTHS[Number(day.slice(5, 7)) - 1] ?? "";
-  return `${Number(day.slice(8, 10))} ${month}, ${time}`;
+  return `${Number(day.slice(8, 10))} ${month}`;
 }
 
 export interface YearAgainstLastYear {
@@ -404,16 +409,11 @@ export interface YearAgainstLastYear {
 }
 
 /**
- * This year against last year, for the front page's funding card (ADR-038): the year so far, how
- * much of last year's whole total it has reached, and the change on the same days of last year.
- * Everything is a difference between snapshots, as on the ledger; nothing is estimated.
- */
-/**
- * This year against the same days of last year, from the wiki's snapshots alone (ADR-018, amended
- * 2026-11-13): the wiki reads RSI's counter at 20:00 UTC every day, so both years end on the same
- * hour, where the counter's reading of the last hour would set part of a day against a whole one.
- * Null when the snapshots' latest day is in another year than `year` (the first hours of a year,
- * before the refresh copies its first snapshot), so the comparison never crosses a year.
+ * This year against the same days of last year, from the wiki's snapshots alone: the fallback for
+ * `yearOnYear` when the comparison to RSI's latest reading cannot be shown (ADR-018, amended
+ * 2026-11-13). Both years end on the wiki's reading at about 20:00 UTC of the same date. Null when
+ * the snapshots' latest day is in another year than `year` (the first hours of a year, before the
+ * refresh copies its first snapshot), so the comparison never crosses a year.
  */
 export function sameDaysChange(
   snapshots: readonly Reading[],
@@ -426,6 +426,107 @@ export function sameDaysChange(
   return { change: head.yearToDateChange, to: head.latest.day };
 }
 
+/** How far apart a same-moment comparison's two bounds may be and the comparison still be shown. */
+export const SAME_MOMENT_SPREAD = 0.01;
+
+/**
+ * This year so far, to RSI's latest reading, against last year over the same length of time
+ * (ADR-018, amended 2026-11-13). Both are counted from their year's start reading (the wiki's of
+ * 31 December, or the one standing for it), so a leap day or a start reading taken early adds
+ * nothing to this year's side. Last year has one reading a day (the wiki's, at about 20:00 UTC), so
+ * the same point falls between two of them; the change is taken against the later one, which gives
+ * last year at least as long as this year has had. The figure can understate this year's lead by up
+ * to a day of last year's, never overstate it. Null when either reading is missing, when they are
+ * not a day apart, or when the earlier one would give a change more than SAME_MOMENT_SPREAD away
+ * (when a single day of last year weighs a lot: the first weeks of a year, and last year's big
+ * sales); the wiki's own comparison, with its day, stands then.
+ */
+export function sameMomentChange(
+  series: FundingSeries,
+  measure: Measure,
+  counter: CounterReading,
+): number | null {
+  const value = (s: FundingSnapshot): number | null =>
+    measure === "pledges" ? s.funds_usd : s.citizens;
+  const list = readings(series, measure);
+  const year = Number(counter.read_at.slice(0, 4));
+  const startThisReading = readingAt(list, `${year - 1}-12-31`);
+  const startLastReading = readingAt(list, `${year - 2}-12-31`);
+  if (startThisReading === null || startLastReading === null) return null;
+  const recordedAt = (day: string): number | null => {
+    const s = series.snapshots.find((x) => x.day === day);
+    return s === undefined ? null : Date.parse(s.recorded_at);
+  };
+  const thisStartAt = recordedAt(startThisReading.day);
+  const lastStartAt = recordedAt(startLastReading.day);
+  if (thisStartAt === null || lastStartAt === null) return null;
+  const startThis = startThisReading.value;
+  const startLast = startLastReading.value;
+  const now = measure === "pledges" ? counter.funds_usd : counter.citizens;
+  // The point in last year as far from its start reading as this reading is from this year's.
+  const moment = lastStartAt + (Date.parse(counter.read_at) - thisStartAt);
+  let before: FundingSnapshot | undefined;
+  let after: FundingSnapshot | undefined;
+  for (const s of series.snapshots) {
+    if (Date.parse(s.recorded_at) <= moment) before = s;
+    else {
+      after = s;
+      break;
+    }
+  }
+  if (before === undefined || after === undefined) return null;
+  const span = Date.parse(after.recorded_at) - Date.parse(before.recorded_at);
+  if (span > 30 * 3_600_000) return null;
+  const lastBefore = value(before);
+  const lastAfter = value(after);
+  if (lastBefore === null || lastAfter === null) return null;
+  const lastYearLong = lastAfter - startLast;
+  const lastYearShort = lastBefore - startLast;
+  if (lastYearLong <= 0 || lastYearShort <= 0) return null;
+  const ytd = now - startThis;
+  const change = ytd / lastYearLong - 1;
+  const other = ytd / lastYearShort - 1;
+  return Math.abs(other - change) > SAME_MOMENT_SPREAD ? null : change;
+}
+
+export interface YearOnYear {
+  /** This year so far against the same days of last year, as a fraction; null when unknown. */
+  readonly change: number | null;
+  /** The day the comparison runs to when it is not the latest reading's; null when it is. */
+  readonly to: string | null;
+}
+
+/**
+ * The front page's year-on-year figure (ADR-018, amended 2026-11-13): with RSI's counter as the
+ * latest reading, against last year to the same moment, or, where that cannot be shown, the
+ * wiki's own comparison with the day it runs to; with the wiki's snapshot as the latest, the
+ * wiki's comparison, which runs to that reading.
+ */
+export function yearOnYear(
+  series: FundingSeries,
+  measure: Measure,
+  counter: CounterReading | null,
+): YearOnYear {
+  const list = readings(series, measure);
+  if (counter === null) {
+    return { change: headline(list)?.yearToDateChange ?? null, to: null };
+  }
+  const current = sameMomentChange(series, measure, counter);
+  if (current !== null) return { change: current, to: null };
+  const days = sameDaysChange(list, Number(counter.read_at.slice(0, 4)));
+  if (days === null) return { change: null, to: null };
+  // The wiki's comparison names its day only when that is not the reading's own.
+  return {
+    change: days.change,
+    to: days.to === counter.read_at.slice(0, 10) ? null : days.to,
+  };
+}
+
+/**
+ * This year against last year, for the front page's funding card (ADR-038): the year so far, how
+ * much of last year's whole total it has reached, and the change on the same days of last year.
+ * Everything is a difference between snapshots, as on the ledger; nothing is estimated.
+ */
 export function yearAgainstLastYear(
   list: readonly Reading[],
 ): YearAgainstLastYear | null {

@@ -464,7 +464,7 @@ describe("year on year against the same moment last year (ADR-018, amended 2026-
     );
   });
 
-  it("is not shown when a few hours would move it by more than a point, as in early January", () => {
+  it("is not shown when a few hours would move it by more than five points, as in early January", () => {
     const january = at("2026-01-02T01:00:00.000Z", v("2025-12-31") + 1_000_000);
     expect(sameMomentChange(series, "pledges", january)).toBeNull();
   });

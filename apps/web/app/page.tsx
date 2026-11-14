@@ -32,6 +32,7 @@ import {
   funding,
   fundingNow,
   headline,
+  liveContext,
   type Reading,
   readings,
   yearOnYear,
@@ -58,6 +59,7 @@ import { dayTitle } from "./events/parts";
 import { FrontEvent } from "./front-event";
 import { FrontLead } from "./front-lead";
 import { FundingCard } from "./funding-now";
+import { FundingLive, Live } from "./funding-live";
 import { VideoPlayer } from "./news/videos/player";
 
 export const metadata: Metadata = {
@@ -161,6 +163,11 @@ export default function HomePage() {
   };
   const year = money === null ? null : Number(money.latest.day.slice(0, 4));
   const thisYear = yoy.pledges ?? { change: null, to: null };
+  // What the browser needs to recompute these figures from RSI's counter every minute.
+  const fundingContext =
+    snapshots === null || series === null
+      ? null
+      : liveContext(snapshots, series);
   const tally = shipTally(r.entries, concepts.length);
   // The parts people fit: thrusters and fuel intakes come with the ship (ADR-046).
   const fitted = withoutFixed(r.components, false);
@@ -198,8 +205,16 @@ export default function HomePage() {
       : [
           {
             label: `Pledged since ${firstYear(pledges)}`,
-            value: formatValue(money.latest.value, "pledges"),
-            note: `as of ${asOf(true, money.latest.day)}`,
+            value: (
+              <Live field="pledged">
+                {formatValue(money.latest.value, "pledges")}
+              </Live>
+            ),
+            note: (
+              <Live field="pledgedNote">
+                {`as of ${asOf(true, money.latest.day)}`}
+              </Live>
+            ),
             // The pledges' figures open the card on pledges, even after a reader pressed Citizens.
             href: toCard("pledges"),
           },
@@ -209,11 +224,18 @@ export default function HomePage() {
       : [
           {
             label: "Citizens",
-            value: formatValue(people.latest.value, "citizens"),
-            note:
-              people.last30 === null
-                ? "on record"
-                : `${signed(people.last30, (n) => formatCompact(n, "citizens"))} in the last 30 days`,
+            value: (
+              <Live field="citizens">
+                {formatValue(people.latest.value, "citizens")}
+              </Live>
+            ),
+            note: (
+              <Live field="citizensNote">
+                {people.last30 === null
+                  ? "on record"
+                  : `${signed(people.last30, (n) => formatCompact(n, "citizens"))} in the last 30 days`}
+              </Live>
+            ),
             // The card draws citizens too since 2026-11-11, and this opens it on them (ADR-040, amended).
             href: toCard("citizens"),
           },
@@ -223,12 +245,19 @@ export default function HomePage() {
       : [
           {
             label: "This year",
-            value: formatCompact(money.yearToDate, "pledges"),
+            value: (
+              <Live field="thisYear">
+                {formatCompact(money.yearToDate, "pledges")}
+              </Live>
+            ),
             // The day the comparison runs to, when it is not the figure's own moment.
-            note:
-              thisYear.change === null || year === null
-                ? "so far"
-                : `${formatChange(thisYear.change)} on the same days of ${year - 1}${thisYear.to === null ? "" : `, to ${formatShortDay(thisYear.to)}`}`,
+            note: (
+              <Live field="thisYearNote">
+                {thisYear.change === null || year === null
+                  ? "so far"
+                  : `${formatChange(thisYear.change)} on the same days of ${year - 1}${thisYear.to === null ? "" : `, to ${formatShortDay(thisYear.to)}`}`}
+              </Live>
+            ),
             href: toCard("pledges"),
           },
         ]),
@@ -375,202 +404,216 @@ export default function HomePage() {
 
   return (
     <Site>
-      <div className="flex flex-col gap-8 pt-8">
-        <div className="flex flex-col gap-6">
-          {/* The date alone: the builds stay in the footer's patch strip (ADR-007, one strip per page). */}
-          <p className="lab m-0 text-secondary">
-            {formatFrontDate(at)} · in the ’verse
-          </p>
-          {live !== null ? (
-            // A show on (ADR-057): its hero stands at the top of the page.
-            <FrontEvent event={live} at={at} r={r} />
-          ) : lead !== null ? (
-            // Outside a show, the lead story (ADR-058).
-            <FrontLead item={lead.lead} video={lead.video} now={at} />
-          ) : (
-            // An empty pack: the site's own words as the title.
-            <h1 className="m-0 max-w-prose text-title text-primary lg:text-display">
-              {SITE_TAGLINE}
-            </h1>
-          )}
-        </div>
-
-        <Counters counters={counters} />
-
-        <section aria-labelledby="dispatches" className="flex flex-col gap-4">
-          <RunningHead
-            id="dispatches"
-            title="Dispatches from the Verse"
-            aside={
-              <TextLink href="/news" className="text-secondary">
-                All dispatches
-              </TextLink>
-            }
-          />
-          {feed.length === 0 ? (
-            <EmptyState>
-              No dispatches yet. What CIG publishes will appear here; until
-              then, browse the <TextLink href="/ships">ships</TextLink>.
-            </EmptyState>
-          ) : (
-            <div className="flex flex-col gap-2">
-              {/* Five as a carousel with overlaid arrows, three across on a desktop (ADR-050). */}
-              <Rail label="Dispatches from the Verse">
-                {feed.map((item, i) => (
-                  <DispatchCard
-                    key={item.id}
-                    source={SOURCE_LABEL[item.source]}
-                    title={item.title}
-                    sourceUrl={item.url}
-                    publishedAt={item.published_at}
-                    now={at}
-                    excerpt={item.summary}
-                    picture={feedPictures[i] ?? null}
-                    // The page's first picture, unless a show's hero (ADR-057) or the lead story
-                    // (ADR-058) stands above it.
-                    priority={i === 0 && live === null && lead === null}
-                  />
-                ))}
-              </Rail>
-              {feedPictures.some((p) => p !== null) ? (
-                <p className="m-0 text-caption text-muted">
-                  {RSI_IMAGE_CREDIT.text}
-                </p>
-              ) : null}
-            </div>
-          )}
-        </section>
-
-        {latestVideos.length === 0 ? null : (
-          <section aria-labelledby="videos" className="flex flex-col gap-4">
-            <RunningHead
-              id="videos"
-              title="Latest videos"
-              aside={
-                <TextLink href="/news/videos" className="text-secondary">
-                  All videos
-                </TextLink>
-              }
-            />
-            <div className="flex flex-col gap-2">
-              {/* The same carousel and the same card widths as the dispatches (owner, 2026-11-11). */}
-              <Rail label="Latest videos">
-                {latestVideos.map((item) => (
-                  <VideoCard
-                    key={item.id}
-                    {...videoCard(item, at)}
-                    sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 80vw"
-                  />
-                ))}
-              </Rail>
-              <p className="m-0 text-caption text-muted">{VIDEO_CREDIT.text}</p>
-            </div>
-          </section>
-        )}
-
-        <section
-          aria-labelledby="featured"
-          data-featured-theme={spotlight.theme.kind}
-          className="flex flex-col gap-4"
-        >
-          <RunningHead
-            id="featured"
-            title="Featured vehicles and ships"
-            aside={
-              spotlight.cadence === "daily" ? "Changes daily" : "Changes weekly"
-            }
-          />
-          {themeLine === null ? null : (
-            <p className="m-0 max-w-prose text-ui text-secondary">
-              {themeLine.text}{" "}
-              <TextLink href={themeLine.href}>{themeLine.link}</TextLink>
+      <FundingLive context={fundingContext}>
+        <div className="flex flex-col gap-8 pt-8">
+          <div className="flex flex-col gap-6">
+            {/* The date alone: the builds stay in the footer's patch strip (ADR-007, one strip per page). */}
+            <p className="lab m-0 text-secondary">
+              {formatFrontDate(at)} · in the ’verse
             </p>
-          )}
-          <Bento cards={plates} />
-          <RegisterLink count={shipsOnRecord} />
-        </section>
+            {live !== null ? (
+              // A show on (ADR-057): its hero stands at the top of the page.
+              <FrontEvent event={live} at={at} r={r} />
+            ) : lead !== null ? (
+              // Outside a show, the lead story (ADR-058).
+              <FrontLead item={lead.lead} video={lead.video} now={at} />
+            ) : (
+              // An empty pack: the site's own words as the title.
+              <h1 className="m-0 max-w-prose text-title text-primary lg:text-display">
+                {SITE_TAGLINE}
+              </h1>
+            )}
+          </div>
 
-        {devOn ? (
-          <section aria-labelledby="developers" className="flex flex-col gap-4">
+          <Counters counters={counters} />
+
+          <section aria-labelledby="dispatches" className="flex flex-col gap-4">
             <RunningHead
-              id="developers"
-              title="Developer gold posts"
+              id="dispatches"
+              title="Dispatches from the Verse"
               aside={
-                <TextLink href="/news/dev" className="text-secondary">
-                  All developer gold posts
+                <TextLink href="/news" className="text-secondary">
+                  All dispatches
                 </TextLink>
               }
             />
-            {featured.length === 0 ? (
+            {feed.length === 0 ? (
               <EmptyState>
-                No developer gold posts yet. The tracker has not read Spectrum.
+                No dispatches yet. What CIG publishes will appear here; until
+                then, browse the <TextLink href="/ships">ships</TextLink>.
               </EmptyState>
             ) : (
-              <Rail label="Developer gold posts">
-                {featured.map((post) => {
-                  const who = authorOf(post, r.authors);
-                  return (
-                    <DevPostCard
-                      key={post.id}
-                      title={post.thread_title ?? post.title}
-                      author={
-                        who === undefined
-                          ? { name: "CIG staff", role: null }
-                          : {
-                              name: who.display_name,
-                              role: who.role,
-                              href: `/news/dev/${encodeURIComponent(who.handle)}`,
-                            }
-                      }
-                      publishedAt={post.published_at}
+              <div className="flex flex-col gap-2">
+                {/* Five as a carousel with overlaid arrows, three across on a desktop (ADR-050). */}
+                <Rail label="Dispatches from the Verse">
+                  {feed.map((item, i) => (
+                    <DispatchCard
+                      key={item.id}
+                      source={SOURCE_LABEL[item.source]}
+                      title={item.title}
+                      sourceUrl={item.url}
+                      publishedAt={item.published_at}
                       now={at}
-                      excerpt={excerptOf(post.body_html)}
-                      sourceUrl={post.url}
-                      threadUrl={threadUrl(post)}
+                      excerpt={item.summary}
+                      picture={feedPictures[i] ?? null}
+                      // The page's first picture, unless a show's hero (ADR-057) or the lead story
+                      // (ADR-058) stands above it.
+                      priority={i === 0 && live === null && lead === null}
                     />
-                  );
-                })}
-              </Rail>
+                  ))}
+                </Rail>
+                {feedPictures.some((p) => p !== null) ? (
+                  <p className="m-0 text-caption text-muted">
+                    {RSI_IMAGE_CREDIT.text}
+                  </p>
+                ) : null}
+              </div>
             )}
           </section>
-        ) : null}
 
-        {series === null || cardMeasures.length === 0 ? null : (
+          {latestVideos.length === 0 ? null : (
+            <section aria-labelledby="videos" className="flex flex-col gap-4">
+              <RunningHead
+                id="videos"
+                title="Latest videos"
+                aside={
+                  <TextLink href="/news/videos" className="text-secondary">
+                    All videos
+                  </TextLink>
+                }
+              />
+              <div className="flex flex-col gap-2">
+                {/* The same carousel and the same card widths as the dispatches (owner, 2026-11-11). */}
+                <Rail label="Latest videos">
+                  {latestVideos.map((item) => (
+                    <VideoCard
+                      key={item.id}
+                      {...videoCard(item, at)}
+                      sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 80vw"
+                    />
+                  ))}
+                </Rail>
+                <p className="m-0 text-caption text-muted">
+                  {VIDEO_CREDIT.text}
+                </p>
+              </div>
+            </section>
+          )}
+
           <section
-            aria-labelledby="funding"
-            className="flex scroll-mt-8 flex-col gap-4"
+            aria-labelledby="featured"
+            data-featured-theme={spotlight.theme.kind}
+            className="flex flex-col gap-4"
           >
             <RunningHead
-              id="funding"
-              title="Funding this year"
+              id="featured"
+              title="Featured vehicles and ships"
               aside={
-                money === null
-                  ? undefined
-                  : `as of ${asOf(false, money.latest.day)}`
+                spotlight.cadence === "daily"
+                  ? "Changes daily"
+                  : "Changes weekly"
               }
             />
-            <FundingCard anchor="funding" measures={cardMeasures} />
-            {/* The ledger's sources line, now the card's (ADR-040); the wiki's credit is in every footer. */}
-            <p className="m-0 max-w-prose text-caption text-secondary">
-              Daily snapshots of RSI&apos;s counter on{" "}
-              <TextLink href={series.source.origin_url} external>
-                robertsspaceindustries.com
-              </TextLink>
-              , as recorded by the{" "}
-              <TextLink href={WIKI_CREDIT.url} external>
-                Star Citizen Wiki API
-              </TextLink>
-              ; copied {formatDay(series.source.fetched_at.slice(0, 10))}.
-              {counter === null
-                ? null
-                : ` The latest figures are RSI's counter itself, read ${formatReadAt(counter.read_at)}; it is read about once an hour.`}{" "}
-              Months, years and comparisons are differences between snapshots;
-              where the API has none within three days of a period&apos;s ends,
-              the period is left blank rather than estimated.
-            </p>
+            {themeLine === null ? null : (
+              <p className="m-0 max-w-prose text-ui text-secondary">
+                {themeLine.text}{" "}
+                <TextLink href={themeLine.href}>{themeLine.link}</TextLink>
+              </p>
+            )}
+            <Bento cards={plates} />
+            <RegisterLink count={shipsOnRecord} />
           </section>
-        )}
-      </div>
+
+          {devOn ? (
+            <section
+              aria-labelledby="developers"
+              className="flex flex-col gap-4"
+            >
+              <RunningHead
+                id="developers"
+                title="Developer gold posts"
+                aside={
+                  <TextLink href="/news/dev" className="text-secondary">
+                    All developer gold posts
+                  </TextLink>
+                }
+              />
+              {featured.length === 0 ? (
+                <EmptyState>
+                  No developer gold posts yet. The tracker has not read
+                  Spectrum.
+                </EmptyState>
+              ) : (
+                <Rail label="Developer gold posts">
+                  {featured.map((post) => {
+                    const who = authorOf(post, r.authors);
+                    return (
+                      <DevPostCard
+                        key={post.id}
+                        title={post.thread_title ?? post.title}
+                        author={
+                          who === undefined
+                            ? { name: "CIG staff", role: null }
+                            : {
+                                name: who.display_name,
+                                role: who.role,
+                                href: `/news/dev/${encodeURIComponent(who.handle)}`,
+                              }
+                        }
+                        publishedAt={post.published_at}
+                        now={at}
+                        excerpt={excerptOf(post.body_html)}
+                        sourceUrl={post.url}
+                        threadUrl={threadUrl(post)}
+                      />
+                    );
+                  })}
+                </Rail>
+              )}
+            </section>
+          ) : null}
+
+          {series === null || cardMeasures.length === 0 ? null : (
+            <section
+              aria-labelledby="funding"
+              className="flex scroll-mt-8 flex-col gap-4"
+            >
+              <RunningHead
+                id="funding"
+                title="Funding this year"
+                aside={
+                  money === null ? undefined : (
+                    <Live field="head">
+                      {`as of ${asOf(false, money.latest.day)}`}
+                    </Live>
+                  )
+                }
+              />
+              <FundingCard anchor="funding" measures={cardMeasures} />
+              {/* The ledger's sources line, now the card's (ADR-040); the wiki's credit is in every footer. */}
+              <p className="m-0 max-w-prose text-caption text-secondary">
+                Daily snapshots of RSI&apos;s counter on{" "}
+                <TextLink href={series.source.origin_url} external>
+                  robertsspaceindustries.com
+                </TextLink>
+                , as recorded by the{" "}
+                <TextLink href={WIKI_CREDIT.url} external>
+                  Star Citizen Wiki API
+                </TextLink>
+                ; copied {formatDay(series.source.fetched_at.slice(0, 10))}.
+                <Live field="readAtSentence">
+                  {counter === null
+                    ? null
+                    : ` The latest figures are RSI's counter itself, read ${formatReadAt(counter.read_at)}; it is read about once an hour.`}
+                </Live>{" "}
+                Months, years and comparisons are differences between snapshots;
+                where the API has none within three days of a period&apos;s
+                ends, the period is left blank rather than estimated.
+              </p>
+            </section>
+          )}
+        </div>
+      </FundingLive>
       {latestVideos.length === 0 ? null : <VideoPlayer />}
     </Site>
   );

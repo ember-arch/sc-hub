@@ -17,6 +17,7 @@ import {
 } from "../lib/funding";
 import { Frame, H, W, YearVsYear, pct } from "./funding-charts";
 import { FigureStrip } from "./strip";
+import { Live } from "./funding-live";
 import { FundingToggle } from "./funding-toggle";
 
 /**
@@ -88,15 +89,31 @@ function fundingParts(
         measure === "pledges"
           ? `Pledged in ${year} so far`
           : `Citizens gained in ${year} so far`,
-      value: yearToDate === null ? "unknown" : formatValue(yearToDate, measure),
-      short:
-        yearToDate === null ? "unknown" : formatCompact(yearToDate, measure),
-      note: `to ${formatDayShort(latest.day)}`,
+      // Each text in a live slot: RSI's counter, read in the browser every minute, replaces it
+      // (ADR-018, amended 2026-11-13).
+      value: (
+        <Live field={`${measure}.ytd`}>
+          {yearToDate === null ? "unknown" : formatValue(yearToDate, measure)}
+        </Live>
+      ),
+      short: (
+        <Live field={`${measure}.ytdShort`}>
+          {yearToDate === null ? "unknown" : formatCompact(yearToDate, measure)}
+        </Live>
+      ),
+      note: (
+        <Live field={`${measure}.ytdNote`}>
+          {`to ${formatDayShort(latest.day)}`}
+        </Live>
+      ),
     },
     {
       label: `Of ${year - 1}'s total`,
-      value:
-        shareOfLastYear === null ? "unknown" : formatShare(shareOfLastYear),
+      value: (
+        <Live field={`${measure}.share`}>
+          {shareOfLastYear === null ? "unknown" : formatShare(shareOfLastYear)}
+        </Live>
+      ),
       note:
         lastYearTotal === null
           ? "last year's total is unknown"
@@ -104,8 +121,12 @@ function fundingParts(
     },
     {
       label: "Year on year",
-      value: change === null ? "unknown" : formatChange(change),
-      note: sameDaysNote,
+      value: (
+        <Live field={`${measure}.yoy`}>
+          {change === null ? "unknown" : formatChange(change)}
+        </Live>
+      ),
+      note: <Live field={`${measure}.yoyNote`}>{sameDaysNote}</Live>,
     },
   ];
   return {

@@ -19,9 +19,9 @@ Environment variables on the project (none is a secret; `vercel env ls` shows th
 | Variable | Production | Preview | Why |
 | --- | --- | --- | --- |
 | `SITE_URL` | `https://coppercork.com` | unset | Canonicals, sitemap and Open Graph (CLAUDE.md section 9). A preview resolves the production URL Vercel injects, see `apps/web/lib/seo.ts` |
-| `SC_HUB_CONTACT_EMAIL` | `ventures@coppercork.com` | same | The project's contact address (ADR-015, ADR-023). Nothing in `apps/web` reads it; set so the deployment carries it like every other runtime |
+| `SC_HUB_CONTACT_EMAIL` | `ventures@coppercork.com` | same | The project's contact address (ADR-015, ADR-023). The live funding route (`/api/funding/live`, ADR-018 amended 2026-11-13) sends it to RSI in its User-Agent and asks RSI nothing without it |
 | `SPECTRUM_MODE` | `poll` | same | Turns the developer-post tab on (ADR-027); the box in `docs/legal/cig-approval.md` is ticked |
-| `NEXT_TELEMETRY_DISABLED` | `1` | same | No network from the build beyond the registry, as in CI |
+| `NEXT_TELEMETRY_DISABLED` | `1` | same | No network from the build beyond the registry and, once per build, RSI's funding counter for the live route (ADR-018, amended 2026-11-13); CI's build has no contact address and asks RSI nothing |
 | `ENABLE_EXPERIMENTAL_COREPACK` | `1` | same | Vercel then honours `packageManager: pnpm@12.18.0`; the lockfile is version 9.0, which Vercel would otherwise install with an older pnpm that does not know `allowBuilds` in `pnpm-workspace.yaml` |
 | `CDN_BASE_URL` | `https://eieovaxp8q6yustn.public.blob.vercel-storage.com` | same | The Blob store's public address (ADR-034, `docs/runbooks/media.md`): the build fetches `manifest.json` from it and every picture and model loads from it. Set on 2026-11-10, after the store existed and before the first publish; the site code before ADR-034 ignores it, and the code from ADR-034 on fails the build when the manifest is missing, so the first publish must precede the first deploy of that code |
 

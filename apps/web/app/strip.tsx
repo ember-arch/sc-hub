@@ -9,9 +9,9 @@ import type { ReactNode } from "react";
 
 export interface Figure {
   readonly label: string;
-  readonly value: string;
+  readonly value: ReactNode;
   /** A shorter form of the value for phones, where the full one would not fit. */
-  readonly short?: string | undefined;
+  readonly short?: ReactNode;
   readonly note?: ReactNode;
   readonly href?: string | undefined;
 }

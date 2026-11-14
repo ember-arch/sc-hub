@@ -86,7 +86,9 @@ export default function AboutPage() {
               <TextLink href="/#funding">
                 front page&apos;s funding card
               </TextLink>{" "}
-              reads RSI&apos;s counter through the Star Citizen Wiki API.
+              reads RSI&apos;s counter day by day through the Star Citizen Wiki
+              API, and its latest figures from RSI&apos;s counter itself, about
+              once an hour.
             </li>
             <li>
               <TextLink href={UEX_CREDIT.url} external>

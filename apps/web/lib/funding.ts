@@ -1,16 +1,21 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
+  type CounterReading,
+  type FundingCounter,
+  FundingCounter as FundingCounterSchema,
   type FundingSeries,
   FundingSeries as FundingSeriesSchema,
+  type FundingSnapshot,
 } from "schema";
 import { REPO_ROOT } from "./data";
 
 /**
  * The funding figures (ADR-018, drawn on the front page since ADR-040), all computed from RSI's
- * cumulative counters as the wiki API recorded them, one snapshot a day. Pure functions over the
- * series, unit-tested on the committed fixture. A month or year is reported only when a snapshot
- * exists close enough to both of its ends; otherwise it is "unknown", never estimated.
+ * cumulative counters as the wiki API recorded them, one snapshot a day, and, after them, RSI's
+ * counter as last read from RSI itself (amended 2026-11-13). Pure functions over the series,
+ * unit-tested on the committed fixture. A month or year is reported only when a snapshot exists
+ * close enough to both of its ends; otherwise it is "unknown", never estimated.
  */
 
 export const FUNDING_FILE = join(
@@ -32,6 +37,77 @@ let cached: FundingSeries | null | undefined;
 export function funding(): FundingSeries | null {
   if (cached === undefined) cached = loadFunding();
   return cached;
+}
+
+export const COUNTER_FILE = join(
+  REPO_ROOT,
+  "fixtures",
+  "funding",
+  "Counter.json",
+);
+
+export function loadCounter(): FundingCounter | null {
+  if (!existsSync(COUNTER_FILE)) return null;
+  return FundingCounterSchema.parse(
+    JSON.parse(readFileSync(COUNTER_FILE, "utf8")),
+  );
+}
+
+const snapshotOf = (r: CounterReading): FundingSnapshot => ({
+  day: r.read_at.slice(0, 10),
+  recorded_at: r.read_at,
+  funds_usd: r.funds_usd,
+  citizens: r.citizens,
+});
+
+/**
+ * The series with RSI's counter after its snapshots, when the counter was read after the last of
+ * them (ADR-018, amended 2026-11-13). The latest reading stands as its UTC day's snapshot, the
+ * day's latest reading, so it takes the place of the wiki's own snapshot of that day. The counter's
+ * last reading of an earlier day stands for a day between the two, the one the wiki recorded at
+ * 20:00 UTC and the daily refresh has not copied yet, so between midnight and the refresh no month
+ * or year closes on the day before its last; it never takes the place of a day the wiki has.
+ * `counter` is the reading when it was used, null when the wiki's last snapshot is the latest.
+ */
+export function withCounter(
+  series: FundingSeries,
+  counter: FundingCounter | null,
+): { readonly series: FundingSeries; readonly counter: FundingCounter | null } {
+  const last = series.snapshots.at(-1);
+  if (
+    counter === null ||
+    last === undefined ||
+    !(Date.parse(counter.read_at) > Date.parse(last.recorded_at))
+  ) {
+    return { series, counter: null };
+  }
+  const latest = snapshotOf(counter);
+  const before =
+    counter.previous_day === null ? null : snapshotOf(counter.previous_day);
+  const rows = [...series.snapshots];
+  if (before !== null && before.day > last.day && before.day < latest.day) {
+    rows.push(before);
+  }
+  if (rows.at(-1)?.day === latest.day) rows[rows.length - 1] = latest;
+  else rows.push(latest);
+  return { series: { ...series, snapshots: rows }, counter };
+}
+
+let cachedNow:
+  | { readonly series: FundingSeries; readonly counter: FundingCounter | null }
+  | null
+  | undefined;
+
+/** The front page's funding: the wiki's daily snapshots and, when it is newer, RSI's counter. */
+export function fundingNow(): {
+  readonly series: FundingSeries;
+  readonly counter: FundingCounter | null;
+} | null {
+  if (cachedNow === undefined) {
+    const series = funding();
+    cachedNow = series === null ? null : withCounter(series, loadCounter());
+  }
+  return cachedNow;
 }
 
 export const MEASURES = ["pledges", "citizens"] as const;
@@ -306,6 +382,15 @@ export function formatDay(day: string): string {
   return longDay.format(new Date(`${day}T00:00:00Z`));
 }
 
+/** "14 November 2026, 01:28 UTC", or "14 Nov, 01:28 UTC" when short: a counter reading's time. */
+export function formatReadAt(iso: string, short = false): string {
+  const day = iso.slice(0, 10);
+  const time = `${iso.slice(11, 16)} UTC`;
+  if (!short) return `${formatDay(day)}, ${time}`;
+  const month = MONTHS[Number(day.slice(5, 7)) - 1] ?? "";
+  return `${Number(day.slice(8, 10))} ${month}, ${time}`;
+}
+
 export interface YearAgainstLastYear {
   readonly year: number;
   /** Added this calendar year so far; null when last year's end is unknown. */
@@ -323,6 +408,24 @@ export interface YearAgainstLastYear {
  * much of last year's whole total it has reached, and the change on the same days of last year.
  * Everything is a difference between snapshots, as on the ledger; nothing is estimated.
  */
+/**
+ * This year against the same days of last year, from the wiki's snapshots alone (ADR-018, amended
+ * 2026-11-13): the wiki reads RSI's counter at 20:00 UTC every day, so both years end on the same
+ * hour, where the counter's reading of the last hour would set part of a day against a whole one.
+ * Null when the snapshots' latest day is in another year than `year` (the first hours of a year,
+ * before the refresh copies its first snapshot), so the comparison never crosses a year.
+ */
+export function sameDaysChange(
+  snapshots: readonly Reading[],
+  year: number,
+): { readonly change: number | null; readonly to: string } | null {
+  const head = headline(snapshots);
+  if (head === null || Number(head.latest.day.slice(0, 4)) !== year) {
+    return null;
+  }
+  return { change: head.yearToDateChange, to: head.latest.day };
+}
+
 export function yearAgainstLastYear(
   list: readonly Reading[],
 ): YearAgainstLastYear | null {

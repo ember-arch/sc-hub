@@ -1,4 +1,4 @@
-import { mkdirSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { expect, test } from "@playwright/test";
@@ -172,6 +172,61 @@ test("the ledger's old address lands on the home's funding card, which the count
   expect(citizens.headers()["location"]).toMatch(/#funding-citizens$/);
 });
 
+// RSI's own counter as last read, and the wiki's last daily snapshot (ADR-018, amended 2026-11-13).
+const fundingDir = join(
+  dirname(fileURLToPath(import.meta.url)),
+  "../../../fixtures/funding",
+);
+// Without a reading on file the page is as it was, and so is this test's expectation.
+const rsiCounter = existsSync(join(fundingDir, "Counter.json"))
+  ? (JSON.parse(readFileSync(join(fundingDir, "Counter.json"), "utf8")) as {
+      read_at: string;
+      funds_usd: number;
+    })
+  : null;
+const lastSnapshot = (
+  JSON.parse(readFileSync(join(fundingDir, "Funding.json"), "utf8")) as {
+    snapshots: { recorded_at: string }[];
+  }
+).snapshots.at(-1)!;
+const counterUsed =
+  rsiCounter !== null &&
+  Date.parse(rsiCounter.read_at) > Date.parse(lastSnapshot.recorded_at);
+
+test("the latest funding figures are RSI's own counter, with the time it was read, when it is newer than the wiki's last snapshot (ADR-018, amended)", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const pledged = page.locator("dl div", { hasText: /^Pledged since/ });
+  const section = page.locator("section[aria-labelledby=funding]");
+  const sources = section.locator("p", { hasText: /^Daily snapshots/ });
+  if (!counterUsed || rsiCounter === null) {
+    await expect(pledged).toContainText(/as of \d+ \w+ \d{4}$/);
+    await expect(sources).not.toContainText("RSI's counter itself");
+    return;
+  }
+  // Year on year stays on the wiki's snapshots, and says to which day when that is not today's.
+  const pledgesPanel = section.locator("[data-measure=pledges]");
+  await expect(
+    pledgesPanel.getByText(/^(to \d+ \w{3}, )?on the same days of \d{4}$/),
+  ).toBeVisible();
+  const hhmm = rsiCounter.read_at.slice(11, 16);
+  // The figure is RSI's, to the dollar, and the notes give the hour it was read.
+  const dollars = Math.round(rsiCounter.funds_usd).toLocaleString("en-US");
+  await expect(pledged).toContainText(`$${dollars}`);
+  await expect(pledged).toContainText(
+    new RegExp(`as of \\d+ \\w{3}, ${hhmm} UTC$`),
+  );
+  await expect(section.getByText(/^as of /)).toHaveText(
+    new RegExp(`^as of \\d+ \\w+ \\d{4}, ${hhmm} UTC$`),
+  );
+  await expect(sources).toContainText(
+    new RegExp(
+      `The latest figures are RSI.s counter itself, read \\d+ \\w+ \\d{4}, ${hhmm} UTC; it is read about once an hour\\.`,
+    ),
+  );
+});
+
 test("the counters open the funding card on their own measure, with its running head in view (ADR-040, amended)", async ({
   page,
 }) => {
@@ -275,7 +330,10 @@ test("the funding card shows the year's three figures and toggles between the tw
   await expect(shown.getByText(/^Pledged in \d{4} so far$/)).toBeVisible();
   await expect(shown.getByText(/^Of \d{4}'s total$/)).toBeVisible();
   await expect(shown.getByText("Year on year")).toBeVisible();
-  await expect(section.getByText(/^as of \d+ \w+ \d{4}$/)).toBeVisible();
+  // The day, and the hour when the latest reading is RSI's own counter (ADR-018, amended 2026-11-13).
+  await expect(
+    section.getByText(/^as of \d+ \w+ \d{4}(, \d{2}:\d{2} UTC)?$/),
+  ).toBeVisible();
   await expect(
     section.getByRole("link", { name: "Star Citizen Wiki API" }),
   ).toBeVisible();

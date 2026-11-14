@@ -1,0 +1,11 @@
+{
+  "source": {
+    "name": "RSI",
+    "url": "https://robertsspaceindustries.com/api/stats/getCrowdfundStats",
+    "origin_url": "https://robertsspaceindustries.com/funding-goals"
+  },
+  "read_at": "2026-11-14T01:52:29.056Z",
+  "funds_usd": 1064815395.65,
+  "citizens": 6759993,
+  "previous_day": null
+}

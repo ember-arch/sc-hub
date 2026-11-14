@@ -3,11 +3,15 @@ import {
   type Reading,
   formatChange,
   formatCompact,
+  formatReadAt,
   headline,
+  loadCounter,
   loadFunding,
   readingAt,
   readings,
+  sameDaysChange,
   sameDayPriorYear,
+  withCounter,
   yearPaths,
   yearRows,
 } from "../lib/funding";
@@ -278,5 +282,145 @@ describe("citizens on the front page's card (ADR-040, amended 2026-11-11)", () =
     const pairs = monthPairs(yearRows(citizens), latestDay);
     expect(pairs).toHaveLength(Number(latestDay.slice(5, 7)));
     expect(pairs.some((p) => p.change !== null)).toBe(true);
+  });
+});
+
+describe("RSI's own counter after the wiki's snapshots (ADR-018, amended 2026-11-13)", () => {
+  const last = series.snapshots.at(-1)!;
+  const reading = (iso: string, funds: number, citizens: number) => ({
+    read_at: iso,
+    funds_usd: funds,
+    citizens,
+  });
+  const counterAt = (
+    iso: string,
+    funds: number,
+    citizens: number,
+    previous_day: ReturnType<typeof reading> | null = null,
+  ) => ({
+    source: {
+      name: "RSI" as const,
+      url: "https://robertsspaceindustries.com/api/stats/getCrowdfundStats",
+      origin_url: "https://robertsspaceindustries.com/funding-goals",
+    },
+    ...reading(iso, funds, citizens),
+    previous_day,
+  });
+  const dayAfter = (day: string, n = 1): string =>
+    new Date(Date.parse(day) + n * 86_400_000).toISOString().slice(0, 10);
+  const lastCitizens = last.citizens ?? 0;
+
+  it("loads the committed reading", () => {
+    const counter = loadCounter();
+    expect(counter).not.toBeNull();
+    expect(counter?.source.name).toBe("RSI");
+  });
+
+  it("stands as the next day's snapshot when read on the day after the wiki's last", () => {
+    const day = dayAfter(last.day);
+    const c = counterAt(
+      `${day}T01:28:33.491Z`,
+      last.funds_usd + 5000,
+      lastCitizens + 7,
+    );
+    const { series: out, counter } = withCounter(series, c);
+    expect(counter).toBe(c);
+    expect(out.snapshots).toHaveLength(series.snapshots.length + 1);
+    expect(out.snapshots.at(-1)).toEqual({
+      day,
+      recorded_at: c.read_at,
+      funds_usd: c.funds_usd,
+      citizens: c.citizens,
+    });
+    expect(headline(readings(out, "pledges"))?.latest).toEqual({
+      day,
+      value: c.funds_usd,
+    });
+    // The wiki's own series is left as it was.
+    expect(series.snapshots.at(-1)).toBe(last);
+  });
+
+  it("takes the place of the wiki's snapshot of the same day when read later that day", () => {
+    const c = counterAt(
+      `${last.day}T23:30:00.000Z`,
+      last.funds_usd + 10,
+      lastCitizens,
+    );
+    const { series: out, counter } = withCounter(series, c);
+    expect(counter).toBe(c);
+    expect(out.snapshots).toHaveLength(series.snapshots.length);
+    expect(out.snapshots.at(-1)?.recorded_at).toBe(c.read_at);
+    expect(out.snapshots.at(-2)).toBe(series.snapshots.at(-2));
+  });
+
+  it("fills the day the wiki has recorded but the refresh has not copied with the earlier day's reading", () => {
+    // Between midnight and the morning refresh: the wiki's copy ends two days before the reading.
+    const missing = dayAfter(last.day);
+    const today = dayAfter(last.day, 2);
+    const evening = reading(
+      `${missing}T23:37:00.000Z`,
+      last.funds_usd + 900,
+      lastCitizens + 3,
+    );
+    const c = counterAt(
+      `${today}T00:07:00.000Z`,
+      last.funds_usd + 950,
+      lastCitizens + 4,
+      evening,
+    );
+    const { series: out } = withCounter(series, c);
+    expect(out.snapshots.map((s) => s.day).slice(-3)).toEqual([
+      last.day,
+      missing,
+      today,
+    ]);
+    expect(out.snapshots.at(-2)?.recorded_at).toBe(evening.read_at);
+    // A month that ends on the missing day closes on its own last day, not the one before.
+    const pledgesOut = readings(out, "pledges");
+    expect(readingAt(pledgesOut, missing)?.day).toBe(missing);
+  });
+
+  it("never puts the earlier day's reading in the place of a day the wiki has", () => {
+    const today = dayAfter(last.day);
+    const evening = reading(
+      `${last.day}T23:37:00.000Z`,
+      last.funds_usd + 900,
+      lastCitizens + 3,
+    );
+    const c = counterAt(
+      `${today}T00:07:00.000Z`,
+      last.funds_usd + 950,
+      lastCitizens + 4,
+      evening,
+    );
+    const { series: out } = withCounter(series, c);
+    expect(out.snapshots.at(-2)).toBe(last);
+    expect(out.snapshots.at(-1)?.day).toBe(today);
+  });
+
+  it("is left out when the wiki's last snapshot is as new or newer, or when there is none", () => {
+    const older = counterAt(last.recorded_at, last.funds_usd - 1, lastCitizens);
+    expect(withCounter(series, older)).toEqual({ series, counter: null });
+    expect(withCounter(series, null)).toEqual({ series, counter: null });
+  });
+
+  it("compares with last year on the wiki's snapshots alone, within one year", () => {
+    const year = Number(last.day.slice(0, 4));
+    const fromWiki = sameDaysChange(pledges, year);
+    expect(fromWiki).toEqual({
+      change: headline(pledges)?.yearToDateChange ?? null,
+      to: last.day,
+    });
+    // The first hours of a year, before its first snapshot is copied: no comparison.
+    expect(sameDaysChange(pledges, year + 1)).toBeNull();
+  });
+
+  it("formats a reading's time, long and short", () => {
+    expect(formatReadAt("2026-11-14T01:28:33.491Z")).toBe(
+      "14 November 2026, 01:28 UTC",
+    );
+    expect(formatReadAt("2026-11-14T01:28:33.491Z", true)).toBe(
+      "14 Nov, 01:28 UTC",
+    );
   });
 });

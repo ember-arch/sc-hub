@@ -7,9 +7,10 @@ import {
   formatChange,
   formatCompact,
   formatShare,
+  formatShortDay,
   formatValue,
   monthPairs,
-  sameDaysChange,
+  type YearOnYear,
   yearAgainstLastYear,
   yearPaths,
   yearRows,
@@ -35,14 +36,14 @@ export function FundingCard({
     readonly measure: Measure;
     readonly list: readonly Reading[];
     /**
-     * The wiki's snapshots alone, for "Year on year" (ADR-018, amended 2026-11-13), when `list`
-     * ends on RSI's counter; the comparison is `list`'s own when absent.
+     * "Year on year" when `list` ends on RSI's counter (`yearOnYear`, ADR-018, amended
+     * 2026-11-13); the comparison is `list`'s own when absent.
      */
-    readonly snapshots?: readonly Reading[] | undefined;
+    readonly yearOnYear?: YearOnYear | undefined;
   }[];
 }) {
-  const parts = measures.flatMap(({ measure, list, snapshots }) => {
-    const p = fundingParts(list, measure, snapshots);
+  const parts = measures.flatMap(({ measure, list, yearOnYear }) => {
+    const p = fundingParts(list, measure, yearOnYear);
     return p === null
       ? []
       : [{ id: measure, label: MEASURE_LABEL[measure], ...p }];
@@ -65,23 +66,19 @@ const VIEWS = [
 function fundingParts(
   list: readonly Reading[],
   measure: Measure,
-  snapshots: readonly Reading[] | undefined,
+  given: YearOnYear | undefined,
 ): { figures: ReactNode; content: Record<string, ReactNode> } | null {
   const against = yearAgainstLastYear(list);
   const latest = list.at(-1);
   if (against === null || latest === undefined) return null;
   const { year, yearToDate, shareOfLastYear, lastYearTotal } = against;
-  // Year on year from the wiki's snapshots when the list ends on RSI's counter, so both years end
-  // on 20:00 UTC; the note names the day it runs to when that is not the list's latest.
-  const sameDays =
-    snapshots === undefined
-      ? { change: against.change, to: latest.day }
-      : sameDaysChange(snapshots, year);
-  const change = sameDays?.change ?? null;
+  // With RSI's counter as the latest reading, against last year to the same moment, or the wiki's
+  // comparison with the day it runs to (ADR-018, amended 2026-11-13).
+  const { change, to } = given ?? { change: against.change, to: null };
   const sameDaysNote =
-    sameDays === null || sameDays.to === latest.day
+    to === null || to === latest.day
       ? `on the same days of ${year - 1}`
-      : `to ${formatDayShort(sameDays.to)}, on the same days of ${year - 1}`;
+      : `to ${formatDayShort(to)}, on the same days of ${year - 1}`;
   const rows = yearRows(list);
   const pairs = monthPairs(rows, latest.day);
   const paths = yearPaths(list, [year, year - 1]);
@@ -134,16 +131,11 @@ function fundingParts(
   };
 }
 
-const shortDay = new Intl.DateTimeFormat("en-GB", {
-  day: "numeric",
-  month: "short",
-  timeZone: "UTC",
-});
-
-/** "9 Nov": the latest reading's day, short enough for a figure's note. */
-function formatDayShort(day: string): string {
-  return shortDay.format(new Date(`${day}T00:00:00Z`));
-}
+/**
+ * "9 Nov": the latest reading's day, short enough for a figure's note. The same three-letter months
+ * as the front page's counters ("12 Sep", where Intl's en-GB gives "12 Sept").
+ */
+const formatDayShort = formatShortDay;
 
 /**
  * Each month so far as a pair of bars on the ledger's graph paper: last year's month in the ink's

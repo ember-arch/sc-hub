@@ -27,13 +27,14 @@ import {
   formatCompact,
   formatDay,
   formatReadAt,
+  formatShortDay,
   formatValue,
   funding,
   fundingNow,
   headline,
   type Reading,
   readings,
-  sameDaysChange,
+  yearOnYear,
 } from "../lib/funding";
 import { dayLabel, frontEvent, leadDay, shortTitle } from "../lib/events";
 import { media, shipCardImage } from "../lib/media";
@@ -148,18 +149,18 @@ export default function HomePage() {
   const money = pledges === null ? null : headline(pledges);
   const citizens = series === null ? null : readings(series, "citizens");
   const people = citizens === null ? null : headline(citizens);
-  // Year on year from the wiki's snapshots alone while the series ends on RSI's counter, so both
-  // years end on the same hour (ADR-018, amended 2026-11-13).
-  const snapshots = counter === null ? null : funding();
-  const wikiOf = (measure: "pledges" | "citizens") =>
-    snapshots === null ? undefined : readings(snapshots, measure);
+  // Year on year, one rule for the top figure and the card (ADR-018, amended 2026-11-13): with
+  // RSI's counter as the latest reading, against last year over the same time, or the wiki's
+  // comparison with the day it runs to; otherwise the wiki's own.
+  const snapshots = funding();
+  const yoy = {
+    pledges:
+      snapshots === null ? null : yearOnYear(snapshots, "pledges", counter),
+    citizens:
+      snapshots === null ? null : yearOnYear(snapshots, "citizens", counter),
+  };
   const year = money === null ? null : Number(money.latest.day.slice(0, 4));
-  const thisYearChange =
-    money === null || year === null
-      ? null
-      : counter === null
-        ? money.yearToDateChange
-        : (sameDaysChange(wikiOf("pledges") ?? [], year)?.change ?? null);
+  const thisYear = yoy.pledges ?? { change: null, to: null };
   const tally = shipTally(r.entries, concepts.length);
   // The parts people fit: thrusters and fuel intakes come with the ship (ADR-046).
   const fitted = withoutFixed(r.components, false);
@@ -173,7 +174,7 @@ export default function HomePage() {
           {
             measure: "pledges" as const,
             list: pledges,
-            snapshots: wikiOf("pledges"),
+            yearOnYear: yoy.pledges ?? undefined,
           },
           ...(citizens === null || citizens.length < 2
             ? []
@@ -181,7 +182,7 @@ export default function HomePage() {
                 {
                   measure: "citizens" as const,
                   list: citizens,
-                  snapshots: wikiOf("citizens"),
+                  yearOnYear: yoy.citizens ?? undefined,
                 },
               ]),
         ];
@@ -223,10 +224,11 @@ export default function HomePage() {
           {
             label: "This year",
             value: formatCompact(money.yearToDate, "pledges"),
+            // The day the comparison runs to, when it is not the figure's own moment.
             note:
-              thisYearChange === null || year === null
+              thisYear.change === null || year === null
                 ? "so far"
-                : `${formatChange(thisYearChange)} on the same days of ${year - 1}`,
+                : `${formatChange(thisYear.change)} on the same days of ${year - 1}${thisYear.to === null ? "" : `, to ${formatShortDay(thisYear.to)}`}`,
             href: toCard("pledges"),
           },
         ]),

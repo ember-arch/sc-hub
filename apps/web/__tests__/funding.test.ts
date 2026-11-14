@@ -1,17 +1,21 @@
+import type { FundingSnapshot } from "schema";
 import { describe, expect, it } from "vitest";
 import {
   type Reading,
   formatChange,
   formatCompact,
   formatReadAt,
+  formatShortDay,
   headline,
   loadCounter,
   loadFunding,
   readingAt,
   readings,
   sameDaysChange,
+  sameMomentChange,
   sameDayPriorYear,
   withCounter,
+  yearOnYear,
   yearPaths,
   yearRows,
 } from "../lib/funding";
@@ -422,5 +426,137 @@ describe("RSI's own counter after the wiki's snapshots (ADR-018, amended 2026-11
     expect(formatReadAt("2026-11-14T01:28:33.491Z", true)).toBe(
       "14 Nov, 01:28 UTC",
     );
+  });
+});
+
+describe("year on year against the same moment last year (ADR-018, amended 2026-11-13)", () => {
+  const v = (day: string): number => {
+    const s = series.snapshots.find((x) => x.day === day);
+    if (s === undefined) throw new Error(`no snapshot on ${day}`);
+    return s.funds_usd;
+  };
+  const at = (iso: string, funds: number, citizens = 6_760_000) => ({
+    read_at: iso,
+    funds_usd: funds,
+    citizens,
+  });
+  const reading = at("2026-11-14T01:52:29.056Z", 1_064_815_395.65);
+
+  it("compares with last year to the next daily reading after the same moment, so it never overstates", () => {
+    // 01:52 on 14 November falls between last year's readings of the 13th and the 14th (20:00).
+    const ytd = reading.funds_usd - v("2025-12-31");
+    const expected = ytd / (v("2025-11-14") - v("2024-12-31")) - 1;
+    expect(sameMomentChange(series, "pledges", reading)).toBeCloseTo(
+      expected,
+      12,
+    );
+    // Against the earlier reading it would be higher: the shown figure is the lower one.
+    expect(ytd / (v("2025-11-13") - v("2024-12-31")) - 1).toBeGreaterThan(
+      expected,
+    );
+    // After 20:00 the same moment falls between the 14th and the 15th.
+    const evening = at("2026-11-14T21:00:00.000Z", 1_065_000_000);
+    expect(sameMomentChange(series, "pledges", evening)).toBeCloseTo(
+      (evening.funds_usd - v("2025-12-31")) /
+        (v("2025-11-15") - v("2024-12-31")) -
+        1,
+      12,
+    );
+  });
+
+  it("is not shown when a few hours would move it by more than a point, as in early January", () => {
+    const january = at("2026-01-02T01:00:00.000Z", v("2025-12-31") + 1_000_000);
+    expect(sameMomentChange(series, "pledges", january)).toBeNull();
+  });
+
+  it("works for citizens too, on the same readings", () => {
+    const cit = (day: string): number => {
+      const s = series.snapshots.find((x) => x.day === day);
+      if (s?.citizens == null) throw new Error(`no citizens on ${day}`);
+      return s.citizens;
+    };
+    const expected =
+      (reading.citizens - cit("2025-12-31")) /
+        (cit("2025-11-14") - cit("2024-12-31")) -
+      1;
+    expect(sameMomentChange(series, "citizens", reading)).toBeCloseTo(
+      expected,
+      12,
+    );
+  });
+
+  it("is not shown when last year has no reading within a day either side", () => {
+    // The wiki has no reading of 30 June 2025: 29 June to 1 July is 48 hours.
+    const summer = at("2026-06-30T12:00:00.000Z", v("2025-12-31") + 70_000_000);
+    expect(sameMomentChange(series, "pledges", summer)).toBeNull();
+  });
+
+  it("never overstates over a leap day: two years at the same pace compare at no more than zero", () => {
+    // A synthetic pair of years, $1,000 a day at 20:00 UTC, 2027 and leap 2028.
+    const snapshots: FundingSnapshot[] = [];
+    for (
+      let t = Date.parse("2026-12-25T20:00:00.000Z");
+      t <= Date.parse("2028-12-31T20:00:00.000Z");
+      t += 86_400_000
+    ) {
+      const iso = new Date(t).toISOString();
+      const days = Math.round(
+        (t - Date.parse("2026-12-25T20:00:00.000Z")) / 86_400_000,
+      );
+      snapshots.push({
+        day: iso.slice(0, 10),
+        recorded_at: iso,
+        funds_usd: 1_000_000 + days * 1_000,
+        citizens: 1_000 + days,
+      });
+    }
+    const flat = { ...series, snapshots };
+    const start2028 = snapshots.find((s) => s.day === "2027-12-31")!;
+    for (const iso of [
+      "2028-06-15T19:00:00.000Z",
+      "2028-11-14T19:00:00.000Z",
+    ]) {
+      const hours =
+        (Date.parse(iso) - Date.parse(start2028.recorded_at)) / 3_600_000;
+      const counter = at(iso, start2028.funds_usd + (hours / 24) * 1_000);
+      const change = sameMomentChange(flat, "pledges", counter);
+      expect(change).not.toBeNull();
+      expect(change!).toBeLessThanOrEqual(0);
+      expect(change!).toBeGreaterThan(-0.01);
+    }
+  });
+
+  it("falls back to the wiki's comparison, with the day it runs to, and uses the wiki's when there is no counter", () => {
+    const last = series.snapshots.at(-1)!;
+    const wiki = headline(readings(series, "pledges"))!;
+    expect(yearOnYear(series, "pledges", null)).toEqual({
+      change: wiki.yearToDateChange,
+      to: null,
+    });
+    const current = yearOnYear(series, "pledges", reading);
+    expect(current.to).toBeNull();
+    expect(current.change).toBe(sameMomentChange(series, "pledges", reading));
+    // A moment whose comparison cannot be shown (early January): the wiki's, to its last day, in
+    // the same year as the reading.
+    const year = Number(last.day.slice(0, 4));
+    const unshowable = at(
+      `${year}-01-02T01:00:00.000Z`,
+      v(`${year - 1}-12-31`) + 1_000_000,
+    );
+    expect(sameMomentChange(series, "pledges", unshowable)).toBeNull();
+    expect(yearOnYear(series, "pledges", unshowable)).toEqual({
+      change: wiki.yearToDateChange,
+      to: last.day,
+    });
+    // In another year than the wiki's last day: nothing to show.
+    const nextYear = at(`${year + 1}-01-01T00:07:00.000Z`, last.funds_usd + 1);
+    expect(yearOnYear(series, "pledges", nextYear)).toEqual({
+      change: null,
+      to: null,
+    });
+  });
+
+  it("formats a short day", () => {
+    expect(formatShortDay("2026-11-12")).toBe("12 Nov");
   });
 });

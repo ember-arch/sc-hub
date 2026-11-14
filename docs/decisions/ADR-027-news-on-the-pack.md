@@ -1,6 +1,6 @@
 # ADR-027: The news feed from the pack, polled from CI, until Fly
 
-- Status: accepted
+- Status: accepted; the News workflow also commits RSI's funding counter on its own, at most about once an hour, since ADR-018's amendment of 2026-11-13
 - Date: 2026-11-10
 - Deciders: owner ("after we get this all done let's build the news feed and the spectrum tracker of yellow CIG posts, like how Wowhead tracks blue posts", 2026-11-10), Claude Code session 2026-11-10
 - Amends: ADR-004 (the fixtures as the site's data until Phase 1), ADR-023 (CI as the host of the refresh)

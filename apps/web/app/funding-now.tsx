@@ -9,6 +9,7 @@ import {
   formatShare,
   formatValue,
   monthPairs,
+  sameDaysChange,
   yearAgainstLastYear,
   yearPaths,
   yearRows,
@@ -33,10 +34,15 @@ export function FundingCard({
   readonly measures: readonly {
     readonly measure: Measure;
     readonly list: readonly Reading[];
+    /**
+     * The wiki's snapshots alone, for "Year on year" (ADR-018, amended 2026-11-13), when `list`
+     * ends on RSI's counter; the comparison is `list`'s own when absent.
+     */
+    readonly snapshots?: readonly Reading[] | undefined;
   }[];
 }) {
-  const parts = measures.flatMap(({ measure, list }) => {
-    const p = fundingParts(list, measure);
+  const parts = measures.flatMap(({ measure, list, snapshots }) => {
+    const p = fundingParts(list, measure, snapshots);
     return p === null
       ? []
       : [{ id: measure, label: MEASURE_LABEL[measure], ...p }];
@@ -59,11 +65,23 @@ const VIEWS = [
 function fundingParts(
   list: readonly Reading[],
   measure: Measure,
+  snapshots: readonly Reading[] | undefined,
 ): { figures: ReactNode; content: Record<string, ReactNode> } | null {
   const against = yearAgainstLastYear(list);
   const latest = list.at(-1);
   if (against === null || latest === undefined) return null;
-  const { year, yearToDate, shareOfLastYear, change, lastYearTotal } = against;
+  const { year, yearToDate, shareOfLastYear, lastYearTotal } = against;
+  // Year on year from the wiki's snapshots when the list ends on RSI's counter, so both years end
+  // on 20:00 UTC; the note names the day it runs to when that is not the list's latest.
+  const sameDays =
+    snapshots === undefined
+      ? { change: against.change, to: latest.day }
+      : sameDaysChange(snapshots, year);
+  const change = sameDays?.change ?? null;
+  const sameDaysNote =
+    sameDays === null || sameDays.to === latest.day
+      ? `on the same days of ${year - 1}`
+      : `to ${formatDayShort(sameDays.to)}, on the same days of ${year - 1}`;
   const rows = yearRows(list);
   const pairs = monthPairs(rows, latest.day);
   const paths = yearPaths(list, [year, year - 1]);
@@ -90,7 +108,7 @@ function fundingParts(
     {
       label: "Year on year",
       value: change === null ? "unknown" : formatChange(change),
-      note: `on the same days of ${year - 1}`,
+      note: sameDaysNote,
     },
   ];
   return {

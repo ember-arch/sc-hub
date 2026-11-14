@@ -60,3 +60,35 @@ export const FundingSeries = z
     }
   });
 export type FundingSeries = z.infer<typeof FundingSeries>;
+
+/** One reading of RSI's counters, at a UTC time ("Z"), so its UTC day is the time's first ten characters. */
+export const CounterReading = z.strictObject({
+  read_at: z.iso.datetime(),
+  /** Total pledged since 2012, in US dollars (RSI answers in cents). */
+  funds_usd: z.number().nonnegative(),
+  citizens: z.int().nonnegative(),
+});
+export type CounterReading = z.infer<typeof CounterReading>;
+
+/**
+ * `fixtures/funding/Counter.json` (ADR-018, amended 2026-11-13): RSI's two counters as RSI's own
+ * funding page reads them: the latest reading, and the last one of an earlier UTC day. The News
+ * workflow reads it about once an hour (`scripts/funding/counter.ts`), and the site puts it after
+ * the wiki's daily snapshots, so the front page's figures are RSI's of the last hour rather than the
+ * wiki's of the evening before. The earlier day's reading stands for a day the wiki's copied series
+ * does not reach yet (the wiki records 20:00 UTC; the daily refresh copies it the next morning), so
+ * no day is missing between the series and the latest reading.
+ */
+export const FundingCounter = z.strictObject({
+  source: z.strictObject({
+    name: z.literal("RSI"),
+    /** The endpoint RSI's funding page reads its counters from. */
+    url: z.url(),
+    /** The funding page itself. */
+    origin_url: z.url(),
+  }),
+  ...CounterReading.shape,
+  /** The last reading on an earlier UTC day than `read_at`; null before there is one. */
+  previous_day: CounterReading.nullable(),
+});
+export type FundingCounter = z.infer<typeof FundingCounter>;

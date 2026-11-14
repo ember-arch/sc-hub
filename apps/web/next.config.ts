@@ -19,6 +19,7 @@ const nextConfig: NextConfig = {
       "../../fixtures/ship-claims/**",
       "../../fixtures/titles/Titles.json",
       "../../fixtures/funding/Funding.json",
+      "../../fixtures/funding/Counter.json",
       "../../pnpm-workspace.yaml",
       // The media manifest fetched from the CDN at build (ADR-034), read per request by the same
       // routes for their card pictures; absent when CDN_BASE_URL is unset.

@@ -27,11 +27,14 @@ import {
   formatChange,
   formatCompact,
   formatDay,
+  formatReadAt,
   formatValue,
   funding,
+  fundingNow,
   headline,
   type Reading,
   readings,
+  sameDaysChange,
 } from "../lib/funding";
 import { frontEvent } from "../lib/events";
 import { media, shipCardImage } from "../lib/media";
@@ -109,12 +112,31 @@ export default function HomePage() {
   const makerName = (code: string): string =>
     r.manufacturers.find((m) => m.code === code)?.name ?? code;
 
-  // Counters. The funding ones need the fixture; the record counts are always there.
-  const series = funding();
+  // Counters. The funding ones need the fixture; the record counts are always there. The latest
+  // reading is RSI's counter as last read from RSI, when that is newer than the wiki's last daily
+  // snapshot (ADR-018, amended 2026-11-13).
+  const latestFunding = fundingNow();
+  const series = latestFunding?.series ?? null;
+  const counter = latestFunding?.counter ?? null;
+  // When the latest reading was taken: the counter's hour, or the snapshot's day.
+  const asOf = (short: boolean, day: string): string =>
+    counter === null ? formatDay(day) : formatReadAt(counter.read_at, short);
   const pledges = series === null ? null : readings(series, "pledges");
   const money = pledges === null ? null : headline(pledges);
   const citizens = series === null ? null : readings(series, "citizens");
   const people = citizens === null ? null : headline(citizens);
+  // Year on year from the wiki's snapshots alone while the series ends on RSI's counter, so both
+  // years end on the same hour (ADR-018, amended 2026-11-13).
+  const snapshots = counter === null ? null : funding();
+  const wikiOf = (measure: "pledges" | "citizens") =>
+    snapshots === null ? undefined : readings(snapshots, measure);
+  const year = money === null ? null : Number(money.latest.day.slice(0, 4));
+  const thisYearChange =
+    money === null || year === null
+      ? null
+      : counter === null
+        ? money.yearToDateChange
+        : (sameDaysChange(wikiOf("pledges") ?? [], year)?.change ?? null);
   const tally = shipTally(r.entries, concepts.length);
   // The parts people fit: thrusters and fuel intakes come with the ship (ADR-046).
   const fitted = withoutFixed(r.components, false);
@@ -125,10 +147,20 @@ export default function HomePage() {
     series === null || pledges === null || pledges.length < 2
       ? []
       : [
-          { measure: "pledges" as const, list: pledges },
+          {
+            measure: "pledges" as const,
+            list: pledges,
+            snapshots: wikiOf("pledges"),
+          },
           ...(citizens === null || citizens.length < 2
             ? []
-            : [{ measure: "citizens" as const, list: citizens }]),
+            : [
+                {
+                  measure: "citizens" as const,
+                  list: citizens,
+                  snapshots: wikiOf("citizens"),
+                },
+              ]),
         ];
   // A counter opens the card on its own measure (ADR-040, amended 2026-11-12), or on the card as
   // it is when that measure is not drawn.
@@ -143,7 +175,7 @@ export default function HomePage() {
           {
             label: `Pledged since ${firstYear(pledges)}`,
             value: formatValue(money.latest.value, "pledges"),
-            note: `as of ${formatDay(money.latest.day)}`,
+            note: `as of ${asOf(true, money.latest.day)}`,
             // The pledges' figures open the card on pledges, even after a reader pressed Citizens.
             href: toCard("pledges"),
           },
@@ -169,9 +201,9 @@ export default function HomePage() {
             label: "This year",
             value: formatCompact(money.yearToDate, "pledges"),
             note:
-              money.yearToDateChange === null
+              thisYearChange === null || year === null
                 ? "so far"
-                : `${formatChange(money.yearToDateChange)} on the same days of ${Number(money.latest.day.slice(0, 4)) - 1}`,
+                : `${formatChange(thisYearChange)} on the same days of ${year - 1}`,
             href: toCard("pledges"),
           },
         ]),
@@ -427,7 +459,7 @@ export default function HomePage() {
               aside={
                 money === null
                   ? undefined
-                  : `as of ${formatDay(money.latest.day)}`
+                  : `as of ${asOf(false, money.latest.day)}`
               }
             />
             <FundingCard anchor="funding" measures={cardMeasures} />
@@ -442,6 +474,9 @@ export default function HomePage() {
                 Star Citizen Wiki API
               </TextLink>
               ; copied {formatDay(series.source.fetched_at.slice(0, 10))}.
+              {counter === null
+                ? null
+                : ` The latest figures are RSI's counter itself, read ${formatReadAt(counter.read_at)}; it is read about once an hour.`}{" "}
               Months, years and comparisons are differences between snapshots;
               where the API has none within three days of a period&apos;s ends,
               the period is left blank rather than estimated.

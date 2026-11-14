@@ -20,6 +20,11 @@
 # fixtures/rsi-media/cover-sources.json, and that row's commit to main is what redeploys the site
 # on the new manifest. It needs the repository secret BLOB_READ_WRITE_TOKEN (the media store's
 # read-write token); without it the step is a dry run that writes nothing.
+#
+# Last, RSI's funding counter (ADR-018, amended 2026-11-13) goes into fixtures/funding/Counter.json:
+# on every run that commits anything else, and otherwise once the committed reading is 55 minutes
+# old, so the front page's funding figures are about an hour behind RSI's at most and the counter
+# alone redeploys the site at most about once an hour.
 name: News
 # The title marks a run asked for the hour's YouTube feed, which the gate reads to keep the feed to
 # one read an hour (ADR-050, ADR-053).
@@ -162,6 +167,10 @@ jobs:
     # threads, a page each as a rule) and thirty on a refusal (ADR-037), and up to twelve more for
     # the cover step (ADR-051); a timeout would lose the run's news too.
     timeout-minutes: 55
+    env:
+      # What the commit below stages besides RSI's funding counter; the counter's step reads it to
+      # know whether this run commits anything else.
+      NEWS_PATHS: fixtures/news fixtures/spectrum/thread-state.json fixtures/spectrum/uploads.json fixtures/rsi-media/cover-sources.json fixtures/events fixtures/refresh
     steps:
       - uses: actions/checkout@v4
         with:
@@ -260,21 +269,58 @@ jobs:
           BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
           REHEARSE: ${{ inputs.rehearse_covers }}
         run: pnpm exec tsx scripts/media/publish-covers.ts --dry-run-without-token --rehearse "$REHEARSE"
+      # RSI's funding counter (ADR-018, amended 2026-11-13), last before the commit: one request
+      # when this run commits anything else, so every redeploy carries the latest figures; on a run
+      # with nothing else to commit, only once the committed reading is 55 minutes old
+      # (`--when-due`), so the counter alone redeploys the site at most about once an hour. A
+      # failure here never holds back the news commit.
+      - name: Read RSI's funding counter
+        continue-on-error: true
+        timeout-minutes: 2
+        env:
+          SC_HUB_CONTACT_EMAIL: ${{ vars.SC_HUB_CONTACT_EMAIL }}
+        run: |
+          # NEWS_PATHS is a list of paths, split on purpose.
+          # shellcheck disable=SC2086
+          git add $NEWS_PATHS
+          if git diff --cached --quiet; then
+            pnpm exec tsx scripts/funding/counter.ts --when-due
+          else
+            pnpm exec tsx scripts/funding/counter.ts
+          fi
       - name: Commit what changed
         run: |
-          git add fixtures/news fixtures/spectrum/thread-state.json fixtures/spectrum/uploads.json fixtures/rsi-media/cover-sources.json fixtures/events fixtures/refresh
+          # shellcheck disable=SC2086
+          git add $NEWS_PATHS
+          if git diff --cached --quiet; then
+            only_counter=true
+          else
+            only_counter=false
+          fi
+          if [ -f fixtures/funding/Counter.json ]; then
+            git add fixtures/funding/Counter.json
+          fi
           if git diff --cached --quiet; then
             echo "Nothing new."
             exit 0
           fi
           git config user.name "sc-hub news"
           git config user.email "news@users.noreply.github.com"
+          if [ "$only_counter" = "true" ]; then
+            git commit -m "data: RSI's funding counter, $(date -u +%Y-%m-%dT%H:%MZ) (ADR-018)"
+            git pull --rebase origin main
+            git push origin HEAD:main
+            exit 0
+          fi
           message="data: news pack, $(date -u +%Y-%m-%dT%H:%MZ) (ADR-027)"
           if ! git diff --cached --quiet -- fixtures/events; then
             message="${message}; the shows (ADR-057)"
           fi
           if ! git diff --cached --quiet -- fixtures/refresh; then
             message="${message}; the refresh started for a new build (ADR-059)"
+          fi
+          if ! git diff --cached --quiet -- fixtures/funding; then
+            message="${message}; RSI's funding counter (ADR-018)"
           fi
           git commit -m "$message"
           git pull --rebase origin main

@@ -15,14 +15,13 @@ import { repo, spectrumOn } from "../lib/data";
 import { authorOf, devPosts, excerptOf, threadUrl } from "../lib/dev-posts";
 import { SOURCE_LABEL, coverOf } from "../lib/dispatches";
 import {
-  dailyPicks,
-  featuredPosts,
-  formatFrontDate,
-  pickLead,
-  pickPlates,
-  signed,
-  utcDayNumber,
-} from "../lib/front";
+  type FeaturedCandidate,
+  type FeaturedPick,
+  type Why,
+  featuredShips,
+} from "../lib/featured";
+import { newsMentions, releaseInput, showInput } from "../lib/featured-sources";
+import { featuredPosts, formatFrontDate, pickLead, signed } from "../lib/front";
 import {
   formatChange,
   formatCompact,
@@ -36,7 +35,7 @@ import {
   readings,
   sameDaysChange,
 } from "../lib/funding";
-import { frontEvent } from "../lib/events";
+import { dayLabel, frontEvent, leadDay, shortTitle } from "../lib/events";
 import { media, shipCardImage } from "../lib/media";
 import { shipTally, tallyNote } from "../lib/ship-count";
 import { withoutFixed } from "../lib/component-filters";
@@ -54,6 +53,7 @@ import {
   RegisterLink,
   RunningHead,
 } from "./front";
+import { dayTitle } from "./events/parts";
 import { FrontEvent } from "./front-event";
 import { FrontLead } from "./front-lead";
 import { FundingCard } from "./funding-now";
@@ -88,8 +88,31 @@ const firstYear = (list: readonly Reading[] | null): string =>
 const CONCEPT_HERO = "odin";
 const LIVE_EXAMPLE = "perseus";
 
-/** How many ships join the pair in the bento, drawn afresh each day (ADR-038). */
-const DAILY_PLATES = 3;
+/** A card's reason, after its role: "new in 4.10.3", "like the Liberator" (ADR-060). */
+function whyNote(why: Why): string | undefined {
+  switch (why.kind) {
+    case "limited":
+      return "limited today";
+    case "new":
+      return `new in ${why.version}`;
+    case "news":
+      return "in the news";
+    case "line":
+      return `the ${why.of} line`;
+    case "like":
+      return `like the ${why.of}`;
+    default:
+      return undefined;
+  }
+}
+
+/** "the Galaxy", "the Galaxy and the Liberator", "the A, the B and the C". */
+function theNames(names: readonly string[]): string {
+  const each = names.map((n) => `the ${n}`);
+  return each.length <= 1
+    ? (each[0] ?? "")
+    : `${each.slice(0, -1).join(", ")} and ${each.at(-1)}`;
+}
 
 /**
  * The front page (ADR-020, ADR-021, ADR-038, ADR-050, ADR-057, ADR-058): the date line, then a
@@ -242,36 +265,52 @@ export default function HomePage() {
     .slice(0, FRONT_DISPATCHES);
   const feedPictures = feed.map((item) => coverOf(item));
 
-  // The bento: the showcase pair, then three ships drawn for the day from those with pictures.
-  const candidates = [
+  // The featured ships (ADR-060): what is on in the game decides them. A show's day, a new LIVE
+  // patch's first week, a ship CIG named in a title that week, each changing daily; otherwise the
+  // showcase pair and three drawn for the week.
+  const candidates: FeaturedCandidate[] = [
     ...concepts.map((c) => ({
       slug: c.slug,
       length: c.length_m,
       hasPicture: conceptImage(c.slug, c.name, c.page_url) !== null,
+      name: c.name,
+      makerCode: c.manufacturer_code,
+      role: c.focus,
     })),
     ...r.entries.map((s) => ({
       slug: s.vehicle.slug,
       length: s.stats?.length_m ?? null,
       hasPicture: shipCardImage(s) !== null,
+      name: s.vehicle.name,
+      makerCode: s.vehicle.manufacturer_code,
+      role: s.vehicle.role,
     })),
   ];
-  const pair = pickPlates(candidates, LIVE_EXAMPLE, CONCEPT_HERO, 0);
-  const daily = dailyPicks(
-    candidates.filter((c) => !pair.some((p) => p.slug === c.slug)),
-    utcDayNumber(at),
-    DAILY_PLATES,
-  );
-  const plates: PlateEntry[] = [...pair, ...daily].map((pick) => {
+  const showDay = live === null ? null : leadDay(live, at);
+  const spotlight = featuredShips({
+    candidates,
+    now: at,
+    pair: { live: LIVE_EXAMPLE, concept: CONCEPT_HERO },
+    show: showInput(live, at, r, concepts),
+    release: releaseInput(r),
+    news: newsMentions(r, concepts),
+  });
+  const plate = ({
+    ship: pick,
+    why,
+  }: FeaturedPick<FeaturedCandidate>): PlateEntry => {
+    const reason = whyNote(why);
     const concept = concepts.find((c) => c.slug === pick.slug);
     if (concept !== undefined) {
       return {
         slug: concept.slug,
         name: concept.name,
         maker: makerName(concept.manufacturer_code),
-        note: [concept.focus?.toLowerCase(), "in concept"]
+        note: [concept.focus?.toLowerCase(), "in concept", reason]
           .filter((s): s is string => s !== undefined)
           .join(" · "),
         picture: conceptImage(concept.slug, concept.name, concept.page_url),
+        why: why.kind,
       };
     }
     const ship = r.shipBySlug(pick.slug);
@@ -282,12 +321,46 @@ export default function HomePage() {
       slug: ship.vehicle.slug,
       name: ship.vehicle.name,
       maker: ship.manufacturer?.name ?? ship.vehicle.manufacturer_code,
-      note: [role, pick.slug === LIVE_EXAMPLE ? "the live example" : undefined]
+      note: [
+        role,
+        why.kind === "pair" && pick.slug === LIVE_EXAMPLE
+          ? "the live example"
+          : reason,
+      ]
         .filter((s): s is string => s !== undefined)
         .join(" · "),
       picture: showcase?.background ?? showcase?.poster ?? shipCardImage(ship),
+      why: why.kind,
     };
-  });
+  };
+  const plates: PlateEntry[] = spotlight.picks.map(plate);
+  // The line under the heading says why these ships (ADR-060); a quiet week needs none.
+  const leadNames = plates
+    .filter((p) => p.why === "new" || p.why === "news")
+    .map((p) => p.name);
+  const withOthers = plates.length > leadNames.length;
+  const like = leadNames.length === 1 ? "it" : "them";
+  const theme = spotlight.theme;
+  const themeLine =
+    theme.kind === "show" && live !== null && showDay !== null
+      ? {
+          text: `${dayLabel(showDay)} of ${shortTitle(live)}: ${dayTitle(showDay, r.manufacturers)}.`,
+          href: `/events/${live.slug}#today`,
+          link: "All of the day’s ships",
+        }
+      : theme.kind === "release"
+        ? {
+            text: `New in ${theme.version}: ${theNames(leadNames)}${withOthers ? `, with ships like ${like}` : ""}.`,
+            href: "/patches",
+            link: `What changed in ${theme.version}`,
+          }
+        : theme.kind === "news"
+          ? {
+              text: `In CIG’s posts this week: ${theNames(leadNames)}${withOthers ? `, with ships like ${like}` : ""}.`,
+              href: "/news",
+              link: "All dispatches",
+            }
+          : null;
 
   // The developers' latest (ADR-038): only with the Spectrum module on, like every Spectrum surface.
   const devOn = spectrumOn();
@@ -393,12 +466,24 @@ export default function HomePage() {
           </section>
         )}
 
-        <section aria-labelledby="featured" className="flex flex-col gap-4">
+        <section
+          aria-labelledby="featured"
+          data-featured-theme={spotlight.theme.kind}
+          className="flex flex-col gap-4"
+        >
           <RunningHead
             id="featured"
             title="Featured vehicles and ships"
-            aside="Changes daily"
+            aside={
+              spotlight.cadence === "daily" ? "Changes daily" : "Changes weekly"
+            }
           />
+          {themeLine === null ? null : (
+            <p className="m-0 max-w-prose text-ui text-secondary">
+              {themeLine.text}{" "}
+              <TextLink href={themeLine.href}>{themeLine.link}</TextLink>
+            </p>
+          )}
           <Bento cards={plates} />
           <RegisterLink count={shipsOnRecord} />
         </section>

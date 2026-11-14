@@ -31,11 +31,13 @@ export interface PlateEntry {
   /** The role or focus, and the plate's reason: "heavy gunship · the live example". */
   readonly note: string;
   readonly picture: PlatePicture | null;
+  /** Why the card is on the bento (ADR-060), as `data-why` for the tests: "show", "new", "like"… */
+  readonly why?: string;
 }
 
 /**
- * The front page's bento (ADR-021, ADR-038): the live example large, the concept hero tall beside
- * it, then three more across that change daily; on a phone the five as a row to swipe, one shape
+ * The front page's bento (ADR-021, ADR-038, ADR-060): the first card large, the second tall beside
+ * it, then three more across, chosen by what is on in the game (`lib/featured.ts`); on a phone the five as a row to swipe, one shape
  * each (ADR-050); each an image card with the ship's name over a scrim. Without a picture a
  * card is a toned panel with the name, so the layout keeps its shape on CI and a deployment.
  */
@@ -65,6 +67,7 @@ export function Bento({ cards }: { readonly cards: readonly PlateEntry[] }) {
         {cards.map((c, i) => (
           <li
             key={c.slug}
+            data-why={c.why}
             className={`shrink-0 basis-4/5 snap-start sm:basis-1/2 md:basis-auto ${place(i)}`}
           >
             <NextLink

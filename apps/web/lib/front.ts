@@ -180,9 +180,25 @@ export function dailyPicks<T extends PlateCandidate>(
   count: number,
 ): T[] {
   const pictured = candidates.filter((c) => c.hasPicture);
-  const pool = [...(pictured.length > 0 ? pictured : candidates)];
-  const next = seeded(dayNumber);
-  // A partial Fisher-Yates: only the first `count` positions need settling.
+  return shuffled(
+    pictured.length > 0 ? pictured : candidates,
+    dayNumber,
+    count,
+  );
+}
+
+/**
+ * The first `count` of a list (all of it by default) in an order seeded by `seed`: the same seed
+ * gives the same order on every build. A partial Fisher-Yates: only the first `count` positions
+ * need settling.
+ */
+export function shuffled<T>(
+  list: readonly T[],
+  seed: number,
+  count: number = list.length,
+): T[] {
+  const pool = [...list];
+  const next = seeded(seed);
   const n = Math.min(count, pool.length);
   for (let i = 0; i < n; i += 1) {
     const j = i + Math.floor(next() * (pool.length - i));
@@ -196,6 +212,14 @@ export function dailyPicks<T extends PlateCandidate>(
 /** The UTC day number of a date: the seed of the day's draw, the same for every build on that day. */
 export function utcDayNumber(date: Date): number {
   return Math.floor(date.getTime() / 86_400_000);
+}
+
+/**
+ * The UTC week number of a UTC day number, weeks starting on Monday (day 0, 1 January 1970, was a
+ * Thursday): the seed of the featured ships' weekly draw (ADR-060).
+ */
+export function utcWeekNumber(dayNumber: number): number {
+  return Math.floor((dayNumber + 3) / 7);
 }
 
 /** A candidate for the front page's lead story (ADR-058): a dispatch or a full video. */

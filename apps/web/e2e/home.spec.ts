@@ -95,20 +95,44 @@ test("the dispatches come first, five of them in a carousel, each linked to its 
   expect(dispatchesTop).toBeLessThan(featuredTop);
 });
 
-test("the featured ships are five cards with the showcase pair, and the register link carries the pack's count", async ({
+// ADR-060: what is on in the game decides the featured ships: a show's day, a new patch's first
+// week, a ship CIG named in a title that week (each changing daily, with a line saying why), or
+// the showcase pair and three drawn for the week.
+test("the featured ships are five cards chosen by what is on, and the register link carries the pack's count", async ({
   page,
 }) => {
   await page.goto("/");
   const section = page.locator("section[aria-labelledby=featured]");
+  const theme = await section.getAttribute("data-featured-theme");
+  expect(theme).toMatch(/^(show|release|news|week)$/);
   const cards = section.locator("ul li a[href^='/ships/']");
   await expect(cards).toHaveCount(5);
   const hrefs = await cards.evaluateAll((as) =>
     as.map((a) => a.getAttribute("href")),
   );
-  expect(hrefs[0]).toBe("/ships/perseus");
-  expect(hrefs[1]).toBe("/ships/odin");
   expect(new Set(hrefs).size).toBe(5);
-  await expect(section.getByText("Changes daily")).toBeVisible();
+  const why = await section
+    .locator("ul li")
+    .evaluateAll((lis) => lis.map((li) => li.getAttribute("data-why")));
+  if (showOn) {
+    // A show on the front page leads the featured ships with its day.
+    expect(theme).toBe("show");
+    const show = eventForFront(shows, clock)!;
+    expect(why[0]).toBe("show");
+    await expect(
+      section.getByRole("link", { name: "All of the day\u2019s ships" }),
+    ).toHaveAttribute("href", `/events/${show.slug}#today`);
+  }
+  if (theme === "week") {
+    expect(hrefs[0]).toBe("/ships/perseus");
+    expect(hrefs[1]).toBe("/ships/odin");
+    expect(why.slice(0, 2)).toEqual(["pair", "pair"]);
+    await expect(section.getByText("Changes weekly")).toBeVisible();
+  } else {
+    await expect(section.getByText("Changes daily")).toBeVisible();
+    if (theme === "release") expect(why[0]).toBe("new");
+    if (theme === "news") expect(why[0]).toBe("news");
+  }
   // The strip's "Ships on record" figure and the register link agree.
   const onRecord = await page
     .locator("dl div", { hasText: "Ships on record" })

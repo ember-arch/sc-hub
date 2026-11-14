@@ -1,6 +1,6 @@
 # ADR-010: Showcase ships: the Anvil Odin concept hero and the RSI Perseus live example
 
-- Status: accepted (owner direction 2026-11-08)
+- Status: accepted (owner direction 2026-11-08); on the front page the pair holds the bento only in a week with nothing on since ADR-060
 - Date: 2026-11-08
 - Deciders: owner, Claude Code session 2026-11-08
 

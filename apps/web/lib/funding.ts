@@ -9,6 +9,28 @@ import {
   type FundingSnapshot,
 } from "schema";
 import { REPO_ROOT } from "./data";
+import { type Measure } from "./funding-format";
+import {
+  type LiveContext,
+  type MeasureContext,
+  type TimedValue,
+  sameMomentCore,
+} from "./funding-live";
+
+export { SAME_MOMENT_SPREAD } from "./funding-live";
+
+export {
+  MEASURES,
+  MONTHS,
+  type Measure,
+  formatChange,
+  formatCompact,
+  formatDay,
+  formatReadAt,
+  formatShare,
+  formatShortDay,
+  formatValue,
+} from "./funding-format";
 
 /**
  * The funding figures (ADR-018, drawn on the front page since ADR-040), all computed from RSI's
@@ -109,9 +131,6 @@ export function fundingNow(): {
   }
   return cachedNow;
 }
-
-export const MEASURES = ["pledges", "citizens"] as const;
-export type Measure = (typeof MEASURES)[number];
 
 const DAY_MS = 86_400_000;
 export const dayNumber = (day: string): number =>
@@ -316,86 +335,6 @@ export function sameDayPriorYear(day: string): string {
   return `${year}-${rest === "02-29" ? "02-28" : rest}`;
 }
 
-const usd = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 0,
-});
-const compactUsd = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  notation: "compact",
-  maximumFractionDigits: 1,
-});
-const compactNumber = new Intl.NumberFormat("en-US", {
-  notation: "compact",
-  maximumFractionDigits: 1,
-});
-const percent = new Intl.NumberFormat("en-US", {
-  style: "percent",
-  maximumFractionDigits: 1,
-  signDisplay: "exceptZero",
-});
-
-/** "$1,061,028,177" or "6,753,476". */
-export function formatValue(value: number, measure: Measure): string {
-  return measure === "pledges"
-    ? usd.format(value)
-    : new Intl.NumberFormat("en-US").format(value);
-}
-
-/** "$131.7M" or "280K"; short enough for a bar's end label. */
-export function formatCompact(value: number, measure: Measure): string {
-  return measure === "pledges"
-    ? compactUsd.format(value)
-    : compactNumber.format(value);
-}
-
-/** "+19.9%" with the sign always shown, "0%" for no change. */
-export function formatChange(fraction: number): string {
-  return percent.format(fraction);
-}
-
-export const MONTHS = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-] as const;
-
-const longDay = new Intl.DateTimeFormat("en-GB", {
-  day: "numeric",
-  month: "long",
-  year: "numeric",
-  timeZone: "UTC",
-});
-
-export function formatDay(day: string): string {
-  return longDay.format(new Date(`${day}T00:00:00Z`));
-}
-
-/** "14 November 2026, 01:28 UTC", or "14 Nov, 01:28 UTC" when short: a counter reading's time. */
-export function formatReadAt(iso: string, short = false): string {
-  const day = iso.slice(0, 10);
-  const time = `${iso.slice(11, 16)} UTC`;
-  if (!short) return `${formatDay(day)}, ${time}`;
-  return `${formatShortDay(day)}, ${time}`;
-}
-
-/** "12 Nov". */
-export function formatShortDay(day: string): string {
-  const month = MONTHS[Number(day.slice(5, 7)) - 1] ?? "";
-  return `${Number(day.slice(8, 10))} ${month}`;
-}
-
 export interface YearAgainstLastYear {
   readonly year: number;
   /** Added this calendar year so far; null when last year's end is unknown. */
@@ -426,67 +365,53 @@ export function sameDaysChange(
   return { change: head.yearToDateChange, to: head.latest.day };
 }
 
-/** How far apart a same-moment comparison's two bounds may be and the comparison still be shown. */
-export const SAME_MOMENT_SPREAD = 0.01;
+/** A measure's readings with the time each was taken, in time order. */
+function timedValues(series: FundingSeries, measure: Measure): TimedValue[] {
+  const out: TimedValue[] = [];
+  for (const s of series.snapshots) {
+    const value = measure === "pledges" ? s.funds_usd : s.citizens;
+    if (value !== null) out.push({ at: s.recorded_at, value });
+  }
+  return out;
+}
+
+/** The reading standing for the end of `day` (`readingAt`), with the time it was taken. */
+function timedAt(
+  series: FundingSeries,
+  measure: Measure,
+  day: string,
+): TimedValue | null {
+  const r = readingAt(readings(series, measure), day);
+  if (r === null) return null;
+  const s = series.snapshots.find((x) => x.day === r.day);
+  return s === undefined ? null : { at: s.recorded_at, value: r.value };
+}
 
 /**
  * This year so far, to RSI's latest reading, against last year over the same length of time
- * (ADR-018, amended 2026-11-13). Both are counted from their year's start reading (the wiki's of
- * 31 December, or the one standing for it), so a leap day or a start reading taken early adds
- * nothing to this year's side. Last year has one reading a day (the wiki's, at about 20:00 UTC), so
- * the same point falls between two of them; the change is taken against the later one, which gives
- * last year at least as long as this year has had. The figure can understate this year's lead by up
- * to a day of last year's, never overstate it. Null when either reading is missing, when they are
- * not a day apart, or when the earlier one would give a change more than SAME_MOMENT_SPREAD away
- * (when a single day of last year weighs a lot: the first weeks of a year, and last year's big
- * sales); the wiki's own comparison, with its day, stands then.
+ * (ADR-018, amended 2026-11-13; `sameMomentCore` in `funding-live.ts`, which the browser runs
+ * too). Both are counted from their year's start reading (the wiki's of 31 December, or the one
+ * standing for it), so a leap day or a start reading taken early adds nothing to this year's side;
+ * the change is taken against last year's next daily reading, so it can understate this year's
+ * lead by up to a day of last year's, never overstate it. Null where the core gives none; the
+ * wiki's own comparison, with its day, stands then.
  */
 export function sameMomentChange(
   series: FundingSeries,
   measure: Measure,
   counter: CounterReading,
 ): number | null {
-  const value = (s: FundingSnapshot): number | null =>
-    measure === "pledges" ? s.funds_usd : s.citizens;
-  const list = readings(series, measure);
   const year = Number(counter.read_at.slice(0, 4));
-  const startThisReading = readingAt(list, `${year - 1}-12-31`);
-  const startLastReading = readingAt(list, `${year - 2}-12-31`);
-  if (startThisReading === null || startLastReading === null) return null;
-  const recordedAt = (day: string): number | null => {
-    const s = series.snapshots.find((x) => x.day === day);
-    return s === undefined ? null : Date.parse(s.recorded_at);
-  };
-  const thisStartAt = recordedAt(startThisReading.day);
-  const lastStartAt = recordedAt(startLastReading.day);
-  if (thisStartAt === null || lastStartAt === null) return null;
-  const startThis = startThisReading.value;
-  const startLast = startLastReading.value;
-  const now = measure === "pledges" ? counter.funds_usd : counter.citizens;
-  // The point in last year as far from its start reading as this reading is from this year's.
-  const moment = lastStartAt + (Date.parse(counter.read_at) - thisStartAt);
-  let before: FundingSnapshot | undefined;
-  let after: FundingSnapshot | undefined;
-  for (const s of series.snapshots) {
-    if (Date.parse(s.recorded_at) <= moment) before = s;
-    else {
-      after = s;
-      break;
-    }
-  }
-  if (before === undefined || after === undefined) return null;
-  const span = Date.parse(after.recorded_at) - Date.parse(before.recorded_at);
-  if (span > 30 * 3_600_000) return null;
-  const lastBefore = value(before);
-  const lastAfter = value(after);
-  if (lastBefore === null || lastAfter === null) return null;
-  const lastYearLong = lastAfter - startLast;
-  const lastYearShort = lastBefore - startLast;
-  if (lastYearLong <= 0 || lastYearShort <= 0) return null;
-  const ytd = now - startThis;
-  const change = ytd / lastYearLong - 1;
-  const other = ytd / lastYearShort - 1;
-  return Math.abs(other - change) > SAME_MOMENT_SPREAD ? null : change;
+  const startThis = timedAt(series, measure, `${year - 1}-12-31`);
+  const startLast = timedAt(series, measure, `${year - 2}-12-31`);
+  if (startThis === null || startLast === null) return null;
+  return sameMomentCore({
+    startThis,
+    startLast,
+    lastYear: timedValues(series, measure),
+    now: measure === "pledges" ? counter.funds_usd : counter.citizens,
+    readAt: counter.read_at,
+  });
 }
 
 export interface YearOnYear {
@@ -593,12 +518,55 @@ export function monthPairs(
   return out;
 }
 
-const wholePercent = new Intl.NumberFormat("en-US", {
-  style: "percent",
-  maximumFractionDigits: 0,
-});
-
-/** "78%": a share of a whole, no sign. */
-export function formatShare(fraction: number): string {
-  return wholePercent.format(fraction);
+/**
+ * What the browser needs to recompute the front page's funding figures from RSI's counter
+ * (ADR-018, amended 2026-11-13; `liveFigures` in `funding-live.ts`): for each measure, the start
+ * readings, last year's readings from two days before today's point to a fortnight after it, the
+ * last six weeks' readings and the wiki's own comparison. A few dozen numbers. `series` is the
+ * front page's (the wiki's with RSI's counter after it), `wiki` the wiki's alone.
+ */
+export function liveContext(
+  wiki: FundingSeries,
+  series: FundingSeries,
+): LiveContext | null {
+  const last = series.snapshots.at(-1);
+  if (last === undefined) return null;
+  const latestAt = last.recorded_at;
+  const year = Number(last.day.slice(0, 4));
+  const part = (measure: Measure): MeasureContext | null => {
+    const list = readings(series, measure);
+    const latest = list.at(-1);
+    if (latest === undefined) return null;
+    const startThis = timedAt(series, measure, `${year - 1}-12-31`);
+    const startLast = timedAt(series, measure, `${year - 2}-12-31`);
+    let lastYear: TimedValue[] = [];
+    if (startThis !== null && startLast !== null) {
+      const moment =
+        Date.parse(startLast.at) +
+        (Date.parse(latestAt) - Date.parse(startThis.at));
+      lastYear = timedValues(wiki, measure).filter((r) => {
+        const t = Date.parse(r.at);
+        return t >= moment - 2 * DAY_MS && t <= moment + 16 * DAY_MS;
+      });
+    }
+    const from = dayString(dayNumber(last.day) - 45);
+    return {
+      startThis,
+      startLast,
+      lastYearTotal: yearAgainstLastYear(list)?.lastYearTotal ?? null,
+      lastYear,
+      // Only the citizens' counter says "in the last 30 days".
+      recent:
+        measure === "citizens"
+          ? list
+              .filter((r) => r.day >= from)
+              .map((r) => ({ day: r.day, value: r.value }))
+          : [],
+      fallback: sameDaysChange(readings(wiki, measure), year),
+      latest: latest.value,
+    };
+  };
+  const pledges = part("pledges");
+  if (pledges === null) return null;
+  return { latestAt, year, pledges, citizens: part("citizens") };
 }

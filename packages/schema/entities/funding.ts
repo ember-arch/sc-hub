@@ -92,3 +92,27 @@ export const FundingCounter = z.strictObject({
   previous_day: CounterReading.nullable(),
 });
 export type FundingCounter = z.infer<typeof FundingCounter>;
+
+/** The endpoint RSI's funding page reads its two counters from (ADR-018, amended 2026-11-13). */
+export const COUNTER_URL =
+  "https://robertsspaceindustries.com/api/stats/getCrowdfundStats";
+/** RSI's funding page, where it shows them. */
+export const COUNTER_ORIGIN_URL =
+  "https://robertsspaceindustries.com/funding-goals";
+/** What RSI's funding page asks for: the citizens ("fans") and the money ("funds"). */
+export const COUNTER_BODY = { fans: true, funds: true } as const;
+
+/**
+ * The endpoint's answer, exactly as seen on 2026-11-13; `funds` is in cents. Anything else halts the
+ * reader (CLAUDE.md section 5): the News workflow's step and the site's own live route alike.
+ */
+export const RsiCrowdfundAnswer = z.strictObject({
+  success: z.literal(1),
+  code: z.literal("OK"),
+  msg: z.string(),
+  data: z.strictObject({
+    fans: z.int().nonnegative(),
+    funds: z.int().nonnegative(),
+  }),
+});
+export type RsiCrowdfundAnswer = z.infer<typeof RsiCrowdfundAnswer>;

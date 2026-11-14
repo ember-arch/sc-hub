@@ -92,6 +92,11 @@ for (const screen of SCREENS) {
           colorScheme: scheme,
           deviceScaleFactor: 1,
         });
+        // The front page's live funding route has nothing newer, so the records show the build's
+        // figures wherever they are drawn (ADR-018, amended 2026-11-13).
+        await context.route("**/api/funding/live", (route) =>
+          route.fulfill({ json: { ok: false, reason: "screenshots" } }),
+        );
         const page = await context.newPage();
         const response = await page.goto(screen.path);
         expect(response?.status()).toBe(screen.status);

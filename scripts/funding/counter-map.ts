@@ -6,30 +6,25 @@
  * counter could give.
  */
 
-import type { FundingCounter, FundingSnapshot } from "schema";
-import { z } from "zod";
+import {
+  COUNTER_BODY,
+  COUNTER_ORIGIN_URL,
+  COUNTER_URL,
+  type FundingCounter,
+  type FundingSnapshot,
+  RsiCrowdfundAnswer,
+} from "schema";
 import { IMPLAUSIBLE_SHARE } from "./map.js";
 
-export const COUNTER_URL =
-  "https://robertsspaceindustries.com/api/stats/getCrowdfundStats";
-export const COUNTER_ORIGIN_URL =
-  "https://robertsspaceindustries.com/funding-goals";
-/** What RSI's funding page asks for: the citizens ("fans") and the money ("funds"). */
-export const COUNTER_BODY = { fans: true, funds: true } as const;
 /** CLAUDE.md section 9: one request every 5 seconds to RSI, the first one too (the job's polls have just asked). */
 export const RSI_SPACING_MS = 5_000;
 
-/** The endpoint's answer, exactly as seen; `funds` is in cents. */
-export const RsiCrowdfundAnswer = z.strictObject({
-  success: z.literal(1),
-  code: z.literal("OK"),
-  msg: z.string(),
-  data: z.strictObject({
-    fans: z.int().nonnegative(),
-    funds: z.int().nonnegative(),
-  }),
-});
-export type RsiCrowdfundAnswer = z.infer<typeof RsiCrowdfundAnswer>;
+export {
+  COUNTER_BODY,
+  COUNTER_ORIGIN_URL,
+  COUNTER_URL,
+  RsiCrowdfundAnswer,
+} from "schema";
 
 /**
  * The new reading on top of the one on file: the earlier day's reading is the one on file when it

@@ -15,6 +15,15 @@ const OUT = join(dirname(fileURLToPath(import.meta.url)), "__screenshots__");
 // A show on (ADR-057) puts its hero at the top of the page; outside one, the lead story (ADR-058).
 const showOn = eventForFront(shows, clock) !== null;
 
+// The page asks the site for RSI's counter (ADR-018, amended 2026-11-13). By default the route has
+// nothing newer, so every test sees the figures the page was built with, wherever it runs; the live
+// test answers with a reading of its own.
+test.beforeEach(async ({ page }) => {
+  await page.route("**/api/funding/live", (route) =>
+    route.fulfill({ json: { ok: false, reason: "test" } }),
+  );
+});
+
 test("the title is the lead story's, linked to its source, under the date label", async ({
   page,
 }) => {
@@ -270,6 +279,62 @@ test("the latest funding figures are RSI's own counter, with the time it was rea
       `The latest figures are RSI.s counter itself, read \\d+ \\w+ \\d{4}, ${hhmm} UTC; it is read about once an hour\\.`,
     ),
   );
+});
+
+test("the funding figures follow RSI's counter live in the browser, and stay as built when it has nothing newer (ADR-018, amended)", async ({
+  page,
+}) => {
+  // A minute after the page's latest reading, whichever of the two that is.
+  const lastAt = Math.max(
+    Date.parse(rsiCounter?.read_at ?? lastSnapshot.recorded_at),
+    Date.parse(lastSnapshot.recorded_at),
+  );
+  const readAt = new Date(lastAt + 60_000).toISOString();
+  const funds = (rsiCounter?.funds_usd ?? 0) + 1_234_567;
+  // The site's own route stands in for RSI here: no network.
+  await page.route("**/api/funding/live", (route) =>
+    route.fulfill({
+      json: {
+        ok: true,
+        read_at: readAt,
+        funds_usd: funds,
+        citizens: 6_800_000,
+      },
+    }),
+  );
+  await page.goto("/");
+  const pledged = page.locator("dl div", { hasText: /^Pledged since/ }).first();
+  const hhmm = readAt.slice(11, 16);
+  await expect(pledged).toContainText(
+    `$${Math.round(funds).toLocaleString("en-US")}`,
+  );
+  await expect(pledged).toContainText(
+    new RegExp(`as of \\d+ \\w{3}, ${hhmm} UTC$`),
+  );
+  await expect(
+    page.locator("dl div", { hasText: /^Citizens\d/ }).first(),
+  ).toContainText("6,800,000");
+  const section = page.locator("section[aria-labelledby=funding]");
+  await expect(section.getByText(/^as of /)).toHaveText(
+    new RegExp(`^as of \\d+ \\w+ \\d{4}, ${hhmm} UTC$`),
+  );
+  await expect(
+    section.locator("p", { hasText: /^Daily snapshots/ }),
+  ).toContainText(
+    "while the page is open it follows the counter minute by minute",
+  );
+
+  // Nothing newer from the route: the page keeps the figures it was built with.
+  await page.unroute("**/api/funding/live");
+  await page.route("**/api/funding/live", (route) =>
+    route.fulfill({ json: { ok: false, reason: "test" } }),
+  );
+  const asked = page.waitForResponse("**/api/funding/live");
+  await page.goto("/");
+  await asked;
+  await expect(
+    page.locator("dl div", { hasText: /^Pledged since/ }).first(),
+  ).not.toContainText(`$${Math.round(funds).toLocaleString("en-US")}`);
 });
 
 test("the counters open the funding card on their own measure, with its running head in view (ADR-040, amended)", async ({

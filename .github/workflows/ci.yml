@@ -1,8 +1,35 @@
 # CI for every PR and for pushes to main (spec 00, criterion "CI").
 #
-# `check` runs now. `e2e` and `lighthouse` are written but skip until apps/web exists
-# (spec 00, criterion "Site shell"), so they start running without another workflow change.
 # The Vercel preview link on PRs comes from the Vercel GitHub app, not from this file.
+#
+# ---- WHAT THIS COSTS (measured 10 Nov 2026, ADR-030) ----
+#
+# Actions bills per JOB and rounds every job UP to the minute, so a job costs a minute
+# before it does any work. Over the seven days to 10 Nov this workflow ran 142 times at
+# 16 billed minutes a run. (A 30-day average says 140 runs and flatters it: the
+# repository is four days old.)
+#
+# Two changes followed, and both are cost decisions rather than matters of taste:
+#
+#   1. There is NO separate "detect" job. It tested for apps/web/package.json in eleven
+#      seconds and was billed a full minute for it, every run. apps/web exists now, so
+#      the question it asked is settled and its answer was always true. What replaced it
+#      is a STEP inside check, which runs anyway: a second job would have cost the
+#      minute it was meant to save, which is the mistake detect was making.
+#   2. e2e and Lighthouse run on PULL REQUESTS, and not on a PR that touches only
+#      documentation. The constitution frames both as PR gates: Lighthouse "fails a PR
+#      that drops performance or accessibility below 90", and a PR "has Playwright
+#      screenshots for any page it touched". A push to main is a PR that already passed
+#      them. This is where the saving is: 4 billed minutes instead of 16.
+#
+# TWO FURTHER IDEAS WERE TRIED AND MEASURED AS LOSSES. Keep them out unless a
+# measurement says otherwise, because both sound obviously right:
+#
+#   - Having check upload .next so Lighthouse skips its build. .next is 137 MB, and
+#     moving it through artifact storage cost MORE than a compile on a warm 53 MB build
+#     cache: Lighthouse went 358s -> 392s.
+#   - Caching the Playwright browser at ~/.cache/ms-playwright. That cache is 292 MB and
+#     restoring it is slower than letting Playwright fetch chromium (~150 MB).
 name: CI
 
 on:
@@ -26,8 +53,16 @@ jobs:
     name: Typecheck, lint, unit tests, build
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    outputs:
+      # Whether this change could move what the site renders. A docs or ADR commit
+      # cannot change a Lighthouse score or a screenshot.
+      app: ${{ steps.changed.outputs.app }}
     steps:
       - uses: actions/checkout@v7
+        with:
+          # The changed-paths step below diffs against the base branch, which needs its
+          # history. The repository is days old, so this is cheap.
+          fetch-depth: 0
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v7
         with:
@@ -46,6 +81,27 @@ jobs:
       - run: pnpm lint
       - run: pnpm test
       - run: pnpm build
+      - name: Decide whether the rendered site could have changed
+        id: changed
+        run: |
+          if [ "${{ github.event_name }}" != "pull_request" ]; then
+            # A push to main has already been through a PR. See note 2 above.
+            echo "app=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git fetch --no-tags origin "${{ github.base_ref }}"
+          # A DENY list on purpose. An allow list would quietly skip the gates for any
+          # new source directory nobody remembered to add to it; this way an
+          # unrecognised path costs a run, which is the safe failure.
+          if git diff --name-only "origin/${{ github.base_ref }}...HEAD" -- . \
+               ':(exclude)docs/**' \
+               ':(exclude)spec/**' \
+               ':(exclude)**/*.md' \
+             | grep -q .; then
+            echo "app=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "app=false" >> "$GITHUB_OUTPUT"
+          fi
       - name: Upload the JSON Schema contract
         uses: actions/upload-artifact@v7
         with:
@@ -53,25 +109,10 @@ jobs:
           path: packages/schema/dist/json
           if-no-files-found: error
 
-  detect:
-    name: Detect which surfaces exist
-    runs-on: ubuntu-latest
-    outputs:
-      web: ${{ steps.web.outputs.exists }}
-    steps:
-      - uses: actions/checkout@v7
-      - id: web
-        run: |
-          if [ -f apps/web/package.json ]; then
-            echo "exists=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "exists=false" >> "$GITHUB_OUTPUT"
-          fi
-
   e2e:
     name: Playwright e2e and screenshots
-    needs: [check, detect]
-    if: needs.detect.outputs.web == 'true'
+    needs: check
+    if: needs.check.outputs.app == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -106,8 +147,8 @@ jobs:
 
   lighthouse:
     name: Lighthouse CI budgets
-    needs: [check, detect]
-    if: needs.detect.outputs.web == 'true'
+    needs: check
+    if: needs.check.outputs.app == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -135,3 +176,6 @@ jobs:
           name: lighthouse
           path: .lighthouseci
           if-no-files-found: ignore
+          # Dotted, so upload-artifact skipped it: hidden files are excluded by default
+          # and if-no-files-found is `ignore`, so this produced nothing and said nothing.
+          include-hidden-files: true

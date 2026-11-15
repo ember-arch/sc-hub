@@ -3,7 +3,7 @@
     "name": "Star Citizen Wiki API",
     "url": "https://api.star-citizen.wiki/api/v2/stats",
     "origin_url": "https://robertsspaceindustries.com/funding-goals",
-    "fetched_at": "2026-11-13T17:56:42.290Z",
+    "fetched_at": "2026-11-15T06:40:31.510Z",
     "dropped": [
       {
         "day": "2021-06-09",
@@ -25450,6 +25450,12 @@
       "recorded_at": "2026-11-12T20:00:13.000000Z",
       "funds_usd": 1061970572.54,
       "citizens": 6756903
+    },
+    {
+      "day": "2026-11-13",
+      "recorded_at": "2026-11-13T20:00:18.000000Z",
+      "funds_usd": 1063927172.61,
+      "citizens": 6759103
     }
   ]
 }

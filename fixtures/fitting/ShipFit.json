@@ -9,7 +9,7 @@
     "last_update": "2026-11-12",
     "consent": "granted"
   },
-  "fetched_at": "2026-11-13T20:14:25.070Z",
+  "fetched_at": "2026-11-15T06:39:41.036Z",
   "legend": {
     "verdicts": {
       "fits": "Good Fit",
@@ -169,7 +169,7 @@
       "class_names": [
         "ANVL_Liberator"
       ],
-      "fabricator": "untested"
+      "fabricator": "fits"
     },
     {
       "id": 11,
@@ -1956,7 +1956,7 @@
     {
       "carrier": 10,
       "vehicle": 0,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -2628,7 +2628,7 @@
     {
       "carrier": 55,
       "vehicle": 1,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
@@ -2760,7 +2760,7 @@
     {
       "carrier": 10,
       "vehicle": 2,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -3162,7 +3162,7 @@
     {
       "carrier": 10,
       "vehicle": 3,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -3966,7 +3966,7 @@
     {
       "carrier": 10,
       "vehicle": 5,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -4368,7 +4368,7 @@
     {
       "carrier": 10,
       "vehicle": 6,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -5172,7 +5172,7 @@
     {
       "carrier": 10,
       "vehicle": 8,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -5574,7 +5574,7 @@
     {
       "carrier": 10,
       "vehicle": 9,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -5844,7 +5844,7 @@
     {
       "carrier": 55,
       "vehicle": 9,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
@@ -5976,7 +5976,7 @@
     {
       "carrier": 10,
       "vehicle": 10,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -6246,8 +6246,8 @@
     {
       "carrier": 55,
       "vehicle": 10,
-      "verdict": "untested",
-      "mark": null
+      "verdict": "tricks",
+      "mark": "E"
     },
     {
       "carrier": 56,
@@ -6378,7 +6378,7 @@
     {
       "carrier": 10,
       "vehicle": 11,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -6648,8 +6648,8 @@
     {
       "carrier": 55,
       "vehicle": 11,
-      "verdict": "untested",
-      "mark": null
+      "verdict": "tricks",
+      "mark": "E"
     },
     {
       "carrier": 56,
@@ -7584,7 +7584,7 @@
     {
       "carrier": 10,
       "vehicle": 14,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
@@ -7986,7 +7986,7 @@
     {
       "carrier": 10,
       "vehicle": 15,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -8388,7 +8388,7 @@
     {
       "carrier": 10,
       "vehicle": 16,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -8790,7 +8790,7 @@
     {
       "carrier": 10,
       "vehicle": 17,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -9192,7 +9192,7 @@
     {
       "carrier": 10,
       "vehicle": 18,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
@@ -9594,7 +9594,7 @@
     {
       "carrier": 10,
       "vehicle": 19,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -10398,7 +10398,7 @@
     {
       "carrier": 10,
       "vehicle": 21,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
@@ -10800,7 +10800,7 @@
     {
       "carrier": 10,
       "vehicle": 22,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
@@ -11202,7 +11202,7 @@
     {
       "carrier": 10,
       "vehicle": 23,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -11604,7 +11604,7 @@
     {
       "carrier": 10,
       "vehicle": 24,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -12006,7 +12006,7 @@
     {
       "carrier": 10,
       "vehicle": 25,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -12408,7 +12408,7 @@
     {
       "carrier": 10,
       "vehicle": 26,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -12750,13 +12750,13 @@
     {
       "carrier": 0,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
       "carrier": 1,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
@@ -12774,163 +12774,163 @@
     {
       "carrier": 4,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
       "carrier": 5,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
       "carrier": 6,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
       "carrier": 7,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
       "carrier": 8,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
       "carrier": 9,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
       "carrier": 10,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
       "carrier": 11,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
       "carrier": 12,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
       "carrier": 13,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
       "carrier": 14,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
       "carrier": 15,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
       "carrier": 16,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
       "carrier": 17,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
       "carrier": 18,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
       "carrier": 19,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
       "carrier": 20,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
       "carrier": 21,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
       "carrier": 22,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
       "carrier": 23,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
       "carrier": 24,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
       "carrier": 25,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
       "carrier": 26,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
       "carrier": 27,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
       "carrier": 28,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
       "carrier": 29,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
       "carrier": 30,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
@@ -12948,73 +12948,73 @@
     {
       "carrier": 33,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
       "carrier": 34,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
       "carrier": 35,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
       "carrier": 36,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
       "carrier": 37,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
       "carrier": 38,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
       "carrier": 39,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
       "carrier": 40,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
       "carrier": 41,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
       "carrier": 42,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
       "carrier": 43,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
       "carrier": 44,
       "vehicle": 27,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
@@ -13212,7 +13212,7 @@
     {
       "carrier": 10,
       "vehicle": 28,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -13614,7 +13614,7 @@
     {
       "carrier": 10,
       "vehicle": 29,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -14016,7 +14016,7 @@
     {
       "carrier": 10,
       "vehicle": 30,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
@@ -14418,7 +14418,7 @@
     {
       "carrier": 10,
       "vehicle": 31,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
@@ -16026,7 +16026,7 @@
     {
       "carrier": 10,
       "vehicle": 35,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -16428,7 +16428,7 @@
     {
       "carrier": 10,
       "vehicle": 36,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
@@ -16830,7 +16830,7 @@
     {
       "carrier": 10,
       "vehicle": 37,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -17232,7 +17232,7 @@
     {
       "carrier": 10,
       "vehicle": 38,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -17634,7 +17634,7 @@
     {
       "carrier": 10,
       "vehicle": 39,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -18438,7 +18438,7 @@
     {
       "carrier": 10,
       "vehicle": 41,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -18840,7 +18840,7 @@
     {
       "carrier": 10,
       "vehicle": 42,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -19242,7 +19242,7 @@
     {
       "carrier": 10,
       "vehicle": 43,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -19644,7 +19644,7 @@
     {
       "carrier": 10,
       "vehicle": 44,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -20046,7 +20046,7 @@
     {
       "carrier": 10,
       "vehicle": 45,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -21252,7 +21252,7 @@
     {
       "carrier": 10,
       "vehicle": 48,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -21654,7 +21654,7 @@
     {
       "carrier": 10,
       "vehicle": 49,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -22056,7 +22056,7 @@
     {
       "carrier": 10,
       "vehicle": 50,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -22458,7 +22458,7 @@
     {
       "carrier": 10,
       "vehicle": 51,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -22860,7 +22860,7 @@
     {
       "carrier": 10,
       "vehicle": 52,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -23262,7 +23262,7 @@
     {
       "carrier": 10,
       "vehicle": 53,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -23664,7 +23664,7 @@
     {
       "carrier": 10,
       "vehicle": 54,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -24066,7 +24066,7 @@
     {
       "carrier": 10,
       "vehicle": 55,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -24468,7 +24468,7 @@
     {
       "carrier": 10,
       "vehicle": 56,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -24870,7 +24870,7 @@
     {
       "carrier": 10,
       "vehicle": 57,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -25272,7 +25272,7 @@
     {
       "carrier": 10,
       "vehicle": 58,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -25674,7 +25674,7 @@
     {
       "carrier": 10,
       "vehicle": 59,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -26076,7 +26076,7 @@
     {
       "carrier": 10,
       "vehicle": 60,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -26478,7 +26478,7 @@
     {
       "carrier": 10,
       "vehicle": 61,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -26880,7 +26880,7 @@
     {
       "carrier": 10,
       "vehicle": 62,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -28086,7 +28086,7 @@
     {
       "carrier": 10,
       "vehicle": 65,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
@@ -28488,7 +28488,7 @@
     {
       "carrier": 10,
       "vehicle": 66,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -28890,7 +28890,7 @@
     {
       "carrier": 10,
       "vehicle": 67,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -29292,7 +29292,7 @@
     {
       "carrier": 10,
       "vehicle": 68,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -29417,17 +29417,17 @@
     },
     {
       "carrier": 31,
-      "vehicle": 68,
-      "verdict": "tricks",
-      "mark": "*"
-    },
-    {
-      "carrier": 32,
       "vehicle": 68,
       "verdict": "tricks",
       "mark": "*"
     },
     {
+      "carrier": 32,
+      "vehicle": 68,
+      "verdict": "tricks",
+      "mark": "*"
+    },
+    {
       "carrier": 33,
       "vehicle": 68,
       "verdict": "no",
@@ -29694,7 +29694,7 @@
     {
       "carrier": 10,
       "vehicle": 69,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -30096,7 +30096,7 @@
     {
       "carrier": 10,
       "vehicle": 70,
-      "verdict": "untested",
+      "verdict": "no",
       "mark": null
     },
     {
@@ -30900,7 +30900,7 @@
     {
       "carrier": 10,
       "vehicle": 72,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -31302,7 +31302,7 @@
     {
       "carrier": 10,
       "vehicle": 73,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -31704,7 +31704,7 @@
     {
       "carrier": 10,
       "vehicle": 74,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -32106,7 +32106,7 @@
     {
       "carrier": 10,
       "vehicle": 75,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -32508,7 +32508,7 @@
     {
       "carrier": 10,
       "vehicle": 76,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -32910,7 +32910,7 @@
     {
       "carrier": 10,
       "vehicle": 77,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -33312,7 +33312,7 @@
     {
       "carrier": 10,
       "vehicle": 78,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -33714,7 +33714,7 @@
     {
       "carrier": 10,
       "vehicle": 79,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -34116,7 +34116,7 @@
     {
       "carrier": 10,
       "vehicle": 80,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -34518,7 +34518,7 @@
     {
       "carrier": 10,
       "vehicle": 81,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -34920,7 +34920,7 @@
     {
       "carrier": 10,
       "vehicle": 82,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -35322,7 +35322,7 @@
     {
       "carrier": 10,
       "vehicle": 83,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -35724,7 +35724,7 @@
     {
       "carrier": 10,
       "vehicle": 84,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -36126,7 +36126,7 @@
     {
       "carrier": 10,
       "vehicle": 85,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -36528,7 +36528,7 @@
     {
       "carrier": 10,
       "vehicle": 86,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -36930,7 +36930,7 @@
     {
       "carrier": 10,
       "vehicle": 87,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -37332,7 +37332,7 @@
     {
       "carrier": 10,
       "vehicle": 88,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -37734,7 +37734,7 @@
     {
       "carrier": 10,
       "vehicle": 89,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -38136,7 +38136,7 @@
     {
       "carrier": 10,
       "vehicle": 90,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -38538,7 +38538,7 @@
     {
       "carrier": 10,
       "vehicle": 91,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -38940,7 +38940,7 @@
     {
       "carrier": 10,
       "vehicle": 92,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -39342,7 +39342,7 @@
     {
       "carrier": 10,
       "vehicle": 93,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -40146,7 +40146,7 @@
     {
       "carrier": 10,
       "vehicle": 95,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {
@@ -40548,7 +40548,7 @@
     {
       "carrier": 10,
       "vehicle": 96,
-      "verdict": "untested",
+      "verdict": "fits",
       "mark": null
     },
     {

@@ -31,6 +31,7 @@ vi.mock("../lib/events", async (importOriginal) => {
 const { CHANGEOVER_WINDOW_MS, changeoverSkip, nextShowChange } =
   await import("../lib/events");
 const { GET } = await import("../app/api/cron/changeover/route");
+const { startNews } = await import("../lib/news-dispatch");
 const { GET: newsGET } = await import("../app/api/cron/news/route");
 
 const SECRET = "cron-secret-for-tests";
@@ -92,8 +93,9 @@ describe("whether the change-over clock starts a run", () => {
     expect(skip("2026-11-15T15:59:00Z")).toMatch(/no show's day opened/);
     expect(skip("2026-11-15T17:01:00Z")).toMatch(/no show's day opened/);
     expect(skip("2026-11-12T16:01:00Z")).toMatch(/no show's day opened/);
-    expect(changeoverSkip(new Date("2026-11-15T16:01:00Z"), [])).toMatch(
-      /no show's day opened/,
+    // No show on file says so, so the log tells it from an ordinary hour.
+    expect(changeoverSkip(new Date("2026-11-15T16:01:00Z"), [])).toBe(
+      "no show on file",
     );
   });
 
@@ -170,6 +172,30 @@ describe("GET /api/cron/changeover", () => {
       reason: expect.stringMatching(/no show's day opened/),
     });
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("answers 500 with a log line when the check before starting fails, and starts nothing", async () => {
+    at("2026-11-15T16:01:00Z");
+    const response = await startNews(
+      new Request("https://site.example.test/api/cron/changeover", {
+        headers: { authorization: `Bearer ${SECRET}` },
+      }),
+      {
+        job: "changeover-clock",
+        skip: () => {
+          throw new Error("the show's record does not parse");
+        },
+      },
+    );
+    expect(response.status).toBe(500);
+    expect(await response.json()).toMatchObject({
+      dispatched: false,
+      reason: expect.stringContaining("does not parse"),
+    });
+    expect(fetchMock).not.toHaveBeenCalled();
+    const logged = vi.mocked(console.log).mock.calls.flat().join("\n");
+    expect(logged).toContain('"job":"changeover-clock"');
+    expect(logged).toContain('"status":500');
   });
 
   it("leaves the news clock as it was: no show check, its own job name", async () => {

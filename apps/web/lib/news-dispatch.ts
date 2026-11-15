@@ -56,7 +56,16 @@ export async function startNews(
   if (!cronAuthorized(request.headers.get("authorization"), secret)) {
     return answer(401, { dispatched: false, reason: "unauthorized" });
   }
-  const skipped = options.skip?.(new Date()) ?? null;
+  let skipped: string | null;
+  try {
+    skipped = options.skip?.(new Date()) ?? null;
+  } catch (error) {
+    // A record that does not parse, say: logged like every answer, and nothing started.
+    return answer(500, {
+      dispatched: false,
+      reason: `the check before starting failed: ${error instanceof Error ? error.message : String(error)}`,
+    });
+  }
   if (skipped !== null) {
     return answer(200, { dispatched: false, reason: skipped });
   }

@@ -95,6 +95,7 @@ export function changeoverSkip(
   now: Date,
   list: readonly EventRecord[] = events(),
 ): string | null {
+  if (list.length === 0) return "no show on file";
   const opened = lastChangeover(list, now);
   if (
     opened === null ||

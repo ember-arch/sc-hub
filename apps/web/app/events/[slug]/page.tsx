@@ -23,11 +23,13 @@ import {
   hullResolver,
   hullsOn,
   leadDay,
+  nextShowChange,
   shipResolver,
   shortTitle,
 } from "../../../lib/events";
 import { Site, now } from "../../../lib/site";
 import { RunningHead } from "../../front";
+import { ShowClock } from "../../show-clock";
 import {
   BandLink,
   Credits,
@@ -47,6 +49,9 @@ import {
 interface Params {
   readonly params: Promise<{ slug: string }>;
 }
+
+/** At most once a minute, so the show's day turns at RSI's change-over (ADR-057, amended). */
+export const revalidate = 60;
 
 export function generateStaticParams() {
   return events().map((e) => ({ slug: e.slug }));
@@ -68,8 +73,9 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
  * The event page (ADR-057): the canonical format for CIG's shows. The opening band on the day's
  * featured ship, the facts, the day on the floor now with every ship it puts up, the limited
  * sales, the schedule day by day, the dispatches about the show and the sources. Every fact is
- * RSI's, read by `scripts/events/fetch.ts`; the page is as current as its last build, and the
- * events step makes a build each time the show's day turns over.
+ * RSI's, read by `scripts/events/fetch.ts`. Vercel rebuilds the page at most once a minute, so the
+ * day turns at RSI's change-over without waiting for a deploy, and an open page follows it
+ * (ADR-057, amended 2026-11-15).
  */
 export default async function EventPage({ params }: Params) {
   const { slug } = await params;
@@ -151,6 +157,7 @@ export default async function EventPage({ params }: Params) {
 
   return (
     <Site>
+      <ShowClock next={nextShowChange(at)} />
       <div className="flex flex-col gap-12 pt-8">
         <div className="flex flex-col gap-4">
           <EventOpening

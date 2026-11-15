@@ -186,6 +186,62 @@ export function eventPhase(
   return { kind: "day", index };
 }
 
+/**
+ * Every moment an event's phase changes, in order: its eve, its opening day, the doors, each
+ * entry's opening (RSI's change-over, 16:00 UTC for IAE 2956: 8:00 in the Pacific), and the end.
+ */
+export function eventChanges(
+  event: Pick<EventRecord, "opens_at" | "last_day" | "days">,
+): number[] {
+  const opens = Date.parse(event.opens_at);
+  const moments = new Set<number>([
+    utcDayStart(opens) - DAY_MS,
+    utcDayStart(opens),
+    opens,
+    ...event.days.map((day) => Date.parse(day.opens_at)),
+    Date.parse(`${event.last_day}T00:00:00.000Z`) + DAY_MS,
+  ]);
+  return [...moments].filter((t) => !Number.isNaN(t)).sort((a, b) => a - b);
+}
+
+/**
+ * The next moment after `at` that any of the events changes phase, so a page built at `at` knows
+ * when it goes stale (ADR-057, amended 2026-11-15); null when none is ahead.
+ */
+export function nextEventChange(
+  list: readonly Pick<EventRecord, "opens_at" | "last_day" | "days">[],
+  at: Date,
+): Date | null {
+  const t = at.getTime();
+  let next = Number.POSITIVE_INFINITY;
+  for (const event of list) {
+    for (const moment of eventChanges(event)) {
+      if (moment > t && moment < next) next = moment;
+    }
+  }
+  return Number.isFinite(next) ? new Date(next) : null;
+}
+
+/**
+ * The latest of RSI's change-overs at or before `at`: the moment one of the shows' days opened
+ * (16:00 UTC for IAE 2956: 8:00 in the Pacific), so the change-over clock can start the News
+ * workflow right after it (ADR-057, amended 2026-11-15); null when none has opened.
+ */
+export function lastChangeover(
+  list: readonly Pick<EventRecord, "days">[],
+  at: Date,
+): Date | null {
+  const t = at.getTime();
+  let last = Number.NEGATIVE_INFINITY;
+  for (const event of list) {
+    for (const day of event.days) {
+      const opens = Date.parse(day.opens_at);
+      if (opens <= t && opens > last) last = opens;
+    }
+  }
+  return Number.isFinite(last) ? new Date(last) : null;
+}
+
 /** A phase as one word, for the fetcher's state file: "before", "eve", "opening", "day-3", "after". */
 export function phaseKey(
   event: Pick<EventRecord, "opens_at" | "last_day" | "days">,

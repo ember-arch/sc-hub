@@ -9,12 +9,17 @@ import {
   eventDates,
   events,
   leadDay,
+  nextShowChange,
   shipResolver,
   shortTitle,
 } from "../../lib/events";
 import { Site, now } from "../../lib/site";
 import { RunningHead } from "../front";
+import { ShowClock } from "../show-clock";
 import { Credits } from "./parts";
+
+/** At most once a minute, so a show's state turns at RSI's change-over (ADR-057, amended). */
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Events",
@@ -48,6 +53,7 @@ export default function EventsPage() {
   });
   return (
     <Site>
+      <ShowClock next={nextShowChange(at, list)} />
       <div className="flex flex-col gap-8 pt-8">
         <div className="flex flex-col gap-3">
           <h1 className="m-0 text-display text-primary lg:text-hero">Events</h1>

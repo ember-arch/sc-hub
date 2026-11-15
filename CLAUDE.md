@@ -137,7 +137,7 @@ SITE_CLOCK (local runs only, ignored on Vercel: an ISO time that pins the site's
 SC_INSTALL_ROOT (Windows only, for example C:\Program Files\Roberts Space Industries\StarCitizen)
 STARBREAKER_BIN (Windows only)
 SC_HUB_CONTACT_EMAIL (dev scripts, the daily refresh, the news workers and the site's live funding route; the contact address every User-Agent carries and RSI requests require, ADR-015, ADR-023, ADR-036; a repository variable in CI)
-CRON_SECRET (the Vercel site only: the bearer token Vercel's cron sends to /api/cron/news and /api/cron/refresh, which refuse every call without it, ADR-053, ADR-056)
+CRON_SECRET (the Vercel site only: the bearer token Vercel's cron sends to /api/cron/news, /api/cron/changeover and /api/cron/refresh, which refuse every call without it, ADR-053, ADR-056, ADR-057)
 NEWS_DISPATCH_TOKEN (the Vercel site only: a fine-grained GitHub token for this repository alone with Actions read and write, which the news and refresh clocks use to start the News and Refresh workflows; unset, the clocks do nothing and the workflows' schedules run them, ADR-053, ADR-056)
 ```
 

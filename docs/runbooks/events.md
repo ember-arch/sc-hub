@@ -2,7 +2,7 @@
 
 ## What runs
 
-The News workflow's step "Read the shows' schedules" runs `scripts/events/fetch.ts` after the polls, every time the workflow runs (at 7 and 37 past the hour). For each show in `fixtures/events/registry.json` it reads the FAQ from the news pack and, only when the show is new, has moved on since its last read (it opens, a day turns over) or was last read on an earlier UTC day, RSI's schedule page: two requests, 5 seconds apart. Once the show is over RSI is not asked again. It writes `fixtures/events/<slug>.json` when the data changed and `fixtures/events/state.json` when the phase did; the workflow's commit then redeploys the site.
+The News workflow's step "Read the shows' schedules" runs `scripts/events/fetch.ts` after the polls, every time the workflow runs (at 7 and 37 past the hour, and a minute after a show's day opens, from the change-over clock). For each show in `fixtures/events/registry.json` it reads the FAQ from the news pack and, only when the show is new, has moved on since its last read (it opens, a day turns over) or was last read on an earlier UTC day, RSI's schedule page: two requests, 5 seconds apart. Once the show is over RSI is not asked again. It writes `fixtures/events/<slug>.json` when the data changed and `fixtures/events/state.json` when the phase did; the workflow's commit then redeploys the site. The day itself turns on the site at RSI's change-over without a deploy: the front page and the event pages rebuild at most once a minute on Vercel, and an open page asks for itself again when the day changes (ADR-057, amended 2026-11-15). Vercel's logs show the change-over clock as `job: "changeover-clock"`; any hour but a change-over's it says "no show's day opened in the last 15 minutes".
 
 ## Adding a show
 

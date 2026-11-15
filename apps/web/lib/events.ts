@@ -14,6 +14,8 @@ import {
   eventForFront,
   eventPhase,
   eventShortTitle,
+  lastChangeover,
+  nextEventChange,
 } from "schema";
 import type { ResponsiveImage } from "ui";
 import { REPO_ROOT, type Repository, type ShipView } from "./data";
@@ -69,6 +71,38 @@ export function frontEvent(
   list: readonly EventRecord[] = events(),
 ): EventRecord | null {
   return eventForFront(list, at);
+}
+
+/**
+ * When a page built at `at` goes stale: the next moment a show on file changes phase, as an ISO
+ * time for the page's `ShowClock`; null when no show is ahead (ADR-057, amended 2026-11-15).
+ */
+export function nextShowChange(
+  at: Date,
+  list: readonly EventRecord[] = events(),
+): string | null {
+  return nextEventChange(list, at)?.toISOString() ?? null;
+}
+
+/** How long after RSI's change-over the change-over clock still starts a News run. */
+export const CHANGEOVER_WINDOW_MS = 15 * 60_000;
+
+/**
+ * Why the change-over clock starts nothing at `now`, or null when a show's day opened within the
+ * last quarter hour (ADR-057, amended 2026-11-15).
+ */
+export function changeoverSkip(
+  now: Date,
+  list: readonly EventRecord[] = events(),
+): string | null {
+  const opened = lastChangeover(list, now);
+  if (
+    opened === null ||
+    now.getTime() - opened.getTime() > CHANGEOVER_WINDOW_MS
+  ) {
+    return "no show's day opened in the last 15 minutes";
+  }
+  return null;
 }
 
 /** The short names CIG uses for its shows, and a show's short name: the schema's rules. */

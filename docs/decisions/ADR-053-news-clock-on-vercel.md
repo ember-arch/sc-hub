@@ -4,7 +4,7 @@
 - Date: 2026-11-12
 - Deciders: owner ("Vercel cron", 2026-11-12, after asking why the scheduled news runs kept being skipped), Claude Code session 2026-11-12
 - Amends: ADR-027 (who starts the pollers), CLAUDE.md section 9
-- Amended by: ADR-056 (the same cron and token also start the daily refresh, from `/api/cron/refresh`)
+- Amended by: ADR-056 (the same cron and token also start the daily refresh, from `/api/cron/refresh`); ADR-057's amendment of 2026-11-15 (a change-over clock, `/api/cron/changeover` a minute past each hour, starts the workflow right after a show's day opens, never with the YouTube feed; the clocks share `startNews` in `apps/web/lib/news-dispatch.ts`)
 
 ## Context
 

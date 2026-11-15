@@ -11949,5 +11949,39 @@
     "thread_title": null,
     "forum": "Star Citizen",
     "takedown": false
+  },
+  {
+    "id": "84f2b869-d939-5c26-9945-d4c0c86a7651",
+    "source": "comm_link",
+    "external_id": "21452",
+    "url": "https://robertsspaceindustries.com/comm-link/transmission/21452-Star-Citizen-Behind-The-Ships-Anvil-Liberator",
+    "title": "Star Citizen | Behind the Ships: Anvil Liberator",
+    "summary": "Load up and learn what the Liberator brings to the ‘verse… and what your fleet could bring to the Liberator. They don’t call it a logistical powerhouse for nothing.",
+    "body_html": "<p>Load up and learn what the Liberator brings to the ‘verse… and what your fleet could bring to the Liberator. They don’t call it a logistical powerhouse for nothing.</p>",
+    "published_at": "2026-11-15T16:07:00.000Z",
+    "fetched_at": "2026-11-15T16:37:55.730Z",
+    "revision": 1,
+    "author_id": null,
+    "thread_id": null,
+    "thread_title": null,
+    "forum": null,
+    "takedown": false
+  },
+  {
+    "id": "d5e9318c-764b-5fea-a38b-8d62b02e8978",
+    "source": "spectrum",
+    "external_id": "575988",
+    "url": "https://robertsspaceindustries.com/spectrum/community/SC/forum/1/thread/iae-2956-choose-your-adventure",
+    "title": "IAE 2956: Choose Your Adventure",
+    "summary": "Hey y'all,",
+    "body_html": "<p>Hey y&#39;all,</p>\n<p>It’s time again for the Intergalactic Aerospace Expo 2956 to bring together the best that Human and Alien ingenuity has to offer in the ultimate ship showcase.</p>\n<p>This year, spacefaring pioneer RSI takes the helm as the expo returns to New Babbage and welcomes all pilots to witness a new wave of iconic ship releases, stand in awe of time-honored designs, and take the controls of over 200 ships for free. Doors are open through November 27.</p>\n<p>But there’s more, as IAE comes with a lineup of extras. Everyone can take to the skies in an RSI Aurora Mk II during the Free Fly event or show us a day in your life for the “All in a Day’s Work” Video Contest. Twitch Drops will be available too!</p>\n<p>Enjoy everything IAE 2956 has to offer:</p>\n<p>IAE 2956 || FAQ</p>\n<p>Manufacturer Schedule</p>\n<p>&quot;All in a Day&#39;s Work&quot; Video Contest</p>\n<p>RSI Galaxy || Q&amp;A || Behind the Ships</p>\n<p>RSI Skylark</p>\n<p>Anvil Liberator || Behind the Ships</p>\n<p>Play for Free During IAE 2956 - The Free Fly will run through November 27</p>\n<p>Twitch Drops - Head to Twitch/StarCitizen, and tune in to any Drops-enabled stream to unlock in-game reward items.</p>\n<p>Welcome Hub</p>\n<p>With so much to do, where are y&#39;all headed first?</p>",
+    "published_at": "2026-11-13T15:56:00.000Z",
+    "fetched_at": "2026-11-15T16:38:12.880Z",
+    "revision": 2,
+    "author_id": "bfa724b8-bb8a-5b51-9c3a-ef9a1c6a01f1",
+    "thread_id": "575988",
+    "thread_title": "IAE 2956: Choose Your Adventure",
+    "forum": "Announcements",
+    "takedown": false
   }
 ]

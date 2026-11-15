@@ -140,6 +140,16 @@
     "external_id": "21411"
   },
   {
+    "file": "21410.jpg",
+    "page_url": "https://robertsspaceindustries.com/comm-link/transmission/21410-IAE-2956-Anvil-Aerospace",
+    "image_url": "https://media.robertsspaceindustries.com/2vc9lcdjp2q5e/channel_item_full.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 214635,
+    "sha256": "0976028d046138ec6a4bad2a79584b7b3ffa092cafdcb41caa88c6fb2ede81c0",
+    "fetched_at": "2026-11-15T16:08:33.047Z",
+    "external_id": "21410"
+  },
+  {
     "file": "21390.png",
     "page_url": "https://robertsspaceindustries.com/comm-link/transmission/21390-Roadmap-Roundup-October-21-2026",
     "image_url": "https://media.robertsspaceindustries.com/5nw60s8x71rw5/channel_item_full.png",
@@ -248,6 +258,16 @@
     "sha256": "0de4ed06a84a38379e53ab4d2f8c61d9a2c8d57ab64249539f288539828df64e",
     "fetched_at": "2026-11-10T20:23:35.513Z",
     "external_id": "21350"
+  },
+  {
+    "file": "21348.jpg",
+    "page_url": "https://robertsspaceindustries.com/comm-link/transmission/21348-Anvil-Liberator",
+    "image_url": "https://media.robertsspaceindustries.com/t4p8iri5rvzma/channel_item_full.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 516182,
+    "sha256": "69d4cbaeebfbc9772158c527124ac0c36d6017d56a0a9da83c088e7da05fe3af",
+    "fetched_at": "2026-11-15T16:08:37.989Z",
+    "external_id": "21348"
   },
   {
     "file": "21347.jpg",

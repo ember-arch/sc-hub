@@ -12153,5 +12153,22 @@
     "thread_title": "[Wave 1] Star Citizen Alpha 5.0 PTU Patch Notes 13201184",
     "forum": "Patch Notes",
     "takedown": false
+  },
+  {
+    "id": "30386d98-4e7f-553a-99f4-81cec4912ad5",
+    "source": "comm_link",
+    "external_id": "21454",
+    "url": "https://robertsspaceindustries.com/comm-link/transmission/21454-This-Week-In-Star-Citizen",
+    "title": "This Week in Star Citizen - November 16, 2026",
+    "summary": "Happy Monday, everyone! Let’s see what’s happening in and out of the ‘verse, This Week in Star Citizen.",
+    "body_html": "<p>Happy Monday, everyone! Let’s see what’s happening in and out of the ‘verse, This Week in Star Citizen.</p>",
+    "published_at": "2026-11-16T22:33:00.000Z",
+    "fetched_at": "2026-11-16T22:37:54.504Z",
+    "revision": 1,
+    "author_id": null,
+    "thread_id": null,
+    "thread_title": null,
+    "forum": null,
+    "takedown": false
   }
 ]

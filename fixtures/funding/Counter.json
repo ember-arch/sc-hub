@@ -4,9 +4,9 @@
     "url": "https://robertsspaceindustries.com/api/stats/getCrowdfundStats",
     "origin_url": "https://robertsspaceindustries.com/funding-goals"
   },
-  "read_at": "2026-11-16T13:38:27.505Z",
-  "funds_usd": 1069423841.65,
-  "citizens": 6766848,
+  "read_at": "2026-11-16T14:38:22.093Z",
+  "funds_usd": 1069467361.75,
+  "citizens": 6766928,
   "previous_day": {
     "read_at": "2026-11-15T23:08:23.931Z",
     "funds_usd": 1068672488.93,

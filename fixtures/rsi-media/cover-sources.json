@@ -1,5 +1,15 @@
 [
   {
+    "file": "21452.jpg",
+    "page_url": "https://robertsspaceindustries.com/comm-link/transmission/21452-Star-Citizen-Behind-The-Ships-Anvil-Liberator",
+    "image_url": "https://media.robertsspaceindustries.com/g0qccrroz7rb3/channel_item_full.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 520941,
+    "sha256": "a65ab08bb80746bbca2d824337ccd3926ec7128c213861688ce8c52425692437",
+    "fetched_at": "2026-11-15T16:38:24.853Z",
+    "external_id": "21452"
+  },
+  {
     "file": "21447.jpg",
     "page_url": "https://robertsspaceindustries.com/comm-link/transmission/21447-Star-Citizen-Behind-The-Ships-RSI-Galaxy",
     "image_url": "https://media.robertsspaceindustries.com/2hdjgzzou7fzt/channel_item_full.jpg",

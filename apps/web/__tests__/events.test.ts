@@ -199,14 +199,22 @@ describe("the makers and ships against the register", () => {
 
 describe("the dispatches about a show", () => {
   it("takes the Comm-Links and videos that name it, newest first", () => {
-    const news = eventNews(iae(), repo().dispatches);
-    const ids = news.map((n) => n.external_id);
+    // Every one, not the page's dozen: the news pack on file grows through the show, and each new
+    // Comm-Link pushes the oldest out of the dozen, so membership is checked on the whole list.
+    const all = eventNews(iae(), repo().dispatches, Number.POSITIVE_INFINITY);
+    const ids = all.map((n) => n.external_id);
     expect(ids).toContain("21386");
     expect(ids).toContain("21389");
     expect(
-      news.every((n) => n.source === "comm_link" || n.source === "video"),
+      all.every((n) => n.source === "comm_link" || n.source === "video"),
     ).toBe(true);
-    const times = news.map((n) => n.published_at);
+    const times = all.map((n) => n.published_at);
     expect([...times].sort().reverse()).toEqual(times);
+  });
+
+  it("gives the page the newest dozen of them", () => {
+    const all = eventNews(iae(), repo().dispatches, Number.POSITIVE_INFINITY);
+    const page = eventNews(iae(), repo().dispatches);
+    expect(page).toEqual(all.slice(0, 12));
   });
 });

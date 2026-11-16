@@ -311,6 +311,12 @@
       "lead": "Day 3 plays host to Anvil's legendary stable of combat-tested ships.",
       "ships": [
         {
+          "name": "Anvil Liberator",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/liberator/Liberator",
+          "line": "Continuing their tradition of excellence, Anvil's Liberator applies long-range transport to a smaller scale.",
+          "group": null
+        },
+        {
           "name": "Anvil Arrow",
           "pledge_url": "https://robertsspaceindustries.com/pledge/ships/anvil-arrow/Arrow",
           "line": "Featuring an ultra-aerodynamic frame and slight profile, it’s the most agile ship in its class.",
@@ -1488,6 +1494,6 @@
       "revision": 3
     }
   ],
-  "body_url": "https://robertsspaceindustries.com/alexandria/html/6ad1120ff662e74386db6f4b/6af49f40b153459bd9458f54/9PSi6rulraO8ATjcoJEUqSjZAL8-en-mwcd80r7-fa253c06",
-  "fetched_at": "2026-11-12T19:11:51.967Z"
+  "body_url": "https://robertsspaceindustries.com/alexandria/html/6ad1120ff662e74386db6f4b/6af9d926cbac67bc3f05e8a8/EaI253nNvPD8fi3D0ga8K9DPCcI-en-mwi1513o-0d796f04",
+  "fetched_at": "2026-11-16T00:08:25.016Z"
 }

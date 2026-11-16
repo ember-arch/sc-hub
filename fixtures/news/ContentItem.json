@@ -12034,5 +12034,22 @@
     "thread_title": null,
     "forum": "Star Citizen",
     "takedown": false
+  },
+  {
+    "id": "c3fe4b45-d911-5103-9616-436c8ba88d43",
+    "source": "spectrum",
+    "external_id": "9237411",
+    "url": "https://robertsspaceindustries.com/spectrum/community/SC/forum/3/thread/star-citizen-vr-support-experimental-release-alpha/9237411",
+    "title": "Re: Star Citizen VR Support - Experimental Release (Alpha 4.8/4.9/4.10)",
+    "summary": "Yes, this is already fixed for 5.0! So many more things to come soon. Stay tuned!",
+    "body_html": "<p>Yes, this is already fixed for 5.0! So many more things to come soon. Stay tuned!</p>",
+    "published_at": "2026-11-16T13:09:32.000Z",
+    "fetched_at": "2026-11-16T13:38:18.333Z",
+    "revision": 1,
+    "author_id": "66b850ae-ec8d-584e-9ed1-91fcdf9e9d76",
+    "thread_id": "549514",
+    "thread_title": "Star Citizen VR Support - Experimental Release (Alpha 4.8/4.9/4.10)",
+    "forum": "General",
+    "takedown": false
   }
 ]

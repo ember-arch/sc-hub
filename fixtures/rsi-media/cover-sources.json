@@ -160,6 +160,26 @@
     "external_id": "21410"
   },
   {
+    "file": "21409.jpg",
+    "page_url": "https://robertsspaceindustries.com/comm-link/transmission/21409-IAE-2956-Crusader-Industries",
+    "image_url": "https://media.robertsspaceindustries.com/rwwx041yorm6q/channel_item_full.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 178649,
+    "sha256": "9095e29905e05d67ecb46742d7d922a6d2382a6643dc427836efa7c29b248308",
+    "fetched_at": "2026-11-16T16:08:44.574Z",
+    "external_id": "21409"
+  },
+  {
+    "file": "21408.jpg",
+    "page_url": "https://robertsspaceindustries.com/comm-link/transmission/21408-IAE-2956-Tumbril-Land-Systems",
+    "image_url": "https://media.robertsspaceindustries.com/dl6542seyo4u2/channel_item_full.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 263407,
+    "sha256": "96ec3553c554e4602e1625bbd0df6e892b2044b23f825a0490e37d07125b25fa",
+    "fetched_at": "2026-11-16T16:08:39.736Z",
+    "external_id": "21408"
+  },
+  {
     "file": "21390.png",
     "page_url": "https://robertsspaceindustries.com/comm-link/transmission/21390-Roadmap-Roundup-October-21-2026",
     "image_url": "https://media.robertsspaceindustries.com/5nw60s8x71rw5/channel_item_full.png",

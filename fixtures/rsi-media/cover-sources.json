@@ -190,6 +190,16 @@
     "external_id": "21408"
   },
   {
+    "file": "21407.jpg",
+    "page_url": "https://robertsspaceindustries.com/comm-link/transmission/21407-IAE-2956-Drake-Interplanetary",
+    "image_url": "https://media.robertsspaceindustries.com/s6xzcjzm5ydrb/channel_item_full.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 478439,
+    "sha256": "c5195b4b621f6076aaa467647acdf8648749b98084803bf087f6b5487c083869",
+    "fetched_at": "2026-11-17T16:08:42.659Z",
+    "external_id": "21407"
+  },
+  {
     "file": "21390.png",
     "page_url": "https://robertsspaceindustries.com/comm-link/transmission/21390-Roadmap-Roundup-October-21-2026",
     "image_url": "https://media.robertsspaceindustries.com/5nw60s8x71rw5/channel_item_full.png",
@@ -328,6 +338,16 @@
     "sha256": "ba2a5f88b7523bf79e0a5f57a365c44937605af8d7f96a88d1984455c45d1f98",
     "fetched_at": "2026-11-13T16:09:08.759Z",
     "external_id": "21346"
+  },
+  {
+    "file": "21345.jpg",
+    "page_url": "https://robertsspaceindustries.com/comm-link/transmission/21345-Drake-Marauder",
+    "image_url": "https://media.robertsspaceindustries.com/gz0ti8wap70cv/channel_item_full.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 422747,
+    "sha256": "96d0dae50cb8741884dde2eafd895bec4480d02b57ab67554ba18bd9960d83e4",
+    "fetched_at": "2026-11-17T16:08:47.559Z",
+    "external_id": "21345"
   },
   {
     "file": "21342.png",

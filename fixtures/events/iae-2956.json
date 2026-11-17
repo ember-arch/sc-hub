@@ -586,6 +586,12 @@
       "lead": "Ready to get your hands dirty?",
       "ships": [
         {
+          "name": "Drake Marauder",
+          "pledge_url": "https://robertsspaceindustries.com/en/pledge/ships/marauder/Marauder",
+          "line": "Purpose-built to deliver serious pain, the Marauder is a medium fighter bristling with weapons.",
+          "group": null
+        },
+        {
           "name": "Drake Buccaneer",
           "pledge_url": "https://robertsspaceindustries.com/pledge/ships/drake-buccaneer/Buccaneer",
           "line": "A light fighter that sacrifices durability (and its ejection seat!) for raw firepower.",
@@ -1494,6 +1500,6 @@
       "revision": 3
     }
   ],
-  "body_url": "https://robertsspaceindustries.com/alexandria/html/6ad1120ff662e74386db6f4b/6af9d926cbac67bc3f05e8a8/EaI253nNvPD8fi3D0ga8K9DPCcI-en-mwi1513o-0d796f04",
-  "fetched_at": "2026-11-16T00:08:25.016Z"
+  "body_url": "https://robertsspaceindustries.com/alexandria/html/6ad1120ff662e74386db6f4b/6afc7abe504c1f1779eea0fb/1xGs7rh6AMPvb4aXo2XyWAoOfqQ-en-mwkvt12z-ab19c883",
+  "fetched_at": "2026-11-17T16:08:30.885Z"
 }

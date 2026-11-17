@@ -12289,5 +12289,39 @@
     "thread_title": "[Wave 1] Star Citizen Alpha 5.0 PTU Patch Notes 13201184",
     "forum": "Patch Notes",
     "takedown": false
+  },
+  {
+    "id": "fe9d4a67-9456-5410-8398-4aec1a01cc63",
+    "source": "spectrum",
+    "external_id": "575988",
+    "url": "https://robertsspaceindustries.com/spectrum/community/SC/forum/1/thread/iae-2956-choose-your-adventure",
+    "title": "IAE 2956: Choose Your Adventure",
+    "summary": "Hey y'all,",
+    "body_html": "<p>Hey y&#39;all,</p>\n<p>It’s time again for the Intergalactic Aerospace Expo 2956 to bring together the best that Human and Alien ingenuity has to offer in the ultimate ship showcase.</p>\n<p>This year, spacefaring pioneer RSI takes the helm as the expo returns to New Babbage and welcomes all pilots to witness a new wave of iconic ship releases, stand in awe of time-honored designs, and take the controls of over 200 ships for free. Doors are open through November 27.</p>\n<p>But there’s more, as IAE comes with a lineup of extras. Everyone can take to the skies in an RSI Aurora Mk II during the Free Fly event or show us a day in your life for the “All in a Day’s Work” Video Contest. Twitch Drops will be available too!</p>\n<p>Enjoy everything IAE 2956 has to offer:</p>\n<p>IAE 2956 || FAQ</p>\n<p>Manufacturer Schedule</p>\n<p>&quot;All in a Day&#39;s Work&quot; Video Contest</p>\n<p>RSI Galaxy || Q&amp;A || Behind the Ships</p>\n<p>RSI Skylark</p>\n<p>Anvil Liberator || Behind the Ships</p>\n<p>Drake Marauder</p>\n<p>Play for Free During IAE 2956 - The Free Fly will run through November 27</p>\n<p>Twitch Drops - Head to Twitch/StarCitizen, and tune in to any Drops-enabled stream to unlock in-game reward items.</p>\n<p>Welcome Hub</p>\n<p>With so much to do, where are y&#39;all headed first?</p>",
+    "published_at": "2026-11-13T15:56:00.000Z",
+    "fetched_at": "2026-11-17T16:38:29.074Z",
+    "revision": 3,
+    "author_id": "bfa724b8-bb8a-5b51-9c3a-ef9a1c6a01f1",
+    "thread_id": "575988",
+    "thread_title": "IAE 2956: Choose Your Adventure",
+    "forum": "Announcements",
+    "takedown": false
+  },
+  {
+    "id": "56eddcb9-5ad4-565e-b41d-95f97ef8920a",
+    "source": "spectrum",
+    "external_id": "576976",
+    "url": "https://robertsspaceindustries.com/spectrum/community/SC/forum/4/thread/4-10-3-live-feedback-drake-marauder",
+    "title": "[4.10.3 LIVE Feedback] Drake Marauder",
+    "summary": "Greetings!",
+    "body_html": "<p>Greetings!</p>\n<p>Take the power back with Drake’s version of the space-superiority fighter. Built for the people, not the military, the Marauder is designed to outgun anything else in its category, offering a wealth of combat options to suit every scenario.</p>\n<p>A feedback survey is available at: Drake Marauder Survey Form. This survey will be open until Dec 15.</p>\n<p>We look forward to reading your feedback!</p>\n<p>-Shark</p>\n<p>Player Experience Team</p>",
+    "published_at": "2026-11-17T16:00:00.000Z",
+    "fetched_at": "2026-11-17T16:38:29.074Z",
+    "revision": 1,
+    "author_id": "b639c31d-7e55-5f77-956c-2fc82bd3f431",
+    "thread_id": "576976",
+    "thread_title": "[4.10.3 LIVE Feedback] Drake Marauder",
+    "forum": "Feedback",
+    "takedown": false
   }
 ]

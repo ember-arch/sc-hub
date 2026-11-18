@@ -1,5 +1,5 @@
 {
-  "last_updated": 1793824771,
+  "last_updated": 1795038688,
   "cards": [
     {
       "id": 355,
@@ -7667,8 +7667,8 @@
       "release": "4.10",
       "release_id": 74,
       "category": "Missions and Events",
-      "status": "Committed",
-      "time_modified": 1793628798,
+      "status": "Released",
+      "time_modified": 1794968258,
       "description": "Implementing an expansion of InterSec Defense Solutions' contracts in Nyx, introducing new missions and gameplay opportunities centered on fighting the growing Vanduul threat, alongside new blueprints for players to earn."
     },
     {
@@ -7677,8 +7677,8 @@
       "release": "4.10",
       "release_id": 74,
       "category": "Weapons and Items",
-      "status": "Committed",
-      "time_modified": 1793194155,
+      "status": "Released",
+      "time_modified": 1794968263,
       "description": "⁠Implementing the Lightning Bolt Company \"Skarnov\" DMR, a fully automatic designated marksman rifle whose specialized projectiles create electrical discharges between multiple targets, making it highly effective against groups of hostiles."
     },
     {
@@ -7710,6 +7710,46 @@
       "status": "Released",
       "time_modified": 1791283541,
       "description": "Implementing the RSI Skylark, a snub fighter nestled within the Constellation’s reimagined hull."
+    },
+    {
+      "id": 1634,
+      "name": "RSI Galaxy",
+      "release": "4.10",
+      "release_id": 74,
+      "category": "Ships and Vehicles",
+      "status": "Released",
+      "time_modified": 1795038050,
+      "description": "Implementing the RSI Galaxy, a jack of all trades redefining the depth of modularity as only RSI can. The next-generation chassis is built around a configurable midship space that transforms into a heavily defended long-haul freighter or mobile field hospital. "
+    },
+    {
+      "id": 1622,
+      "name": "Anvil Liberator",
+      "release": "4.10",
+      "release_id": 74,
+      "category": "Ships and Vehicles",
+      "status": "Released",
+      "time_modified": 1794935467,
+      "description": "Implementing the Anvil Liberator, a transporter and light carrier allowing you to load the decks with fighters, miners, salvagers, or whatever’s needed for your daily operations. The Liberator handles long-range jumps, so your ships reserve their supplies and always arrive ready to get to work."
+    },
+    {
+      "id": 1623,
+      "name": "Drake Marauder",
+      "release": "4.10",
+      "release_id": 74,
+      "category": "Ships and Vehicles",
+      "status": "Released",
+      "time_modified": 1794935531,
+      "description": "Implementing the Drake Marauder, a medium fighter that packs a punch, putting all its seven size 3 weapons under one pilot’s thumb, ready to blast."
+    },
+    {
+      "id": 1635,
+      "name": "Gatac Hyūn",
+      "release": "4.10",
+      "release_id": 74,
+      "category": "Ships and Vehicles",
+      "status": "Committed",
+      "time_modified": 1795038688,
+      "description": "Implementing the Gatac Hyūn, the alien manufacturer's first combined mining and salvage ship."
     },
     {
       "id": 1580,
@@ -7817,8 +7857,8 @@
       "release": "5.0",
       "release_id": 75,
       "category": "Ships and Vehicles",
-      "status": "Tentative",
-      "time_modified": 1793823158,
+      "status": "Committed",
+      "time_modified": 1795015059,
       "description": "Implementing a weapon balancing pass for ship combat, with a focus on fighter combat and adjustments to weapon performance, time to kill, and the balance between energy and ballistic weapons."
     },
     {
@@ -7827,9 +7867,19 @@
       "release": "5.0",
       "release_id": 75,
       "category": "Gameplay",
-      "status": "Tentative",
-      "time_modified": 1793630684,
+      "status": "Committed",
+      "time_modified": 1795015056,
       "description": "Rebalancing loot at various sandbox locations and introducing previously Wikelo-exclusive rewards to the loot pool."
+    },
+    {
+      "id": 1625,
+      "name": "The Moraine Faction Outfits Update",
+      "release": "5.0",
+      "release_id": 75,
+      "category": "Characters",
+      "status": "Committed",
+      "time_modified": 1794967989,
+      "description": "Implementing multiple outfit variants for the Moraine faction in Nyx, including matching backpacks."
     },
     {
       "id": 1578,
@@ -7840,6 +7890,26 @@
       "status": "Committed",
       "time_modified": 1793193901,
       "description": "Implementing the Population Manager tech. Its primary goal is to load balance the server population and create inhabitants appropriate to their local environment, while enabling more complex interactions between agents focused on a dynamic context."
+    },
+    {
+      "id": 1626,
+      "name": "The First Legion Faction Outfits Update",
+      "release": "5.0",
+      "release_id": 75,
+      "category": "Characters",
+      "status": "Committed",
+      "time_modified": 1794967997,
+      "description": "Implementing multiple outfit variants for the First Legion faction in Nyx, including matching backpacks."
+    },
+    {
+      "id": 1627,
+      "name": "The Claw Salamanders Faction Outfits Update",
+      "release": "5.0",
+      "release_id": 75,
+      "category": "Characters",
+      "status": "Committed",
+      "time_modified": 1794968019,
+      "description": "Implementing multiple outfit variants for the Claw Salamanders faction in Nyx, including matching backpacks."
     },
     {
       "id": 1583,
@@ -7862,6 +7932,16 @@
       "description": "Implementing a tech that allows us to subdivide planets and moons into smaller territories, so a single Dynamic Game Server (DGS) is never responsible for an entire body. Territory boundaries are generated from spatial clustering of seeded entities scattered by Genesis, and dynamically assigned to available DGSs, improving load distribution and paving the way for finer‑grained server meshing at planetary scale. Nyx 1 will be the first planet to use this tech."
     },
     {
+      "id": 1628,
+      "name": "The Shattered Blade Faction Outfits Update",
+      "release": "5.0",
+      "release_id": 75,
+      "category": "Characters",
+      "status": "Committed",
+      "time_modified": 1794968034,
+      "description": "Implementing multiple outfit variants for the Shattered Blade faction in Nyx, including matching backpacks."
+    },
+    {
       "id": 1558,
       "name": "Item Recovery: Ship Loadout Improvements",
       "release": "5.0",
@@ -7880,6 +7960,46 @@
       "status": "Committed",
       "time_modified": 1793632204,
       "description": "Implementing the Kastak Arms \"Verdict\" LMG, a medium-range weapon that builds heat through sustained fire before unleashing devastating superheated plasma projectiles with its alternate fire mode."
+    },
+    {
+      "id": 1629,
+      "name": "The People's Alliance Faction Outfits Update",
+      "release": "5.0",
+      "release_id": 75,
+      "category": "Characters",
+      "status": "Committed",
+      "time_modified": 1794968040,
+      "description": "Implementing multiple outfit variants for the People's Alliance faction in Nyx, including matching backpacks."
+    },
+    {
+      "id": 1630,
+      "name": "Covalex Faction Outfits Update",
+      "release": "5.0",
+      "release_id": 75,
+      "category": "Characters",
+      "status": "Committed",
+      "time_modified": 1794968048,
+      "description": "Implementing multiple outfit variants for the Covalex faction in Nyx, including matching backpacks."
+    },
+    {
+      "id": 1633,
+      "name": "Rayari Inc. Faction Outfits Update",
+      "release": "5.0",
+      "release_id": 75,
+      "category": "Characters",
+      "status": "Committed",
+      "time_modified": 1795019542,
+      "description": "Implementing multiple outfit variants for the Rayari Inc. faction in Nyx, including matching backpacks."
+    },
+    {
+      "id": 1632,
+      "name": "Shubin Interstellar Faction Outfits Update",
+      "release": "5.0",
+      "release_id": 75,
+      "category": "Characters",
+      "status": "Committed",
+      "time_modified": 1794968062,
+      "description": "Implementing multiple outfit variants for the Shubin Interstellar faction in Nyx, including matching backpacks."
     },
     {
       "id": 1609,

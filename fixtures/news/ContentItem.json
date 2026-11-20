@@ -12952,5 +12952,22 @@
     "thread_title": "[5.0 PTU Feedback] Ship TTK Balancing Update #6",
     "forum": "Feedback",
     "takedown": false
+  },
+  {
+    "id": "c3809ddd-d570-533e-ae6f-c1ddc0e5985b",
+    "source": "comm_link",
+    "external_id": "21398",
+    "url": "https://robertsspaceindustries.com/comm-link/transmission/21398-IAE-2956-Aegis-Dynamics",
+    "title": "IAE 2956 Aegis Dynamics",
+    "summary": "The longest-serving shipbuilder to the UEE military.",
+    "body_html": "<p>The longest-serving shipbuilder to the UEE military.</p>",
+    "published_at": "2026-11-20T15:59:00.000Z",
+    "fetched_at": "2026-11-20T16:07:51.196Z",
+    "revision": 1,
+    "author_id": null,
+    "thread_id": null,
+    "thread_title": null,
+    "forum": null,
+    "takedown": false
   }
 ]

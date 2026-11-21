@@ -37,7 +37,13 @@ import {
   readings,
   yearOnYear,
 } from "../lib/funding";
-import { dayLabel, frontEvent, leadDay, shortTitle } from "../lib/events";
+import {
+  dayLabel,
+  frontEvent,
+  leadDay,
+  nextShowChange,
+  shortTitle,
+} from "../lib/events";
 import { media, shipCardImage } from "../lib/media";
 import { shipTally, tallyNote } from "../lib/ship-count";
 import { withoutFixed } from "../lib/component-filters";
@@ -61,6 +67,14 @@ import { FrontLead } from "./front-lead";
 import { FundingCard } from "./funding-now";
 import { FundingLive, Live } from "./funding-live";
 import { VideoPlayer } from "./news/videos/player";
+import { ShowClock } from "./show-clock";
+
+/**
+ * Rebuilt by Vercel at most once a minute, on the first visit after it, so the show's day turns
+ * at RSI's change-over (8:00 in the Pacific for IAE) without waiting for a deploy, and an open page
+ * follows it through `ShowClock` (ADR-057, amended 2026-11-15).
+ */
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: { absolute: SITE_NAME },
@@ -404,6 +418,7 @@ export default function HomePage() {
 
   return (
     <Site>
+      <ShowClock next={nextShowChange(at)} />
       <FundingLive context={fundingContext}>
         <div className="flex flex-col gap-8 pt-8">
           <div className="flex flex-col gap-6">

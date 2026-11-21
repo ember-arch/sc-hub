@@ -2,7 +2,11 @@ import { mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { expect, test } from "@playwright/test";
-import { eventForFront, eventShortTitle as shortTitle } from "schema";
+import {
+  eventForFront,
+  eventShortTitle as shortTitle,
+  nextEventChange,
+} from "schema";
 import { clock, shows } from "./shows";
 
 // The events module (ADR-057): the event page in the canonical format, the index, and the front
@@ -99,6 +103,35 @@ test("the front page carries a show only while it runs", async ({ page }) => {
   await expect(page.locator("section[aria-labelledby=lead-story]")).toHaveCount(
     0,
   );
+});
+
+test("an open page asks the site for itself again once a show's day changes over", async ({
+  page,
+}) => {
+  // ADR-057, amended 2026-11-15: the page knows the next change (RSI's change-over, 16:00 UTC for
+  // IAE 2956) and, once it passes, asks for the page again rather than wait for a reload.
+  const next = nextEventChange(shows, clock);
+  test.skip(next === null, "no show ahead of the build's clock");
+  const isRefresh = (url: string, headers: Record<string, string>) =>
+    new URL(url).pathname === "/" &&
+    headers["rsc"] === "1" &&
+    headers["next-router-prefetch"] === undefined;
+  const refreshes: string[] = [];
+  page.on("request", (request) => {
+    if (isRefresh(request.url(), request.headers()))
+      refreshes.push(request.url());
+  });
+  // The browser's clock starts a minute before the change, wherever the build's clock stands.
+  await page.clock.install({ time: new Date(next!.getTime() - 60_000) });
+  await page.goto("/");
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  await page.clock.fastForward(30_000);
+  expect(refreshes, "asked before the change").toEqual([]);
+  const asked = page.waitForRequest((request) =>
+    isRefresh(request.url(), request.headers()),
+  );
+  await page.clock.fastForward(32_000);
+  await asked;
 });
 
 // The sale comes from a Spectrum post, so it shows only with the module on (ADR-027, ADR-057).

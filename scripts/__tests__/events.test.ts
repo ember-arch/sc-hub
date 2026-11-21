@@ -4,8 +4,10 @@ import { fileURLToPath } from "node:url";
 import {
   type ContentItem,
   EventRecord,
+  eventChanges,
   eventOnFront,
   eventPhase,
+  nextEventChange,
   phaseKey,
 } from "schema";
 import { describe, expect, it } from "vitest";
@@ -387,6 +389,48 @@ describe("where the show stands", () => {
     expect(on("2026-11-13T08:00:00Z")).toBe(true);
     expect(on("2026-11-27T23:59:00Z")).toBe(true);
     expect(on("2026-11-28T00:00:00Z")).toBe(false);
+  });
+
+  it("changes at its eve, its opening day, each day's change-over and its end", () => {
+    const changes = eventChanges(event).map((t) => new Date(t).toISOString());
+    expect(changes[0]).toBe("2026-11-12T00:00:00.000Z");
+    expect(changes[1]).toBe("2026-11-13T00:00:00.000Z");
+    expect(changes[2]).toBe("2026-11-13T16:00:00.000Z");
+    expect(changes).toContain("2026-11-15T16:00:00.000Z");
+    expect(changes.at(-1)).toBe("2026-11-28T00:00:00.000Z");
+    // One entry per change, in order: the doors and Day 1 open together.
+    expect(new Set(changes).size).toBe(changes.length);
+    expect([...changes].sort()).toEqual(changes);
+    // Every change moves the phase, and nothing between two changes does.
+    const minuteBefore = (iso: string) =>
+      new Date(Date.parse(iso) - 60_000).toISOString();
+    for (let i = 0; i + 1 < changes.length; i += 1) {
+      const on = at(changes[i]!);
+      expect(on).not.toEqual(at(minuteBefore(changes[i]!)));
+      expect(at(minuteBefore(changes[i + 1]!))).toEqual(on);
+    }
+  });
+
+  it("names the next change after a moment, across the shows on file", () => {
+    const next = (iso: string, list = [event]) =>
+      nextEventChange(list, new Date(iso))?.toISOString() ?? null;
+    // RSI's change-over at 8:00 in the Pacific: Day 3 opens at 16:00 UTC on the 15th.
+    expect(next("2026-11-15T15:59:00Z")).toBe("2026-11-15T16:00:00.000Z");
+    expect(next("2026-11-15T16:00:00Z")).toBe("2026-11-16T16:00:00.000Z");
+    expect(next("2026-11-01T00:00:00Z")).toBe("2026-11-12T00:00:00.000Z");
+    expect(next("2026-11-27T12:00:00Z")).toBe("2026-11-28T00:00:00.000Z");
+    expect(next("2026-11-28T00:00:00Z")).toBeNull();
+    expect(next("2026-11-15T12:00:00Z", [])).toBeNull();
+    // The soonest of two shows.
+    const later = {
+      ...event,
+      opens_at: "2026-11-20T15:30:00.000Z",
+      last_day: "2026-11-21",
+      days: [{ ...event.days[0]!, opens_at: "2026-11-20T15:30:00.000Z" }],
+    };
+    expect(next("2026-11-20T15:00:00Z", [event, later])).toBe(
+      "2026-11-20T15:30:00.000Z",
+    );
   });
 
   it("names each phase in one word for the state file", () => {

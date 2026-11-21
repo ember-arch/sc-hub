@@ -20,13 +20,26 @@ const nextConfig: NextConfig = {
       "../../fixtures/titles/Titles.json",
       "../../fixtures/funding/Funding.json",
       "../../fixtures/funding/Counter.json",
+      // The shows and the pages their pictures come from (ADR-057): read again each minute by the
+      // front page and the event pages, which Vercel rebuilds so a show's day turns at RSI's
+      // change-over (amended 2026-11-15), and by the change-over clock.
+      "../../fixtures/events/*.json",
+      "../../fixtures/rsi-media/sources.json",
+      // The rest the site's code reads, so no page rendered at run time finds a file missing
+      // (apps/web/__tests__/trace.test.ts holds every fixture the code names to this list).
+      "../../fixtures/cargo/CargoBox.json",
+      "../../fixtures/fitting/ShipFit.json",
+      "../../fixtures/schema/*.json",
       "../../pnpm-workspace.yaml",
       // The media manifest fetched from the CDN at build (ADR-034), read per request by the same
       // routes for their card pictures; absent when CDN_BASE_URL is unset.
       "generated/media-manifest.json",
     ],
-    // The build snapshots (ADR-049), read per request by /patches/compare only.
+    // The build snapshots (ADR-049), read per request by /patches/compare, and by the front page
+    // when Vercel rebuilds it each minute (ADR-057, amended 2026-11-15): its featured ships follow a
+    // new LIVE patch's ships (ADR-060).
     "/patches/**": ["../../fixtures/patches/*.json.gz"],
+    "/": ["../../fixtures/patches/*.json.gz"],
   },
   // No image optimizer: the pictures are pre-sized WebP renditions (scripts/media/prepare.ts)
   // served as static files locally and from the CDN in a deploy (ADR-009, ADR-034).
